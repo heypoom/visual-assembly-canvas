@@ -5,11 +5,11 @@
 00 01 02 03 04 05 06 07
 AA BB CC DD EE FF 88 77
 
-```rs
-mut memory: [u8; 0xFFFF] = [0; 0xFFFF]
+```rust
+static MEMORY: [u8; 0xFFFF] = [0; 0xFFFF];
 ```
 
-```rs
+```txt
 memset(offset: u16, byte: u8) -> u8 =
   memory[offset] = value
 
@@ -20,7 +20,7 @@ memget(offset) = memory[offset]
 
 Maybe we can allocate the memory simply by keeping track of the cursor? This is pretty dumb, but it's a start.
 
-```rs
+```txt
 let cursor = 0
 
 fn alloc(size) =
@@ -37,8 +37,9 @@ set(base + 2, 5)
 
 We're going to have 16 registers, each 8-bit: `[u8; 0xF]`
 
-R00: 0x00
-R01: 0x01
+```md
+R01: 0x00
+R01: 0x00
 R02: 0x02
 R03: 0x03
 R04: 0x04
@@ -55,18 +56,20 @@ R11: 0x0B
 
 R12: 0x0C
   SP: Stack Pointer.
-  Keeps track of the top of the stack.
+  Keep track of the top of the stack.
 
 R13: 0x0D
   PC: Program Counter.
-  Keeps track of the current instruction pointer.
+  Keep track of the current instruction pointer.
 
 R14: 0x0E
   SR: Status Register
   Stores the status flags of the program execution.
+```
 
 ### Base Memory Layout
 
+```md
 0x0000 - 0x1000
   Code Segment: `text`
   Stores the program instructions.
@@ -80,20 +83,21 @@ R14: 0x0E
 0x2000 - 0x3000
   Uninitialized Data Segment: `bss`
   Initializes to zero.
-  Contains all global variables that are initialized to zero, or do not have explicit initialization in code, such as `int i`
+  Contains all global variables that are initialized to zero, or do not have an explicit initialization in code, such as `int i`
 
 after 0x3000
   Heap.
   Contains all dynamically allocated memory.
   Grows to larger addresses.
-  Uses malloc, realloc and free.
-  
+  Use malloc, realloc and free.
+
 below 0xFFFF
   Stack.
   Stack is LIFO.
   Contains the program stack frames.
-  Stack frames contains the local variables of the function.
+  Stack frames contain the local variables of the function.
   Makes recursion possible.
-  When the heap and stack collide, we ran out of memory.
+  When the heap and stack collided, we ran out of memory.
   SP tracks the top of the stack.
   Grows downwards.
+```
