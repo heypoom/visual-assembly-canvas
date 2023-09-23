@@ -35,10 +35,7 @@ set(base + 2, 5)
 
 ## 03: Registers
 
-We're going to have 16 registers, each 16-bit.
-
-Registers: 0xF (16 registers)
-Each register is 16-bit. [u16; 0xF]
+We're going to have 16 registers, each 8-bit: `[u8; 0xF]`
 
 R00: 0x00
 R01: 0x01
@@ -65,8 +62,8 @@ R13: 0x0D
   Keeps track of the current instruction pointer.
 
 R14: 0x0E
-  SR: State Register
-  Stores the flags of the program execution.
+  SR: Status Register
+  Stores the status flags of the program execution.
 
 ### Base Memory Layout
 

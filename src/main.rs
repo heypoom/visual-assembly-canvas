@@ -1,6 +1,8 @@
 mod mem;
+mod register;
 
 use self::mem::Memory;
+use self::register::Registers;
 
 #[derive(Debug)]
 struct Machine {
