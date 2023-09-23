@@ -14,17 +14,17 @@ memset(offset: u16, byte: u8) -> u8 =
 memget(offset) = memory[offset]
 ```
 
-## 02: Memory Allocation
+## 02: Naive Memory Allocation
 
-global alloc_cursor
+```rs
+let cursor = 0
 
-alloc(size) =
-  alloc_cursor += 1
-  p = alloc_cursor
-  alloc_cursor += size
+fn alloc(size) =
+  out = cursor.clone()
+  cursor += size
 
-  return ptr(p)
+  return out
 
 base = alloc(5)
-memset(base + 2, value)
-memget(base + 2)
+set(base + 2, 5)
+```
