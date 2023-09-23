@@ -1,3 +1,6 @@
+use snafu::prelude::*;
+use snafu::Whatever;
+
 use crate::mem::Memory;
 use crate::register::{Registers, Register::SP};
 
@@ -26,20 +29,20 @@ impl<'a> StackManager<'a> {
         self.reg.get(SP)
     }
 
-    fn push(&mut self, val: u8) -> Option<bool> {
-        // Stack Overflow!
-        if self.top() < MIN_STACK_ADDR {return None}
+    fn push(&mut self, val: u8) -> Result<(), Whatever> {
+        if self.top() < MIN_STACK_ADDR {whatever!("stack overflow")}
 
         // Decrement the stack pointer.
         self.reg.dec(SP);
+
+        // Save the value at the top of the stack.
         self.mem.set(self.top(), val);
 
-        Some(true)
+        Ok(())
     }
 
-    fn pop(&mut self) -> Option<u8> {
-        // Stack Underflow!
-        if self.top() > MAX_STACK_ADDR {return None}
+    fn pop(&mut self) -> Result<u8, Whatever> {
+        if self.top() > MAX_STACK_ADDR {whatever!("stack underflow")}
 
         let v = self.mem.get(self.top());
 
@@ -47,7 +50,7 @@ impl<'a> StackManager<'a> {
         self.reg.inc(SP);
 
         // Return the value at the top of the stack.
-        Some(v)
+        Ok(v)
     }
 }
 
@@ -62,12 +65,12 @@ mod tests {
         let mut s = StackManager::new(&mut m.mem, &mut m.reg);
 
         s.init();
-        s.push(10);
-        s.push(20);
-        s.push(30);
+        s.push(10).unwrap();
+        s.push(20).unwrap();
+        s.push(30).unwrap();
         assert_eq!(s.pop().unwrap(), 30);
         assert_eq!(s.pop().unwrap(), 20);
-        s.push(40);
+        s.push(40).unwrap();
         assert_eq!(s.pop().unwrap(), 40);
         assert_eq!(s.pop().unwrap(), 10);
     }
