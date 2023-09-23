@@ -5,6 +5,7 @@ pub struct Registers {
     pub buffer: [u8; R_SIZE],
 }
 
+#[derive(Copy, Clone)]
 pub enum Register {
     // General Purpose Registers
     R01 = 0x01,
@@ -31,6 +32,8 @@ pub enum Register {
     SR = 0x0E,
 }
 
+type R = Register;
+
 impl Registers {
     pub fn new() -> Registers {
         Registers {
@@ -38,12 +41,20 @@ impl Registers {
         }
     }
 
-    pub fn set(&mut self, r: Register, val: u8) {
+    pub fn set(&mut self, r: R, val: u8) {
         self.buffer[r as usize] = val;
     }
 
-    pub fn get(&self, r: Register) -> u8 {
+    pub fn get(&self, r: R) -> u8 {
         self.buffer[r as usize]
+    }
+
+    pub fn inc(&mut self, r: R) {
+        self.set(r, self.get(r) + 1);
+    }
+
+    pub fn dec(&mut self, r: R) {
+        self.set(r, self.get(r) - 1);
     }
 }
 
@@ -56,9 +67,21 @@ mod tests {
     fn test_set_register() {
         let mut r = Registers::new();
         r.set(FP, 0x10);
-        assert_eq!(r.get(FP), 0x10);
+        assert_eq!(r.get(FP), 0x10, "FP should be set to 0x10");
 
         r.set(PC, 0xFF);
-        assert_eq!(r.get(PC), 0xFF);
+        assert_eq!(r.get(PC), 0xFF, "PC should be set to 0xFF")
+    }
+
+    #[test]
+    fn test_inc_dec() {
+        let mut r = Registers::new();
+
+        r.inc(PC);
+        r.inc(PC);
+        assert_eq!(r.get(PC), 2, "PC should be incremented");
+
+        r.dec(PC);
+        assert_eq!(r.get(PC), 1, "PC should be decremented");
     }
 }
