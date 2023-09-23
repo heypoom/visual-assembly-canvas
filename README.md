@@ -25,3 +25,8 @@ Let's build it all from scratch in Rust, building one on top of another! For edu
 - [ ] Binary Tree
 - [ ] Binary Search Tree
 
+## Implementation Ideas
+
+- Build key data structures and algorithms in the Rust runtime, e.g. our own `ArrayList` data structure is actually built on top of our own allocator and memory manager, which just operates on a single `[u8; 0xFFFF]`
+
+- Then, build a language on top of that, which can invoke these algorithms and functions on our core runtime.
