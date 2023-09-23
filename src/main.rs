@@ -1,6 +1,7 @@
 mod machine;
 mod register;
 mod mem;
+mod stack;
 
 use machine::Machine;
 use crate::register::Register::PC;
