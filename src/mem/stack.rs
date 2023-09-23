@@ -26,22 +26,20 @@ impl<'a> StackManager<'a> {
         self.reg.get(SP)
     }
 
-    fn push(&mut self, val: u8) {
+    fn push(&mut self, val: u8) -> Option<bool> {
         // Stack Overflow!
-        // TODO: handle stack overflow.
-        // TODO: handle heap and stack collision.
-        if self.top() < MIN_STACK_ADDR {return}
+        if self.top() < MIN_STACK_ADDR {return None}
 
         // Decrement the stack pointer.
         self.reg.dec(SP);
         self.mem.set(self.top(), val);
+
+        Some(true)
     }
 
     fn pop(&mut self) -> Option<u8> {
         // Stack Underflow!
-        if self.top() > MAX_STACK_ADDR {
-            return None;
-        }
+        if self.top() > MAX_STACK_ADDR {return None}
 
         let v = self.mem.get(self.top());
 
