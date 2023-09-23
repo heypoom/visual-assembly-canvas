@@ -3,17 +3,17 @@ mod mem;
 use self::mem::Memory;
 
 #[derive(Debug)]
-struct CPU {
+struct Machine {
     mem: Memory,
 }
 
-impl CPU {
-    fn new() -> CPU {
-        CPU { mem: Memory::new() }
+impl Machine {
+    fn new() -> Machine {
+        Machine { mem: Memory::new() }
     }
 }
 
 fn main() {
-    let cpu = CPU::new();
+    let cpu = Machine::new();
     println!("{}", cpu.mem.get(0));
 }

@@ -1,5 +1,8 @@
 const MEMORY_SIZE: usize = 0xFFFF;
 
+/**
+ * Memory defines a fixed-size memory area for the program.
+ */
 #[derive(Debug)]
 pub struct Memory {
     pub buffer: [u8; MEMORY_SIZE],
