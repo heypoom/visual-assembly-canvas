@@ -15,12 +15,12 @@ impl Memory {
         }
     }
 
-    pub fn set(&mut self, addr: usize, val: u8) {
-        self.buffer[addr] = val;
+    pub fn set(&mut self, addr: u16, val: u8) {
+        self.buffer[addr as usize] = val;
     }
 
-    pub fn get(&self, addr: usize) -> u8 {
-        self.buffer[addr]
+    pub fn get(&self, addr: u16) -> u8 {
+        self.buffer[addr as usize]
     }
 }
 

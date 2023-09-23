@@ -1,10 +1,11 @@
-const R_SIZE: usize = 0xF;
+const REG_COUNT: usize = 0xF;
 
 #[derive(Debug)]
 pub struct Registers {
-    pub buffer: [u8; R_SIZE],
+    pub buffer: [u16; REG_COUNT],
 }
 
+#[allow(dead_code)]
 #[derive(Copy, Clone)]
 pub enum Register {
     // General Purpose Registers
@@ -37,19 +38,25 @@ type R = Register;
 impl Registers {
     pub fn new() -> Registers {
         Registers {
-            buffer: [0; R_SIZE],
+            buffer: [0; REG_COUNT],
         }
     }
 
-    pub fn set(&mut self, r: R, val: u8) {
+    pub fn set(&mut self, r: R, val: u16) {
         self.buffer[r as usize] = val;
     }
 
-    pub fn get(&self, r: R) -> u8 {
+    pub fn get(&self, r: R) -> u16 {
         self.buffer[r as usize]
     }
 
     pub fn inc(&mut self, r: R) {
+        // TODO: handle integer overflow.
+        if self.get(r) > u16::MAX {
+            println!("overflow!");
+            return
+        }
+
         self.set(r, self.get(r) + 1);
     }
 
