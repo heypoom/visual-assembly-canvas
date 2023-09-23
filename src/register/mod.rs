@@ -1,7 +1,8 @@
 const R_SIZE: usize = 0xF;
 
+#[derive(Debug)]
 pub struct Registers {
-    buffer: [u8; R_SIZE],
+    pub buffer: [u8; R_SIZE],
 }
 
 pub enum Register {

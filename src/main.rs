@@ -1,19 +1,8 @@
-mod mem;
+mod machine;
 mod register;
+mod mem;
 
-use self::mem::Memory;
-use self::register::Registers;
-
-#[derive(Debug)]
-struct Machine {
-    mem: Memory,
-}
-
-impl Machine {
-    fn new() -> Machine {
-        Machine { mem: Memory::new() }
-    }
-}
+use machine::Machine;
 
 fn main() {
     let cpu = Machine::new();
