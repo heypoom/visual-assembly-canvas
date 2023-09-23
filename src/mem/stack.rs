@@ -43,13 +43,13 @@ impl<'a> StackManager<'a> {
             return None;
         }
 
-        let v = Some(self.mem.get(self.top()));
+        let v = self.mem.get(self.top());
 
         // Increment the stack pointer.
         self.reg.inc(SP);
 
         // Return the value at the top of the stack.
-        v
+        Some(v)
     }
 }
 
