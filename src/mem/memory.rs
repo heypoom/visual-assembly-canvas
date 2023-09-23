@@ -6,14 +6,12 @@ const MEMORY_SIZE: usize = 0xFFFF;
 #[derive(Debug)]
 pub struct Memory {
     pub buffer: [u8; MEMORY_SIZE],
-    pub cursor: usize,
 }
 
 impl Memory {
     pub fn new() -> Memory {
         Memory {
             buffer: [0; MEMORY_SIZE],
-            cursor: 0,
         }
     }
 
