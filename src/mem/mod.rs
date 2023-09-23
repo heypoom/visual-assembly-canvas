@@ -1,15 +1,19 @@
 mod alloc;
 
+pub use self::alloc::*;
+
+const MEMORY_SIZE: usize = 0xFFFF;
+
 #[derive(Debug)]
 pub struct Memory {
-    pub buffer: [u8; 0xFF],
+    pub buffer: [u8; MEMORY_SIZE],
     pub cursor: usize,
 }
 
 impl Memory {
     pub fn new() -> Memory {
         Memory {
-            buffer: [0; 0xFF],
+            buffer: [0; MEMORY_SIZE],
             cursor: 0,
         }
     }

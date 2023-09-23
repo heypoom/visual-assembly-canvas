@@ -1,4 +1,5 @@
 mod mem;
+mod array;
 
 use self::mem::Memory;
 
