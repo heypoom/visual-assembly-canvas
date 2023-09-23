@@ -1,8 +1,8 @@
-# cpu-from-scratch.rs
+# From Opcodes to Algorithms in Rust
 
-An attempt to implement memory management, data structures and algorithms from scratch in Rust, one building after the another.
+An attempt to implement the most basic build blocks such as memory management, registers, assembly opcodes, compilers, interpreters, up to data structures and algorithms, all the way up to working programs.
 
-For educational purposes, of course.
+Let's build it all from scratch in Rust, building one on top of another! For educational purposes, of course.
 
 ## Checklist
 
