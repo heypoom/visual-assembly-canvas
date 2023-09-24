@@ -4,7 +4,7 @@ use snafu::Whatever;
 use crate::mem::Memory;
 use crate::register::{Registers, Register::SP};
 
-const MIN_STACK_ADDR: u16 = 0x1000;
+const MIN_STACK_ADDR: u16 = 0x3000;
 const MAX_STACK_ADDR: u16 = 0xFFFF;
 
 #[derive(Debug)]
