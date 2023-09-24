@@ -1,6 +1,7 @@
-mod machine;
-mod register;
-mod mem;
+pub mod register;
+pub mod mem;
+pub mod instructions;
+pub mod machine;
 
 use machine::Machine;
 use crate::register::Register::PC;
