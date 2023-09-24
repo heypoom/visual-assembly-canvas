@@ -17,7 +17,7 @@ pub trait Decode {
 impl Decode for Machine {
     /// Get the current instruction from the code segment.
     fn opcode(&self) -> u16 {
-        self.mem.get(self.pc())
+        self.mem.get(self.reg.get(PC))
     }
 
     /// Get a single argument from the code segment.

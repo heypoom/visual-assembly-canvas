@@ -3,7 +3,6 @@ mod execute;
 
 use crate::instructions::{Instruction as I, Instruction, Load};
 use crate::mem::{Memory, StackManager};
-use crate::register::Register::PC;
 use crate::register::Registers;
 
 pub use self::decode::Decode;
@@ -29,9 +28,6 @@ impl Machine {
         StackManager::new(&mut self.mem, &mut self.reg)
     }
 
-    /// Returns the current program counter.
-    fn pc(&self) -> u16 { self.reg.get(PC) }
-
     /// Pops a value from the stack.
     fn pop(&mut self) -> u16 {
         self.stack().pop().unwrap()
@@ -41,7 +37,6 @@ impl Machine {
     fn push(&mut self, value: u16) {
         self.stack().push(value).unwrap();
     }
-
 
     pub fn load(&mut self, ops: Vec<I>) {
         // Append a [halt] instruction to the code.
