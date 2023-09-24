@@ -29,11 +29,6 @@ impl Machine {
 impl From<Vec<Instruction>> for Machine {
     fn from(code: Vec<Instruction>) -> Self {
         let mut m = Machine::new();
-
-        // Add a halt instruction to the end of the code.
-        let mut code = code.clone();
-        code.push(I::Halt);
-
         m.mem.load_code(code);
         m
     }
@@ -41,6 +36,7 @@ impl From<Vec<Instruction>> for Machine {
 
 #[cfg(test)]
 mod tests {
+    use crate::mem::WithStringManager;
     use super::*;
 
     type M = Machine;
@@ -90,5 +86,26 @@ mod tests {
         let mut m: M = vec![I::Push(2), I::Push(5), I::GreaterThan].into();
         m.run();
         assert_eq!(m.stack().peek(), 1);
+    }
+
+    #[test]
+    fn test_load_str() {
+        let mut m = Machine::new();
+        let mut ms = m.mem.string();
+
+        let s = "hello";
+        let h_ptr = ms.add_str(s);
+
+        let mut ins: Vec<I> = vec![];
+
+        for i in h_ptr..h_ptr + s.len() as u16 {
+            ins.push(I::Load(i));
+        }
+
+        m.mem.load_code(ins);
+        assert_eq!(m.mem.read_stack(5), [0, 0, 0, 0, 0]);
+
+        m.run();
+        assert_eq!(m.mem.read_stack(5), [111, 108, 108, 101, 104]);
     }
 }

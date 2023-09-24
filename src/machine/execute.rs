@@ -107,7 +107,6 @@ impl Execute for Machine {
 
     fn should_halt(&self) -> bool {
         let i: I = self.opcode().into();
-
         i == I::Halt
     }
 }

@@ -2,8 +2,8 @@ use snafu::{Whatever, whatever};
 use crate::mem::{DATA_END, DATA_START, Memory};
 
 pub struct StringManager<'a> {
-    mem: &'a mut Memory,
-    top: u16,
+    pub mem: &'a mut Memory,
+    pub top: u16,
 }
 
 impl<'a> StringManager<'a> {
@@ -12,7 +12,7 @@ impl<'a> StringManager<'a> {
     }
 
     /// Add the given data to the data section.
-    fn add_data(&mut self, value: &[u16]) -> u16 {
+    pub fn add_data(&mut self, value: &[u16]) -> u16 {
         let t = self.top;
         self.mem.write(t, value);
         self.top += value.len() as u16;
@@ -21,7 +21,7 @@ impl<'a> StringManager<'a> {
     }
 
     /// Add the given string to the data section.
-    fn add_str(&mut self, value: &str) -> u16 {
+    pub fn add_str(&mut self, value: &str) -> u16 {
         let mut v: Vec<u16> = value.chars().map(|c| c as u16).collect();
 
         // Add the null terminator.
@@ -31,7 +31,7 @@ impl<'a> StringManager<'a> {
     }
 
     /// Get the string at the given address.
-    fn get_str(&self, addr: u16) -> Result<String, Whatever> {
+    pub fn get_str(&self, addr: u16) -> Result<String, Whatever> {
         let v16 = self.get_str_bytes(addr);
 
         // TODO: Properly decode high UTF-8 bytes such as emojis.
@@ -44,7 +44,7 @@ impl<'a> StringManager<'a> {
     }
 
     /// Get the string bytes until the null terminator.
-    fn get_str_bytes(&self, addr: u16) -> Vec<u16> {
+    pub fn get_str_bytes(&self, addr: u16) -> Vec<u16> {
         let mut data = vec![];
 
         for i in addr.. {

@@ -57,7 +57,6 @@ pub enum Instruction {
     LessThanOrEqual,
     GreaterThan,
     GreaterThanOrEqual,
-
     Halt,
 }
 

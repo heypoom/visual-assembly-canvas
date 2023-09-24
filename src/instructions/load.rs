@@ -35,6 +35,8 @@ impl Load for Memory {
                 _ => {}
             }
         }
+
+        write(I::Halt.opcode());
     }
 }
 
