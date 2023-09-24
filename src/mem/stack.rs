@@ -22,6 +22,11 @@ impl<'a> StackManager<'a> {
         self.reg.get(SP)
     }
 
+    // Write a value to the top of the stack.
+    pub fn write(&mut self, val: u16) {
+        self.mem.set(self.top(), val);
+    }
+
     pub fn push(&mut self, val: u16) -> Result<(), Whatever> {
         if self.top() < MIN_STACK_ADDR {
             whatever!("stack overflow")
@@ -31,7 +36,7 @@ impl<'a> StackManager<'a> {
         self.reg.dec(SP);
 
         // Save the value at the top of the stack.
-        self.mem.set(self.top(), val);
+        self.write(val);
 
         Ok(())
     }
@@ -46,6 +51,7 @@ impl<'a> StackManager<'a> {
         }
 
         let v = self.peek();
+        self.write(0);
 
         // Increment the stack pointer.
         self.reg.inc(SP);

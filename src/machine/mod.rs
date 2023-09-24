@@ -119,17 +119,21 @@ mod tests {
     #[test]
     fn test_add() {
         let mut m = Machine::new();
-        m.mem.load_code(vec![I::Push(5), I::Push(10), I::Add, I::Push(5), I::Sub]);
+        m.mem.load_code(vec![I::Push(5), I::Push(10), I::Add, I::Push(3), I::Sub]);
 
         m.tick().unwrap();
         m.tick().unwrap();
+        assert_eq!(m.mem.read_stack(3), [0, 10, 5]);
+
         m.tick().unwrap();
-        assert_eq!(m.mem.read_stack(2), [10, 15]);
+        assert_eq!(m.mem.read_stack(3), [0, 0, 15]);
         assert_eq!(m.stack().peek(), 15);
 
         m.tick().unwrap();
+        assert_eq!(m.stack().peek(), 3);
+
         m.tick().unwrap();
-        assert_eq!(m.mem.read_stack(2), [5, 10]);
-        assert_eq!(m.stack().peek(), 10);
+        assert_eq!(m.mem.read_stack(3), [0, 0, 12]);
+        assert_eq!(m.stack().peek(), 12);
     }
 }
