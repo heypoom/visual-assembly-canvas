@@ -33,6 +33,18 @@ impl Execute for Machine {
             I::Mul => self.stack().apply_two(|a, b| a * b),
             I::Div => self.stack().apply_two(|a, b| b / a),
 
+            // Increment and decrement.
+            I::Inc => self.stack().apply(|v| v + 1),
+            I::Dec => self.stack().apply(|v| v - 1),
+
+            // Equality and comparison operations.
+            I::Equal => self.stack().apply_two(|a, b| (a == b).into()),
+            I::NotEqual => self.stack().apply_two(|a, b| (a != b).into()),
+            I::LessThan => self.stack().apply_two(|a, b| (a < b).into()),
+            I::LessThanOrEqual => self.stack().apply_two(|a, b| (a <= b).into()),
+            I::GreaterThan => self.stack().apply_two(|a, b| (a > b).into()),
+            I::GreaterThanOrEqual => self.stack().apply_two(|a, b| (a >= b).into()),
+
             I::StartLoop => {}
 
             I::EndLoop(start) => self.reg.set(PC, start),
@@ -67,16 +79,6 @@ impl Execute for Machine {
                 let v = self.stack().get(1);
                 self.push(v);
             }
-
-            I::Inc => self.stack().apply(|v| v + 1),
-            I::Dec => self.stack().apply(|v| v - 1),
-
-            I::Equal => self.stack().apply_two(|a, b| (a == b).into()),
-            I::NotEqual => self.stack().apply_two(|a, b| (a != b).into()),
-            I::LessThan => self.stack().apply_two(|a, b| (a < b).into()),
-            I::LessThanOrEqual => self.stack().apply_two(|a, b| (a <= b).into()),
-            I::GreaterThan => self.stack().apply_two(|a, b| (a > b).into()),
-            I::GreaterThanOrEqual => self.stack().apply_two(|a, b| (a >= b).into()),
 
             I::Halt => {}
         };
