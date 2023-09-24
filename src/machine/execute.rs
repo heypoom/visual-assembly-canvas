@@ -1,16 +1,15 @@
-use snafu::Whatever;
 use crate::machine::Machine;
 use crate::register::Register::PC;
 use crate::instructions::{Instruction as I};
 
 pub trait Execute {
-    fn tick(&mut self) -> Result<(), Whatever>;
+    fn tick(&mut self);
     fn run(&mut self);
 }
 
 impl Execute for Machine {
     /// Executes the current instruction.
-    fn tick(&mut self) -> Result<(), Whatever> {
+    fn tick(&mut self) {
         let op = self.instruction();
         println!("Operation: {:?}", op);
 
@@ -162,13 +161,11 @@ impl Execute for Machine {
         } else {
             self.reg.inc(PC);
         }
-
-        Ok(())
     }
 
     fn run(&mut self) {
         while !self.should_halt() {
-            self.tick().unwrap();
+            self.tick();
         }
     }
 }
