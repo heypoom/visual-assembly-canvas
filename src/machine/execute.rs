@@ -1,16 +1,21 @@
-use crate::machine::Machine;
+use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::instructions::{Instruction as I};
 
 pub trait Execute {
+    /// Executes the current instruction.
     fn tick(&mut self);
+
+    /// Runs the machine until it halts.
     fn run(&mut self);
+
+    /// Returns whether the machine should halt.
+    fn should_halt(&self) -> bool;
 }
 
 impl Execute for Machine {
-    /// Executes the current instruction.
     fn tick(&mut self) {
-        let op = self.instruction();
+        let op = self.decode();
         println!("Operation: {:?}", op);
 
         // Whether we should jump to the address.
@@ -167,5 +172,11 @@ impl Execute for Machine {
         while !self.should_halt() {
             self.tick();
         }
+    }
+
+    fn should_halt(&self) -> bool {
+        let i: I = self.opcode().into();
+
+        i == I::Halt
     }
 }

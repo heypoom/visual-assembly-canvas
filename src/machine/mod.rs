@@ -1,3 +1,4 @@
+mod decode;
 mod execute;
 
 use crate::instructions::{Instruction as I, Instruction, Load};
@@ -5,6 +6,7 @@ use crate::mem::{Memory, StackManager};
 use crate::register::Register::PC;
 use crate::register::Registers;
 
+pub use self::decode::Decode;
 pub use self::execute::Execute;
 
 #[derive(Debug)]
@@ -40,34 +42,6 @@ impl Machine {
         self.stack().push(value).unwrap();
     }
 
-    /// Get the current instruction from the code segment.
-    fn opcode(&self) -> u16 {
-        self.mem.get(self.pc())
-    }
-
-    /// Get a single argument from the code segment.
-    fn arg(&mut self) -> u16 {
-        self.reg.inc(PC);
-
-        self.opcode()
-    }
-
-    fn should_halt(&self) -> bool {
-        let i: I = self.opcode().into();
-
-        i == I::Halt
-    }
-
-    /// Returns the current instruction.
-    /// Decodes the opcode and arguments into instruction.
-    fn instruction(&mut self) -> I {
-        let i: I = self.opcode().into();
-
-        match i {
-            I::Push(_) => I::Push(self.arg()),
-            _ => i
-        }
-    }
 
     pub fn load(&mut self, ops: Vec<I>) {
         // Append a [halt] instruction to the code.

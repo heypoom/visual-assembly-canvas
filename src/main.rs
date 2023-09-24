@@ -3,12 +3,17 @@ pub mod machine;
 pub mod mem;
 pub mod register;
 
-use crate::register::Register::PC;
-use machine::Machine;
+use machine::Machine as M;
+use instructions::Instruction as I;
+// use crate::machine::Execute;
 
 fn main() {
-    let mut cpu = Machine::new();
-    println!("{}", cpu.mem.get(0));
-
-    cpu.reg.set(PC, 0x0001);
+    let _m: M = vec![
+        I::Push(0),
+        I::Inc,
+        I::Push(10),
+        I::Equal,
+        I::JumpNotZero(0x01),
+        I::Push(20),
+    ].into();
 }
