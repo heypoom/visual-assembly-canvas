@@ -1,4 +1,4 @@
-use crate::instructions::{Instruction as I, Load};
+use crate::instructions::{Instruction as I, Instruction, Load, Target, Value};
 use crate::mem::{Memory, StackManager};
 use crate::register::Register::PC;
 use crate::register::Registers;
@@ -66,10 +66,28 @@ impl Machine {
         }
     }
 
+    fn read_value(&self, value: Value) -> u16 {
+        match value {
+            Value::Data(data) => data,
+            Value::Register(reg) => self.reg.get(reg),
+            Value::Memory(addr) => self.mem.get(addr)
+        }
+    }
+
+    fn write_target(&mut self, value: u16, target: Target) {
+        match target {
+            Target::Register(r) => self.reg.set(r, value),
+            Target::Memory(addr) => self.mem.set(addr, value),
+        }
+    }
+
     /// Executes the current instruction.
     pub fn tick(&mut self) -> Result<(), Whatever> {
         let op = self.instruction();
         println!("Operation: {:?}", op);
+
+        /// Whether we should jump to the address.
+        let mut jump: Option<u16> = None;
 
         match op {
             I::None => {}
@@ -110,10 +128,48 @@ impl Machine {
                 self.push(b / a);
             }
 
+            I::StartLoop => {}
+
+            I::EndLoop(start) => {
+                self.reg.set(PC, start);
+            }
+
+            I::Jump(addr) => {
+                self.reg.set(PC, addr);
+            }
+
+            I::JumpZero(addr) => {
+                if self.pop() == 0 {
+                    jump = Some(addr);
+                }
+            }
+
+            I::JumpNotZero(addr) => {
+                if self.pop() != 0 {
+                    jump = Some(addr);
+                }
+            }
+
+            I::Inc => {
+                self.push(self.pop() + 1)
+            }
+
+            I::Dec => {
+                self.push(self.pop() - 1)
+            }
+
+            I::Mov(target, value) => {
+                self.write_target(self.read_value(value), target);
+            }
+
             I::Halt => {}
         };
 
-        self.reg.inc(PC);
+        if let Some(addr) = jump {
+            self.reg.set(PC, addr);
+        } else {
+            self.reg.inc(PC);
+        }
 
         Ok(())
     }
