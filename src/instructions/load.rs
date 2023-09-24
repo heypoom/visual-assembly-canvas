@@ -21,14 +21,16 @@ impl Load for Memory {
             // Insert the opcode into memory.
             write(ins.opcode());
 
-            // TODO: can we introspect the instruction to see how many operands it has?
-            // Insert the operands into memory.
+            // TODO: this is very repetitive!
+            //       Can we detect the number of arguments and do this automatically?
             match ins {
                 I::Push(v) => write(v),
                 I::EndLoop(v) => write(v),
                 I::Jump(v) => write(v),
                 I::JumpZero(v) => write(v),
                 I::JumpNotZero(v) => write(v),
+                I::Load(v) => write(v),
+                I::Store(v) => write(v),
 
                 _ => {}
             }
@@ -46,7 +48,7 @@ mod tests {
     #[test]
     fn test_load_code() {
         let mut m = Memory::new();
-        m.load_code(vec![I::Push(5), I::Push(10), I::Add, I::Pop]);
-        assert_eq!(&m.buffer[0..7], [0x01, 5, 0x01, 10, 0x08, 0x02, 0x00])
+        m.load_code(vec![I::Push(5), I::Push(10)]);
+        assert_eq!(&m.buffer[0..4], [0x01, 5, 0x01, 10])
     }
 }

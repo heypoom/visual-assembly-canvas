@@ -15,6 +15,12 @@ pub enum Instruction {
     Push(u16),
     Pop,
 
+    /// Push data from the specified address onto the stack.
+    Load(u16),
+
+    /// Pop data from the stack and store it into the specified address.
+    Store(u16),
+
     /// Duplicates the value at the top of the stack.
     /// Makes a copy of the top value and pushes it onto the stack.
     Dup,
@@ -76,7 +82,8 @@ impl From<u16> for Instruction {
 }
 
 impl From<Instruction> for u16 {
-    // TODO: can we avoid manually setting the value to zero for comparing?
+    // TODO: this is very repetitive!
+    //       Can we detect the number of arguments and do this automatically?
     fn from(ins: Instruction) -> Self {
         let v = match ins {
             I::Push(_) => I::Push(0),
@@ -84,6 +91,8 @@ impl From<Instruction> for u16 {
             I::Jump(_) => I::Jump(0),
             I::JumpZero(_) => I::JumpZero(0),
             I::JumpNotZero(_) => I::JumpNotZero(0),
+            I::Load(_) => I::Load(0),
+            I::Store(_) => I::Store(0),
             _ => ins,
         };
 

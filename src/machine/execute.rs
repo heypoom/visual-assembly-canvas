@@ -1,6 +1,6 @@
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
-use crate::instructions::{Instruction as I};
+use crate::instructions::Instruction as I;
 
 pub trait Execute {
     /// Executes the current instruction.
@@ -24,6 +24,16 @@ impl Execute for Machine {
         match op {
             I::Push(v) => { s.push(v).expect("push error"); }
             I::Pop => { s.pop().expect("pop error"); }
+
+            I::Load(addr) => {
+                let v = self.mem.get(addr);
+                self.stack().push(v).expect("load error");
+            }
+
+            I::Store(addr) => {
+                let v = s.pop().expect("store read error");
+                self.mem.set(addr, v);
+            }
 
             // Addition, subtraction, multiplication and division.
             I::Add => s.apply_two(|a, b| a + b),

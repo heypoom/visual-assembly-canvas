@@ -39,6 +39,8 @@ impl Decode for Machine {
             I::Jump(_) => I::Jump(self.arg()),
             I::JumpZero(_) => I::JumpZero(self.arg()),
             I::JumpNotZero(_) => I::JumpNotZero(self.arg()),
+            I::Load(_) => I::Load(self.arg()),
+            I::Store(_) => I::Store(self.arg()),
             _ => i
         }
     }
