@@ -1,6 +1,7 @@
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
-use crate::instructions::Instruction as I;
+use crate::instructions::{Instruction as I};
+use crate::mem::WithStringManager;
 
 pub trait Execute {
     /// Executes the current instruction.
@@ -22,6 +23,9 @@ impl Execute for Machine {
         let mut jump: Option<u16> = None;
 
         match op {
+            I::None => {}
+            I::Halt => {}
+
             I::Push(v) => { s.push(v).expect("push error"); }
             I::Pop => { s.pop().expect("pop error"); }
 
@@ -88,8 +92,13 @@ impl Execute for Machine {
                 s.push(v).unwrap();
             }
 
-            I::Halt => {}
-            I::None => {}
+            I::Print => {
+                let addr = s.pop().unwrap();
+                let text = self.mem.string().get_str(addr).expect("string decode error");
+
+                // TODO: this should be a callback to the outside world, not a console print!
+                print!("{}", text);
+            }
         };
 
         if let Some(addr) = jump {

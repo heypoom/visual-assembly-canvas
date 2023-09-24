@@ -108,4 +108,18 @@ mod tests {
         m.run();
         assert_eq!(m.mem.read_stack(5), [111, 108, 108, 101, 104]);
     }
+
+    #[test]
+    fn test_print_hello_world() {
+        let mut m = Machine::new();
+
+        let mut ms = m.mem.string();
+        let h_ptr = ms.add_str("hello, ");
+        let w_ptr = ms.add_str("world!");
+
+        m.mem.load_code(vec![I::Push(h_ptr), I::Print, I::Push(w_ptr), I::Print]);
+        m.run();
+
+        assert_eq!(m.mem.read_stack(2), [0, 0]);
+    }
 }

@@ -57,6 +57,10 @@ pub enum Instruction {
     LessThanOrEqual,
     GreaterThan,
     GreaterThanOrEqual,
+
+    // Print the text at the memory address of operand zero.
+    Print,
+
     Halt,
 }
 
