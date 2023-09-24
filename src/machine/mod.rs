@@ -37,10 +37,12 @@ impl Machine {
         self.stack().push(value).unwrap();
     }
 
+    /// Get the current instruction from the code segment.
     fn mem(&self) -> u16 {
         self.mem.get(self.pc())
     }
 
+    /// Get a single argument from the code segment.
     fn arg(&mut self) -> u16 {
         self.reg.inc(PC);
 
