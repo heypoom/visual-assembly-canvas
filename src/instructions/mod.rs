@@ -1,8 +1,8 @@
 pub mod load;
 
 pub use load::Load;
-pub use bimap::BiMap;
 use lazy_static::lazy_static;
+use std::collections::HashMap;
 
 use strum::IntoEnumIterator;
 use strum_macros::{EnumIter, FromRepr};
@@ -23,8 +23,8 @@ pub enum Instruction {
 }
 
 lazy_static! {
-    static ref OPCODES: BiMap<Instruction, u8> = {
-        let mut m = BiMap::new();
+    static ref OPCODES: HashMap<Instruction, u8> = {
+        let mut m = HashMap::new();
 
         for (i, op) in Instruction::iter().enumerate() {
             m.insert(op, i as u8);
@@ -49,7 +49,7 @@ impl From<Instruction> for u8 {
             _ => ins
         };
 
-        *OPCODES.get_by_left(&v).unwrap_or(&0)
+        *OPCODES.get(&v).unwrap_or(&0)
     }
 }
 
