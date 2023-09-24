@@ -53,9 +53,7 @@ impl Machine {
         let i: I = self.mem().into();
 
         match i {
-            I::Push(_) => {
-                I::Push(self.arg())
-            }
+            I::Push(_) => I::Push(self.arg()),
             _ => i
         }
     }
