@@ -1,6 +1,6 @@
 mod execute;
 
-use crate::instructions::{Instruction as I, Load};
+use crate::instructions::{Instruction as I, Instruction, Load};
 use crate::mem::{Memory, StackManager};
 use crate::register::Register::PC;
 use crate::register::Registers;
@@ -69,7 +69,7 @@ impl Machine {
         }
     }
 
-    pub fn load_code(&mut self, ops: Vec<I>) {
+    pub fn load(&mut self, ops: Vec<I>) {
         // Append a [halt] instruction to the code.
         let mut code = ops.clone();
         code.push(I::Halt);
@@ -78,14 +78,23 @@ impl Machine {
     }
 }
 
+impl From<Vec<Instruction>> for Machine {
+    fn from(code: Vec<Instruction>) -> Self {
+        let mut m = Machine::new();
+        m.load(code);
+        m
+    }
+}
+
+type M = Machine;
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_add() {
-        let mut m = Machine::new();
-        m.load_code(vec![I::Push(5), I::Push(10), I::Add, I::Push(3), I::Sub]);
+        let mut m: M = vec![I::Push(5), I::Push(10), I::Add, I::Push(3), I::Sub].into();
 
         m.tick().unwrap();
         m.tick().unwrap();
@@ -103,10 +112,19 @@ mod tests {
 
     #[test]
     fn test_run() {
-        let mut m = Machine::new();
-        m.load_code(vec![I::Push(10), I::Push(3), I::Sub]);
+        let mut m: M = vec![I::Push(10), I::Push(3), I::Sub].into();
         m.run();
-
         assert_eq!(m.mem.read_stack(2), [0, 7]);
+    }
+
+    #[test]
+    fn test_eq() {
+        let mut m: M = vec![I::Push(10), I::Push(10), I::Equal].into();
+        m.run();
+        assert_eq!(m.mem.read_stack(2), [0, 1]);
+
+        let mut m: M = vec![I::Push(5), I::Push(2), I::Equal].into();
+        m.run();
+        assert_eq!(m.mem.read_stack(2), [0, 0]);
     }
 }

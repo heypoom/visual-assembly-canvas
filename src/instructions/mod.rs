@@ -45,6 +45,13 @@ pub enum Instruction {
     /// Jump to the address if the previous value in the stack is not zero.
     JumpNotZero(u16),
 
+    Equal,
+    NotEqual,
+    LessThan,
+    LessThanOrEqual,
+    GreaterThan,
+    GreaterThanOrEqual,
+
     Halt,
 }
 

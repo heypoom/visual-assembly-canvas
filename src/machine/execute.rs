@@ -107,6 +107,24 @@ impl Execute for Machine {
             }
 
             I::Halt => {}
+
+            I::Equal => {
+                let a = self.pop();
+                let b = self.pop();
+                println!("{} == {}", a, b);
+
+                self.push((a == b).into());
+            }
+
+            I::NotEqual => {}
+
+            I::LessThan => {}
+
+            I::LessThanOrEqual => {}
+
+            I::GreaterThan => {}
+
+            I::GreaterThanOrEqual => {}
         };
 
         if let Some(addr) = jump {
