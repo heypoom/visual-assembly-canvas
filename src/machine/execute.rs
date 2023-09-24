@@ -116,15 +116,45 @@ impl Execute for Machine {
                 self.push((a == b).into());
             }
 
-            I::NotEqual => {}
+            I::NotEqual => {
+                let a = self.pop();
+                let b = self.pop();
+                println!("{} != {}", a, b);
 
-            I::LessThan => {}
+                self.push((a != b).into());
+            }
 
-            I::LessThanOrEqual => {}
+            I::LessThan => {
+                let a = self.pop();
+                let b = self.pop();
+                println!("{} < {}", a, b);
 
-            I::GreaterThan => {}
+                self.push((a < b).into());
+            }
 
-            I::GreaterThanOrEqual => {}
+            I::LessThanOrEqual => {
+                let a = self.pop();
+                let b = self.pop();
+                println!("{} <= {}", a, b);
+
+                self.push((a <= b).into());
+            }
+
+            I::GreaterThan => {
+                let a = self.pop();
+                let b = self.pop();
+                println!("{} > {}", a, b);
+
+                self.push((a > b).into());
+            }
+
+            I::GreaterThanOrEqual => {
+                let a = self.pop();
+                let b = self.pop();
+                println!("{} >= {}", a, b);
+
+                self.push((a >= b).into());
+            }
         };
 
         if let Some(addr) = jump {

@@ -121,10 +121,21 @@ mod tests {
     fn test_eq() {
         let mut m: M = vec![I::Push(10), I::Push(10), I::Equal].into();
         m.run();
-        assert_eq!(m.mem.read_stack(2), [0, 1]);
+        assert_eq!(m.stack().peek(), 1);
 
         let mut m: M = vec![I::Push(5), I::Push(2), I::Equal].into();
         m.run();
-        assert_eq!(m.mem.read_stack(2), [0, 0]);
+        assert_eq!(m.stack().peek(), 0);
+    }
+
+    #[test]
+    fn test_le_ge() {
+        let mut m: M = vec![I::Push(5), I::Push(2), I::LessThan].into();
+        m.run();
+        assert_eq!(m.stack().peek(), 1);
+
+        let mut m: M = vec![I::Push(2), I::Push(5), I::GreaterThan].into();
+        m.run();
+        assert_eq!(m.stack().peek(), 1);
     }
 }
