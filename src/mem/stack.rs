@@ -64,7 +64,14 @@ impl<'a> StackManager<'a> {
         Ok(v)
     }
 
-    fn apply_two<F>(&mut self, f: F)
+    pub fn apply<F>(&mut self, f: F)
+        where F: FnOnce(u16) -> u16 {
+        let a = self.pop().unwrap();
+        let value = f(a);
+        self.push(value).unwrap();
+    }
+
+    pub fn apply_two<F>(&mut self, f: F)
         where F: FnOnce(u16, u16) -> u16 {
         let a = self.pop().unwrap();
         let b = self.pop().unwrap();

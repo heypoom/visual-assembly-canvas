@@ -21,55 +21,22 @@ impl Execute for Machine {
         // Whether we should jump to the address.
         let mut jump: Option<u16> = None;
 
-
         match op {
             I::None => {}
 
-            I::Push(v) => {
-                self.push(v);
-            }
+            I::Push(v) => { self.push(v); }
+            I::Pop => { self.pop(); }
 
-            I::Pop => {
-                self.pop();
-            }
-
-            I::Add => {
-                let a = self.pop();
-                let b = self.pop();
-
-                self.push(a + b);
-            }
-
-            I::Sub => {
-                let a = self.pop();
-                let b = self.pop();
-
-                self.push(b - a);
-            }
-
-            I::Mul => {
-                let a = self.pop();
-                let b = self.pop();
-
-                self.push(a * b);
-            }
-
-            I::Div => {
-                let a = self.pop();
-                let b = self.pop();
-
-                self.push(b / a);
-            }
+            // Addition, subtraction, multiplication and division.
+            I::Add => self.stack().apply_two(|a, b| a + b),
+            I::Sub => self.stack().apply_two(|a, b| b - a),
+            I::Mul => self.stack().apply_two(|a, b| a * b),
+            I::Div => self.stack().apply_two(|a, b| b / a),
 
             I::StartLoop => {}
 
-            I::EndLoop(start) => {
-                self.reg.set(PC, start);
-            }
-
-            I::Jump(addr) => {
-                self.reg.set(PC, addr);
-            }
+            I::EndLoop(start) => self.reg.set(PC, start),
+            I::Jump(addr) => self.reg.set(PC, addr),
 
             I::JumpZero(addr) => {
                 if self.pop() == 0 {
@@ -81,16 +48,6 @@ impl Execute for Machine {
                 if self.pop() != 0 {
                     jump = Some(addr);
                 }
-            }
-
-            I::Inc => {
-                let v = self.pop();
-                self.push(v + 1)
-            }
-
-            I::Dec => {
-                let v = self.pop();
-                self.push(v - 1)
             }
 
             I::Dup => {
@@ -111,55 +68,17 @@ impl Execute for Machine {
                 self.push(v);
             }
 
+            I::Inc => self.stack().apply(|v| v + 1),
+            I::Dec => self.stack().apply(|v| v - 1),
+
+            I::Equal => self.stack().apply_two(|a, b| (a == b).into()),
+            I::NotEqual => self.stack().apply_two(|a, b| (a != b).into()),
+            I::LessThan => self.stack().apply_two(|a, b| (a < b).into()),
+            I::LessThanOrEqual => self.stack().apply_two(|a, b| (a <= b).into()),
+            I::GreaterThan => self.stack().apply_two(|a, b| (a > b).into()),
+            I::GreaterThanOrEqual => self.stack().apply_two(|a, b| (a >= b).into()),
+
             I::Halt => {}
-
-            I::Equal => {
-                let a = self.pop();
-                let b = self.pop();
-                println!("{} == {}", a, b);
-
-                self.push((a == b).into());
-            }
-
-            I::NotEqual => {
-                let a = self.pop();
-                let b = self.pop();
-                println!("{} != {}", a, b);
-
-                self.push((a != b).into());
-            }
-
-            I::LessThan => {
-                let a = self.pop();
-                let b = self.pop();
-                println!("{} < {}", a, b);
-
-                self.push((a < b).into());
-            }
-
-            I::LessThanOrEqual => {
-                let a = self.pop();
-                let b = self.pop();
-                println!("{} <= {}", a, b);
-
-                self.push((a <= b).into());
-            }
-
-            I::GreaterThan => {
-                let a = self.pop();
-                let b = self.pop();
-                println!("{} > {}", a, b);
-
-                self.push((a > b).into());
-            }
-
-            I::GreaterThanOrEqual => {
-                let a = self.pop();
-                let b = self.pop();
-                println!("{} >= {}", a, b);
-
-                self.push((a >= b).into());
-            }
         };
 
         if let Some(addr) = jump {
