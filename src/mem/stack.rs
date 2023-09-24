@@ -45,6 +45,10 @@ impl<'a> StackManager<'a> {
         self.mem.get(self.top())
     }
 
+    pub fn get(&self, index: u16) -> u16 {
+        self.mem.get(self.top() - index)
+    }
+
     pub fn pop(&mut self) -> Result<u16, Whatever> {
         if self.top() > MAX_STACK_ADDR {
             whatever!("stack underflow")

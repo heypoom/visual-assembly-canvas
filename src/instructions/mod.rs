@@ -15,6 +15,16 @@ pub enum Instruction {
     Push(u16),
     Pop,
 
+    /// Duplicates the value at the top of the stack.
+    /// Makes a copy of the top value and pushes it onto the stack.
+    Dup,
+
+    /// Swaps the positions of the top two values on the stack.
+    Swap,
+
+    /// Duplicates the second value from the top of the stack and pushes it onto the stack.
+    Over,
+
     Inc,
     Dec,
 

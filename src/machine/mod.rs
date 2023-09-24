@@ -1,4 +1,4 @@
-use crate::instructions::{Instruction as I, Load};
+use crate::instructions::{Instruction as I, Instruction, Load};
 use crate::mem::{Memory, StackManager};
 use crate::register::Register::PC;
 use crate::register::Registers;
@@ -137,11 +137,31 @@ impl Machine {
             }
 
             I::Inc => {
-                self.push(self.pop() + 1)
+                let v = self.pop();
+                self.push(v + 1)
             }
 
             I::Dec => {
-                self.push(self.pop() - 1)
+                let v = self.pop();
+                self.push(v - 1)
+            }
+
+            I::Dup => {
+                let v = self.stack().peek();
+                self.push(v);
+            }
+
+            I::Swap => {
+                let a = self.pop();
+                let b = self.pop();
+
+                self.push(a);
+                self.push(b);
+            }
+
+            I::Over => {
+                let v = self.stack().get(1);
+                self.push(v);
             }
 
             I::Halt => {}
