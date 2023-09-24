@@ -124,10 +124,12 @@ mod tests {
         m.tick().unwrap();
         m.tick().unwrap();
         m.tick().unwrap();
+        assert_eq!(m.mem.read_stack(2), [10, 15]);
         assert_eq!(m.stack().peek(), 15);
 
         m.tick().unwrap();
         m.tick().unwrap();
+        assert_eq!(m.mem.read_stack(2), [5, 10]);
         assert_eq!(m.stack().peek(), 10);
     }
 }

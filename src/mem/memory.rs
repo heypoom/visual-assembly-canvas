@@ -1,3 +1,5 @@
+use crate::mem::MAX_STACK_ADDR;
+
 pub const MEMORY_SIZE: u16 = 0xFFFF;
 
 /**
@@ -21,6 +23,13 @@ impl Memory {
 
     pub fn get(&self, addr: u16) -> u16 {
         self.buffer[addr as usize]
+    }
+
+    pub fn read_stack(&self, count: usize) -> Vec<u16> {
+        let top = MAX_STACK_ADDR as usize;
+        let offset = top - count;
+
+        (&self.buffer[offset..(offset + count)]).into()
     }
 }
 
