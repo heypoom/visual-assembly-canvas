@@ -21,6 +21,7 @@ impl Execute for Machine {
         // Whether we should jump to the address.
         let mut jump: Option<u16> = None;
 
+
         match op {
             I::None => {}
 

@@ -63,6 +63,15 @@ impl<'a> StackManager<'a> {
         // Return the value at the top of the stack.
         Ok(v)
     }
+
+    fn apply_two<F>(&mut self, f: F)
+        where F: FnOnce(u16, u16) -> u16 {
+        let a = self.pop().unwrap();
+        let b = self.pop().unwrap();
+
+        let value = f(a, b);
+        self.push(value).unwrap();
+    }
 }
 
 #[cfg(test)]
