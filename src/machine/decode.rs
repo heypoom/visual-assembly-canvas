@@ -31,6 +31,8 @@ impl Decode for Machine {
     fn decode(&mut self) -> I {
         let i: I = self.opcode().into();
 
+        // TODO: this is very repetitive!
+        //       Can we detect the number of arguments and do this automatically?
         match i {
             I::Push(_) => I::Push(self.arg()),
             I::EndLoop(_) => I::EndLoop(self.arg()),
