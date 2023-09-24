@@ -9,7 +9,7 @@ AA BB CC DD EE FF 88 77
 static MEMORY: [u16; 0xFFFF] = [0; 0xFFFF];
 ```
 
-```txt
+```
 memset(offset: u16, byte: u16) -> u16 =
   memory[offset] = value
 
@@ -20,7 +20,7 @@ memget(offset) = memory[offset]
 
 Maybe we can allocate the memory simply by keeping track of the cursor? This is pretty dumb, but it's a start.
 
-```txt
+```
 let cursor = 0
 
 fn alloc(size) =
@@ -37,7 +37,7 @@ set(base + 2, 5)
 
 We're going to have 16 registers, each 8-bit: `[u16; 0xF]`
 
-```md
+```
 R01: 0x00
 R01: 0x00
 R02: 0x02
@@ -69,7 +69,7 @@ R14: 0x0E
 
 ### Base Memory Layout
 
-```md
+```
 0x0000 - 0x1000
   Code Segment: `text`
   Stores the program instructions.
@@ -97,7 +97,6 @@ below 0xFFFF
   Contains the program stack frames.
   Stack frames contain the local variables of the function.
   Makes recursion possible.
-  When the heap and stack collided, we ran out of memory.
   SP tracks the top of the stack.
   Grows downwards.
 ```

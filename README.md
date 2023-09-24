@@ -17,7 +17,9 @@ Let's build it all from scratch in Rust, building one on top of another! For edu
 - [x] Instruction: ADD, SUB, MUL, DIV
 - [x] Instruction: JUMP, JUMP_ZERO, JUMP_NOT_ZERO
 - [x] Instruction: HALT
+- [ ] Char
 - [ ] String
+- [ ] IO.read, IO.write
 - [ ] Hello World
 - [ ] Palindrome
 - [ ] Array

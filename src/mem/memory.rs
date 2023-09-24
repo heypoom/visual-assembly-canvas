@@ -25,11 +25,14 @@ impl Memory {
         self.buffer[addr as usize]
     }
 
-    pub fn read_stack(&self, count: usize) -> Vec<u16> {
-        let top = MAX_STACK_ADDR as usize;
-        let offset = top - count;
+    pub fn read(&self, addr: u16, count: u16) -> Vec<u16> {
+        let start = addr as usize;
 
-        (&self.buffer[offset..(offset + count)]).into()
+        self.buffer[start..(start + count as usize)].into()
+    }
+
+    pub fn read_stack(&self, count: u16) -> Vec<u16> {
+        self.read(MAX_STACK_ADDR - count, count)
     }
 }
 
