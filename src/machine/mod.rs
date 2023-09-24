@@ -1,4 +1,4 @@
-use crate::instructions::{Instruction as I, Instruction, Load, Target, Value};
+use crate::instructions::{Instruction as I, Load};
 use crate::mem::{Memory, StackManager};
 use crate::register::Register::PC;
 use crate::register::Registers;
@@ -66,20 +66,6 @@ impl Machine {
         }
     }
 
-    fn read_value(&self, value: Value) -> u16 {
-        match value {
-            Value::Data(data) => data,
-            Value::Register(reg) => self.reg.get(reg),
-            Value::Memory(addr) => self.mem.get(addr)
-        }
-    }
-
-    fn write_target(&mut self, value: u16, target: Target) {
-        match target {
-            Target::Register(r) => self.reg.set(r, value),
-            Target::Memory(addr) => self.mem.set(addr, value),
-        }
-    }
 
     /// Executes the current instruction.
     pub fn tick(&mut self) -> Result<(), Whatever> {
@@ -156,10 +142,6 @@ impl Machine {
 
             I::Dec => {
                 self.push(self.pop() - 1)
-            }
-
-            I::Mov(target, value) => {
-                self.write_target(self.read_value(value), target);
             }
 
             I::Halt => {}
