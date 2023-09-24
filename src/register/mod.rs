@@ -1,5 +1,5 @@
 use crate::mem::MAX_STACK_ADDR;
-use crate::register::Register::SP;
+use crate::register::Register::{PC, SP};
 
 const REG_COUNT: usize = 0xF;
 
@@ -27,6 +27,7 @@ impl Registers {
         };
 
         // Initialize the stack pointer.
+        v.set(PC, 0);
         v.set(SP, MAX_STACK_ADDR);
 
         v
@@ -44,7 +45,7 @@ impl Registers {
         // TODO: handle integer overflow.
         if self.get(r) > u16::MAX {
             println!("overflow!");
-            return
+            return;
         }
 
         self.set(r, self.get(r) + 1);

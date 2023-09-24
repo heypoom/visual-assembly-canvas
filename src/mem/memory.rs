@@ -1,25 +1,25 @@
-const MEMORY_SIZE: usize = 0xFFFF;
+pub const MEMORY_SIZE: u16 = 0xFFFF;
 
 /**
  * Memory defines a fixed-size memory area for the program.
  */
 #[derive(Debug)]
 pub struct Memory {
-    pub buffer: [u8; MEMORY_SIZE],
+    pub buffer: [u16; MEMORY_SIZE as usize],
 }
 
 impl Memory {
     pub fn new() -> Memory {
         Memory {
-            buffer: [0; MEMORY_SIZE],
+            buffer: [0; MEMORY_SIZE as usize],
         }
     }
 
-    pub fn set(&mut self, addr: u16, val: u8) {
+    pub fn set(&mut self, addr: u16, val: u16) {
         self.buffer[addr as usize] = val;
     }
 
-    pub fn get(&self, addr: u16) -> u8 {
+    pub fn get(&self, addr: u16) -> u16 {
         self.buffer[addr as usize]
     }
 }

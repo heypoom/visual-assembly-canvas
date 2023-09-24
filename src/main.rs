@@ -1,10 +1,10 @@
-pub mod register;
-pub mod mem;
 pub mod instructions;
 pub mod machine;
+pub mod mem;
+pub mod register;
 
-use machine::Machine;
 use crate::register::Register::PC;
+use machine::Machine;
 
 fn main() {
     let mut cpu = Machine::new();

@@ -7,11 +7,11 @@
 // }
 
 // impl HeapManager {
-//     fn alloc(&mut self, _size: usize) -> u8 {
+//     fn alloc(&mut self, _size: usize) -> u16 {
 //         todo!()
 //     }
 //
-//     fn free(&mut self, _ptr: u8, _size: usize) {
+//     fn free(&mut self, _ptr: u16, _size: usize) {
 //         todo!()
 //     }
 // }

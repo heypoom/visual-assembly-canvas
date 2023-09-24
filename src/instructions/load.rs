@@ -22,7 +22,7 @@ impl Load for Memory {
                 Push(v) => {
                     self.set(offset, v);
                     offset += 1;
-                },
+                }
                 _ => {}
             }
         }

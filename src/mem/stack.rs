@@ -1,32 +1,31 @@
 use snafu::prelude::*;
 use snafu::Whatever;
 
-use crate::mem::Memory;
-use crate::register::{Registers, Register::SP};
+use crate::mem::{Memory, MEMORY_SIZE};
+use crate::register::{Register::SP, Registers};
 
 pub const MIN_STACK_ADDR: u16 = 0x3000;
-pub const MAX_STACK_ADDR: u16 = 0xFFFF;
+pub const MAX_STACK_ADDR: u16 = MEMORY_SIZE - 1;
 
 #[derive(Debug)]
 pub struct StackManager<'a> {
     mem: &'a mut Memory,
-    reg: &'a mut Registers
+    reg: &'a mut Registers,
 }
 
 impl<'a> StackManager<'a> {
     pub fn new(mem: &'a mut Memory, reg: &'a mut Registers) -> StackManager<'a> {
-        StackManager {
-            mem,
-            reg
-        }
+        StackManager { mem, reg }
     }
 
     pub fn top(&self) -> u16 {
         self.reg.get(SP)
     }
 
-    pub fn push(&mut self, val: u8) -> Result<(), Whatever> {
-        if self.top() < MIN_STACK_ADDR {whatever!("stack overflow")}
+    pub fn push(&mut self, val: u16) -> Result<(), Whatever> {
+        if self.top() < MIN_STACK_ADDR {
+            whatever!("stack overflow")
+        }
 
         // Decrement the stack pointer.
         self.reg.dec(SP);
@@ -37,8 +36,10 @@ impl<'a> StackManager<'a> {
         Ok(())
     }
 
-    pub fn pop(&mut self) -> Result<u8, Whatever> {
-        if self.top() > MAX_STACK_ADDR {whatever!("stack underflow")}
+    pub fn pop(&mut self) -> Result<u16, Whatever> {
+        if self.top() > MAX_STACK_ADDR {
+            whatever!("stack underflow")
+        }
 
         let v = self.mem.get(self.top());
 

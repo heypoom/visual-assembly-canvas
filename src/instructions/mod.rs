@@ -1,17 +1,18 @@
 pub mod load;
 
-pub use load::Load;
+use bimap::BiMap;
 use lazy_static::lazy_static;
-use std::collections::HashMap;
+pub use load::Load;
+use std::any::Any;
 
 use strum::IntoEnumIterator;
-use strum_macros::{EnumIter, FromRepr};
+use strum_macros::EnumIter;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, FromRepr)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash)]
 pub enum Instruction {
     None,
 
-    Push(u8),
+    Push(u16),
     Pop,
 
     Add,
@@ -19,42 +20,42 @@ pub enum Instruction {
     Mul,
     Div,
 
-    Halt
+    Halt,
 }
 
 lazy_static! {
-    static ref OPCODES: HashMap<Instruction, u8> = {
-        let mut m = HashMap::new();
+    static ref OPCODES: BiMap<Instruction, u16> = {
+        let mut m = BiMap::new();
 
         for (i, op) in Instruction::iter().enumerate() {
-            m.insert(op, i as u8);
+            m.insert(op, i as u16);
         }
 
-        return m
+        return m;
     };
 }
 
 type I = Instruction;
 
-impl From<u8> for Instruction {
-    fn from(id: u8) -> Self {
-        Instruction::from_repr(id as usize).unwrap_or(I::None)
+impl From<u16> for Instruction {
+    fn from(id: u16) -> Self {
+        *OPCODES.get_by_right(&id).unwrap_or(&I::None)
     }
 }
 
-impl From<Instruction> for u8 {
+impl From<Instruction> for u16 {
     fn from(ins: Instruction) -> Self {
         let v = match ins {
             I::Push(_) => I::Push(0),
-            _ => ins
+            _ => ins,
         };
 
-        *OPCODES.get(&v).unwrap_or(&0)
+        *OPCODES.get_by_left(&v).unwrap_or(&0)
     }
 }
 
 impl Instruction {
-    pub fn opcode(self) -> u8 {
+    pub fn opcode(self) -> u16 {
         self.into()
     }
 }

@@ -6,11 +6,11 @@
 AA BB CC DD EE FF 88 77
 
 ```rust
-static MEMORY: [u8; 0xFFFF] = [0; 0xFFFF];
+static MEMORY: [u16; 0xFFFF] = [0; 0xFFFF];
 ```
 
 ```txt
-memset(offset: u16, byte: u8) -> u8 =
+memset(offset: u16, byte: u16) -> u16 =
   memory[offset] = value
 
 memget(offset) = memory[offset]
@@ -35,7 +35,7 @@ set(base + 2, 5)
 
 ## 03: Registers
 
-We're going to have 16 registers, each 8-bit: `[u8; 0xF]`
+We're going to have 16 registers, each 8-bit: `[u16; 0xF]`
 
 ```md
 R01: 0x00
