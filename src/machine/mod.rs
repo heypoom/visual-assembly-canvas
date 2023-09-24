@@ -1,6 +1,6 @@
 use crate::instructions::Instruction as I;
 use crate::mem::{Memory, StackManager};
-use crate::register::Register::{PC, SP};
+use crate::register::Register::PC;
 use crate::register::Registers;
 use snafu::Whatever;
 
@@ -24,8 +24,8 @@ impl Machine {
         StackManager::new(&mut self.mem, &mut self.reg)
     }
 
+    /// Returns the current program counter.
     fn pc(&self) -> u16 { self.reg.get(PC) }
-    fn sp(&self) -> u16 { self.reg.get(SP) }
 
     /// Pops a value from the stack.
     fn pop(&mut self) -> u16 {
@@ -85,7 +85,7 @@ impl Machine {
                 let a = self.pop();
                 let b = self.pop();
 
-                self.push(a - b);
+                self.push(b - a);
             }
 
             I::Mul => {
@@ -99,7 +99,7 @@ impl Machine {
                 let a = self.pop();
                 let b = self.pop();
 
-                self.push(a / b);
+                self.push(b / a);
             }
 
             I::Halt => {}
@@ -119,12 +119,15 @@ mod tests {
     #[test]
     fn test_add() {
         let mut m = Machine::new();
-        m.mem.load_code(vec![I::Push(5), I::Push(10), I::Add]);
+        m.mem.load_code(vec![I::Push(5), I::Push(10), I::Add, I::Push(5), I::Sub]);
 
         m.tick().unwrap();
         m.tick().unwrap();
         m.tick().unwrap();
+        assert_eq!(m.stack().peek(), 15);
 
-        assert_eq!(m.pop(), 15);
+        m.tick().unwrap();
+        m.tick().unwrap();
+        assert_eq!(m.stack().peek(), 10);
     }
 }

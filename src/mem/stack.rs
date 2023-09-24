@@ -36,12 +36,16 @@ impl<'a> StackManager<'a> {
         Ok(())
     }
 
+    pub fn peek(&self) -> u16 {
+        self.mem.get(self.top())
+    }
+
     pub fn pop(&mut self) -> Result<u16, Whatever> {
         if self.top() > MAX_STACK_ADDR {
             whatever!("stack underflow")
         }
 
-        let v = self.mem.get(self.top());
+        let v = self.peek();
 
         // Increment the stack pointer.
         self.reg.inc(SP);

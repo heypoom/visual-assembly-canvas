@@ -3,7 +3,6 @@ pub mod load;
 use bimap::BiMap;
 use lazy_static::lazy_static;
 pub use load::Load;
-use std::any::Any;
 
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
