@@ -31,6 +31,12 @@ impl Memory {
         self.buffer[start..(start + count as usize)].into()
     }
 
+    pub fn write(&mut self, addr: u16, data: &[u16]) {
+        for (offset, value) in data.iter().enumerate() {
+            self.buffer[addr as usize + offset] = *value;
+        }
+    }
+
     pub fn read_stack(&self, count: u16) -> Vec<u16> {
         self.read(MAX_STACK_ADDR - count, count)
     }
@@ -47,5 +53,13 @@ mod tests {
         m.set(0, 1);
         assert_eq!(m.get(0), 1);
         assert_eq!(m.get(1), 0);
+    }
+
+    #[test]
+    fn test_write() {
+        let mut m = Memory::new();
+
+        m.write(0x03, &[1, 2, 3]);
+        assert_eq!(m.read(0x03, 3), [1, 2, 3]);
     }
 }
