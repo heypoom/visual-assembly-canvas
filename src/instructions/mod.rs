@@ -76,9 +76,14 @@ impl From<u16> for Instruction {
 }
 
 impl From<Instruction> for u16 {
+    // TODO: can we avoid manually setting the value to zero for comparing?
     fn from(ins: Instruction) -> Self {
         let v = match ins {
             I::Push(_) => I::Push(0),
+            I::EndLoop(_) => I::EndLoop(0),
+            I::Jump(_) => I::Jump(0),
+            I::JumpZero(_) => I::JumpZero(0),
+            I::JumpNotZero(_) => I::JumpNotZero(0),
             _ => ins,
         };
 
