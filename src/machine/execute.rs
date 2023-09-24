@@ -17,16 +17,13 @@ impl Execute for Machine {
     fn tick(&mut self) {
         let op = self.decode();
         let mut s = self.stack();
-        println!("Operation: {:?}", op);
 
         // Should we jump to a different instruction?
         let mut jump: Option<u16> = None;
 
         match op {
-            I::None => {}
-
-            I::Push(v) => { self.push(v); }
-            I::Pop => { self.pop(); }
+            I::Push(v) => { s.push(v).expect("push error"); }
+            I::Pop => { s.pop().expect("pop error"); }
 
             // Addition, subtraction, multiplication and division.
             I::Add => s.apply_two(|a, b| a + b),
@@ -52,36 +49,37 @@ impl Execute for Machine {
             I::Jump(addr) => self.reg.set(PC, addr),
 
             I::JumpZero(addr) => {
-                if self.pop() == 0 {
+                if s.pop().unwrap() == 0 {
                     jump = Some(addr);
                 }
             }
 
             I::JumpNotZero(addr) => {
-                if self.pop() != 0 {
+                if s.pop().unwrap() != 0 {
                     jump = Some(addr);
                 }
             }
 
             I::Dup => {
                 let v = s.peek();
-                self.push(v);
+                s.push(v).unwrap();
             }
 
             I::Swap => {
-                let a = self.pop();
-                let b = self.pop();
+                let a = s.pop().unwrap();
+                let b = s.pop().unwrap();
 
-                self.push(a);
-                self.push(b);
+                s.push(a).unwrap();
+                s.push(b).unwrap();
             }
 
             I::Over => {
                 let v = s.get(1);
-                self.push(v);
+                s.push(v).unwrap();
             }
 
             I::Halt => {}
+            I::None => {}
         };
 
         if let Some(addr) = jump {
