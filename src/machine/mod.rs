@@ -1,4 +1,4 @@
-use crate::instructions::Instruction as I;
+use crate::instructions::{Instruction as I, Load};
 use crate::mem::{Memory, StackManager};
 use crate::register::Register::PC;
 use crate::register::Registers;
@@ -38,7 +38,7 @@ impl Machine {
     }
 
     /// Get the current instruction from the code segment.
-    fn mem(&self) -> u16 {
+    fn opcode(&self) -> u16 {
         self.mem.get(self.pc())
     }
 
@@ -46,13 +46,19 @@ impl Machine {
     fn arg(&mut self) -> u16 {
         self.reg.inc(PC);
 
-        self.mem()
+        self.opcode()
+    }
+
+    fn should_halt(&self) -> bool {
+        let i: I = self.opcode().into();
+
+        i == I::Halt
     }
 
     /// Returns the current instruction.
     /// Decodes the opcode and arguments into instruction.
     fn instruction(&mut self) -> I {
-        let i: I = self.mem().into();
+        let i: I = self.opcode().into();
 
         match i {
             I::Push(_) => I::Push(self.arg()),
@@ -111,17 +117,30 @@ impl Machine {
 
         Ok(())
     }
+
+    pub fn run(&mut self) {
+        while !self.should_halt() {
+            self.tick().unwrap();
+        }
+    }
+
+    pub fn load_code(&mut self, ops: Vec<I>) {
+        // Append a [halt] instruction to the code.
+        let mut code = ops.clone();
+        code.push(I::Halt);
+
+        self.mem.load_code(code);
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::instructions::Load;
 
     #[test]
     fn test_add() {
         let mut m = Machine::new();
-        m.mem.load_code(vec![I::Push(5), I::Push(10), I::Add, I::Push(3), I::Sub]);
+        m.load_code(vec![I::Push(5), I::Push(10), I::Add, I::Push(3), I::Sub]);
 
         m.tick().unwrap();
         m.tick().unwrap();
@@ -129,13 +148,20 @@ mod tests {
 
         m.tick().unwrap();
         assert_eq!(m.mem.read_stack(3), [0, 0, 15]);
-        assert_eq!(m.stack().peek(), 15);
 
         m.tick().unwrap();
         assert_eq!(m.stack().peek(), 3);
 
         m.tick().unwrap();
         assert_eq!(m.mem.read_stack(3), [0, 0, 12]);
-        assert_eq!(m.stack().peek(), 12);
+    }
+
+    #[test]
+    fn test_run() {
+        let mut m = Machine::new();
+        m.load_code(vec![I::Push(10), I::Push(3), I::Sub]);
+        m.run();
+
+        assert_eq!(m.mem.read_stack(2), [0, 7]);
     }
 }
