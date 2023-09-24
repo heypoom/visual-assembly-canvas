@@ -1,6 +1,5 @@
 use snafu::prelude::*;
 use snafu::Whatever;
-// use crate::machine::Machine;
 
 use crate::mem::Memory;
 use crate::register::{Registers, Register::SP};
