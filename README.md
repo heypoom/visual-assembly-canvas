@@ -6,11 +6,10 @@ Let's build it all from scratch in Rust, building one on top of another! For edu
 
 ## Checklist
 
-- [x] [Memory](./src/mem/mod.rs)
-- [x] Dumb Allocator
-- [ ] Registers
-- [ ] Machine Opcode
-- [ ] Instruction: MOV
+- [x] Linear Memory
+- [x] Registers (PC, SP)
+- [x] Instruction: PUSH
+- [x] Instruction: POP
 - [ ] Hello World
 - [ ] Palindrome
 - [ ] Array
@@ -20,8 +19,8 @@ Let's build it all from scratch in Rust, building one on top of another! For edu
 - [ ] Doubly Linked List
 - [ ] Ring Buffer
 - [ ] Graph
-- [ ] Depth First Search
-- [ ] Breadth First Search
+- [ ] Depth-First Search
+- [ ] Breadth-First Search
 - [ ] Binary Tree
 - [ ] Binary Search Tree
 
