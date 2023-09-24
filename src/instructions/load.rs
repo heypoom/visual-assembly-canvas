@@ -6,7 +6,7 @@ pub trait Load {
     fn load_code(&mut self, code: Vec<Instruction>);
 }
 
-const CODE_START: u16 = 0x0000;
+pub const CODE_START: u16 = 0x0000;
 
 impl Load for Memory {
     fn load_code(&mut self, code: Vec<Instruction>) {

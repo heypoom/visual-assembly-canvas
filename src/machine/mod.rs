@@ -1,5 +1,6 @@
 use crate::mem::Memory;
 use crate::register::Registers;
+use crate::register::Register::PC;
 use crate::instructions::Load;
 use crate::instructions::Instruction::{Push, Pop, Add};
 
@@ -22,5 +23,12 @@ impl Machine {
         }
     }
 
+    pub fn tick(&self) {
+        // Fetch
+        let pc = self.reg.get(PC);
+        let ins = self.mem.get(pc);
 
+        // Decode
+        // Execute
+    }
 }

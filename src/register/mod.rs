@@ -8,29 +8,11 @@ pub struct Registers {
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
 pub enum Register {
-    // General Purpose Registers
-    R01 = 0x01,
-    R02 = 0x02,
-    R03 = 0x03,
-    R04 = 0x04,
-    R05 = 0x05,
-    R06 = 0x06,
-    R07 = 0x07,
-    R08 = 0x08,
-    R09 = 0x09,
-    R10 = 0x0A,
-
-    /// Frame Pointer
-    FP = 0x0B,
+    /// Program Counter
+    PC = 0x01,
 
     /// Stack Pointer
-    SP = 0x0C,
-
-    /// Program Counter
-    PC = 0x0D,
-
-    /// Status Register
-    SR = 0x0E,
+    SP = 0x02,
 }
 
 type R = Register;
@@ -67,14 +49,14 @@ impl Registers {
 
 #[cfg(test)]
 mod tests {
-    use super::Register::{FP, PC};
+    use super::Register::{PC, SP};
     use super::*;
 
     #[test]
     fn test_set_register() {
         let mut r = Registers::new();
-        r.set(FP, 0x10);
-        assert_eq!(r.get(FP), 0x10, "FP should be set to 0x10");
+        r.set(SP, 0x10);
+        assert_eq!(r.get(SP), 0x10, "SP should be set to 0x10");
 
         r.set(PC, 0xFF);
         assert_eq!(r.get(PC), 0xFF, "PC should be set to 0xFF")
