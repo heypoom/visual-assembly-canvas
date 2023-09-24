@@ -1,9 +1,9 @@
 mod memory;
 mod stack;
 mod data;
-mod symbol;
+mod string;
 
 pub use self::memory::*;
 pub use self::stack::*;
 pub use self::data::*;
-pub use self::symbol::*;
+pub use self::string::*;

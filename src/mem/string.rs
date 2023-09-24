@@ -64,6 +64,16 @@ impl<'a> StringManager<'a> {
     }
 }
 
+pub trait WithStringManager {
+    fn string(&mut self) -> StringManager;
+}
+
+impl WithStringManager for Memory {
+    fn string(&mut self) -> StringManager {
+        StringManager::new(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -71,7 +81,7 @@ mod tests {
     #[test]
     fn test_str() {
         let mut m = Memory::new();
-        let mut s = StringManager::new(&mut m);
+        let mut s = m.string();
 
         let hello_ptr = s.add_str("hello");
         let hello = s.get_str(hello_ptr).unwrap();
