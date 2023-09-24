@@ -62,6 +62,7 @@ impl Instruction {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn test_opcode() {
         // Convert instruction to opcode.
