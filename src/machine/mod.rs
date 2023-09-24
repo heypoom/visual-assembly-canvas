@@ -55,11 +55,11 @@ impl From<Vec<Instruction>> for Machine {
     }
 }
 
-type M = Machine;
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    type M = Machine;
 
     #[test]
     fn test_add() {
