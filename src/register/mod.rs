@@ -1,3 +1,6 @@
+use crate::mem::MAX_STACK_ADDR;
+use crate::register::Register::SP;
+
 const REG_COUNT: usize = 0xF;
 
 #[derive(Debug)]
@@ -19,9 +22,14 @@ type R = Register;
 
 impl Registers {
     pub fn new() -> Registers {
-        Registers {
+        let mut v = Registers {
             buffer: [0; REG_COUNT],
-        }
+        };
+
+        // Initialize the stack pointer.
+        v.set(SP, MAX_STACK_ADDR);
+
+        v
     }
 
     pub fn set(&mut self, r: R, val: u16) {
