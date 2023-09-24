@@ -16,9 +16,10 @@ pub trait Execute {
 impl Execute for Machine {
     fn tick(&mut self) {
         let op = self.decode();
+        let mut s = self.stack();
         println!("Operation: {:?}", op);
 
-        // Whether we should jump to the address.
+        // Should we jump to a different instruction?
         let mut jump: Option<u16> = None;
 
         match op {
@@ -28,22 +29,22 @@ impl Execute for Machine {
             I::Pop => { self.pop(); }
 
             // Addition, subtraction, multiplication and division.
-            I::Add => self.stack().apply_two(|a, b| a + b),
-            I::Sub => self.stack().apply_two(|a, b| b - a),
-            I::Mul => self.stack().apply_two(|a, b| a * b),
-            I::Div => self.stack().apply_two(|a, b| b / a),
+            I::Add => s.apply_two(|a, b| a + b),
+            I::Sub => s.apply_two(|a, b| b - a),
+            I::Mul => s.apply_two(|a, b| a * b),
+            I::Div => s.apply_two(|a, b| b / a),
 
             // Increment and decrement.
-            I::Inc => self.stack().apply(|v| v + 1),
-            I::Dec => self.stack().apply(|v| v - 1),
+            I::Inc => s.apply(|v| v + 1),
+            I::Dec => s.apply(|v| v - 1),
 
             // Equality and comparison operations.
-            I::Equal => self.stack().apply_two(|a, b| (a == b).into()),
-            I::NotEqual => self.stack().apply_two(|a, b| (a != b).into()),
-            I::LessThan => self.stack().apply_two(|a, b| (a < b).into()),
-            I::LessThanOrEqual => self.stack().apply_two(|a, b| (a <= b).into()),
-            I::GreaterThan => self.stack().apply_two(|a, b| (a > b).into()),
-            I::GreaterThanOrEqual => self.stack().apply_two(|a, b| (a >= b).into()),
+            I::Equal => s.apply_two(|a, b| (a == b).into()),
+            I::NotEqual => s.apply_two(|a, b| (a != b).into()),
+            I::LessThan => s.apply_two(|a, b| (a < b).into()),
+            I::LessThanOrEqual => s.apply_two(|a, b| (a <= b).into()),
+            I::GreaterThan => s.apply_two(|a, b| (a > b).into()),
+            I::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into()),
 
             I::StartLoop => {}
 
@@ -63,7 +64,7 @@ impl Execute for Machine {
             }
 
             I::Dup => {
-                let v = self.stack().peek();
+                let v = s.peek();
                 self.push(v);
             }
 
@@ -76,7 +77,7 @@ impl Execute for Machine {
             }
 
             I::Over => {
-                let v = self.stack().get(1);
+                let v = s.get(1);
                 self.push(v);
             }
 
