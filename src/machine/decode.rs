@@ -15,7 +15,7 @@ pub trait Decode {
 }
 
 impl Decode for Machine {
-    /// Get the current instruction from the code segment.
+    /// Fetch the current instruction from the code segment.
     fn opcode(&self) -> u16 {
         self.mem.get(self.reg.get(PC))
     }
@@ -27,7 +27,7 @@ impl Decode for Machine {
     }
 
     /// Returns the current instruction.
-    /// Decodes the opcode and arguments into instruction.
+    /// Fetch and decode the opcode and its arguments into instruction.
     fn decode(&mut self) -> I {
         let i: I = self.opcode().into();
 
@@ -41,6 +41,7 @@ impl Decode for Machine {
             I::JumpNotZero(_) => I::JumpNotZero(self.arg()),
             I::Load(_) => I::Load(self.arg()),
             I::Store(_) => I::Store(self.arg()),
+            I::LoadString(_) => I::LoadString(self.arg()),
             _ => i
         }
     }

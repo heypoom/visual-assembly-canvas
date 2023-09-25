@@ -94,11 +94,11 @@ mod tests {
         let mut ms = m.mem.string();
 
         let s = "hello";
-        let h_ptr = ms.add_str(s);
+        let h_addr = ms.add_str(s);
 
         let mut ins: Vec<I> = vec![];
 
-        for i in h_ptr..h_ptr + s.len() as u16 {
+        for i in h_addr..h_addr + s.len() as u16 {
             ins.push(I::Load(i));
         }
 
@@ -114,12 +114,36 @@ mod tests {
         let mut m = Machine::new();
 
         let mut ms = m.mem.string();
-        let h_ptr = ms.add_str("hello, ");
-        let w_ptr = ms.add_str("world!");
+        let h_addr = ms.add_str("hello, ");
+        let w_addr = ms.add_str("world!");
 
-        m.mem.load_code(vec![I::Push(h_ptr), I::Print, I::Push(w_ptr), I::Print]);
+        m.mem.load_code(vec![I::Push(h_addr), I::Print, I::Push(w_addr), I::Print]);
         m.run();
 
         assert_eq!(m.mem.read_stack(2), [0, 0]);
+    }
+
+    #[test]
+    fn reverse_string() {
+        let mut m = Machine::new();
+
+        let mut ms = m.mem.string();
+        let s_addr = ms.add_str("poom");
+
+        m.mem.load_code(vec![
+            // Push the string from the data section onto the stack.
+            I::LoadString(s_addr),
+
+            // TODO: manipulate the stack to reverse the string.
+            I::StartLoop,
+            I::Pop,
+            I::Push(0),
+            I::Equal,
+            I::JumpNotZero(0x09),
+            I::EndLoop(0x01),
+        ]);
+
+        m.tick();
+        assert_eq!(m.mem.read_stack(5), [0, 109, 111, 111, 112]);
     }
 }

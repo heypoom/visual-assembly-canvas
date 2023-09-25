@@ -4,6 +4,9 @@ use crate::instructions::{Instruction as I};
 use crate::mem::WithStringManager;
 
 pub trait Execute {
+    /// Execute an instruction.
+    fn exec_op(&mut self, op: I);
+
     /// Executes the current instruction.
     fn tick(&mut self);
 
@@ -15,12 +18,13 @@ pub trait Execute {
 }
 
 impl Execute for Machine {
-    fn tick(&mut self) {
-        let op = self.decode();
-        let mut s = self.stack();
-
+    /// Execute an instruction.
+    fn exec_op(&mut self, op: I) {
         // Should we jump to a different instruction?
         let mut jump: Option<u16> = None;
+
+        // Initialize the stack helper.
+        let mut s = self.stack();
 
         match op {
             I::None => {}
@@ -99,13 +103,28 @@ impl Execute for Machine {
                 // TODO: this should be a callback to the outside world, not a console print!
                 print!("{}", text);
             }
+
+            I::LoadString(addr) => {
+                let text = self.mem.string().get_str_bytes(addr);
+
+                for v in text.iter() {
+                    self.stack().push(*v).expect("push error");
+                }
+            }
         };
 
+        // Advance or jump the program counter.
         if let Some(addr) = jump {
             self.reg.set(PC, addr);
         } else {
             self.reg.inc(PC);
         }
+    }
+
+    // Fetch, decode and execute the instruction.
+    fn tick(&mut self) {
+        let instruction = self.decode();
+        self.exec_op(instruction);
     }
 
     fn run(&mut self) {

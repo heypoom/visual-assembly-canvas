@@ -15,6 +15,9 @@ pub enum Instruction {
     Push(u16),
     Pop,
 
+    /// Push the null-terminated string from the specified address onto the stack.
+    LoadString(u16),
+
     /// Push data from the specified address onto the stack.
     Load(u16),
 
@@ -96,6 +99,7 @@ impl From<Instruction> for u16 {
             I::JumpNotZero(_) => I::JumpNotZero(0),
             I::Load(_) => I::Load(0),
             I::Store(_) => I::Store(0),
+            I::LoadString(_) => I::LoadString(0),
             _ => ins,
         };
 

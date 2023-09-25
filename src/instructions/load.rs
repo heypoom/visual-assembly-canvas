@@ -31,6 +31,7 @@ impl Load for Memory {
                 I::JumpNotZero(v) => write(v),
                 I::Load(v) => write(v),
                 I::Store(v) => write(v),
+                I::LoadString(v) => write(v),
 
                 _ => {}
             }
