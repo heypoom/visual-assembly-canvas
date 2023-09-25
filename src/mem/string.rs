@@ -1,3 +1,5 @@
+extern crate snafu;
+
 use snafu::{Whatever, whatever};
 use crate::mem::{DATA_END, DATA_START, Memory};
 

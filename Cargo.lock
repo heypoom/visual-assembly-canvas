@@ -9,17 +9,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "230c5f1ca6a325a32553f8640d31ac9b49f2411e901e427570154868b46da4f7"
 
 [[package]]
-name = "cpu-from-scratch"
-version = "0.1.0"
-dependencies = [
- "bimap",
- "lazy_static",
- "snafu",
- "strum",
- "strum_macros",
-]
-
-[[package]]
 name = "doc-comment"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -36,6 +25,17 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "opcodes_to_algorithms"
+version = "0.1.0"
+dependencies = [
+ "bimap",
+ "lazy_static",
+ "snafu",
+ "strum",
+ "strum_macros",
+]
 
 [[package]]
 name = "proc-macro2"

@@ -1,4 +1,3 @@
-use crate::instructions::Instruction;
 use crate::instructions::Instruction as I;
 use crate::mem::Memory;
 
@@ -45,8 +44,6 @@ impl Load for Memory {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    type I = Instruction;
 
     #[test]
     fn test_load_code() {
