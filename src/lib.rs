@@ -1,3 +1,5 @@
+extern crate core;
+
 pub mod instructions;
 pub mod machine;
 pub mod mem;

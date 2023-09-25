@@ -111,6 +111,13 @@ impl Instruction {
     pub fn opcode(self) -> u16 {
         self.into()
     }
+
+    pub fn partial_eq(self, target: &I) -> bool {
+        match (self, *target) {
+            (I::Push(_), I::Push(_)) => true,
+            _ => false
+        }
+    }
 }
 
 #[cfg(test)]
@@ -130,5 +137,11 @@ mod tests {
 
         // Convert instruction to opcode and back.
         assert_eq!(I::from(I::Push(12).opcode()), I::Push(0));
+    }
+
+    #[test]
+    fn test_partial_eq() {
+        assert!(I::Push(12).partial_eq(&I::Push(24)));
+        assert_eq!(I::Push(12).partial_eq(&I::Pop), false);
     }
 }
