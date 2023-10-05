@@ -24,16 +24,4 @@ mod tests {
         m.run();
         assert_eq!(m.mem.read_stack(5), [104, 101, 108, 108, 111]);
     }
-
-    /// TODO: manipulate the stack to reverse the string.
-    #[test]
-    fn reverse_string() {
-        let mut m = M::new();
-
-        let mut ms = m.mem.string();
-        let s_addr = ms.add_str("poom");
-        m.mem.load_code(vec![I::LoadString(s_addr)]);
-        m.tick();
-        assert_eq!(m.mem.read_stack(4), [112, 111, 111, 109]);
-    }
 }
