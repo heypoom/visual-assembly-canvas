@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 bimap = "0.6.3"
 lazy_static = "1.4.0"
+log = "0.4.20"
 snafu = "0.7.5"
 strum = "0.25.0"
 strum_macros = "0.25.2"
