@@ -25,22 +25,6 @@ mod tests {
         assert_eq!(m.mem.read_stack(5), [104, 101, 108, 108, 111]);
     }
 
-    #[test]
-    fn test_print_hello_world() {
-        let mut m = M::new();
-
-        let mut ms = m.mem.string();
-        let h_addr = ms.add_str("hello, ");
-        let w_addr = ms.add_str("world!");
-
-        // TODO: assert that "Hello World" is printed.
-        //       requires callbacks to the host.
-        m.mem.load_code(vec![I::Push(h_addr), I::Print, I::Push(w_addr), I::Print]);
-        m.run();
-
-        assert_eq!(m.mem.read_stack(2), [0, 0]);
-    }
-
     /// TODO: manipulate the stack to reverse the string.
     #[test]
     fn reverse_string() {

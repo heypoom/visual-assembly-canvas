@@ -100,8 +100,9 @@ impl Execute for Machine {
                 let addr = s.pop().unwrap();
                 let text = self.mem.string().get_str(addr).expect("string decode error");
 
-                // TODO: this should be a callback to the outside world, not a console print!
-                print!("{}", text);
+                for handler in &self.handlers.print {
+                    handler(&text);
+                }
             }
 
             I::LoadString(addr) => {

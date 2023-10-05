@@ -1,7 +1,9 @@
 mod decode;
 mod execute;
+mod handlers;
 
 use crate::instructions::{Instruction, Load};
+use crate::machine::handlers::Handlers;
 use crate::mem::{Memory, StackManager};
 use crate::register::Registers;
 
@@ -12,12 +14,13 @@ pub use self::execute::Execute;
 pub struct Machine {
     pub mem: Memory,
     pub reg: Registers,
+    pub handlers: Handlers,
 }
 
 impl Machine {
     /// Creates a new machine.
     pub fn new() -> Machine {
-        Machine { mem: Memory::new(), reg: Registers::new() }
+        Machine { mem: Memory::new(), reg: Registers::new(), handlers: Handlers::new() }
     }
 
     /// Returns a stack manager for the current machine.
