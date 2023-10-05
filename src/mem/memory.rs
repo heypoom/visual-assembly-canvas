@@ -1,4 +1,4 @@
-use crate::mem::MAX_STACK_ADDR;
+use crate::MIN_STACK_ADDR;
 
 pub const MEMORY_SIZE: u16 = 0xFFFF;
 
@@ -38,7 +38,7 @@ impl Memory {
     }
 
     pub fn read_stack(&self, count: u16) -> Vec<u16> {
-        self.read(MAX_STACK_ADDR - count, count)
+        self.read(MIN_STACK_ADDR, count)
     }
 }
 

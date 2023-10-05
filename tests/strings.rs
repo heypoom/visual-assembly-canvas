@@ -22,7 +22,7 @@ mod tests {
         assert_eq!(m.mem.read_stack(5), [0, 0, 0, 0, 0]);
 
         m.run();
-        assert_eq!(m.mem.read_stack(5), [111, 108, 108, 101, 104]);
+        assert_eq!(m.mem.read_stack(6), [0, 104, 101, 108, 108, 111]);
     }
 
     #[test]
@@ -50,6 +50,6 @@ mod tests {
         let s_addr = ms.add_str("poom");
         m.mem.load_code(vec![I::LoadString(s_addr)]);
         m.tick();
-        assert_eq!(m.mem.read_stack(5), [0, 109, 111, 111, 112]);
+        assert_eq!(m.mem.read_stack(5), [0, 112, 111, 111, 109]);
     }
 }

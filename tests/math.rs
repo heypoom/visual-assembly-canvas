@@ -10,15 +10,15 @@ mod tests {
 
         m.tick();
         m.tick();
-        assert_eq!(m.mem.read_stack(3), [0, 10, 5]);
+        assert_eq!(m.mem.read_stack(3), [0, 5, 10]);
 
         m.tick();
-        assert_eq!(m.mem.read_stack(3), [0, 0, 15]);
+        assert_eq!(m.mem.read_stack(3), [0, 15, 0]);
 
         m.tick();
         assert_eq!(m.stack().peek(), 3);
 
         m.tick();
-        assert_eq!(m.mem.read_stack(3), [0, 0, 12]);
+        assert_eq!(m.mem.read_stack(3), [0, 12, 0]);
     }
 }

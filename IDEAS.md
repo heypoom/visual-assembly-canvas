@@ -67,7 +67,7 @@ R14: 0x0E
   Stores the status flags of the program execution.
 ```
 
-### Base Memory Layout
+### 04. Memory Layout
 
 ```
 0x0000 - 0x1000
@@ -75,28 +75,15 @@ R14: 0x0E
   Stores the program instructions.
   Read-only.
 
-0x1000 - 0x2000
-  Initialized Data Segment: `data`
-  Contains the variables initialized in the code.
-  TODO: const variables should be read-only. needs separate sections.
-
-0x2000 - 0x3000
-  Uninitialized Data Segment: `bss`
-  Initializes to zero.
-  Contains all global variables that are initialized to zero, or do not have an explicit initialization in code, such as `int i`
+0x1000 - 0x3000
+  Read-only data, which is not code.
 
 after 0x3000
-  Heap.
-  Contains all dynamically allocated memory.
-  Grows to larger addresses.
-  Use malloc, realloc and free.
-
-below 0xFFFF
-  Stack.
-  Stack is LIFO.
-  Contains the program stack frames.
-  Stack frames contain the local variables of the function.
-  Makes recursion possible.
+  Stack, LIFO.
   SP tracks the top of the stack.
-  Grows downwards.
+  Grows to 0xFFFF.
 ```
+
+## 05. Stack Frames
+
+- Stack frames contain the local variables of the function call.

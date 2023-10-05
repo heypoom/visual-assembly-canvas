@@ -28,12 +28,12 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn push(&mut self, val: u16) -> Result<(), Whatever> {
-        if self.top() < MIN_STACK_ADDR {
+        if self.top() > MAX_STACK_ADDR {
             whatever!("stack overflow")
         }
 
-        // Decrement the stack pointer.
-        self.reg.dec(SP);
+        // Increment the stack pointer.
+        self.reg.inc(SP);
 
         // Save the value at the top of the stack.
         self.write(val);
@@ -50,15 +50,17 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn pop(&mut self) -> Result<u16, Whatever> {
-        if self.top() > MAX_STACK_ADDR {
+        if self.top() < MIN_STACK_ADDR {
             whatever!("stack underflow")
         }
 
         let v = self.peek();
+
+        // Clear the value at the top of the stack.
         self.write(0);
 
-        // Increment the stack pointer.
-        self.reg.inc(SP);
+        // Decrement the stack pointer.
+        self.reg.dec(SP);
 
         // Return the value at the top of the stack.
         Ok(v)
