@@ -45,12 +45,12 @@ For labels, we should build up a symbol table of the labels, then compute the me
 ```
 jump start
 
-[add_pattern]
+add_pattern:
     push 0xAA
     push 0xBB
     return
 
-[start]
+start:
     call add_pattern
     call add_pattern
 ```
@@ -62,7 +62,7 @@ Another example is conditional jumps. We can build a loop using the following sy
 ```
 push 0
 
-[loop_start]
+loop_start:
     push 2
     add
     dup
