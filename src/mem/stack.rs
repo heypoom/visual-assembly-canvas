@@ -28,7 +28,7 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn push(&mut self, val: u16) -> Result<(), Whatever> {
-        if self.top() > MAX_STACK_ADDR {
+        if self.top() >= MAX_STACK_ADDR {
             whatever!("stack overflow")
         }
 
@@ -101,5 +101,24 @@ mod tests {
         s.push(40).unwrap();
         assert_eq!(s.pop().unwrap(), 40);
         assert_eq!(s.pop().unwrap(), 10);
+    }
+
+    #[test]
+    fn test_stack_underflow() {
+        let mut m = Machine::new();
+        let mut s = StackManager::new(&mut m.mem, &mut m.reg);
+
+        s.push(10).unwrap();
+        s.pop().unwrap();
+        s.pop().expect_err("should fail to pop from empty stack");
+    }
+
+    #[test]
+    fn test_stack_overflow() {
+        let mut m = Machine::new();
+        let mut s = StackManager::new(&mut m.mem, &mut m.reg);
+
+        s.reg.set(SP, MAX_STACK_ADDR);
+        s.push(1).expect_err("should fail to push to a full stack");
     }
 }
