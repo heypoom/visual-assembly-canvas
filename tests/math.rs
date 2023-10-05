@@ -19,6 +19,8 @@ mod tests {
         assert_eq!(m.stack().peek(), 3);
 
         m.tick();
-        assert_eq!(m.stack().peek(), 12);
+
+        // Ensure the top of the stack does not contain invalid values.
+        assert_eq!(m.mem.read_stack(2), [12, 0]);
     }
 }
