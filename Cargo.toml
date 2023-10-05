@@ -12,6 +12,7 @@ log = "0.4.20"
 snafu = "0.7.5"
 strum = "0.25.0"
 strum_macros = "0.25.2"
+clap = { version = "4.4.6", features = ["derive"] }
 
 [dev-dependencies]
 mockall = "0.11.4"

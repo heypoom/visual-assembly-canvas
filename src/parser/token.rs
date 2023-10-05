@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum TokenType {
     /// Label definition ends with a colon, such as "start:"
     LabelDefinition,
@@ -13,7 +13,7 @@ pub enum TokenType {
     Identifier,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Token {
     pub token_type: TokenType,
     pub lexeme: String,

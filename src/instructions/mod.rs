@@ -7,7 +7,6 @@ pub use load::Load;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash)]
 pub enum Instruction {
     None,
@@ -125,6 +124,7 @@ impl Instruction {
 
 #[cfg(test)]
 mod tests {
+    use std::mem::{size_of, size_of_val};
     use super::*;
 
     #[test]
@@ -146,5 +146,12 @@ mod tests {
     fn test_partial_eq() {
         assert!(I::Push(12).partial_eq(&I::Push(24)));
         assert_eq!(I::Push(12).partial_eq(&I::Pop), false);
+    }
+
+    #[test]
+    fn test_arity() {
+        println!("{:?}", size_of::<I>());
+        println!("{:?}", size_of_val(&I::Pop));
+        println!("{:?}", size_of_val(&I::Push(1024)));
     }
 }
