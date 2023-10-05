@@ -2,27 +2,18 @@
 mod call_stack_tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine, Execute, Load, Instruction as I};
+    use O::{Machine, Execute, Instruction as I};
 
     #[test]
     fn test_call_stack() {
-        let mut m = Machine::new();
-
-        let ptr_pusher = 1;
-        let ptr_start = 6;
-
-        m.mem.load_code(vec![
-            I::Call(ptr_start),
-
-            // [pusher]
-            I::Push(0xAA),
+        let mut m: Machine = vec![
+            I::Call(6),
+            I::Push(0xAA), // [pusher]
             I::Push(0xBB),
             I::Return,
-
-            // [start]
-            I::Call(ptr_pusher),
-            I::Call(ptr_pusher),
-        ]);
+            I::Call(1),    // [start]
+            I::Call(1),
+        ].into();
 
         m.run();
         assert_eq!(m.mem.read_stack(4), [0xAA, 0xBB, 0xAA, 0xBB]);
