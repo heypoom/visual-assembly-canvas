@@ -1,4 +1,4 @@
-use crate::MIN_STACK_ADDR;
+use crate::STACK_START;
 use crate::register::Register::{PC, SP};
 
 const REG_COUNT: usize = 0xF;
@@ -9,13 +9,16 @@ pub struct Registers {
 }
 
 #[allow(dead_code)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Register {
     /// Program Counter
     PC = 0x01,
 
     /// Stack Pointer
     SP = 0x02,
+
+    /// Frame Pointer
+    FP = 0x03,
 }
 
 type R = Register;
@@ -28,7 +31,7 @@ impl Registers {
 
         // Initialize the stack pointer.
         v.set(PC, 0);
-        v.set(SP, MIN_STACK_ADDR - 1);
+        v.set(SP, STACK_START - 1);
 
         v
     }

@@ -1,11 +1,10 @@
+use crate::CODE_START;
 use crate::instructions::Instruction as I;
 use crate::mem::Memory;
 
 pub trait Load {
     fn load_code(&mut self, code: Vec<I>);
 }
-
-pub const CODE_START: u16 = 0x0000;
 
 impl Load for Memory {
     fn load_code(&mut self, code: Vec<I>) {

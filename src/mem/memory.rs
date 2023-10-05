@@ -1,6 +1,4 @@
-use crate::MIN_STACK_ADDR;
-
-pub const MEMORY_SIZE: u16 = 0xFFFF;
+use crate::{MEMORY_SIZE, STACK_START};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -38,7 +36,7 @@ impl Memory {
     }
 
     pub fn read_stack(&self, count: u16) -> Vec<u16> {
-        self.read(MIN_STACK_ADDR, count)
+        self.read(STACK_START, count)
     }
 }
 

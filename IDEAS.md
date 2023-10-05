@@ -70,18 +70,19 @@ R14: 0x0E
 ### 04. Memory Layout
 
 ```
-0x0000 - 0x1000
-  Code Segment: `text`
+Code segment.
   Stores the program instructions.
   Read-only.
 
-0x1000 - 0x3000
-  Read-only data, which is not code.
+Data segment.
+  Read-only.
+  
+Call stack.
+  Read-write.
 
-after 0x3000
-  Stack, LIFO.
+Stack memory.
   SP tracks the top of the stack.
-  Grows to 0xFFFF.
+  Read-write.
 ```
 
 ## 05. Stack Frames
