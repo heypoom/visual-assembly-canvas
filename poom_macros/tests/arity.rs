@@ -11,5 +11,7 @@ mod arity_tests {
     #[test]
     fn test_arity() {
         let m = Foo::Bar(1, 2);
+        println!("{}", m.arity());
+        // println!("{}", m.bar());
     }
 }
