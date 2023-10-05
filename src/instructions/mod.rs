@@ -58,8 +58,14 @@ pub enum Instruction {
     GreaterThan,
     GreaterThanOrEqual,
 
-    // Print the text at the memory address of operand zero.
+    // Print the text at the memory address of operand.
     Print,
+
+    // Stores the PC on the call stack and jumps to the address.
+    Call(u16),
+
+    // Pop the return address from the call stack and jumps to it.
+    Return,
 
     Halt,
 }
@@ -96,6 +102,7 @@ impl From<Instruction> for u16 {
             I::Load(_) => I::Load(0),
             I::Store(_) => I::Store(0),
             I::LoadString(_) => I::LoadString(0),
+            I::Call(_) => I::Call(0),
             _ => ins,
         };
 

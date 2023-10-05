@@ -11,7 +11,7 @@ impl Load for Memory {
         let mut offset = CODE_START;
 
         let mut write = |v: u16| {
-            self.set(offset, v.clone());
+            self.set(offset, v);
             offset += 1;
         };
 
@@ -22,7 +22,7 @@ impl Load for Memory {
             // TODO: this is very repetitive!
             //       Can we detect the number of arguments and do this automatically?
             match ins {
-                I::LoadString(v) | I::Store(v) | I::Load(v) | I::JumpNotZero(v) | I::JumpZero(v) | I::Jump(v) | I::Push(v) => write(v),
+                I::LoadString(v) | I::Store(v) | I::Load(v) | I::JumpNotZero(v) | I::JumpZero(v) | I::Jump(v) | I::Push(v) | I::Call(v) => write(v),
                 _ => {}
             }
         }

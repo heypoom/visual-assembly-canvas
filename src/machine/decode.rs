@@ -41,6 +41,7 @@ impl Decode for Machine {
             I::Load(_) => I::Load(self.arg()),
             I::Store(_) => I::Store(self.arg()),
             I::LoadString(_) => I::LoadString(self.arg()),
+            I::Call(_) => I::Call(self.arg()),
             _ => i
         }
     }

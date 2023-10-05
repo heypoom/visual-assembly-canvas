@@ -59,7 +59,7 @@ impl<'a> StackManager<'a> {
 
     pub fn pop(&mut self) -> Result<u16, Whatever> {
         if self.top() < self.min {
-            whatever!("stack underflow")
+            whatever!("stack underflow. top={}, min={}", self.top(), self.min)
         }
 
         let v = self.peek();

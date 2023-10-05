@@ -1,4 +1,5 @@
-use crate::STACK_START;
+use crate::Register::FP;
+use crate::{CALL_STACK_START, STACK_START};
 use crate::register::Register::{PC, SP};
 
 const REG_COUNT: usize = 0xF;
@@ -32,6 +33,7 @@ impl Registers {
         // Initialize the stack pointer.
         v.set(PC, 0);
         v.set(SP, STACK_START - 1);
+        v.set(FP, CALL_STACK_START - 1);
 
         v
     }

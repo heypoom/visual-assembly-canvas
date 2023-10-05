@@ -109,6 +109,18 @@ impl Execute for Machine {
                     self.stack().push(*v).expect("push error");
                 }
             }
+
+            I::Call(address) => {
+                let pc = self.reg.get(PC);
+
+                self.call_stack().push(pc).unwrap();
+                self.reg.set(PC, address);
+            }
+
+            I::Return => {
+                let address = self.call_stack().pop().expect("cannot pop the return address");
+                self.reg.set(PC, address);
+            }
         };
 
         // Advance or jump the program counter.
@@ -122,6 +134,8 @@ impl Execute for Machine {
     // Fetch, decode and execute the instruction.
     fn tick(&mut self) {
         let instruction = self.decode();
+        // println!("{:?}", instruction);
+
         self.exec_op(instruction);
     }
 
