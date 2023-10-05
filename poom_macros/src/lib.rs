@@ -20,6 +20,12 @@ pub fn arity(input: TokenStream) -> TokenStream {
 
             let variant_ident = &variant.ident;
 
+            if field_count == 0 {
+                return quote! {
+                    #enum_name::#variant_ident => 0
+                };
+            }
+
             quote! {
                 #enum_name::#variant_ident(..) => #field_count
             }

@@ -246,9 +246,18 @@ dependencies = [
  "lazy_static",
  "log",
  "mockall",
+ "poom_macros",
  "snafu",
  "strum",
  "strum_macros",
+]
+
+[[package]]
+name = "poom_macros"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.38",
 ]
 
 [[package]]

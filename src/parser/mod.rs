@@ -59,9 +59,9 @@ impl Parser {
             T::Instruction => {
                 // Terminates the previous instruction.
                 if self.op != "" {
-                    self.opcode_offset += 1 + self.args.len();
-
                     let op = self.instruction();
+
+                    self.opcode_offset += 1 + self.args.len();
                     self.instructions.push(op);
                 }
 

@@ -1,13 +1,16 @@
+extern crate poom_macros;
+
 pub mod load;
 
 use bimap::BiMap;
 use lazy_static::lazy_static;
+use poom_macros::Arity;
 pub use load::Load;
 
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity)]
 pub enum Instruction {
     None,
 
@@ -124,7 +127,6 @@ impl Instruction {
 
 #[cfg(test)]
 mod tests {
-    use std::mem::{size_of, size_of_val};
     use super::*;
 
     #[test]
@@ -150,8 +152,8 @@ mod tests {
 
     #[test]
     fn test_arity() {
-        println!("{:?}", size_of::<I>());
-        println!("{:?}", size_of_val(&I::Pop));
-        println!("{:?}", size_of_val(&I::Push(1024)));
+        assert_eq!(I::None.arity(), 0);
+        assert_eq!(I::Push(12).arity(), 1);
+        assert_eq!(I::Call(0xFF).arity(), 1);
     }
 }
