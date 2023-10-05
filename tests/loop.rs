@@ -19,7 +19,6 @@ mod loop_tests {
             I::Dup,      // B = i
             I::Push(20), // A = 20
 
-
             I::GreaterThanOrEqual,      // 20 >= i?
             I::JumpNotZero(loop_start), // jump to [loop_start] if 20 >= i
 
