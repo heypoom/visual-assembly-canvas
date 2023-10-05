@@ -19,9 +19,11 @@ mod loop_tests {
             I::Dup,      // B = i
             I::Push(20), // A = 20
 
-            // [A = 20, B = i; A < B; ? 1 : 0]
-            I::LessThan,
-            I::JumpZero(loop_start), // 20 , jump to loop_start
+
+            I::GreaterThanOrEqual,      // 20 >= i?
+            I::JumpNotZero(loop_start), // jump to [loop_start] if 20 >= i
+
+            // i is now over 20. we are at the end of the loop.
             I::Push(0xFF),
         ]);
 
