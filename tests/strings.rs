@@ -2,11 +2,11 @@
 mod tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine as M, Execute, Instruction as I, Load, WithStringManager};
+    use O::{Machine, Execute, Instruction as I, Load, WithStringManager};
 
     #[test]
     fn test_load_str() {
-        let mut m = M::new();
+        let mut m = Machine::new();
         let mut ms = m.mem.string();
 
         let s = "hello";

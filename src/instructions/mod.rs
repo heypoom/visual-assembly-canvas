@@ -42,9 +42,6 @@ pub enum Instruction {
     Mul,
     Div,
 
-    StartLoop,
-    EndLoop(u16),
-
     /// Jump to the address.
     Jump(u16),
 
@@ -93,7 +90,6 @@ impl From<Instruction> for u16 {
     fn from(ins: Instruction) -> Self {
         let v = match ins {
             I::Push(_) => I::Push(0),
-            I::EndLoop(_) => I::EndLoop(0),
             I::Jump(_) => I::Jump(0),
             I::JumpZero(_) => I::JumpZero(0),
             I::JumpNotZero(_) => I::JumpNotZero(0),

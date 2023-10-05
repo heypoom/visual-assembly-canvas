@@ -35,7 +35,6 @@ impl Decode for Machine {
         //       Can we detect the number of arguments and do this automatically?
         match i {
             I::Push(_) => I::Push(self.arg()),
-            I::EndLoop(_) => I::EndLoop(self.arg()),
             I::Jump(_) => I::Jump(self.arg()),
             I::JumpZero(_) => I::JumpZero(self.arg()),
             I::JumpNotZero(_) => I::JumpNotZero(self.arg()),

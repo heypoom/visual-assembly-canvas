@@ -61,9 +61,6 @@ impl Execute for Machine {
             I::GreaterThan => s.apply_two(|a, b| (a > b).into()),
             I::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into()),
 
-            I::StartLoop => {}
-
-            I::EndLoop(start) => self.reg.set(PC, start),
             I::Jump(addr) => self.reg.set(PC, addr),
 
             I::JumpZero(addr) => {

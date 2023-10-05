@@ -3,7 +3,7 @@ mod tests {
     extern crate opcodes_to_algorithms as O;
 
     use mockall::{automock, predicate::*};
-    use O::{Machine as M, Execute, Instruction as I, Load, WithStringManager};
+    use O::{Machine, Execute, Instruction as I, Load, WithStringManager};
 
     #[cfg_attr(test, automock)]
     trait Printer {
@@ -12,7 +12,7 @@ mod tests {
 
     #[test]
     fn test_print_hello_world() {
-        let mut m = M::new();
+        let mut m = Machine::new();
 
         let mut ms = m.mem.string();
         let h_addr = ms.add_str("hello, ");

@@ -23,7 +23,7 @@ impl Load for Memory {
             // TODO: this is very repetitive!
             //       Can we detect the number of arguments and do this automatically?
             match ins {
-                I::LoadString(v) | I::Store(v) | I::Load(v) | I::JumpNotZero(v) | I::JumpZero(v) | I::Jump(v) | I::Push(v) | I::EndLoop(v) => write(v),
+                I::LoadString(v) | I::Store(v) | I::Load(v) | I::JumpNotZero(v) | I::JumpZero(v) | I::Jump(v) | I::Push(v) => write(v),
                 _ => {}
             }
         }
