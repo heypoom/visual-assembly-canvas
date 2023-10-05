@@ -9,6 +9,6 @@ mod tests {
         let mut m: M = vec![I::Push(10), I::Push(3), I::Sub].into();
         m.run();
 
-        assert_eq!(m.mem.read_stack(2), [0, 7]);
+        assert_eq!(m.stack().peek(), 7);
     }
 }

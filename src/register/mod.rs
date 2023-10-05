@@ -28,7 +28,7 @@ impl Registers {
 
         // Initialize the stack pointer.
         v.set(PC, 0);
-        v.set(SP, MIN_STACK_ADDR);
+        v.set(SP, MIN_STACK_ADDR - 1);
 
         v
     }
