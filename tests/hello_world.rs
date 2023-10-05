@@ -20,11 +20,11 @@ mod tests {
 
         m.mem.load_code(vec![I::Push(h_addr), I::Print, I::Push(w_addr), I::Print]);
 
-        let mut print_m = MockPrinter::new();
-        print_m.expect_print().with(eq("hello, ")).times(1).return_const(());
-        print_m.expect_print().with(eq("world!")).times(1).return_const(());
+        let mut mock = MockPrinter::new();
+        mock.expect_print().with(eq("hello, ")).times(1).return_const(());
+        mock.expect_print().with(eq("world!")).times(1).return_const(());
 
-        let print = move |s: &_| print_m.print(s);
+        let print = move |s: &_| mock.print(s);
         m.handlers.print.push(Box::new(print));
 
         m.run();
