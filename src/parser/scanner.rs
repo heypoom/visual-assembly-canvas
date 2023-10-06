@@ -53,6 +53,15 @@ impl Scanner {
         match c {
             ' ' | '\r' | '\t' => {}
 
+            '/' => {
+                // if '//' is found, advance scanner until EOL.
+                if self.advance() == '/' {
+                    while self.peek() != '\n' {
+                        self.advance();
+                    }
+                }
+            }
+
             '\n' => {
                 self.line += 1;
                 self.in_instruction = false;

@@ -113,12 +113,14 @@ impl Execute for Machine {
             I::Call(address) => {
                 let pc = self.reg.get(PC);
 
-                self.call_stack().push(pc).unwrap();
+                self.call_stack().push(pc).expect("call stack exceeded");
                 self.reg.set(PC, address);
             }
 
             I::Return => {
                 let address = self.call_stack().pop().expect("cannot pop the return address");
+
+                // Return to to the return address
                 self.reg.set(PC, address);
             }
         };
@@ -134,7 +136,7 @@ impl Execute for Machine {
     // Fetch, decode and execute the instruction.
     fn tick(&mut self) {
         let instruction = self.decode();
-        // println!("{:?}", instruction);
+        println!("{:?}", instruction);
 
         self.exec_op(instruction);
     }

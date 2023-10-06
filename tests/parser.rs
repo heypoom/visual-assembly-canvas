@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod parser_tests {
-    use opcodes_to_algorithms::Parser;
+    use opcodes_to_algorithms::{Parser, Machine, Execute, Instruction as I};
 
     const SOURCE: &'static str = r"
         jump start
@@ -13,7 +13,7 @@ mod parser_tests {
 
         start:
             call add_pattern
-            call add_pattern
+            halt
     ";
 
     #[test]
@@ -21,7 +21,15 @@ mod parser_tests {
         let mut p = Parser::new(SOURCE);
         p.parse();
 
-        println!("{:?}", p.instructions);
-        println!("{:?}", p.symbols);
+        println!("Symbols: {:?}", p.symbols.labels);
+        println!("Ops: {:?}", p.instructions);
+
+        // assert_eq!(*p.symbols.labels.get("start").unwrap(), 10);
+        // assert_eq!(*p.symbols.labels.get("add_pattern").unwrap(), 2);
+
+        let mut m: Machine = p.instructions.into();
+        m.run();
+
+        println!("{:?}", m.mem.read_stack(6));
     }
 }

@@ -33,7 +33,7 @@ pub fn arity(input: TokenStream) -> TokenStream {
 
         let expanded = quote! {
             impl #enum_name {
-                fn arity(&self) -> usize {
+                pub fn arity(&self) -> usize {
                     match self {
                         #(#arity_values,)*
                     }

@@ -16,8 +16,6 @@ pub struct Parser {
 
     /// Symbols
     pub symbols: Symbols,
-
-    /// Instructions
     pub instructions: Vec<I>,
 
     /// Current operation
@@ -46,6 +44,18 @@ impl Parser {
     }
 
     pub fn parse(&mut self) {
+        // Pass 1: collect labels.
+        self.parse_tokens();
+
+        // Pass 2: collect instructions with memory offsets in labels.
+        self.parse_tokens();
+    }
+
+    pub fn parse_tokens(&mut self) {
+        self.op = "".into();
+        self.opcode_offset = 0;
+        self.instructions = vec![];
+
         for token in self.tokens.clone() {
             self.parse_token(&token)
         }
@@ -54,20 +64,30 @@ impl Parser {
     fn parse_token(&mut self, token: &Token) {
         match token.token_type {
             T::LabelDefinition => {
-                self.symbols.labels.insert(token.lexeme.clone(), self.opcode_offset);
-            }
-            T::Instruction => {
-                // Terminates the previous instruction.
-                if self.op != "" {
-                    let op = self.instruction();
+                let key = token.lexeme.clone();
+                let key = key.trim().strip_suffix(":").expect("label definition should end with :");
 
-                    self.opcode_offset += 1 + self.args.len();
+                // Define labels based on the token.
+                if !self.symbols.labels.contains_key(key) {
+                    let offset = self.opcode_offset + 1;
+                    self.symbols.labels.insert(key.to_owned(), offset);
+                }
+            }
+
+            T::Instruction => {
+                // Resolves the previous instruction.
+                let op = self.instruction();
+
+                if op != I::None {
+                    self.opcode_offset += 1 + op.arity();
                     self.instructions.push(op);
                 }
 
+                // Processes next instructions
                 self.op = token.lexeme.clone();
                 self.args = vec![];
             }
+
             T::Value(value) => {
                 self.args.push(value);
             }
@@ -88,21 +108,12 @@ impl Parser {
     }
 
     fn instruction(&mut self) -> I {
-        println!("{}({:?})", self.op, self.args);
-
         match self.op.as_str() {
-            "push" => {
-                I::Push(self.arg())
-            }
-            "jump" => {
-                I::Jump(self.arg())
-            }
-            "return" => {
-                I::Return
-            }
-            "call" => {
-                I::Call(self.arg())
-            }
+            "push" => I::Push(self.arg()),
+            "jump" => I::Jump(self.arg()),
+            "return" => I::Return,
+            "call" => I::Call(self.arg()),
+            "halt" => I::Halt,
             _ => I::None
         }
     }
