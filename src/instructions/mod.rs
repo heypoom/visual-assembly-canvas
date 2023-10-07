@@ -7,7 +7,7 @@ use poom_macros::{Arity, InsertArgs, FieldValues, VariantIndex};
 
 pub use compile::compile;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, FromRepr, EnumString, Arity, InsertArgs, FieldValues, VariantIndex)]
+#[derive(Debug, Copy, Clone, PartialEq, FromRepr, EnumString, Arity, InsertArgs, FieldValues, VariantIndex)]
 #[strum(serialize_all = "snake_case")]
 #[repr(u16)]
 pub enum Op {
