@@ -6,8 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bimap = "0.6.3"
-lazy_static = "1.4.0"
 log = "0.4.20"
 snafu = "0.7.5"
 strum = "0.25.0"
