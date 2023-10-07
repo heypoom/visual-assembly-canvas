@@ -1,16 +1,21 @@
-pub mod cli;
+extern crate opcodes_to_algorithms;
 
-pub use crate::cli::*;
+use clap::Parser;
+use opcodes_to_algorithms::cli::{Args, Commands, compile_to_file, run_from_bytecode, run_from_source};
 
-use std::{io};
-use opcodes_to_algorithms::{Execute, Machine};
+fn main() {
+    let args = Args::parse();
 
-fn main() -> Result<(), io::Error> {
-    let source = read_input()?;
-    let mut m: Machine = (*source).into();
-    m.run();
-
-    println!("{:?}", m.mem.read_stack(10));
-    Ok(())
+    match args.command {
+        None => {}
+        Some(Commands::Compile { src, out }) => compile_to_file(&src, &out),
+        Some(Commands::Run { path, from_source }) => {
+            if from_source {
+                run_from_source(&path);
+            } else {
+                run_from_bytecode(&path);
+            }
+        }
+    }
 }
 

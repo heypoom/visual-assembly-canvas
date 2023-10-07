@@ -2,14 +2,14 @@ extern crate poom_macros;
 
 pub mod compile;
 
-pub use compile::*;
-
 use bimap::BiMap;
 use lazy_static::lazy_static;
 use poom_macros::Arity;
 
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
+
+pub use compile::compile;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity)]
 pub enum Instruction {
