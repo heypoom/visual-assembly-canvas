@@ -35,7 +35,12 @@ impl<'a> StringManager<'a> {
     /// Get the string at the given address.
     pub fn get_str(&self, addr: u16) -> Result<String, Whatever> {
         let v16 = self.get_str_bytes(addr);
-
+        
+        self.get_str_from_bytes(v16)
+    }
+    
+    /// Get the string at the given address.
+    pub fn get_str_from_bytes(&self, v16: Vec<u16>) -> Result<String, Whatever> {
         // TODO: Properly decode high UTF-8 bytes such as emojis.
         let v8: Vec<u8> = v16.iter().map(|&x| x as u8).collect();
 

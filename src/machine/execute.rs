@@ -98,8 +98,17 @@ impl Execute for Machine {
             }
 
             I::Print => {
-                let addr = s.pop().unwrap();
-                let text = self.mem.string().get_str(addr).expect("string decode error");
+                let mut chr_vec = vec![];
+
+                while let Ok(v) = s.pop() {
+                    if v == 0 { break; }
+                    chr_vec.push(v);
+                }
+
+                // The instructions are popped in reverse-order.
+                chr_vec.reverse();
+
+                let text = self.mem.string().get_str_from_bytes(chr_vec).expect("invalid string");
 
                 for handler in &self.handlers.print {
                     handler(&text);

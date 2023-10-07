@@ -19,11 +19,14 @@ pub struct StackManager<'a> {
 
     /// The stack pointer register.
     pub sp: Register,
+
+    /// Debug logging mode.
+    pub is_debug: bool,
 }
 
 impl<'a> StackManager<'a> {
     pub fn new(mem: &'a mut Memory, reg: &'a mut Registers) -> StackManager<'a> {
-        StackManager { mem, reg, min: STACK_START, max: STACK_END, sp: SP }
+        StackManager { mem, reg, min: STACK_START, max: STACK_END, sp: SP, is_debug: false }
     }
 
     pub fn top(&self) -> u16 {
@@ -40,7 +43,10 @@ impl<'a> StackManager<'a> {
             whatever!("stack overflow")
         }
 
-        // println!("{:?}-> pushing {} to stack", self.sp, val);
+        // DEBUG: log the pushed value.
+        if self.is_debug {
+            println!("{:?}-> pushing {} to stack", self.sp, val);
+        }
 
         // Increment the stack pointer.
         self.reg.inc(self.sp);
@@ -65,13 +71,17 @@ impl<'a> StackManager<'a> {
         }
 
         let v = self.peek();
-        // println!("<-{:?} popping {} from stack", self.sp, v);
 
         // Clear the value at the top of the stack.
         self.write(0);
 
         // Decrement the stack pointer.
         self.reg.dec(self.sp);
+
+        // DEBUG: log the popped value.
+        if self.is_debug {
+            println!("<-{:?} popping {} from stack", self.sp, v);
+        }
 
         // Return the value at the top of the stack.
         Ok(v)

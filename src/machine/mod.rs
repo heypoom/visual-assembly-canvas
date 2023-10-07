@@ -35,7 +35,9 @@ impl Machine {
 
     /// Returns a stack manager for the current machine.
     pub fn stack(&mut self) -> StackManager {
-        StackManager::new(&mut self.mem, &mut self.reg)
+        let mut s = StackManager::new(&mut self.mem, &mut self.reg);
+        s.is_debug = self.is_debug;
+        s
     }
 
     pub fn call_stack(&mut self) -> StackManager {

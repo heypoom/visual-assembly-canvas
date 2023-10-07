@@ -13,12 +13,13 @@ mod tests {
     #[test]
     fn test_print_hello_world() {
         let mut m = Machine::new();
+        m.is_debug = true;
 
         let mut ms = m.mem.string();
         let h_addr = ms.add_str("hello, ");
         let w_addr = ms.add_str("world!");
 
-        m.mem.load_code(vec![I::Push(h_addr), I::Print, I::Push(w_addr), I::Print]);
+        m.mem.load_code(vec![I::LoadString(h_addr), I::Print, I::LoadString(w_addr), I::Print]);
 
         let mut mock = MockPrinter::new();
         mock.expect_print().with(eq("hello, ")).times(1).return_const(());
