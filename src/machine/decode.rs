@@ -49,9 +49,7 @@ impl Decode for Machine {
 
         if self.is_debug {
             let pc = self.reg.get(PC);
-            let offset = op.arity() + 1;
-            let raw = self.mem.read(pc, offset as u16);
-
+            let raw = self.mem.read(pc, (op.arity() + 1) as u16);
             println!("{:02} | {:?} | {} | {:?}", pc, op, opcode, raw);
         }
 
