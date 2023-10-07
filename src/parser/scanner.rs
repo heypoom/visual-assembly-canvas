@@ -10,6 +10,7 @@ pub struct Scanner {
     pub line: usize,
 
     pub in_instruction: bool,
+    pub in_definition: bool,
 }
 
 impl Scanner {
@@ -23,6 +24,7 @@ impl Scanner {
             line: 0,
 
             in_instruction: false,
+            in_definition: false,
         }
     }
 
@@ -60,9 +62,39 @@ impl Scanner {
                 }
             }
 
+            '"' => self.string(),
+
+            // Newlines
             '\n' => {
                 self.line += 1;
                 self.in_instruction = false;
+                self.in_definition = false;
+            }
+
+            // Data definition
+            '.' => {
+                // TODO: handle `.` in identifiers.
+                if self.in_instruction || self.in_definition {
+                    return;
+                }
+
+                while is_identifier(self.peek()) {
+                    self.advance();
+                }
+
+                let text = self.peek_lexeme();
+
+                let token = match &*text {
+                    ".string" => Some(TokenType::StringDefinition),
+                    ".value" => Some(TokenType::ValueDefinition),
+                    _ => None
+                };
+
+                if let Some(t) = token {
+                    self.add_token(t);
+                    self.in_instruction = false;
+                    self.in_definition = true;
+                }
             }
 
             // Parse hexadecimals.
@@ -125,15 +157,37 @@ impl Scanner {
         self.add_token(TokenType::Value(num));
     }
 
+    fn string(&mut self) {
+        while self.peek() != '"' && !self.is_end() {
+            if self.peek() == '\n' {
+                self.line += 1;
+            };
+
+            self.advance();
+        }
+
+        // The closing quotes.
+        self.advance();
+
+        // Trim the surrounding quotes.
+        let text = self.source[(self.start + 1)..(self.current - 1)].to_string();
+        self.add_token(TokenType::String(text))
+    }
+
     fn identifier(&mut self) {
         while is_identifier(self.peek()) {
             self.advance();
         }
 
         match self.peek() {
+            // Label definition
             ':' => {
                 self.advance();
                 self.add_token(TokenType::LabelDefinition);
+            }
+
+            _ if self.in_definition => {
+                self.add_token(TokenType::Identifier);
             }
 
             _ if !self.in_instruction => {
@@ -142,14 +196,7 @@ impl Scanner {
             }
 
             _ => {
-                let text = self.source[self.start..self.current].to_string();
-
-                let token_type = match &*text {
-                    ".string" => TokenType::StringDefinition,
-                    _ => TokenType::Identifier
-                };
-
-                self.add_token(token_type);
+                self.add_token(TokenType::Identifier);
             }
         }
     }
@@ -181,7 +228,8 @@ mod tests {
 
     #[test]
     fn test_string_data_in_assembly() {
-        let src = load_test_file("hello-world.asm");
-        let s: Scanner = (*src).into();
+        let source = load_test_file("hello-world.asm");
+        let s: Scanner = (*source).into();
+        println!("tokens: {:?}", s.tokens);
     }
 }

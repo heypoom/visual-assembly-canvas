@@ -1,10 +1,16 @@
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub enum TokenType {
     /// Label definition ends with a colon, such as "start:"
     LabelDefinition,
 
     /// String definition keyword: ".string"
     StringDefinition,
+
+    /// String such as `"hello, world!"`
+    String(String),
+
+    /// Value definition keyword: ".value"
+    ValueDefinition,
 
     /// Instruction starts a line, such as "push"
     Instruction,

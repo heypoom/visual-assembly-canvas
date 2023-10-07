@@ -79,6 +79,8 @@ impl Parser {
             T::Value(..) => {}
             T::Identifier => {}
             T::StringDefinition => {}
+            T::ValueDefinition => {}
+            T::String(..) => {}
         }
 
         self.current += 1;
