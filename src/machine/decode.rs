@@ -29,10 +29,14 @@ impl Decode for Machine {
     /// Returns the current instruction.
     /// Fetch and decode the opcode and its arguments into instruction.
     fn decode(&mut self) -> I {
+        // Fetch the opcode and decode it.
         let opcode = self.opcode();
         let op: I = opcode.into();
 
-        // Inject the arguments into the instruction.
+        // Store the initial program counter for debugging.
+        let initial_pc = self.reg.get(PC);
+
+        // Load the arguments into the instruction.
         // TODO: this is very repetitive!
         //       Can we detect the number of arguments and do this automatically?
         let op = match op {
@@ -48,9 +52,8 @@ impl Decode for Machine {
         };
 
         if self.is_debug {
-            let pc = self.reg.get(PC);
-            let raw = self.mem.read(pc, (op.arity() + 1) as u16);
-            println!("{:02} | {:?} | {} | {:?}", pc, op, opcode, raw);
+            let raw = self.mem.read(initial_pc, (op.arity() + 1) as u16);
+            println!("{:02} | {:?} | {} | {:?}", initial_pc, op, opcode, raw);
         }
 
         op

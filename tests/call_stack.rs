@@ -13,10 +13,9 @@ mod call_stack_tests {
             I::Return,
             I::Call(2),    // [start]
             I::Call(2),
-            I::Halt,
         ].into();
 
-        println!("{:?}", m.mem.read_code(11));
+        println!("{:?}", m.mem.read_code(13));
 
         m.is_debug = true;
 
