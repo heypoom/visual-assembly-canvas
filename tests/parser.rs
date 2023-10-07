@@ -19,5 +19,11 @@ mod parser_tests {
 
         assert_eq!(p.symbols.strings["hello_world"], "Hello, world!");
         assert_eq!(p.symbols.data["hello_world"], 0);
+
+        assert_eq!(p.symbols.strings["foo"], "foo bar");
+        assert_eq!(p.symbols.data["foo"], 14);
+
+        assert_eq!(p.symbols.data["bar"], 0xDEAD);
+        assert_eq!(p.symbols.data["baz"], 0xBEEF);
     }
 }

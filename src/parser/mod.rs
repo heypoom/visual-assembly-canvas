@@ -82,11 +82,11 @@ impl Parser {
         match token.token_type {
             T::LabelDefinition => self.save_label(token),
             T::Instruction => self.save_instruction(token),
-            T::Value(..) => {}
-            T::Identifier => {}
             T::StringDefinition => self.save_string(),
-            T::ValueDefinition => {}
+            T::ValueDefinition => self.save_value(),
+            T::Identifier => {}
             T::String(..) => {}
+            T::Value(..) => {}
         }
 
         self.current += 1;
@@ -145,27 +145,48 @@ impl Parser {
         panic!("missing string value!")
     }
 
-    fn save_string(&mut self) {
-        // Do not process labels if the label is already scanned in the first pass.
-        if self.symbol_scanned { return; }
+    fn byte_value(&self) -> u16 {
+        let token = self.peek();
+
+        if let TokenType::Value(value) = token.token_type.clone() {
+            return value;
+        }
+
+        panic!("missing value!")
+    }
+
+    fn symbol(&mut self) -> Option<String> {
+        // Do not process if the symbol is already scanned in the first pass.
+        if self.symbol_scanned { return None; }
 
         self.advance();
         let key = self.identifier_name();
 
         // Abort if the string is already defined.
         // TODO: warn the user if they defined strings with the same name!
+        if self.symbols.data.contains_key(&key) { return None; }
+
+        self.advance();
+        Some(key)
+    }
+
+    fn save_string(&mut self) {
+        let Some(key) = self.symbol() else { return; };
         if self.symbols.strings.contains_key(&key) { return; }
 
-        // Define strings based on the token.
-        self.advance();
-
         let value = self.string_value();
-
         let len = value.len();
-        self.symbols.strings.insert(key.clone(), value);
-        self.symbols.data.insert(key, self.data_offset);
 
+        self.symbols.strings.insert(key.clone(), value);
+        self.symbols.data.insert(key.clone(), self.data_offset);
         self.data_offset += len + 1;
+    }
+
+    fn save_value(&mut self) {
+        let Some(key) = self.symbol() else { return; };
+
+        self.symbols.data.insert(key.clone(), self.byte_value() as usize);
+        self.data_offset += 1;
     }
 
     fn save_instruction(&mut self, token: &Token) {

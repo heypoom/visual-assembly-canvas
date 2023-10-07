@@ -1,5 +1,7 @@
 .string hello_world "Hello, world!"
-.value poom 0x1000
+.string foo "foo bar"
+.value bar 0xDEAD
+.value baz 0xBEEF
 
 load_string hello_world
 print
