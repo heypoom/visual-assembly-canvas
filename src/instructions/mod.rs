@@ -79,12 +79,10 @@ pub enum Instruction {
     Eof,
 }
 
-type I = Instruction;
-
 lazy_static! {
     /// A map of instructions to their opcode numbers.
-    static ref OP_TO_OPCODE: HashMap<I, u16> = {
-        I::iter().enumerate().map(|(i, op)| (op, i as u16)).collect()
+    static ref OP_TO_OPCODE: HashMap<Instruction, u16> = {
+        Instruction::iter().enumerate().map(|(i, op)| (op, i as u16)).collect()
     };
 }
 
@@ -96,7 +94,7 @@ impl Instruction {
 
 impl From<u16> for Instruction {
     fn from(id: u16) -> Self {
-        I::from_repr(id).unwrap_or(I::Noop)
+        Instruction::from_repr(id).unwrap_or(Instruction::Noop)
     }
 }
 
@@ -108,7 +106,7 @@ impl From<Instruction> for u16 {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Instruction as I;
 
     #[test]
     fn test_opcode() {
