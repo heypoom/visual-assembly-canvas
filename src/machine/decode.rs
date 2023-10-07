@@ -30,8 +30,7 @@ impl Decode for Machine {
     /// Fetch and decode the opcode and its arguments into instruction.
     fn decode(&mut self) -> I {
         // Fetch the opcode and decode it.
-        let opcode = self.opcode();
-        let op: I = opcode.into();
+        let op: I = self.opcode().into();
 
         // DEBUG: store the initial program counter.
         let initial_pc = if self.is_debug { self.reg.get(PC) } else { 0 };
