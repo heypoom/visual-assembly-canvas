@@ -2,9 +2,9 @@ extern crate poom_macros;
 
 pub mod compile;
 
-use bimap::BiMap;
 use lazy_static::lazy_static;
 use poom_macros::{Arity, NameToInstruction};
+use std::collections::HashMap;
 
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
@@ -77,9 +77,11 @@ pub enum Instruction {
     EOF,
 }
 
+type I = Instruction;
+
 lazy_static! {
-    static ref OPCODES: BiMap<Instruction, u16> = {
-        let mut m = BiMap::new();
+    static ref OPCODES: HashMap<Instruction, u16> = {
+        let mut m = HashMap::new();
 
         for (i, op) in Instruction::iter().enumerate() {
             m.insert(op, i as u16);
@@ -88,8 +90,6 @@ lazy_static! {
         return m;
     };
 }
-
-type I = Instruction;
 
 impl From<u16> for Instruction {
     fn from(id: u16) -> Self {
@@ -112,7 +112,7 @@ impl From<Instruction> for u16 {
             _ => ins,
         };
 
-        *OPCODES.get_by_left(&v).unwrap_or(&0)
+        *OPCODES.get(&v).unwrap_or(&0)
     }
 }
 
