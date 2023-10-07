@@ -3,11 +3,11 @@ pub mod code_samples;
 #[cfg(test)]
 mod parser_tests {
     use opcodes_to_algorithms::{Parser, Instruction as I};
-    use super::code_samples::SAMPLE_1;
+    use super::code_samples::CODE_SAMPLE_CALL_STACK;
 
     #[test]
     fn test_parse_sample_one() {
-        let mut p: Parser = SAMPLE_1.into();
+        let mut p: Parser = CODE_SAMPLE_CALL_STACK.into();
         p.parse();
 
         assert_eq!(p.symbols.labels["start"], 9);

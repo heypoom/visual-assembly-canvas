@@ -1,5 +1,5 @@
 #[cfg(test)]
-pub static SAMPLE_1: &str = r"
+pub static CODE_SAMPLE_CALL_STACK: &str = r"
     jump start
 
     add_pattern:
