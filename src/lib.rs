@@ -5,6 +5,7 @@ pub mod machine;
 pub mod mem;
 pub mod register;
 pub mod parser;
+pub mod cli;
 
 pub use instructions::*;
 pub use machine::*;

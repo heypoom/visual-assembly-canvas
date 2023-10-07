@@ -7,7 +7,7 @@ pub use scanner::*;
 pub use symbols::*;
 
 use TokenType as T;
-use crate::Instruction as I;
+use crate::{Instruction as I};
 
 #[derive(Clone)]
 pub struct Parser {
