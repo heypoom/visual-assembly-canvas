@@ -7,14 +7,21 @@ pub fn run_from_bytecode(path: &str) {
     let bytecode = u8_vec_to_u16(bytes);
 
     let mut m = Machine::new();
+    m.is_debug = true;
+
     m.mem.write(CODE_START, &bytecode);
     m.run();
+
+    println!("{:?}", m.mem.read_stack(10));
 }
 
 pub fn run_from_source(path: &str) {
     let source = fs::read_to_string(path).expect("cannot read source file");
     let p: Parser = (*source).into();
     let mut m: Machine = p.instructions.into();
+    m.is_debug = true;
     m.run();
+
+    println!("{:?}", m.mem.read_stack(10));
 }
 
