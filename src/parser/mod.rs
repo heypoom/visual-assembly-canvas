@@ -126,13 +126,37 @@ impl Parser {
     }
 
     fn instruction(&mut self, op: &str) -> I {
+        // TODO: generate this via a procedural macro instead!
         match op.trim() {
             "push" => I::Push(self.arg()),
             "jump" => I::Jump(self.arg()),
             "return" => I::Return,
             "call" => I::Call(self.arg()),
-            "load_str" => I::LoadString(self.arg()),
             "halt" => I::Halt,
+            "noop" => I::Noop,
+            "pop" => I::Pop,
+            "load_string" => I::LoadString(self.arg()),
+            "load" => I::Load(self.arg()),
+            "store" => I::Store(self.arg()),
+            "dup" => I::Dup,
+            "swap" => I::Swap,
+            "over" => I::Over,
+            "inc" => I::Inc,
+            "dec" => I::Dec,
+            "add" => I::Add,
+            "sub" => I::Sub,
+            "mul" => I::Mul,
+            "div" => I::Div,
+            "jump_zero" => I::JumpZero(self.arg()),
+            "jump_not_zero" => I::JumpNotZero(self.arg()),
+            "equal" => I::Equal,
+            "not_equal" => I::NotEqual,
+            "less_than" => I::LessThan,
+            "less_than_or_equal" => I::LessThanOrEqual,
+            "greater_than" => I::GreaterThan,
+            "greater_than_or_equal" => I::GreaterThanOrEqual,
+            "print" => I::Print,
+            "eof" => I::EOF,
             _ => I::Noop
         }
     }
