@@ -98,17 +98,17 @@ impl Execute for Machine {
             }
 
             I::Print => {
-                let mut chr_vec = vec![];
+                let mut bytes = vec![];
 
                 while let Ok(v) = s.pop() {
                     if v == 0 { break; }
-                    chr_vec.push(v);
+                    bytes.push(v);
                 }
 
                 // The instructions are popped in reverse-order.
-                chr_vec.reverse();
+                bytes.reverse();
 
-                let text = self.mem.string().get_str_from_bytes(chr_vec).expect("invalid string");
+                let text = self.mem.string().get_str_from_bytes(bytes).expect("invalid string");
 
                 for handler in &self.handlers.print {
                     handler(&text);
