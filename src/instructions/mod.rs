@@ -4,14 +4,14 @@ pub mod compile;
 
 use bimap::BiMap;
 use lazy_static::lazy_static;
-use poom_macros::Arity;
+use poom_macros::{Arity, NameToInstruction};
 
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
 pub use compile::compile;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity, NameToInstruction)]
 pub enum Instruction {
     Noop,
 
