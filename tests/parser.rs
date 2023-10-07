@@ -13,7 +13,7 @@ mod parser_tests {
         assert_eq!(p.symbols.labels["start"], 9);
         assert_eq!(p.symbols.labels["add_pattern"], 2);
 
-        assert_eq!(p.instructions[0], Op::Jump(9));
-        assert_eq!(p.instructions[5], Op::Call(2));
+        assert_eq!(p.ops[0], Op::Jump(9));
+        assert_eq!(p.ops[5], Op::Call(2));
     }
 }

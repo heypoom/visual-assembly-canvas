@@ -57,7 +57,7 @@ impl From<Vec<Op>> for Machine {
 impl From<&str> for Machine {
     fn from(source: &str) -> Self {
         let p: Parser = source.into();
-        p.instructions.into()
+        p.ops.into()
     }
 }
 

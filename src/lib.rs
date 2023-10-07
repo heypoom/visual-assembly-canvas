@@ -1,13 +1,13 @@
 extern crate core;
 
-pub mod instructions;
+pub mod op;
 pub mod machine;
 pub mod mem;
 pub mod register;
 pub mod parser;
 pub mod cli;
 
-pub use instructions::*;
+pub use op::*;
 pub use machine::*;
 pub use mem::*;
 pub use register::*;

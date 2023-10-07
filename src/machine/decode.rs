@@ -1,5 +1,5 @@
 use crate::machine::Machine;
-use crate::instructions::Op;
+use crate::op::Op;
 use crate::register::Register::PC;
 
 pub trait Decode {

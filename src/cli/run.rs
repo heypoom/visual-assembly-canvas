@@ -22,7 +22,7 @@ pub fn run_from_source(path: &str, is_debug: bool) {
     let source = fs::read_to_string(path).expect("cannot read source file");
     let p: Parser = (*source).into();
 
-    let mut m: Machine = p.instructions.into();
+    let mut m: Machine = p.ops.into();
     m.is_debug = is_debug;
     m.handlers.print.push(Box::new(|s: &_| print!("{}", s)));
 

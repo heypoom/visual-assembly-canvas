@@ -15,8 +15,8 @@ pub struct Parser {
     /// Input a set of tokens.
     tokens: Vec<Token>,
 
-    /// Output a set of instructions.
-    pub instructions: Vec<Op>,
+    /// Output a set of operations.
+    pub ops: Vec<Op>,
 
     /// Output a set of symbols.
     pub symbols: Symbols,
@@ -38,7 +38,7 @@ impl Parser {
 
         Parser {
             tokens: scanner.tokens,
-            instructions: vec![],
+            ops: vec![],
             symbols: Symbols::new(),
 
             label_scanned: false,
@@ -51,7 +51,7 @@ impl Parser {
         // Pass 1: collect labels.
         self.parse_tokens();
 
-        // Pass 2: collect instructions with memory offsets in labels.
+        // Pass 2: collect op with memory offsets in labels.
         self.parse_tokens();
     }
 
@@ -59,7 +59,7 @@ impl Parser {
         // Reset the parser state.
         self.current = 0;
         self.opcode_offset = 0;
-        self.instructions = vec![];
+        self.ops = vec![];
 
         // Parse each token.
         while self.current < self.tokens.len() {
@@ -122,7 +122,7 @@ impl Parser {
 
         if op == Op::Noop { return; }
 
-        self.instructions.push(op);
+        self.ops.push(op);
         self.opcode_offset += arity + 1;
     }
 

@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod instruction_enum_tests {
+mod enum_tests {
     use poom_macros::{InsertArgs, Arity, FieldValues, VariantIndex};
 
     #[derive(Debug, PartialEq, InsertArgs, Arity, FieldValues, VariantIndex)]

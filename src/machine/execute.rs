@@ -1,6 +1,6 @@
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
-use crate::instructions::Op;
+use crate::op::Op;
 use crate::mem::WithStringManager;
 
 pub trait Execute {
@@ -62,7 +62,7 @@ impl Execute for Machine {
             Op::GreaterThan => s.apply_two(|a, b| (a > b).into()),
             Op::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into()),
 
-            // TODO: write a unit test for jump, and instructions that uses jump.
+            // TODO: write a unit test for jump, and op that uses jump.
             //       there was a bug caused by using set(PC) instead of assigning to jump
             Op::Jump(addr) => {
                 jump = Some(addr);
@@ -106,7 +106,7 @@ impl Execute for Machine {
                     bytes.push(v);
                 }
 
-                // The instructions are popped in reverse-order.
+                // The op are popped in reverse-order.
                 bytes.reverse();
 
                 let text = self.mem.string().get_str_from_bytes(bytes).expect("invalid string");
