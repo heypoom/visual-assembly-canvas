@@ -54,3 +54,51 @@ pub fn arity(input: TokenStream) -> TokenStream {
         panic!("Arity can only be derived for enums");
     }
 }
+
+#[proc_macro_derive(NameToInstruction)]
+pub fn match_instruction(input: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(input as DeriveInput);
+
+    let enum_name = &ast.ident;
+
+    let variant_names: Vec<String> = match ast.data {
+        // Extract the variant names and convert them to lowercase camel-case.
+        Data::Enum(data_enum) => {
+            data_enum.variants.iter().map(|variant| {
+                let id = &variant.ident;
+                let id_str = id.to_string();
+                let first_char = id_str.chars().next().unwrap();
+                let mut camel_case = first_char.to_lowercase().to_string();
+                camel_case.push_str(&id_str[1..]);
+                camel_case
+            }).collect()
+        }
+        _ => {
+            panic!("NameToInstruction can only be derived for enums!");
+        }
+    };
+
+    // Generate the match arms.
+    let match_arms = variant_names.iter().map(|variant_name| {
+        let variant = &variant_name;
+
+        quote! {
+            stringify!(#variant) => #enum_name::#variant_name,
+        }
+    });
+
+    // Generate the final code with the match arms.
+    let stream = quote! {
+        impl #enum_name {
+            fn from_name(op: &str) -> #enum_name {
+                match op.trim() {
+                    #(#match_arms)*
+                    _ => {},
+                }
+            }
+        }
+    };
+
+    // Return the generated code as a TokenStream.
+    TokenStream::from(stream)
+}
