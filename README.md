@@ -22,6 +22,10 @@ Let's build it all from scratch in Rust, building one on top of another! For edu
 - [x] String
 - [x] Print
 - [x] Hello World
+- [x] Simple Call Stack
+- [x] Instruction: CALL, RETURN
+- [x] Scanner and Parser
+- [x] Assembler
 - [ ] Palindrome
 - [ ] Array
 - [ ] ArrayList
