@@ -114,7 +114,7 @@ impl Parser {
     }
 
     fn save_instruction(&mut self, token: &Token) {
-        // Processes current instructions
+        // Build the instruction from token.
         let op_str = token.lexeme.clone();
         let op = self.instruction(&op_str);
         let arity = op.arity();
