@@ -82,20 +82,15 @@ pub enum Instruction {
 type I = Instruction;
 
 lazy_static! {
-    static ref OPCODES: HashMap<Instruction, u16> = {
-        let mut m = HashMap::new();
-
-        for (i, op) in Instruction::iter().enumerate() {
-            m.insert(op, i as u16);
-        }
-
-        return m;
+    /// A map of instructions to their opcode numbers.
+    static ref OP_TO_OPCODE: HashMap<I, u16> = {
+        I::iter().enumerate().map(|(i, op)| (op, i as u16)).collect()
     };
 }
 
 impl Instruction {
     pub fn opcode(self) -> u16 {
-        *OPCODES.get(&self.with_arg(|| 0)).unwrap_or(&0)
+        *OP_TO_OPCODE.get(&self.with_arg(|| 0)).unwrap_or(&0)
     }
 }
 
