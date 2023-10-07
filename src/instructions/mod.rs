@@ -74,7 +74,7 @@ pub enum Instruction {
     Halt,
 
     // End-of-file marker.
-    EOF,
+    Eof,
 }
 
 type I = Instruction;

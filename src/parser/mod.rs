@@ -126,7 +126,8 @@ impl Parser {
     }
 
     fn instruction(&mut self, op: &str) -> I {
-        I::from_name(op, || self.arg())
+        let mut arg_fn = || self.arg();
+        I::from_name(op, &mut arg_fn)
     }
 
     fn arg(&mut self) -> u16 {

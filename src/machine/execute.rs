@@ -29,7 +29,7 @@ impl Execute for Machine {
         match op {
             I::Noop => {}
             I::Halt => {}
-            I::EOF => {}
+            I::Eof => {}
 
             I::Push(v) => { s.push(v).expect("push error"); }
             I::Pop => { s.pop().expect("pop error"); }
@@ -162,6 +162,6 @@ impl Execute for Machine {
     fn should_halt(&self) -> bool {
         let i: I = self.opcode().into();
 
-        i == I::Halt || i == I::EOF
+        i == I::Halt || i == I::Eof
     }
 }

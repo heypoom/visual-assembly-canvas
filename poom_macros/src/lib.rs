@@ -105,16 +105,31 @@ pub fn derive_name_to_instruction(input: TokenStream) -> TokenStream {
                 };
             }
 
+            let args = (0..field_count).map(|_| quote! {
+                {
+                    let arg_fn = arg_fn.clone();
+                    let mut arg_fn = arg_fn.borrow_mut();
+                    arg_fn()
+                }
+            });
+
             // Otherwise, match against the fields as well, e.g. `Foo::Baz(..) => 2`
             quote! {
-                #snake_case => #enum_name::#variant_ident(arg_fn())
+                #snake_case => #enum_name::#variant_ident(
+                    #(#args,)*
+                )
             }
         });
 
         // Insert the arity method into the enum.
         let expanded = quote! {
+            use std::rc::Rc;
+            use std::cell::RefCell;
+
             impl #enum_name {
-                pub fn from_name<F>(name: &str, arg_fn: F) -> #enum_name where F: FnOnce() -> u16 {
+                pub fn from_name<F>(name: &str, arg_fn: F) -> #enum_name where F: FnMut() -> u16 {
+                    let arg_fn = Rc::new(RefCell::new(arg_fn));
+
                     match name {
                         #(#arity_values,)*
                         _ => panic!("unknown instruction: {}", name),

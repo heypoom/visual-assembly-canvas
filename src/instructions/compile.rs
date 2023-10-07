@@ -13,7 +13,7 @@ pub fn compile(ops: Vec<I>) -> Vec<u16> {
         }
     }
 
-    bytecode.push(I::EOF.opcode());
+    bytecode.push(I::Eof.opcode());
     bytecode
 }
 
