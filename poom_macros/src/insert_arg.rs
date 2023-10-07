@@ -4,10 +4,9 @@ use proc_macro::TokenStream;
 use quote::{quote};
 use syn::{parse_macro_input, Data, DeriveInput};
 
-use crate::strings::to_snake_case;
 use crate::enums::variant_arity;
 
-pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
+pub fn insert_arg_method(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
     // Ensure that the input is an enum
@@ -19,13 +18,9 @@ pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
             let field_count = variant_arity(variant);
             let variant_ident = &variant.ident;
 
-            // Convert the identifier to lower_snake_case.
-            let snake_case = to_snake_case(&variant_ident.to_string());
-
-            // If the arity is zero, match against the variant identifier, e.g. `Foo::Bar => 0`
             if field_count == 0 {
                 return quote! {
-                    #snake_case => #enum_name::#variant_ident
+                    #enum_name::#variant_ident => #enum_name::#variant_ident
                 };
             }
 
@@ -41,7 +36,7 @@ pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
 
             // Otherwise, match against the fields as well, e.g. `Foo::Baz(..) => 2`
             quote! {
-                #snake_case => #enum_name::#variant_ident(
+                #enum_name::#variant_ident(..) => #enum_name::#variant_ident(
                     #(#args,)*
                 )
             }
@@ -49,16 +44,16 @@ pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
 
         // Insert the method into the enum.
         let expanded = quote! {
-            use std::rc::Rc;
-            use std::cell::RefCell;
+            use std::rc::Rc as __insert_arg_Rc;
+            use std::cell::RefCell as __insert_arg_RefCell;
 
             impl #enum_name {
-                pub fn from_name<F>(name: &str, arg_fn: F) -> #enum_name where F: FnMut() -> u16 {
-                    let arg_fn = Rc::new(RefCell::new(arg_fn));
+                pub fn insert_arg<F>(self, arg_fn: F) -> #enum_name where F: FnMut() -> u16 {
+                    let arg_fn = __insert_arg_Rc::new(__insert_arg_RefCell::new(arg_fn));
 
-                    match name {
+                    match self {
                         #(#match_arms,)*
-                        _ => panic!("unknown instruction: {}", name),
+                        v => v
                     }
                 }
             }
@@ -66,6 +61,6 @@ pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
 
         expanded.into()
     } else {
-        panic!("NameToInstruction can only be derived for enums");
+        panic!("InsertArg can only be derived for enums");
     }
 }

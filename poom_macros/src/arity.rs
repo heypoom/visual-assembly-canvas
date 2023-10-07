@@ -12,8 +12,6 @@ pub fn insert_arity_method(input: TokenStream) -> TokenStream {
     // Ensure that the input is an enum
     if let Data::Enum(data_enum) = &ast.data {
         let enum_name = &ast.ident;
-
-        // Extract the enum variants.
         let arity_values = data_enum.variants.iter().map(|variant| {
             let field_count = variant_arity(variant);
 
