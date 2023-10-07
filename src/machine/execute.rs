@@ -124,8 +124,8 @@ impl Execute for Machine {
             I::Return => {
                 let address = self.call_stack().pop().expect("cannot pop the return address");
 
-                // Return to to the return address
-                jump = Some(address);
+                // Return to to the return address, plus one.
+                jump = Some(address + 1);
             }
         };
 

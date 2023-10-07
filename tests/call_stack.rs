@@ -15,10 +15,6 @@ mod call_stack_tests {
             I::Call(2),
         ].into();
 
-        println!("{:?}", m.mem.read_code(13));
-
-        m.is_debug = true;
-
         m.run();
         assert_eq!(m.mem.read_stack(4), [0xAA, 0xBB, 0xAA, 0xBB]);
     }
