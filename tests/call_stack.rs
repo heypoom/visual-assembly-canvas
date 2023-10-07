@@ -17,15 +17,16 @@ mod call_stack_tests {
     #[test]
     fn test_call_stack_instructions() {
         let mut m: Machine = vec![
-            I::Call(7),
+            I::Call(9),
             I::Push(0xAA), // [pusher]
-            I::Push(0xBB),
+            I::Push(0b11001100),
+            I::Push(01024),
             I::Return,
             I::Call(2),    // [start]
             I::Call(2),
         ].into();
 
         m.run();
-        assert_eq!(m.mem.read_stack(4), [0xAA, 0xBB, 0xAA, 0xBB]);
+        assert_eq!(m.mem.read_stack(6), [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]);
     }
 }
