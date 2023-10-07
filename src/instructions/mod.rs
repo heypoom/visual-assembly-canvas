@@ -93,7 +93,7 @@ type I = Instruction;
 
 impl From<u16> for Instruction {
     fn from(id: u16) -> Self {
-        *OPCODES.get_by_right(&id).unwrap_or(&I::Noop)
+        I::iter().get(id as usize).unwrap_or(I::Noop)
     }
 }
 
