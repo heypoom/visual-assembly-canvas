@@ -12,10 +12,10 @@ mod tests {
         let mut ops: Vec<I> = vec![];
 
         let mut m = Machine::new();
-        let h_addr = m.mem.string().add_str(msg);
+        let msg_ptr = m.mem.string().add_str(msg);
 
-        for i in h_addr..h_addr + msg.len() as u16 {
-            ops.push(I::Load(i));
+        for addr in msg_ptr..msg_ptr + msg.len() as u16 {
+            ops.push(I::Load(addr));
         }
 
         m.mem.load_code(ops);
