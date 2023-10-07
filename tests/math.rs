@@ -2,11 +2,11 @@
 mod tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine as M, Execute, Op as I};
+    use O::{Machine as M, Execute, Op};
 
     #[test]
     fn test_add() {
-        let mut m: M = vec![I::Push(5), I::Push(10), I::Add, I::Push(3), I::Sub].into();
+        let mut m: M = vec![Op::Push(5), Op::Push(10), Op::Add, Op::Push(3), Op::Sub].into();
 
         m.tick();
         m.tick();

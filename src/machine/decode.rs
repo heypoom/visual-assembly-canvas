@@ -1,5 +1,5 @@
 use crate::machine::Machine;
-use crate::instructions::Op as I;
+use crate::instructions::Op;
 use crate::register::Register::PC;
 
 pub trait Decode {
@@ -11,7 +11,7 @@ pub trait Decode {
 
     /// Returns the current instruction.
     /// Decodes the opcode and arguments into instruction.
-    fn decode(&mut self) -> I;
+    fn decode(&mut self) -> Op;
 }
 
 impl Decode for Machine {
@@ -28,9 +28,9 @@ impl Decode for Machine {
 
     /// Returns the current instruction.
     /// Fetch and decode the opcode and its arguments into instruction.
-    fn decode(&mut self) -> I {
+    fn decode(&mut self) -> Op {
         // Fetch the opcode and decode it.
-        let op: I = self.opcode().into();
+        let op: Op = self.opcode().into();
 
         // DEBUG: store the initial program counter.
         let initial_pc = if self.is_debug { self.reg.get(PC) } else { 0 };

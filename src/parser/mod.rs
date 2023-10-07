@@ -8,7 +8,7 @@ pub use symbols::*;
 
 use std::str::FromStr;
 use TokenType as T;
-use crate::{Op as I};
+use crate::Op;
 
 #[derive(Clone)]
 pub struct Parser {
@@ -16,7 +16,7 @@ pub struct Parser {
     tokens: Vec<Token>,
 
     /// Output a set of instructions.
-    pub instructions: Vec<I>,
+    pub instructions: Vec<Op>,
 
     /// Output a set of symbols.
     pub symbols: Symbols,
@@ -120,14 +120,14 @@ impl Parser {
         let op = self.instruction(&op_str);
         let arity = op.arity();
 
-        if op == I::Noop { return; }
+        if op == Op::Noop { return; }
 
         self.instructions.push(op);
         self.opcode_offset += arity + 1;
     }
 
-    fn instruction(&mut self, op: &str) -> I {
-        I::from_str(op).expect("invalid instruction").with_arg(|| self.arg())
+    fn instruction(&mut self, op: &str) -> Op {
+        Op::from_str(op).expect("invalid instruction").with_arg(|| self.arg())
     }
 
     fn arg(&mut self) -> u16 {

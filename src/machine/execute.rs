@@ -1,11 +1,11 @@
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
-use crate::instructions::{Op as I};
+use crate::instructions::Op;
 use crate::mem::WithStringManager;
 
 pub trait Execute {
     /// Execute an instruction.
-    fn exec_op(&mut self, op: I);
+    fn exec_op(&mut self, op: Op);
 
     /// Executes the current instruction.
     fn tick(&mut self);
@@ -19,7 +19,7 @@ pub trait Execute {
 
 impl Execute for Machine {
     /// Execute an instruction.
-    fn exec_op(&mut self, op: I) {
+    fn exec_op(&mut self, op: Op) {
         // Should we jump to a different instruction?
         let mut jump: Option<u16> = None;
 
@@ -27,65 +27,65 @@ impl Execute for Machine {
         let mut s = self.stack();
 
         match op {
-            I::Noop => {}
-            I::Halt => {}
-            I::Eof => {}
+            Op::Noop => {}
+            Op::Halt => {}
+            Op::Eof => {}
 
-            I::Push(v) => { s.push(v).expect("push error"); }
-            I::Pop => { s.pop().expect("pop error"); }
+            Op::Push(v) => { s.push(v).expect("push error"); }
+            Op::Pop => { s.pop().expect("pop error"); }
 
-            I::Load(addr) => {
+            Op::Load(addr) => {
                 let v = self.mem.get(addr);
                 self.stack().push(v).expect("load error");
             }
 
-            I::Store(addr) => {
+            Op::Store(addr) => {
                 let v = s.pop().expect("store read error");
                 self.mem.set(addr, v);
             }
 
             // Addition, subtraction, multiplication and division.
-            I::Add => s.apply_two(|a, b| a + b),
-            I::Sub => s.apply_two(|a, b| b - a),
-            I::Mul => s.apply_two(|a, b| a * b),
-            I::Div => s.apply_two(|a, b| b / a),
+            Op::Add => s.apply_two(|a, b| a + b),
+            Op::Sub => s.apply_two(|a, b| b - a),
+            Op::Mul => s.apply_two(|a, b| a * b),
+            Op::Div => s.apply_two(|a, b| b / a),
 
             // Increment and decrement.
-            I::Inc => s.apply(|v| v + 1),
-            I::Dec => s.apply(|v| v - 1),
+            Op::Inc => s.apply(|v| v + 1),
+            Op::Dec => s.apply(|v| v - 1),
 
             // Equality and comparison operations.
-            I::Equal => s.apply_two(|a, b| (a == b).into()),
-            I::NotEqual => s.apply_two(|a, b| (a != b).into()),
-            I::LessThan => s.apply_two(|a, b| (a < b).into()),
-            I::LessThanOrEqual => s.apply_two(|a, b| (a <= b).into()),
-            I::GreaterThan => s.apply_two(|a, b| (a > b).into()),
-            I::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into()),
+            Op::Equal => s.apply_two(|a, b| (a == b).into()),
+            Op::NotEqual => s.apply_two(|a, b| (a != b).into()),
+            Op::LessThan => s.apply_two(|a, b| (a < b).into()),
+            Op::LessThanOrEqual => s.apply_two(|a, b| (a <= b).into()),
+            Op::GreaterThan => s.apply_two(|a, b| (a > b).into()),
+            Op::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into()),
 
             // TODO: write a unit test for jump, and instructions that uses jump.
             //       there was a bug caused by using set(PC) instead of assigning to jump
-            I::Jump(addr) => {
+            Op::Jump(addr) => {
                 jump = Some(addr);
             }
 
-            I::JumpZero(addr) => {
+            Op::JumpZero(addr) => {
                 if s.pop().unwrap() == 0 {
                     jump = Some(addr);
                 }
             }
 
-            I::JumpNotZero(addr) => {
+            Op::JumpNotZero(addr) => {
                 if s.pop().unwrap() != 0 {
                     jump = Some(addr);
                 }
             }
 
-            I::Dup => {
+            Op::Dup => {
                 let v = s.peek();
                 s.push(v).unwrap();
             }
 
-            I::Swap => {
+            Op::Swap => {
                 let a = s.pop().unwrap();
                 let b = s.pop().unwrap();
 
@@ -93,12 +93,12 @@ impl Execute for Machine {
                 s.push(b).unwrap();
             }
 
-            I::Over => {
+            Op::Over => {
                 let v = s.get(1);
                 s.push(v).unwrap();
             }
 
-            I::Print => {
+            Op::Print => {
                 let mut bytes = vec![];
 
                 while let Ok(v) = s.pop() {
@@ -116,7 +116,7 @@ impl Execute for Machine {
                 }
             }
 
-            I::LoadString(addr) => {
+            Op::LoadString(addr) => {
                 let text = self.mem.string().get_str_bytes(addr);
 
                 for v in text.iter() {
@@ -124,14 +124,14 @@ impl Execute for Machine {
                 }
             }
 
-            I::Call(address) => {
+            Op::Call(address) => {
                 let pc = self.reg.get(PC);
 
                 self.call_stack().push(pc).expect("call stack exceeded");
                 jump = Some(address);
             }
 
-            I::Return => {
+            Op::Return => {
                 let address = self.call_stack().pop().expect("cannot pop the return address");
 
                 // Return to to the return address, plus one.
@@ -160,8 +160,8 @@ impl Execute for Machine {
     }
 
     fn should_halt(&self) -> bool {
-        let i: I = self.opcode().into();
+        let op: Op = self.opcode().into();
 
-        i == I::Halt || i == I::Eof
+        op == Op::Halt || op == Op::Eof
     }
 }

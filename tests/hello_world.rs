@@ -3,7 +3,7 @@ mod tests {
     extern crate opcodes_to_algorithms as O;
 
     use mockall::{automock, predicate::*};
-    use O::{Machine, Execute, Op as I, WithStringManager};
+    use O::{Machine, Execute, Op, WithStringManager};
 
     #[cfg_attr(test, automock)]
     trait Printer {
@@ -18,7 +18,7 @@ mod tests {
         let h_addr = strings.add_str("hello, ");
         let w_addr = strings.add_str("world!");
 
-        m.mem.load_code(vec![I::LoadString(h_addr), I::Print, I::LoadString(w_addr), I::Print]);
+        m.mem.load_code(vec![Op::LoadString(h_addr), Op::Print, Op::LoadString(w_addr), Op::Print]);
 
         let mut mock = MockPrinter::new();
         mock.expect_print().with(eq("hello, ")).times(1).return_const(());

@@ -1,6 +1,6 @@
-use crate::{Op as I};
+use crate::Op;
 
-pub fn compile(ops: Vec<I>) -> Vec<u16> {
+pub fn compile(ops: Vec<Op>) -> Vec<u16> {
     let mut bytecode = vec![];
 
     for op in ops {
@@ -8,12 +8,12 @@ pub fn compile(ops: Vec<I>) -> Vec<u16> {
 
         // Insert the arguments into memory.
         // TODO: this is very repetitive!
-        if let I::LoadString(v) | I::Store(v) | I::Load(v) | I::JumpNotZero(v) | I::JumpZero(v) | I::Jump(v) | I::Push(v) | I::Call(v) = op {
+        if let Op::LoadString(v) | Op::Store(v) | Op::Load(v) | Op::JumpNotZero(v) | Op::JumpZero(v) | Op::Jump(v) | Op::Push(v) | Op::Call(v) = op {
             bytecode.push(v)
         }
     }
 
-    bytecode.push(I::Eof.opcode());
+    bytecode.push(Op::Eof.opcode());
     bytecode
 }
 
@@ -23,7 +23,7 @@ mod tests {
 
     #[test]
     fn test_compile() {
-        let m = compile(vec![I::Push(5), I::Push(10)]);
+        let m = compile(vec![Op::Push(5), Op::Push(10)]);
         assert_eq!(m[0..4], [0x01, 5, 0x01, 10])
     }
 }

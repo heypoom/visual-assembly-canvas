@@ -2,26 +2,26 @@
 mod tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine as M, Execute, Op as I};
+    use O::{Machine as M, Execute, Op};
 
     #[test]
     fn test_eq() {
-        let mut m: M = vec![I::Push(10), I::Push(10), I::Equal].into();
+        let mut m: M = vec![Op::Push(10), Op::Push(10), Op::Equal].into();
         m.run();
         assert_eq!(m.stack().peek(), 1);
 
-        let mut m: M = vec![I::Push(5), I::Push(2), I::Equal].into();
+        let mut m: M = vec![Op::Push(5), Op::Push(2), Op::Equal].into();
         m.run();
         assert_eq!(m.stack().peek(), 0);
     }
 
     #[test]
     fn test_le_ge() {
-        let mut m: M = vec![I::Push(5), I::Push(2), I::LessThan].into();
+        let mut m: M = vec![Op::Push(5), Op::Push(2), Op::LessThan].into();
         m.run();
         assert_eq!(m.stack().peek(), 1);
 
-        let mut m: M = vec![I::Push(2), I::Push(5), I::GreaterThan].into();
+        let mut m: M = vec![Op::Push(2), Op::Push(5), Op::GreaterThan].into();
         m.run();
         assert_eq!(m.stack().peek(), 1);
     }
