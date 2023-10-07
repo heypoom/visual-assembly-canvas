@@ -14,9 +14,9 @@ mod tests {
     fn test_print_hello_world() {
         let mut m = Machine::new();
 
-        let mut ms = m.mem.string();
-        let h_addr = ms.add_str("hello, ");
-        let w_addr = ms.add_str("world!");
+        let mut strings = m.mem.string();
+        let h_addr = strings.add_str("hello, ");
+        let w_addr = strings.add_str("world!");
 
         m.mem.load_code(vec![I::LoadString(h_addr), I::Print, I::LoadString(w_addr), I::Print]);
 

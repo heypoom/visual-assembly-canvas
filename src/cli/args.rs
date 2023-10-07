@@ -4,10 +4,6 @@ use clap::{Parser, Subcommand};
 #[command(name = "Poom's Virtual Stack Machine")]
 #[command(author = "Phoomparin Mano <poom@poom.dev>")]
 pub struct Args {
-    /// Enable debug mode.
-    #[arg(short, long)]
-    pub debug: bool,
-
     #[command(subcommand)]
     pub command: Option<Commands>,
 }
@@ -31,5 +27,9 @@ pub enum Commands {
         /// Run from the text assembly source file instead.
         #[arg(short, long)]
         from_source: bool,
+
+        /// Enable debug mode.
+        #[arg(short, long)]
+        debug: bool,
     },
 }

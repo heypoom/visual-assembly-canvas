@@ -9,11 +9,11 @@ fn main() {
     match args.command {
         None => {}
         Some(Commands::Compile { src, out }) => compile_to_file(&src, &out),
-        Some(Commands::Run { path, from_source }) => {
+        Some(Commands::Run { path, from_source, debug }) => {
             if from_source {
-                run_from_source(&path);
+                run_from_source(&path, debug);
             } else {
-                run_from_bytecode(&path);
+                run_from_bytecode(&path, debug);
             }
         }
     }
