@@ -100,21 +100,8 @@ impl From<u16> for Instruction {
 }
 
 impl From<Instruction> for u16 {
-    // TODO: this is very repetitive!
     fn from(ins: Instruction) -> Self {
-        let v = match ins {
-            I::Push(_) => I::Push(0),
-            I::Jump(_) => I::Jump(0),
-            I::JumpZero(_) => I::JumpZero(0),
-            I::JumpNotZero(_) => I::JumpNotZero(0),
-            I::Load(_) => I::Load(0),
-            I::Store(_) => I::Store(0),
-            I::LoadString(_) => I::LoadString(0),
-            I::Call(_) => I::Call(0),
-            _ => ins,
-        };
-
-        *OPCODES.get(&v).unwrap_or(&0)
+        *OPCODES.get(&ins.with_arg(|| 0)).unwrap_or(&0)
     }
 }
 
