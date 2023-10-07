@@ -14,7 +14,7 @@ pub use compile::compile;
 #[derive(Debug, Display, Copy, Clone, Eq, PartialEq, EnumIter, Hash, FromRepr, EnumString, Arity, InsertArgs)]
 #[strum(serialize_all = "snake_case")]
 #[repr(u16)]
-pub enum Instruction {
+pub enum Op {
     Noop,
 
     Push(u16),
@@ -81,52 +81,52 @@ pub enum Instruction {
 
 lazy_static! {
     /// A map of instructions to their opcode numbers.
-    static ref OP_TO_OPCODE: HashMap<Instruction, u16> = {
-        Instruction::iter().enumerate().map(|(i, op)| (op, i as u16)).collect()
+    static ref OP_TO_OPCODE: HashMap<Op, u16> = {
+        Op::iter().enumerate().map(|(i, op)| (op, i as u16)).collect()
     };
 }
 
-impl Instruction {
+impl Op {
     pub fn opcode(self) -> u16 {
         *OP_TO_OPCODE.get(&self.with_arg(|| 0)).unwrap_or(&0)
     }
 }
 
-impl From<u16> for Instruction {
+impl From<u16> for Op {
     fn from(id: u16) -> Self {
-        Instruction::from_repr(id).unwrap_or(Instruction::Noop)
+        Op::from_repr(id).unwrap_or(Op::Noop)
     }
 }
 
-impl From<Instruction> for u16 {
-    fn from(ins: Instruction) -> Self {
+impl From<Op> for u16 {
+    fn from(ins: Op) -> Self {
         ins.opcode()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Instruction as I;
+    use super::Op;
 
     #[test]
     fn test_opcode() {
         // Convert instruction to opcode.
-        assert_eq!(I::Push(12).opcode(), 0x01);
+        assert_eq!(Op::Push(12).opcode(), 0x01);
 
         // Convert opcode to instruction.
-        assert_eq!(I::from(2), I::Pop);
+        assert_eq!(Op::from(2), Op::Pop);
 
         // Convert opcode to instruction.
-        assert_eq!(I::from(I::Pop.opcode()), I::Pop);
+        assert_eq!(Op::from(Op::Pop.opcode()), Op::Pop);
 
         // Convert instruction to opcode and back.
-        assert_eq!(I::from(I::Push(12).opcode()), I::Push(0));
+        assert_eq!(Op::from(Op::Push(12).opcode()), Op::Push(0));
     }
 
     #[test]
     fn test_arity() {
-        assert_eq!(I::Noop.arity(), 0);
-        assert_eq!(I::Push(12).arity(), 1);
-        assert_eq!(I::Call(0xFF).arity(), 1);
+        assert_eq!(Op::Noop.arity(), 0);
+        assert_eq!(Op::Push(12).arity(), 1);
+        assert_eq!(Op::Call(0xFF).arity(), 1);
     }
 }

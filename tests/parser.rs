@@ -2,7 +2,7 @@ pub mod asm;
 
 #[cfg(test)]
 mod parser_tests {
-    use opcodes_to_algorithms::{Parser, Instruction as I};
+    use opcodes_to_algorithms::{Parser, Op as I};
     use crate::asm::load_test_file;
 
     #[test]

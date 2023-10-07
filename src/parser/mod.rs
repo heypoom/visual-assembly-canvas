@@ -8,7 +8,7 @@ pub use symbols::*;
 
 use std::str::FromStr;
 use TokenType as T;
-use crate::{Instruction as I};
+use crate::{Op as I};
 
 #[derive(Clone)]
 pub struct Parser {

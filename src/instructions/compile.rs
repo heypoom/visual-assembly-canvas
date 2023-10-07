@@ -1,4 +1,4 @@
-use crate::{Instruction as I};
+use crate::{Op as I};
 
 pub fn compile(ops: Vec<I>) -> Vec<u16> {
     let mut bytecode = vec![];

@@ -3,7 +3,7 @@ mod execute;
 mod handlers;
 
 use crate::{CALL_STACK_END, CALL_STACK_START, Parser};
-use crate::instructions::{Instruction};
+use crate::instructions::{Op};
 use crate::machine::handlers::Handlers;
 use crate::mem::{Memory, StackManager};
 use crate::Register::FP;
@@ -49,8 +49,8 @@ impl Machine {
     }
 }
 
-impl From<Vec<Instruction>> for Machine {
-    fn from(code: Vec<Instruction>) -> Self {
+impl From<Vec<Op>> for Machine {
+    fn from(code: Vec<Op>) -> Self {
         let mut m = Machine::new();
         m.mem.load_code(code);
         m

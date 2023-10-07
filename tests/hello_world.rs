@@ -3,7 +3,7 @@ mod tests {
     extern crate opcodes_to_algorithms as O;
 
     use mockall::{automock, predicate::*};
-    use O::{Machine, Execute, Instruction as I, WithStringManager};
+    use O::{Machine, Execute, Op as I, WithStringManager};
 
     #[cfg_attr(test, automock)]
     trait Printer {

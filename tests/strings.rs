@@ -2,7 +2,7 @@
 mod tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine, Execute, Instruction as I, WithStringManager};
+    use O::{Machine, Execute, Op as I, WithStringManager};
 
     /// Loads string manually using the Load instruction.
     /// Note that the LoadString instruction is a more convenient alternative.

@@ -2,7 +2,7 @@
 mod loop_tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine, Execute, Instruction as I};
+    use O::{Machine, Execute, Op as I};
 
     #[test]
     fn test_loop() {

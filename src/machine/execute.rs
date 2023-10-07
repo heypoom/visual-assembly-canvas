@@ -1,6 +1,6 @@
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
-use crate::instructions::{Instruction as I};
+use crate::instructions::{Op as I};
 use crate::mem::WithStringManager;
 
 pub trait Execute {

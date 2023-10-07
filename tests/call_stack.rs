@@ -4,7 +4,7 @@ pub mod asm;
 mod call_stack_tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine, Execute, Instruction as I};
+    use O::{Machine, Execute, Op as I};
     use crate::asm::load_test_program;
 
     #[test]
