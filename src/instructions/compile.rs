@@ -5,12 +5,7 @@ pub fn compile(ops: Vec<Op>) -> Vec<u16> {
 
     for op in ops {
         bytecode.push(op.opcode());
-
-        // Insert the arguments into memory.
-        // TODO: this is very repetitive!
-        if let Op::LoadString(v) | Op::Store(v) | Op::Load(v) | Op::JumpNotZero(v) | Op::JumpZero(v) | Op::Jump(v) | Op::Push(v) | Op::Call(v) = op {
-            bytecode.push(v)
-        }
+        bytecode.extend(op.field_values());
     }
 
     bytecode.push(Op::Eof.opcode());
