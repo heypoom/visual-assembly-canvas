@@ -7,11 +7,12 @@ use poom_macros::{Arity, InsertArgs, NameToInstruction};
 use std::collections::HashMap;
 
 use strum::IntoEnumIterator;
-use strum_macros::EnumIter;
+use strum_macros::{EnumIter, FromRepr};
 
 pub use compile::compile;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity, NameToInstruction, InsertArgs)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity, NameToInstruction, InsertArgs, FromRepr)]
+#[repr(u16)]
 pub enum Instruction {
     Noop,
 
@@ -93,7 +94,7 @@ lazy_static! {
 
 impl From<u16> for Instruction {
     fn from(id: u16) -> Self {
-        I::iter().get(id as usize).unwrap_or(I::Noop)
+        I::from_repr(id).unwrap_or(I::Noop)
     }
 }
 
