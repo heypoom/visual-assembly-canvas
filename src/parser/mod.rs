@@ -73,13 +73,12 @@ impl Parser {
     }
 
     fn parse_token(&mut self, token: &Token) {
-        // println!("[parse_token] {:?} -> {}", token.token_type, token.lexeme);
-
         match token.token_type {
             T::LabelDefinition => self.save_label(token),
             T::Instruction => self.save_instruction(token),
             T::Value(..) => {}
             T::Identifier => {}
+            T::StringDefinition => {}
         }
 
         self.current += 1;
@@ -119,15 +118,12 @@ impl Parser {
         let op_str = token.lexeme.clone();
         let op = self.instruction(&op_str);
         let arity = op.arity();
-        // println!("[op] {} -> {:?}, arity: {}", op_str, op, arity);
 
         // Skip if the instruction is NO-OP
         if op == I::Noop { return; }
 
         self.instructions.push(op);
         self.opcode_offset += arity + 1;
-
-        // println!("++ incrementing opcode offset for {:?} to {} (by {})", op, self.opcode_offset, arity + 1);
     }
 
     fn instruction(&mut self, op: &str) -> I {
@@ -136,6 +132,7 @@ impl Parser {
             "jump" => I::Jump(self.arg()),
             "return" => I::Return,
             "call" => I::Call(self.arg()),
+            "load_str" => I::LoadString(self.arg()),
             "halt" => I::Halt,
             _ => I::Noop
         }

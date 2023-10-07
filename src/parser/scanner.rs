@@ -103,7 +103,6 @@ impl Scanner {
         self.add_token(TokenType::Value(num));
     }
 
-
     fn hex(&mut self) {
         while self.peek().is_digit(16) {
             self.advance();

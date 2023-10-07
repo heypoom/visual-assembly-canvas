@@ -38,7 +38,6 @@ impl Decode for Machine {
 
         // Load the arguments into the instruction.
         // TODO: this is very repetitive!
-        //       Can we detect the number of arguments and do this automatically?
         let op = match op {
             I::Push(_) => I::Push(self.arg()),
             I::Jump(_) => I::Jump(self.arg()),

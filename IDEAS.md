@@ -73,3 +73,15 @@ loop_start:
 push 0xFF
 ```
 
+## 05. Compile to Bytecode
+
+We expose a bytecode compile and run mode.
+
+`--compile` compiles the assembly text into bytecode, and writes the bytecode to a file.
+
+`--run` runs the bytecode file.
+
+## 06. String & Symbol Definition
+
+``````
+

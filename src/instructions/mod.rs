@@ -1,11 +1,14 @@
 extern crate poom_macros;
 
 pub mod load;
+pub mod compile;
+
+pub use load::Load;
+pub use compile::*;
 
 use bimap::BiMap;
 use lazy_static::lazy_static;
 use poom_macros::Arity;
-pub use load::Load;
 
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
@@ -69,7 +72,11 @@ pub enum Instruction {
     // Pop the return address from the call stack and jumps to it.
     Return,
 
+    // Halt the program.
     Halt,
+
+    // End-of-file marker.
+    EOF,
 }
 
 lazy_static! {
@@ -94,7 +101,6 @@ impl From<u16> for Instruction {
 
 impl From<Instruction> for u16 {
     // TODO: this is very repetitive!
-    //       Can we detect the number of arguments and do this automatically?
     fn from(ins: Instruction) -> Self {
         let v = match ins {
             I::Push(_) => I::Push(0),
