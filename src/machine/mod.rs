@@ -2,12 +2,9 @@ mod decode;
 mod execute;
 mod handlers;
 
-use crate::{CALL_STACK_END, CALL_STACK_START, Parser};
-use crate::instructions::{Op};
+use crate::{Op, Registers, Register::FP, Parser, CALL_STACK_END, CALL_STACK_START};
 use crate::machine::handlers::Handlers;
 use crate::mem::{Memory, StackManager};
-use crate::Register::FP;
-use crate::register::Registers;
 
 pub use self::decode::Decode;
 pub use self::execute::Execute;
@@ -35,9 +32,9 @@ impl Machine {
 
     /// Returns a stack manager for the current machine.
     pub fn stack(&mut self) -> StackManager {
-        let mut s = StackManager::new(&mut self.mem, &mut self.reg);
-        s.is_debug = self.is_debug;
-        s
+        let mut stack = StackManager::new(&mut self.mem, &mut self.reg);
+        stack.is_debug = self.is_debug;
+        stack
     }
 
     pub fn call_stack(&mut self) -> StackManager {
