@@ -1,7 +1,7 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use quote::{quote};
+use quote::{format_ident, quote};
 use syn::{parse_macro_input, Data, DeriveInput};
 
 use crate::enums::variant_arity;
@@ -26,9 +26,21 @@ pub fn insert_field_values_method(input: TokenStream) -> TokenStream {
                 };
             }
 
+            let field_vars = (0..field_count).map(|i| {
+                let id = format_ident!("f{}", i);
+                quote! { #id }
+            });
+
+            let field_values = (0..field_count).map(|i| {
+                let id = format_ident!("f{}", i);
+                quote! { *#id }
+            });
+
             // TODO: extract the field values into a vector.
             quote! {
-                #enum_name::#variant_ident(..) => vec![]
+                #enum_name::#variant_ident(#(#field_vars,)*) => vec![
+                    #(#field_values,)*
+                ]
             }
         });
 

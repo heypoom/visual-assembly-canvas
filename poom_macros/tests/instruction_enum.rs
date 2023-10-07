@@ -26,7 +26,7 @@ mod instruction_enum_tests {
     #[test]
     fn test_field_values() {
         assert_eq!(Foo::Pop.field_values(), []);
-        assert_eq!(Foo::Push(1).field_values(), []);
-        assert_eq!(Foo::Foo(0, 0, 0).field_values(), []);
+        assert_eq!(Foo::Push(1).field_values(), [1]);
+        assert_eq!(Foo::Foo(12, 12, 12).field_values(), [12, 12, 12]);
     }
 }
