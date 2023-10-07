@@ -2,16 +2,12 @@ extern crate poom_macros;
 
 pub mod compile;
 
-use lazy_static::lazy_static;
-use poom_macros::{Arity, InsertArgs, FieldValues};
-use std::collections::HashMap;
-
-use strum::IntoEnumIterator;
-use strum_macros::{Display, EnumIter, FromRepr, EnumString};
+use strum_macros::{FromRepr, EnumString};
+use poom_macros::{Arity, InsertArgs, FieldValues, VariantIndex};
 
 pub use compile::compile;
 
-#[derive(Debug, Display, Copy, Clone, Eq, PartialEq, EnumIter, Hash, FromRepr, EnumString, Arity, InsertArgs, FieldValues)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, FromRepr, EnumString, Arity, InsertArgs, FieldValues, VariantIndex)]
 #[strum(serialize_all = "snake_case")]
 #[repr(u16)]
 pub enum Op {
@@ -79,16 +75,9 @@ pub enum Op {
     Eof,
 }
 
-lazy_static! {
-    /// A map of instructions to their opcode numbers.
-    static ref OP_TO_OPCODE: HashMap<Op, u16> = {
-        Op::iter().enumerate().map(|(i, op)| (op, i as u16)).collect()
-    };
-}
-
 impl Op {
     pub fn opcode(self) -> u16 {
-        *OP_TO_OPCODE.get(&self.with_arg(|| 0)).unwrap_or(&0)
+        self.index() as u16
     }
 }
 

@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod instruction_enum_tests {
-    use poom_macros::{InsertArgs, Arity, FieldValues};
+    use poom_macros::{InsertArgs, Arity, FieldValues, VariantIndex};
 
-    #[derive(Debug, PartialEq, InsertArgs, Arity, FieldValues)]
+    #[derive(Debug, PartialEq, InsertArgs, Arity, FieldValues, VariantIndex)]
     enum Foo {
         Pop,
         Push(u16),
@@ -28,5 +28,12 @@ mod instruction_enum_tests {
         assert_eq!(Foo::Pop.field_values(), []);
         assert_eq!(Foo::Push(1).field_values(), [1]);
         assert_eq!(Foo::Foo(12, 12, 12).field_values(), [12, 12, 12]);
+    }
+
+    #[test]
+    fn test_variant_index() {
+        assert_eq!(Foo::Pop.index(), 0);
+        assert_eq!(Foo::Push(1).index(), 1);
+        assert_eq!(Foo::Foo(12, 12, 12).index(), 2);
     }
 }
