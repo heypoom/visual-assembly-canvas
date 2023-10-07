@@ -97,13 +97,6 @@ impl Instruction {
     pub fn opcode(self) -> u16 {
         *OPCODES.get(&self.with_arg(|| 0)).unwrap_or(&0)
     }
-
-    pub fn partial_eq(self, target: &I) -> bool {
-        match (self, *target) {
-            (I::Push(_), I::Push(_)) => true,
-            _ => false
-        }
-    }
 }
 
 impl From<u16> for Instruction {
@@ -135,12 +128,6 @@ mod tests {
 
         // Convert instruction to opcode and back.
         assert_eq!(I::from(I::Push(12).opcode()), I::Push(0));
-    }
-
-    #[test]
-    fn test_partial_eq() {
-        assert!(I::Push(12).partial_eq(&I::Push(24)));
-        assert_eq!(I::Push(12).partial_eq(&I::Pop), false);
     }
 
     #[test]
