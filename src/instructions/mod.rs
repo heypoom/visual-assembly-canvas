@@ -99,8 +99,8 @@ impl From<u16> for Op {
 }
 
 impl From<Op> for u16 {
-    fn from(ins: Op) -> Self {
-        ins.opcode()
+    fn from(op: Op) -> Self {
+        op.opcode()
     }
 }
 
