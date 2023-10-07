@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum TokenType {
     /// Label definition ends with a colon, such as "start:"
     LabelDefinition,

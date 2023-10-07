@@ -224,12 +224,15 @@ impl From<&str> for Scanner {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Scanner, load_test_file};
+    use crate::{Scanner, load_test_file, TokenType};
 
     #[test]
     fn test_string_data_in_assembly() {
         let source = load_test_file("hello-world.asm");
         let s: Scanner = (*source).into();
-        println!("tokens: {:?}", s.tokens);
+
+        assert_eq!(s.tokens[0].token_type, TokenType::StringDefinition);
+        assert_eq!(s.tokens[1].token_type, TokenType::Identifier);
+        assert_eq!(s.tokens[2].token_type, TokenType::String("Hello, world!".into()));
     }
 }
