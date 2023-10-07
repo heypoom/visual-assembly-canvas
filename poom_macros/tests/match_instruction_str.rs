@@ -2,8 +2,8 @@
 mod match_instruction_str_tests {
     use poom_macros::NameToInstruction;
 
-    #[derive(NameToInstruction)]
-    enum Instruction {
+    #[derive(Debug, PartialEq, NameToInstruction)]
+    enum Foo {
         Push(u16),
         Pop,
         LoadString(u16),
@@ -12,6 +12,8 @@ mod match_instruction_str_tests {
 
     #[test]
     fn test_instruction() {
-        assert_eq!(Instruction::from_name("push"), Instruction::Push);
+        assert_eq!(Foo::from_name("pop", || 12), Foo::Pop);
+        assert_eq!(Foo::from_name("push", || 12), Foo::Push(12));
+        assert_eq!(Foo::from_name("load_string", || 0xFF), Foo::LoadString(0xFF));
     }
 }
