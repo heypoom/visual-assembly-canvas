@@ -119,7 +119,6 @@ impl Parser {
         let op = self.instruction(&op_str);
         let arity = op.arity();
 
-        // Skip if the instruction is NO-OP
         if op == I::Noop { return; }
 
         self.instructions.push(op);
