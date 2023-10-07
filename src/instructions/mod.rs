@@ -93,6 +93,19 @@ lazy_static! {
     };
 }
 
+impl Instruction {
+    pub fn opcode(self) -> u16 {
+        *OPCODES.get(&self.with_arg(|| 0)).unwrap_or(&0)
+    }
+
+    pub fn partial_eq(self, target: &I) -> bool {
+        match (self, *target) {
+            (I::Push(_), I::Push(_)) => true,
+            _ => false
+        }
+    }
+}
+
 impl From<u16> for Instruction {
     fn from(id: u16) -> Self {
         I::from_repr(id).unwrap_or(I::Noop)
@@ -101,20 +114,7 @@ impl From<u16> for Instruction {
 
 impl From<Instruction> for u16 {
     fn from(ins: Instruction) -> Self {
-        *OPCODES.get(&ins.with_arg(|| 0)).unwrap_or(&0)
-    }
-}
-
-impl Instruction {
-    pub fn opcode(self) -> u16 {
-        self.into()
-    }
-
-    pub fn partial_eq(self, target: &I) -> bool {
-        match (self, *target) {
-            (I::Push(_), I::Push(_)) => true,
-            _ => false
-        }
+        ins.opcode()
     }
 }
 
