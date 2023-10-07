@@ -44,12 +44,12 @@ pub fn insert_arg_method(input: TokenStream) -> TokenStream {
 
         // Insert the method into the enum.
         let expanded = quote! {
-            use std::rc::Rc as __insert_arg_Rc;
-            use std::cell::RefCell as __insert_arg_RefCell;
+            use std::rc::Rc as __with_arg_Rc;
+            use std::cell::RefCell as __with_arg_RefCell;
 
             impl #enum_name {
-                pub fn insert_arg<F>(self, arg_fn: F) -> #enum_name where F: FnMut() -> u16 {
-                    let arg_fn = __insert_arg_Rc::new(__insert_arg_RefCell::new(arg_fn));
+                pub fn with_arg<F>(self, arg_fn: F) -> #enum_name where F: FnMut() -> u16 {
+                    let arg_fn = __with_arg_Rc::new(__with_arg_RefCell::new(arg_fn));
 
                     match self {
                         #(#match_arms,)*

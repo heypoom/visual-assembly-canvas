@@ -3,7 +3,7 @@ extern crate poom_macros;
 pub mod compile;
 
 use lazy_static::lazy_static;
-use poom_macros::{Arity, NameToInstruction};
+use poom_macros::{Arity, InsertArgs, NameToInstruction};
 use std::collections::HashMap;
 
 use strum::IntoEnumIterator;
@@ -11,7 +11,7 @@ use strum_macros::EnumIter;
 
 pub use compile::compile;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity, NameToInstruction)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity, NameToInstruction, InsertArgs)]
 pub enum Instruction {
     Noop,
 

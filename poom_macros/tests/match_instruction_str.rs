@@ -19,9 +19,9 @@ mod match_instruction_str_tests {
     }
 
     #[test]
-    fn test_insert_arg() {
-        assert_eq!(Foo::Pop.insert_arg(|| 12), Foo::Pop);
-        assert_eq!(Foo::Push(0).insert_arg(|| 24), Foo::Push(24));
-        assert_eq!(Foo::Foo(0, 0, 0).insert_arg(|| 6), Foo::Foo(6, 6, 6));
+    fn test_with_arg() {
+        assert_eq!(Foo::Pop.with_arg(|| 12), Foo::Pop);
+        assert_eq!(Foo::Push(0).with_arg(|| 24), Foo::Push(24));
+        assert_eq!(Foo::Foo(0, 0, 0).with_arg(|| 6), Foo::Foo(6, 6, 6));
     }
 }

@@ -36,18 +36,7 @@ impl Decode for Machine {
         let initial_pc = if self.is_debug { self.reg.get(PC) } else { 0 };
 
         // Load the arguments into the instruction.
-        // TODO: this is very repetitive!
-        let op = match op {
-            I::Push(_) => I::Push(self.arg()),
-            I::Jump(_) => I::Jump(self.arg()),
-            I::JumpZero(_) => I::JumpZero(self.arg()),
-            I::JumpNotZero(_) => I::JumpNotZero(self.arg()),
-            I::Load(_) => I::Load(self.arg()),
-            I::Store(_) => I::Store(self.arg()),
-            I::LoadString(_) => I::LoadString(self.arg()),
-            I::Call(_) => I::Call(self.arg()),
-            _ => op
-        };
+        let op = op.with_arg(|| self.arg());
 
         if self.is_debug {
             let raw = self.mem.read(initial_pc, (op.arity() + 1) as u16);

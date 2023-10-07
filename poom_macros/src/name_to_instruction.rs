@@ -49,12 +49,12 @@ pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
 
         // Insert the method into the enum.
         let expanded = quote! {
-            use std::rc::Rc;
-            use std::cell::RefCell;
+            use std::rc::Rc as __from_name_Rc;
+            use std::cell::RefCell as __from_name_RefCell;
 
             impl #enum_name {
                 pub fn from_name<F>(name: &str, arg_fn: F) -> #enum_name where F: FnMut() -> u16 {
-                    let arg_fn = Rc::new(RefCell::new(arg_fn));
+                    let arg_fn = __from_name_Rc::new(__from_name_RefCell::new(arg_fn));
 
                     match name {
                         #(#match_arms,)*
