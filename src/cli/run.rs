@@ -7,7 +7,7 @@ pub fn run_from_bytecode(path: &str) {
     let bytecode = u8_vec_to_u16(bytes);
 
     let mut m = Machine::new();
-    m.is_debug = true;
+    // m.is_debug = true;
 
     m.mem.write(CODE_START, &bytecode);
     m.run();
