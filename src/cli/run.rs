@@ -1,6 +1,6 @@
 use std::fs;
 use crate::cli::bytes::u8_vec_to_u16;
-use crate::{CODE_START, Execute, Machine, Parser};
+use crate::{CODE_START, Execute, Machine};
 
 pub fn run_from_bytecode(path: &str, is_debug: bool) {
     let bytes = fs::read(path).expect("cannot read bytecode file");
@@ -20,12 +20,10 @@ pub fn run_from_bytecode(path: &str, is_debug: bool) {
 
 pub fn run_from_source(path: &str, is_debug: bool) {
     let source = fs::read_to_string(path).expect("cannot read source file");
-    let p: Parser = (*source).into();
 
-    let mut m: Machine = p.ops.into();
+    let mut m: Machine = (*source).into();
     m.is_debug = is_debug;
     m.handlers.print.push(Box::new(|s: &_| print!("{}", s)));
-
     m.run();
 
     if is_debug {

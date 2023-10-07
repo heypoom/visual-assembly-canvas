@@ -8,7 +8,7 @@ pub use symbols::*;
 
 use std::str::FromStr;
 use TokenType as T;
-use crate::Op;
+use crate::{DATA_START, Op};
 
 #[derive(Clone)]
 pub struct Parser {
@@ -28,10 +28,10 @@ pub struct Parser {
     current: usize,
 
     /// Current opcode offsets
-    code_offset: usize,
+    code_offset: u16,
 
     /// Current data offsets
-    data_offset: usize,
+    data_offset: u16,
 }
 
 impl Parser {
@@ -93,12 +93,25 @@ impl Parser {
     }
 
     /// Return the memory offset of the label.
-    fn resolve_identifier(&mut self, token: &Token) -> u16 {
+    fn resolve_op_arg(&mut self, token: &Token) -> u16 {
         // Return a placeholder for the scanning phase.
         if !self.symbol_scanned { return 0x00; }
 
         let key = token.lexeme.trim();
-        *self.symbols.data.get(key).expect("missing identifier") as u16
+        let offset = DATA_START + *self.symbols.offsets.get(key).expect("missing identifier");
+
+        // it's a string.
+        if self.symbols.strings.contains_key(key) {
+            return offset;
+        }
+
+        // It's raw bytes.
+        if self.symbols.data.contains_key(key) {
+            let value = self.symbols.data.get(key).unwrap();
+            return *value.get(0).unwrap();
+        }
+
+        panic!("invalid variable for instruction argument")
     }
 
     fn advance(&mut self) {
@@ -114,11 +127,11 @@ impl Parser {
 
         // Abort if the label already exists.
         // TODO: warn the user if they defined duplicate labels!
-        if self.symbols.data.contains_key(key) { return; }
+        if self.symbols.offsets.contains_key(key) { return; }
 
         // Define labels based on the token.
         let offset = self.code_offset;
-        self.symbols.data.insert(key.to_owned(), offset);
+        self.symbols.offsets.insert(key.to_owned(), offset);
     }
 
     fn identifier_name(&self) -> String {
@@ -164,9 +177,12 @@ impl Parser {
 
         // Abort if the string is already defined.
         // TODO: warn the user if they defined strings with the same name!
-        if self.symbols.data.contains_key(&key) { return None; }
+        if self.symbols.offsets.contains_key(&key) { return None; }
+        self.symbols.offsets.insert(key.clone(), self.data_offset);
 
         self.advance();
+        self.data_offset += 1;
+
         Some(key)
     }
 
@@ -175,17 +191,16 @@ impl Parser {
         if self.symbols.strings.contains_key(&key) { return; }
 
         let value = self.string_value();
-        let len = value.len();
+        let len = value.len() as u16;
+        self.data_offset += len;
 
         self.symbols.strings.insert(key.clone(), value);
-        self.symbols.data.insert(key.clone(), self.data_offset);
-        self.data_offset += len + 1;
     }
 
     fn save_value(&mut self) {
         let Some(key) = self.symbol() else { return; };
 
-        self.symbols.data.insert(key.clone(), self.byte_value() as usize);
+        self.symbols.data.insert(key.clone(), vec![self.byte_value()]);
         self.data_offset += 1;
     }
 
@@ -193,7 +208,7 @@ impl Parser {
         // Build the instruction from token.
         let op_str = token.lexeme.clone();
         let op = self.instruction(&op_str);
-        let arity = op.arity();
+        let arity = op.arity() as u16;
 
         if op == Op::Noop { return; }
 
@@ -211,7 +226,7 @@ impl Parser {
 
         match token.token_type {
             TokenType::Value(v) => v,
-            TokenType::Identifier => self.resolve_identifier(&token.clone()),
+            TokenType::Identifier => self.resolve_op_arg(&token.clone()),
             _ => 0x00
         }
     }

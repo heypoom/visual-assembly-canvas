@@ -24,21 +24,16 @@ impl<'a> StringManager<'a> {
 
     /// Add the given string to the data section.
     pub fn add_str(&mut self, value: &str) -> u16 {
-        let mut v: Vec<u16> = value.chars().map(|c| c as u16).collect();
-
-        // Add the null terminator.
-        v.push(0x00);
-
-        self.add_data(&v)
+        self.add_data(&str_to_u16(value))
     }
 
     /// Get the string at the given address.
     pub fn get_str(&self, addr: u16) -> Result<String, Whatever> {
         let v16 = self.get_str_bytes(addr);
-        
+
         self.get_str_from_bytes(v16)
     }
-    
+
     /// Get the string at the given address.
     pub fn get_str_from_bytes(&self, v16: Vec<u16>) -> Result<String, Whatever> {
         // TODO: Properly decode high UTF-8 bytes such as emojis.
@@ -98,4 +93,10 @@ mod tests {
         let world = s.get_str(world_ptr).unwrap();
         assert_eq!(world, "world");
     }
+}
+
+pub fn str_to_u16(s: &str) -> Vec<u16> {
+    let mut v: Vec<u16> = s.chars().map(|c| c as u16).collect();
+    v.push(0x00);
+    v
 }

@@ -57,7 +57,9 @@ impl From<Vec<Op>> for Machine {
 impl From<&str> for Machine {
     fn from(source: &str) -> Self {
         let p: Parser = source.into();
-        p.ops.into()
+        let mut m: Self = p.ops.into();
+        m.mem.load_symbols(p.symbols);
+        m
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::{CALL_STACK_START, CODE_START, compile, MEMORY_SIZE, STACK_START, Op};
+use crate::{CALL_STACK_START, CODE_START, compile, MEMORY_SIZE, STACK_START, Op, Symbols, DATA_START, str_to_u16};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -35,10 +35,6 @@ impl Memory {
         }
     }
 
-    pub fn load_code(&mut self, ops: Vec<Op>) {
-        self.write(CODE_START, &compile(ops))
-    }
-
     pub fn read_code(&self, count: u16) -> Vec<u16> {
         self.read(CODE_START, count)
     }
@@ -49,6 +45,28 @@ impl Memory {
 
     pub fn read_call_stack(&self, count: u16) -> Vec<u16> {
         self.read(CALL_STACK_START, count)
+    }
+
+    pub fn load_code(&mut self, ops: Vec<Op>) {
+        self.write(CODE_START, &compile(ops))
+    }
+
+    pub fn load_symbols(&mut self, symbols: Symbols) {
+        for (key, offset) in symbols.offsets.iter() {
+            let offset = DATA_START + *offset;
+
+            // it's a string.
+            if symbols.strings.contains_key(key) {
+                let value = symbols.strings.get(key).unwrap();
+                self.write(offset, &str_to_u16(value));
+            }
+
+            // It's raw bytes.
+            if symbols.data.contains_key(key) {
+                let value = symbols.data.get(key).unwrap();
+                self.write(offset, value);
+            }
+        }
     }
 }
 
