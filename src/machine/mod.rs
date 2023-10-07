@@ -3,7 +3,7 @@ mod execute;
 mod handlers;
 
 use crate::{CALL_STACK_END, CALL_STACK_START, Parser};
-use crate::instructions::{Instruction, Load};
+use crate::instructions::{Instruction};
 use crate::machine::handlers::Handlers;
 use crate::mem::{Memory, StackManager};
 use crate::Register::FP;

@@ -2,7 +2,7 @@
 mod tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine, Execute, Instruction as I, Load, WithStringManager};
+    use O::{Machine, Execute, Instruction as I, WithStringManager};
 
     #[test]
     fn test_load_str() {

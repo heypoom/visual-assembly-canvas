@@ -1,9 +1,7 @@
 extern crate poom_macros;
 
-pub mod load;
 pub mod compile;
 
-pub use load::Load;
 pub use compile::*;
 
 use bimap::BiMap;

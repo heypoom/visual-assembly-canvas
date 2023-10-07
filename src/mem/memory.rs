@@ -1,4 +1,4 @@
-use crate::{CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START};
+use crate::{CALL_STACK_START, CODE_START, compile, MEMORY_SIZE, STACK_START, Instruction};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -35,6 +35,10 @@ impl Memory {
         }
     }
 
+    pub fn load_code(&mut self, ops: Vec<Instruction>) {
+        self.write(CODE_START, &compile(ops))
+    }
+
     pub fn read_code(&self, count: u16) -> Vec<u16> {
         self.read(CODE_START, count)
     }
@@ -50,6 +54,7 @@ impl Memory {
 
 #[cfg(test)]
 mod tests {
+    use crate::Instruction;
     use super::*;
 
     #[test]
@@ -67,5 +72,12 @@ mod tests {
 
         m.write(0x03, &[1, 2, 3]);
         assert_eq!(m.read(0x03, 3), [1, 2, 3]);
+    }
+
+    #[test]
+    fn test_load_code() {
+        let mut m = Memory::new();
+        m.load_code(vec![Instruction::Push(5), Instruction::Push(10)]);
+        assert_eq!(&m.buffer[0..4], [0x01, 5, 0x01, 10])
     }
 }
