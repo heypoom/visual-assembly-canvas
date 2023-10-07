@@ -21,14 +21,17 @@ pub struct Parser {
     /// Output a set of symbols.
     pub symbols: Symbols,
 
-    /// Is the first pass of label scanning completed?
-    label_scanned: bool,
+    /// Is the first pass of symbol scanning completed?
+    symbol_scanned: bool,
 
     /// Current token index.
     current: usize,
 
     /// Current opcode offsets
-    opcode_offset: usize,
+    code_offset: usize,
+
+    /// Current data offsets
+    data_offset: usize,
 }
 
 impl Parser {
@@ -40,9 +43,11 @@ impl Parser {
             ops: vec![],
             symbols: Symbols::new(),
 
-            label_scanned: false,
+            symbol_scanned: false,
+
             current: 0,
-            opcode_offset: 0,
+            code_offset: 0,
+            data_offset: 0,
         }
     }
 
@@ -57,18 +62,19 @@ impl Parser {
     pub fn parse_tokens(&mut self) {
         // Reset the parser state.
         self.current = 0;
-        self.opcode_offset = 0;
+        self.code_offset = 0;
+        self.data_offset = 0;
         self.ops = vec![];
 
         // Parse each token.
         while self.current < self.tokens.len() {
-            let token = self.tokens.get(self.current).expect("missing token");
+            let token = self.peek();
             self.parse_token(&token.clone());
         }
 
-        // Mark label scanning pass to be completed.
-        if !self.label_scanned {
-            self.label_scanned = true;
+        // Mark symbol scanning phase to be completed.
+        if !self.symbol_scanned {
+            self.symbol_scanned = true;
         }
     }
 
@@ -78,7 +84,7 @@ impl Parser {
             T::Instruction => self.save_instruction(token),
             T::Value(..) => {}
             T::Identifier => {}
-            T::StringDefinition => {}
+            T::StringDefinition => self.save_string(),
             T::ValueDefinition => {}
             T::String(..) => {}
         }
@@ -86,13 +92,13 @@ impl Parser {
         self.current += 1;
     }
 
-    fn identifier(&mut self, token: &Token) -> u16 {
+    /// Return the memory offset of the label.
+    fn resolve_identifier(&mut self, token: &Token) -> u16 {
         // Return a placeholder for the scanning phase.
-        if !self.label_scanned { return 0x00; }
+        if !self.symbol_scanned { return 0x00; }
 
-        let label = token.lexeme.trim();
-
-        *self.symbols.labels.get(label).expect("unknown label") as u16
+        let key = token.lexeme.trim();
+        *self.symbols.data.get(key).expect("missing identifier") as u16
     }
 
     fn advance(&mut self) {
@@ -101,18 +107,65 @@ impl Parser {
 
     fn save_label(&mut self, token: &Token) {
         // Do not process labels if the label is already scanned in the first pass.
-        if self.label_scanned { return; }
+        if self.symbol_scanned { return; }
 
         let key = token.lexeme.clone();
         let key = key.trim().strip_suffix(":").expect("label definition should end with :");
 
         // Abort if the label already exists.
         // TODO: warn the user if they defined duplicate labels!
-        if self.symbols.labels.contains_key(key) { return; }
+        if self.symbols.data.contains_key(key) { return; }
 
         // Define labels based on the token.
-        let offset = self.opcode_offset;
-        self.symbols.labels.insert(key.to_owned(), offset);
+        let offset = self.code_offset;
+        self.symbols.data.insert(key.to_owned(), offset);
+    }
+
+    fn identifier_name(&self) -> String {
+        let token = self.peek();
+
+        if token.token_type != TokenType::Identifier {
+            panic!("token is not a valid identifier");
+        }
+
+        token.lexeme.clone()
+    }
+
+    fn peek(&self) -> &Token {
+        self.tokens.get(self.current).expect("missing token!")
+    }
+
+    fn string_value(&self) -> String {
+        let token = self.peek();
+
+        if let TokenType::String(value) = token.token_type.clone() {
+            return value;
+        }
+
+        panic!("missing string value!")
+    }
+
+    fn save_string(&mut self) {
+        // Do not process labels if the label is already scanned in the first pass.
+        if self.symbol_scanned { return; }
+
+        self.advance();
+        let key = self.identifier_name();
+
+        // Abort if the string is already defined.
+        // TODO: warn the user if they defined strings with the same name!
+        if self.symbols.strings.contains_key(&key) { return; }
+
+        // Define strings based on the token.
+        self.advance();
+
+        let value = self.string_value();
+
+        let len = value.len();
+        self.symbols.strings.insert(key.clone(), value);
+        self.symbols.data.insert(key, self.data_offset);
+
+        self.data_offset += len + 1;
     }
 
     fn save_instruction(&mut self, token: &Token) {
@@ -124,7 +177,7 @@ impl Parser {
         if op == Op::Noop { return; }
 
         self.ops.push(op);
-        self.opcode_offset += arity + 1;
+        self.code_offset += arity + 1;
     }
 
     fn instruction(&mut self, op: &str) -> Op {
@@ -133,12 +186,11 @@ impl Parser {
 
     fn arg(&mut self) -> u16 {
         self.advance();
-
-        let token = self.tokens.get(self.current).expect("missing argument token");
+        let token = self.peek();
 
         match token.token_type {
             TokenType::Value(v) => v,
-            TokenType::Identifier => self.identifier(&token.clone()),
+            TokenType::Identifier => self.resolve_identifier(&token.clone()),
             _ => 0x00
         }
     }
