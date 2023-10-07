@@ -11,5 +11,4 @@ pub static CODE_SAMPLE_CALL_STACK: &str = r"
     start:
         call add_pattern
         call add_pattern
-        halt
 ";
