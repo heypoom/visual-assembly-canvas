@@ -13,7 +13,6 @@ mod tests {
     #[test]
     fn test_print_hello_world() {
         let mut m = Machine::new();
-        m.is_debug = true;
 
         let mut ms = m.mem.string();
         let h_addr = ms.add_str("hello, ");
