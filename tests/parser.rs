@@ -23,7 +23,7 @@ mod parser_tests {
         assert_eq!(p.symbols.strings["foo"], "foo bar");
         assert_eq!(p.symbols.offsets["foo"], 14);
 
-        assert_eq!(p.symbols.offsets["bar"], 0xDEAD);
-        assert_eq!(p.symbols.offsets["baz"], 0xBEEF);
+        assert_eq!(p.symbols.data["bar"][0], 0xDEAD);
+        assert_eq!(p.symbols.data["baz"][0], 0xBEEF);
     }
 }

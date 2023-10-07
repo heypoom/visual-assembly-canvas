@@ -1,4 +1,4 @@
-use crate::{CALL_STACK_START, CODE_START, compile, MEMORY_SIZE, STACK_START, Op, Symbols, DATA_START, str_to_u16};
+use crate::{compile, Symbols, Op, CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START, DATA_START};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -52,27 +52,12 @@ impl Memory {
     }
 
     pub fn load_symbols(&mut self, symbols: Symbols) {
-        for (key, offset) in symbols.offsets.iter() {
-            let offset = DATA_START + *offset;
-
-            // it's a string.
-            if symbols.strings.contains_key(key) {
-                let value = symbols.strings.get(key).unwrap();
-                self.write(offset, &str_to_u16(value));
-            }
-
-            // It's raw bytes.
-            if symbols.data.contains_key(key) {
-                let value = symbols.data.get(key).unwrap();
-                self.write(offset, value);
-            }
-        }
+        self.write(DATA_START, &symbols.bytes());
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::Op;
     use super::*;
 
     #[test]

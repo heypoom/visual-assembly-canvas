@@ -92,28 +92,6 @@ impl Parser {
         self.current += 1;
     }
 
-    /// Return the memory offset of the label.
-    fn resolve_op_arg(&mut self, token: &Token) -> u16 {
-        // Return a placeholder for the scanning phase.
-        if !self.symbol_scanned { return 0x00; }
-
-        let key = token.lexeme.trim();
-        let offset = DATA_START + *self.symbols.offsets.get(key).expect("missing identifier");
-
-        // it's a string.
-        if self.symbols.strings.contains_key(key) {
-            return offset;
-        }
-
-        // It's raw bytes.
-        if self.symbols.data.contains_key(key) {
-            let value = self.symbols.data.get(key).unwrap();
-            return *value.get(0).unwrap();
-        }
-
-        panic!("invalid variable for instruction argument")
-    }
-
     fn advance(&mut self) {
         self.current += 1;
     }
@@ -226,9 +204,32 @@ impl Parser {
 
         match token.token_type {
             TokenType::Value(v) => v,
-            TokenType::Identifier => self.resolve_op_arg(&token.clone()),
+            TokenType::Identifier => self.op_arg(&token.clone()),
             _ => 0x00
         }
+    }
+
+    /// Return the memory offset of the label.
+    fn op_arg(&mut self, token: &Token) -> u16 {
+        // Return a placeholder for the scanning phase.
+        if !self.symbol_scanned { return 0x00; }
+
+        let key = token.lexeme.trim();
+        let offset = *self.symbols.offsets.get(key).expect("invalid identifier");
+
+        // Strings should be loaded from the data segment.
+        if self.symbols.strings.contains_key(key) {
+            return DATA_START + offset;
+        }
+
+        // Raw bytes are loaded directly into the code segment.
+        if self.symbols.data.contains_key(key) {
+            let value = self.symbols.data.get(key).unwrap();
+            return *value.get(0).unwrap();
+        }
+
+        // Labels stores the offsets within the code segment.
+        offset
     }
 }
 

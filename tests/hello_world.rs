@@ -39,6 +39,7 @@ mod tests {
         let print = move |s: &_| mock.print(s);
 
         let mut m = load_test_program("hello-world.asm");
+        m.is_debug = true;
         m.handlers.print.push(Box::new(print));
         m.run();
 
