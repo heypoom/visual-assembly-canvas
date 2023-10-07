@@ -6,6 +6,7 @@ pub use token::*;
 pub use scanner::*;
 pub use symbols::*;
 
+use std::str::FromStr;
 use TokenType as T;
 use crate::{Instruction as I};
 
@@ -126,8 +127,7 @@ impl Parser {
     }
 
     fn instruction(&mut self, op: &str) -> I {
-        let mut arg_fn = || self.arg();
-        I::from_name(op, &mut arg_fn)
+        I::from_str(op).expect("invalid instruction").with_arg(|| self.arg())
     }
 
     fn arg(&mut self) -> u16 {

@@ -3,15 +3,16 @@ extern crate poom_macros;
 pub mod compile;
 
 use lazy_static::lazy_static;
-use poom_macros::{Arity, InsertArgs, NameToInstruction};
+use poom_macros::{Arity, InsertArgs};
 use std::collections::HashMap;
 
 use strum::IntoEnumIterator;
-use strum_macros::{EnumIter, FromRepr};
+use strum_macros::{Display, EnumIter, FromRepr, EnumString};
 
 pub use compile::compile;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity, NameToInstruction, InsertArgs, FromRepr)]
+#[derive(Debug, Display, Copy, Clone, Eq, PartialEq, EnumIter, Hash, FromRepr, EnumString, Arity, InsertArgs)]
+#[strum(serialize_all = "snake_case")]
 #[repr(u16)]
 pub enum Instruction {
     Noop,

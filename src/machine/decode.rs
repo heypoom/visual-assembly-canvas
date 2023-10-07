@@ -38,6 +38,7 @@ impl Decode for Machine {
         // Load the arguments into the instruction.
         let op = op.with_arg(|| self.arg());
 
+        // DEBUG: log the program counter, instruction and raw instruction bytes.
         if self.is_debug {
             let raw = self.mem.read(initial_pc, (op.arity() + 1) as u16);
             println!("{:02} | {:?} | {:?}", initial_pc, op, raw);
