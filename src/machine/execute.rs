@@ -15,6 +15,9 @@ pub trait Execute {
 
     /// Returns whether the machine should halt.
     fn should_halt(&self) -> bool;
+
+    // Inspect the current instruction for debugging.
+    fn inspect(&self, op: I);
 }
 
 impl Execute for Machine {
@@ -135,10 +138,9 @@ impl Execute for Machine {
 
     // Fetch, decode and execute the instruction.
     fn tick(&mut self) {
-        let instruction = self.decode();
-        println!("{:?}", instruction);
-
-        self.exec_op(instruction);
+        let op = self.decode();
+        self.inspect(op);
+        self.exec_op(op);
     }
 
     fn run(&mut self) {
@@ -149,6 +151,18 @@ impl Execute for Machine {
 
     fn should_halt(&self) -> bool {
         let i: I = self.opcode().into();
+
         i == I::Halt
+    }
+
+    fn inspect(&self, op: I) {
+        let pc = self.reg.get(PC);
+
+        if pc > 0 {
+            let offset = 1 + op.arity();
+            let raw = self.mem.read(pc - 1, offset as u16);
+
+            println!("{:02} | {:?} | {:?}", pc, op, raw);
+        }
     }
 }

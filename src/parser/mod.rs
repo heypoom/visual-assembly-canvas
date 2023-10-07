@@ -69,7 +69,7 @@ impl Parser {
 
                 // Define labels based on the token.
                 if !self.symbols.labels.contains_key(key) {
-                    let offset = self.opcode_offset + 1;
+                    let offset = self.opcode_offset;
                     self.symbols.labels.insert(key.to_owned(), offset);
                 }
             }
@@ -78,9 +78,10 @@ impl Parser {
                 // Resolves the previous instruction.
                 let op = self.instruction();
 
+                // Process the opcodes
                 if op != I::None {
-                    self.opcode_offset += 1 + op.arity();
                     self.instructions.push(op);
+                    self.opcode_offset += op.arity() + 1;
                 }
 
                 // Processes next instructions

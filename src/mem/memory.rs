@@ -1,4 +1,4 @@
-use crate::{CALL_STACK_START, MEMORY_SIZE, STACK_START};
+use crate::{CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -33,6 +33,10 @@ impl Memory {
         for (offset, value) in data.iter().enumerate() {
             self.buffer[addr as usize + offset] = *value;
         }
+    }
+
+    pub fn read_code(&self, count: u16) -> Vec<u16> {
+        self.read(CODE_START, count)
     }
 
     pub fn read_stack(&self, count: u16) -> Vec<u16> {
