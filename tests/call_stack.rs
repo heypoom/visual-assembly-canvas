@@ -1,15 +1,15 @@
-pub mod code_samples;
+pub mod asm;
 
 #[cfg(test)]
 mod call_stack_tests {
     extern crate opcodes_to_algorithms as O;
 
-    use super::code_samples::CODE_SAMPLE_CALL_STACK;
     use O::{Machine, Execute, Instruction as I};
+    use crate::asm::load_test_program;
 
     #[test]
     fn test_call_stack_asm() {
-        let mut m: Machine = CODE_SAMPLE_CALL_STACK.into();
+        let mut m: Machine = load_test_program("call-stack-1.asm");
         m.run();
         assert_eq!(m.mem.read_stack(6), [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]);
     }

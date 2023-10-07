@@ -1,13 +1,13 @@
-pub mod code_samples;
+pub mod asm;
 
 #[cfg(test)]
 mod parser_tests {
     use opcodes_to_algorithms::{Parser, Instruction as I};
-    use super::code_samples::CODE_SAMPLE_CALL_STACK;
+    use crate::asm::load_test_file;
 
     #[test]
     fn test_parse_sample_one() {
-        let mut p: Parser = CODE_SAMPLE_CALL_STACK.into();
+        let mut p: Parser = (*load_test_file("call-stack-1.asm")).into();
         p.parse();
 
         assert_eq!(p.symbols.labels["start"], 9);

@@ -23,8 +23,7 @@ fn read_input() -> Result<String, io::Error> {
 
 fn main() -> Result<(), io::Error> {
     let source = read_input()?;
-
-    let mut m: Machine = (&*source).into();
+    let mut m: Machine = (*source).into();
     m.run();
 
     println!("{:?}", m.mem.read_stack(10));
