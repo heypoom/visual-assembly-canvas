@@ -2,8 +2,10 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use quote::{quote};
-use syn::{parse_macro_input, Data, DeriveInput, Fields};
+use syn::{parse_macro_input, Data, DeriveInput};
+
 use crate::strings::to_snake_case;
+use crate::enums::variant_arity;
 
 pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
@@ -12,15 +14,9 @@ pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
     if let Data::Enum(data_enum) = &ast.data {
         let enum_name = &ast.ident;
 
-        // Extract the enum variants.
-        let arity_values = data_enum.variants.iter().map(|variant| {
-            // Extract the arity of the variant fields.
-            let field_count = match &variant.fields {
-                Fields::Unnamed(fields) => fields.unnamed.len(),
-
-                // The variant fields does not exist. Arity is zero.
-                _ => 0,
-            };
+        // Transform the match arms
+        let match_arms = data_enum.variants.iter().map(|variant| {
+            let field_count = variant_arity(variant);
 
             // Extract the variant's identifier.
             let variant_ident = &variant.ident;
@@ -63,7 +59,7 @@ pub fn insert_name_to_instruction_method(input: TokenStream) -> TokenStream {
                     let arg_fn = Rc::new(RefCell::new(arg_fn));
 
                     match name {
-                        #(#arity_values,)*
+                        #(#match_arms,)*
                         _ => panic!("unknown instruction: {}", name),
                     }
                 }

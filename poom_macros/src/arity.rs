@@ -2,7 +2,9 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use quote::{quote};
-use syn::{parse_macro_input, Data, DeriveInput, Fields};
+use syn::{parse_macro_input, Data, DeriveInput};
+
+use crate::enums::variant_arity;
 
 pub fn insert_arity_method(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
@@ -13,13 +15,7 @@ pub fn insert_arity_method(input: TokenStream) -> TokenStream {
 
         // Extract the enum variants.
         let arity_values = data_enum.variants.iter().map(|variant| {
-            // Extract the arity of the variant fields.
-            let field_count = match &variant.fields {
-                Fields::Unnamed(fields) => fields.unnamed.len(),
-
-                // The variant fields does not exist. Arity is zero.
-                _ => 0,
-            };
+            let field_count = variant_arity(variant);
 
             // Extract the variant's identifier.
             let variant_ident = &variant.ident;

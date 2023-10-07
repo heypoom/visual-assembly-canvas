@@ -2,6 +2,7 @@ extern crate proc_macro;
 
 mod strings;
 mod arity;
+mod enums;
 mod name_to_instruction;
 
 use proc_macro::TokenStream;
