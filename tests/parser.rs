@@ -1,9 +1,6 @@
-pub mod asm;
-
 #[cfg(test)]
 mod parser_tests {
-    use opcodes_to_algorithms::{Parser, Op};
-    use crate::asm::load_test_file;
+    use opcodes_to_algorithms::{Parser, Op, load_test_file};
 
     #[test]
     fn test_parse_sample_one() {

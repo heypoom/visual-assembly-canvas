@@ -1,11 +1,8 @@
-pub mod asm;
-
 #[cfg(test)]
 mod call_stack_tests {
     extern crate opcodes_to_algorithms as O;
 
-    use O::{Machine, Execute, Op};
-    use crate::asm::load_test_program;
+    use O::{Machine, Execute, Op, test_helper::load_test_program};
 
     #[test]
     fn test_call_stack_asm() {

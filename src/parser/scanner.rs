@@ -142,7 +142,14 @@ impl Scanner {
             }
 
             _ => {
-                self.add_token(TokenType::Identifier);
+                let text = self.source[self.start..self.current].to_string();
+
+                let token_type = match &*text {
+                    ".string" => TokenType::StringDefinition,
+                    _ => TokenType::Identifier
+                };
+
+                self.add_token(token_type);
             }
         }
     }
@@ -157,5 +164,24 @@ impl Scanner {
 
     fn peek_lexeme(&self) -> String {
         self.source[self.start..self.current].to_string()
+    }
+}
+
+impl From<&str> for Scanner {
+    fn from(source: &str) -> Self {
+        let mut s = Scanner::new(source);
+        s.scan_tokens();
+        s
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{Scanner, load_test_file};
+
+    #[test]
+    fn test_string_data_in_assembly() {
+        let src = load_test_file("hello-world.asm");
+        let s: Scanner = (*src).into();
     }
 }

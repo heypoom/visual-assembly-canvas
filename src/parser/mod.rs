@@ -33,8 +33,7 @@ pub struct Parser {
 
 impl Parser {
     pub fn new(source: &str) -> Parser {
-        let mut scanner = Scanner::new(source);
-        scanner.scan_tokens();
+        let scanner: Scanner = source.into();
 
         Parser {
             tokens: scanner.tokens,
