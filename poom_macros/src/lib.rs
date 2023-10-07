@@ -96,6 +96,7 @@ pub fn derive_name_to_instruction(input: TokenStream) -> TokenStream {
             // Extract the variant's identifier.
             let variant_ident = &variant.ident;
 
+            // Convert the identifier to lower_snake_case.
             let snake_case = to_snake_case(&variant_ident.to_string());
 
             // If the arity is zero, match against the variant identifier, e.g. `Foo::Bar => 0`
@@ -105,6 +106,8 @@ pub fn derive_name_to_instruction(input: TokenStream) -> TokenStream {
                 };
             }
 
+            // Retrieve the arguments by using the arg_fn mutable closure.
+            // We use Rc<RefCell>> to allow the closure to be called multiple times.
             let args = (0..field_count).map(|_| quote! {
                 {
                     let arg_fn = arg_fn.clone();
