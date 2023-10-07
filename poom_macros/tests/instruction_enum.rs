@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod instruction_enum_tests {
-    use poom_macros::{InsertArgs, Arity};
+    use poom_macros::{InsertArgs, Arity, FieldValues};
 
-    #[derive(Debug, PartialEq, InsertArgs, Arity)]
+    #[derive(Debug, PartialEq, InsertArgs, Arity, FieldValues)]
     enum Foo {
         Pop,
         Push(u16),
@@ -21,5 +21,12 @@ mod instruction_enum_tests {
         assert_eq!(Foo::Pop.arity(), 0);
         assert_eq!(Foo::Push(1).arity(), 1);
         assert_eq!(Foo::Foo(0, 0, 0).arity(), 3);
+    }
+
+    #[test]
+    fn test_field_values() {
+        assert_eq!(Foo::Pop.field_values(), []);
+        assert_eq!(Foo::Push(1).field_values(), []);
+        assert_eq!(Foo::Foo(0, 0, 0).field_values(), []);
     }
 }
