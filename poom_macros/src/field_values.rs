@@ -31,15 +31,11 @@ pub fn insert_field_values_method(input: TokenStream) -> TokenStream {
                 quote! { #id }
             });
 
-            let field_values = (0..field_count).map(|i| {
-                let id = format_ident!("f{}", i);
-                quote! { *#id }
-            });
+            let field_values = field_vars.clone();
 
-            // TODO: extract the field values into a vector.
             quote! {
                 #enum_name::#variant_ident(#(#field_vars,)*) => vec![
-                    #(#field_values,)*
+                    #(*#field_values,)*
                 ]
             }
         });
