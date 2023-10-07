@@ -12,7 +12,7 @@ use strum_macros::EnumIter;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, EnumIter, Hash, Arity)]
 pub enum Instruction {
-    None,
+    Noop,
 
     Push(u16),
     Pop,
@@ -88,7 +88,7 @@ type I = Instruction;
 
 impl From<u16> for Instruction {
     fn from(id: u16) -> Self {
-        *OPCODES.get_by_right(&id).unwrap_or(&I::None)
+        *OPCODES.get_by_right(&id).unwrap_or(&I::Noop)
     }
 }
 
@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn test_arity() {
-        assert_eq!(I::None.arity(), 0);
+        assert_eq!(I::Noop.arity(), 0);
         assert_eq!(I::Push(12).arity(), 1);
         assert_eq!(I::Call(0xFF).arity(), 1);
     }

@@ -29,11 +29,13 @@ impl Decode for Machine {
     /// Returns the current instruction.
     /// Fetch and decode the opcode and its arguments into instruction.
     fn decode(&mut self) -> I {
-        let i: I = self.opcode().into();
+        let opcode = self.opcode();
+        let op: I = opcode.into();
 
+        // Inject the arguments into the instruction.
         // TODO: this is very repetitive!
         //       Can we detect the number of arguments and do this automatically?
-        match i {
+        let op = match op {
             I::Push(_) => I::Push(self.arg()),
             I::Jump(_) => I::Jump(self.arg()),
             I::JumpZero(_) => I::JumpZero(self.arg()),
@@ -42,7 +44,17 @@ impl Decode for Machine {
             I::Store(_) => I::Store(self.arg()),
             I::LoadString(_) => I::LoadString(self.arg()),
             I::Call(_) => I::Call(self.arg()),
-            _ => i
+            _ => op
+        };
+
+        if self.is_debug {
+            let pc = self.reg.get(PC);
+            let offset = op.arity() + 1;
+            let raw = self.mem.read(pc, offset as u16);
+
+            println!("{:02} | {:?} | {} | {:?}", pc, op, opcode, raw);
         }
+
+        op
     }
 }

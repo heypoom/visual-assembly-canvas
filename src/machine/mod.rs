@@ -2,7 +2,7 @@ mod decode;
 mod execute;
 mod handlers;
 
-use crate::{CALL_STACK_END, CALL_STACK_START};
+use crate::{CALL_STACK_END, CALL_STACK_START, Parser};
 use crate::instructions::{Instruction, Load};
 use crate::machine::handlers::Handlers;
 use crate::mem::{Memory, StackManager};
@@ -17,12 +17,20 @@ pub struct Machine {
     pub mem: Memory,
     pub reg: Registers,
     pub handlers: Handlers,
+
+    pub is_debug: bool,
 }
 
 impl Machine {
     /// Creates a new machine.
     pub fn new() -> Machine {
-        Machine { mem: Memory::new(), reg: Registers::new(), handlers: Handlers::new() }
+        Machine {
+            mem: Memory::new(),
+            reg: Registers::new(),
+            handlers: Handlers::new(),
+
+            is_debug: false,
+        }
     }
 
     /// Returns a stack manager for the current machine.
@@ -44,6 +52,13 @@ impl From<Vec<Instruction>> for Machine {
         let mut m = Machine::new();
         m.mem.load_code(code);
         m
+    }
+}
+
+impl From<&str> for Machine {
+    fn from(source: &str) -> Self {
+        let p: Parser = source.into();
+        p.instructions.into()
     }
 }
 

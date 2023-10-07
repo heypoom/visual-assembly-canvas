@@ -40,6 +40,8 @@ impl<'a> StackManager<'a> {
             whatever!("stack overflow")
         }
 
+        // println!("{:?}-> pushing {} to stack", self.sp, val);
+
         // Increment the stack pointer.
         self.reg.inc(self.sp);
 
@@ -63,6 +65,7 @@ impl<'a> StackManager<'a> {
         }
 
         let v = self.peek();
+        // println!("<-{:?} popping {} from stack", self.sp, v);
 
         // Clear the value at the top of the stack.
         self.write(0);

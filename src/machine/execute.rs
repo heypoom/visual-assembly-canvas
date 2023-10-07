@@ -15,9 +15,6 @@ pub trait Execute {
 
     /// Returns whether the machine should halt.
     fn should_halt(&self) -> bool;
-
-    // Inspect the current instruction for debugging.
-    fn inspect(&self, op: I);
 }
 
 impl Execute for Machine {
@@ -30,7 +27,7 @@ impl Execute for Machine {
         let mut s = self.stack();
 
         match op {
-            I::None => {}
+            I::Noop => {}
             I::Halt => {}
 
             I::Push(v) => { s.push(v).expect("push error"); }
@@ -64,7 +61,11 @@ impl Execute for Machine {
             I::GreaterThan => s.apply_two(|a, b| (a > b).into()),
             I::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into()),
 
-            I::Jump(addr) => self.reg.set(PC, addr),
+            // TODO: write a unit test for jump, and instructions that uses jump.
+            //       there was a bug caused by using set(PC) instead of assigning to jump
+            I::Jump(addr) => {
+                jump = Some(addr);
+            }
 
             I::JumpZero(addr) => {
                 if s.pop().unwrap() == 0 {
@@ -117,14 +118,14 @@ impl Execute for Machine {
                 let pc = self.reg.get(PC);
 
                 self.call_stack().push(pc).expect("call stack exceeded");
-                self.reg.set(PC, address);
+                jump = Some(address);
             }
 
             I::Return => {
                 let address = self.call_stack().pop().expect("cannot pop the return address");
 
                 // Return to to the return address
-                self.reg.set(PC, address);
+                jump = Some(address);
             }
         };
 
@@ -139,7 +140,6 @@ impl Execute for Machine {
     // Fetch, decode and execute the instruction.
     fn tick(&mut self) {
         let op = self.decode();
-        self.inspect(op);
         self.exec_op(op);
     }
 
@@ -153,16 +153,5 @@ impl Execute for Machine {
         let i: I = self.opcode().into();
 
         i == I::Halt
-    }
-
-    fn inspect(&self, op: I) {
-        let pc = self.reg.get(PC);
-
-        if pc > 0 {
-            let offset = 1 + op.arity();
-            let raw = self.mem.read(pc - 1, offset as u16);
-
-            println!("{:02} | {:?} | {:?}", pc, op, raw);
-        }
     }
 }
