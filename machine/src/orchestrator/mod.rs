@@ -50,7 +50,6 @@ impl Orchestrator {
         let parser: Parser = code.into();
         machine.mem.load_symbols(parser.symbols);
         machine.mem.load_code(parser.ops);
-        machine.is_debug = true;
         machine.run();
     }
 
