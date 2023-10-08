@@ -139,7 +139,7 @@ impl Execute for Machine {
                 jump = Some(address + 1);
             }
 
-            Op::Send(port, size) => {
+            Op::Send(to, size) => {
                 let mut packet = vec![];
 
                 for _ in 0..size {
@@ -149,7 +149,7 @@ impl Execute for Machine {
                 for msg_handler in &self.handlers.message {
                     msg_handler(MessageEvent::Send {
                         from: self.id.unwrap_or(0),
-                        to: port,
+                        to,
                         bytes: packet.clone(),
                     });
                 }
