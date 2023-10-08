@@ -3,14 +3,14 @@ use crate::cli::bytes::u8_vec_to_u16;
 use crate::{CODE_START, Execute, Machine};
 
 pub fn run_from_bytecode(path: &str, is_debug: bool) {
-    let bytes = fs::read(path).expect("cannot read bytecode file");
-    let bytecode = u8_vec_to_u16(bytes);
+    let raw_bytes = fs::read(path).expect("cannot read bytecode file");
+    let bytes = u8_vec_to_u16(raw_bytes);
 
     let mut m = Machine::new();
     m.is_debug = is_debug;
     m.handlers.print.push(Box::new(|s: &_| print!("{}", s)));
 
-    m.mem.write(CODE_START, &bytecode);
+    m.mem.write(CODE_START, &bytes);
     m.run();
 
     if is_debug {
