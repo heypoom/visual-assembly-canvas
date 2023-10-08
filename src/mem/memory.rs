@@ -47,6 +47,10 @@ impl Memory {
         self.read(CALL_STACK_START, count)
     }
 
+    pub fn read_data(&self, count: u16) -> Vec<u16> {
+        self.read(DATA_START, count)
+    }
+
     pub fn load_code(&mut self, ops: Vec<Op>) {
         self.write(CODE_START, &compile_to_bytecode(ops))
     }
