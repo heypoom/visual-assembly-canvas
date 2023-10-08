@@ -1,7 +1,7 @@
 extern crate opcodes_to_algorithms;
 
 use clap::Parser;
-use opcodes_to_algorithms::cli::{Args, Commands, compile_to_file, run_from_bytecode, run_from_source};
+use opcodes_to_algorithms::cli::{Args, Commands, compile_to_file, run_from_binary_file, run_from_source};
 
 fn main() {
     let args = Args::parse();
@@ -13,7 +13,7 @@ fn main() {
             if from_source {
                 run_from_source(&path, debug);
             } else {
-                run_from_bytecode(&path, debug);
+                run_from_binary_file(&path, debug);
             }
         }
     }
