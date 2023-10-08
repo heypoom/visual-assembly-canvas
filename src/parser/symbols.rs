@@ -25,6 +25,11 @@ impl Symbols {
 
     // TODO: add unit tests for this method, as this is a source for regression bugs.
     pub fn bytes(&self) -> Vec<u16> {
+        // We must sort the offset table by their offset,
+        // otherwise the binary will be out of order.
+        let mut offsets: Vec<_> = self.offsets.clone().into_iter().collect();
+        offsets.sort_by(|a, b| (a.1).cmp(&b.1));
+
         let mut data: Vec<u16> = vec![];
 
         let mut write = |offset: usize, bytes: Vec<u16>| {
@@ -39,29 +44,30 @@ impl Symbols {
             }
         };
 
-        // We must sort the offset table by their offset,
-        // otherwise the binary will be out of order.
-        let mut offsets: Vec<_> = self.offsets.clone().into_iter().collect();
-        offsets.sort_by(|a, b| (a.1).cmp(&b.1));
-
         for (key, offset) in offsets.iter() {
-            let offset = *offset as usize;
-
-            // it's a string.
-            if self.strings.contains_key(key) {
-                let value = self.strings.get(key).unwrap();
-                write(offset, str_to_u16(value));
-                continue;
-            }
-
-            // It's raw bytes.
-            if self.data.contains_key(key) {
-                let value = self.data.get(key).unwrap();
-                write(offset, value.clone());
-                continue;
+            if let Some(value) = self.value(key) {
+                write(*offset as usize, value);
             }
         }
 
         data
+    }
+
+    fn value(&self, key: &str) -> Option<Vec<u16>> {
+        // Strings.
+        if self.strings.contains_key(key) {
+            let value = self.strings.get(key).unwrap();
+
+            return Some(str_to_u16(value));
+        }
+
+        // Raw bytes.
+        if self.data.contains_key(key) {
+            let value = self.data.get(key).unwrap();
+
+            return Some(value.clone());
+        }
+
+        None
     }
 }
