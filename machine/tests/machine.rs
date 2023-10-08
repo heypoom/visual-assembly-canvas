@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod tests {
-    extern crate machine as O;
-
-    use O::{Execute, Machine as M, Op};
+    use machine::{Execute, Machine as M, Op};
 
     #[test]
     fn test_run_machine() {

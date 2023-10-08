@@ -1,5 +1,3 @@
-extern crate core;
-
 pub mod op;
 pub mod machine;
 pub mod mem;

@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod tests {
-    extern crate machine as O;
-
-    use O::{Execute, Machine, Op, WithStringManager};
+    use machine::{Execute, Machine, Op, WithStringManager};
 
     /// Loads string manually using the Load instruction.
     /// Note that the LoadString instruction is a more convenient alternative.

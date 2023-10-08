@@ -1,10 +1,7 @@
 #[cfg(test)]
 mod tests {
-    extern crate machine as O;
-
-    use machine::{compile_to_binary, load_from_binary};
     use mockall::{automock, predicate::*};
-    use O::{load_test_file, load_test_program, Execute, Machine, Op, WithStringManager};
+    use machine::{compile_to_binary, load_from_binary, load_test_file, load_test_program, Execute, Machine, Op, WithStringManager};
 
     #[test]
     fn test_print_hello_world() {

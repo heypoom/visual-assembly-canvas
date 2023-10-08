@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod call_stack_tests {
-    extern crate machine as O;
-
-    use O::{test_helper::load_test_program, Execute, Machine, Op};
+    use machine::{test_helper::load_test_program, Execute, Machine, Op};
 
     #[test]
     fn test_call_stack_asm() {
@@ -25,7 +23,7 @@ mod call_stack_tests {
             Op::Call(2), // [start]
             Op::Call(2),
         ]
-        .into();
+            .into();
 
         m.run();
         assert_eq!(

@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod loop_tests {
-    extern crate machine as O;
-
-    use O::{Execute, Machine, Op};
+    use machine::{Execute, Machine, Op};
 
     #[test]
     fn test_loop() {
@@ -17,7 +15,7 @@ mod loop_tests {
             // i is now over 20. we are at the end of the loop.
             Op::Push(0xFF),
         ]
-        .into();
+            .into();
 
         m.run();
 
