@@ -1,0 +1,3 @@
+[RSW::ERR]
+[RSW::NAME] :~> machine-wasm
+[RSW::BUILD] :~> wasm-pack build machine-wasm --out-dir pkg --target web --dev

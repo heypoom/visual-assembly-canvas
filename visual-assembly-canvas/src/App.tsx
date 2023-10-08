@@ -1,7 +1,9 @@
-import setup, {greet} from 'machine-wasm'
+import setup, {load_machine} from 'machine-wasm'
 
 await setup()
-greet()
+
+// @ts-ignore
+window.load_machine = load_machine
 
 function App() {
   return <div>22</div>
