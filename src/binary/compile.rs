@@ -1,15 +1,18 @@
-use std::fs;
-use crate::{Parser, compile};
-use crate::cli::bytes::u16_vec_to_u8;
+use crate::{Op, Parser};
 
 /// Signature of the binary file.
 pub static MAGIC_BYTES: [u16; 2] = [0xDEAD, 0xBEEF];
 
-pub fn compile_to_file(src_path: &str, out_path: &str) {
-    let source = fs::read_to_string(&src_path).unwrap();
-    let bytes = u16_vec_to_u8(compile_to_binary(&source));
+pub fn compile_to_bytecode(ops: Vec<Op>) -> Vec<u16> {
+    let mut bytecode = vec![];
 
-    fs::write(out_path, bytes).expect("cannot write bytecode to file");
+    for op in ops {
+        bytecode.push(op.opcode());
+        bytecode.extend(op.field_values());
+    }
+
+    bytecode.push(Op::Eof.opcode());
+    bytecode
 }
 
 pub fn compile_to_binary(source: &str) -> Vec<u16> {
@@ -19,7 +22,7 @@ pub fn compile_to_binary(source: &str) -> Vec<u16> {
     let mut header: [u16; 4] = [0x00, 0x00, 0x00, 0x00];
 
     // Code segment.
-    let code_segment = compile(parser.ops);
+    let code_segment = compile_to_bytecode(parser.ops);
     let code_start = MAGIC_BYTES.len() + header.len();
     header[0] = code_start as u16;
     header[1] = code_segment.len() as u16;
@@ -37,4 +40,15 @@ pub fn compile_to_binary(source: &str) -> Vec<u16> {
     bytes.extend(code_segment);
     bytes.extend(data_segment);
     bytes
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_compile_to_bytecode() {
+        let m = compile_to_bytecode(vec![Op::Push(5), Op::Push(10)]);
+        assert_eq!(m[0..4], [0x01, 5, 0x01, 10])
+    }
 }

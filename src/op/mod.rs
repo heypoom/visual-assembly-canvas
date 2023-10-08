@@ -1,11 +1,9 @@
 extern crate poom_macros;
 
-pub mod compile;
-
 use strum_macros::{FromRepr, EnumString};
 use poom_macros::{Arity, InsertArgs, FieldValues, VariantIndex};
 
-pub use compile::compile;
+pub use crate::compile::compile_to_bytecode;
 
 #[derive(Debug, Copy, Clone, PartialEq, FromRepr, EnumString, Arity, InsertArgs, FieldValues, VariantIndex)]
 #[strum(serialize_all = "snake_case")]

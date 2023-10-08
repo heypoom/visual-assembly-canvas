@@ -1,4 +1,4 @@
-use crate::{compile, Symbols, Op, CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START, DATA_START};
+use crate::{compile_to_bytecode, Symbols, Op, CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START, DATA_START};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -48,7 +48,7 @@ impl Memory {
     }
 
     pub fn load_code(&mut self, ops: Vec<Op>) {
-        self.write(CODE_START, &compile(ops))
+        self.write(CODE_START, &compile_to_bytecode(ops))
     }
 
     pub fn load_symbols(&mut self, symbols: Symbols) {
