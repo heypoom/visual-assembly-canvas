@@ -15,6 +15,10 @@ pub struct Machine {
     pub reg: Registers,
     pub handlers: Handlers,
 
+    /// Identifier of the machine.
+    pub id: Option<u16>,
+
+    /// Is the machine in debug mode?
     pub is_debug: bool,
 }
 
@@ -26,6 +30,7 @@ impl Machine {
             reg: Registers::new(),
             handlers: Handlers::new(),
 
+            id: None,
             is_debug: false,
         }
     }

@@ -3,7 +3,7 @@ use crate::message::MessageEvent;
 
 pub struct Handlers {
     pub print: Vec<Box<dyn Fn(&str)>>,
-    pub message: Vec<Box<dyn Fn(MessageEvent)>>,
+    pub message: Vec<Box<dyn Fn(MessageEvent) + 'static>>,
 }
 
 impl Debug for Handlers {
