@@ -1,0 +1,14 @@
+name = "machin"
+version = "0.1.0"
+
+# default is 50 milliseconds
+interval = 50
+
+cli = "pnpm"
+
+[new]
+using = "wasm-pack"
+
+[[crates]]
+name = "machine-wasm"
+link = true
