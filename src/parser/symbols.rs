@@ -23,6 +23,7 @@ impl Symbols {
         }
     }
 
+    // TODO: add unit tests for this method, as this is a source for regression bugs.
     pub fn bytes(&self) -> Vec<u16> {
         let mut data: Vec<u16> = vec![];
 
@@ -38,19 +39,26 @@ impl Symbols {
             }
         };
 
-        for (key, offset) in self.offsets.iter() {
+        // We must sort the offset table by their offset,
+        // otherwise the binary will be out of order.
+        let mut offsets: Vec<_> = self.offsets.clone().into_iter().collect();
+        offsets.sort_by(|a, b| (a.1).cmp(&b.1));
+
+        for (key, offset) in offsets.iter() {
             let offset = *offset as usize;
 
             // it's a string.
             if self.strings.contains_key(key) {
                 let value = self.strings.get(key).unwrap();
                 write(offset, str_to_u16(value));
+                continue;
             }
 
             // It's raw bytes.
             if self.data.contains_key(key) {
                 let value = self.data.get(key).unwrap();
                 write(offset, value.clone());
+                continue;
             }
         }
 

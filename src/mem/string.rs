@@ -46,6 +46,7 @@ impl<'a> StringManager<'a> {
     }
 
     /// Get the string bytes until the null terminator.
+    /// TODO: add tests for get_str_bytes
     pub fn get_str_bytes(&self, addr: u16) -> Vec<u16> {
         let mut data = vec![];
 

@@ -44,15 +44,8 @@ mod tests {
         mock.expect_print().with(eq("Hello, world!")).times(1).return_const(());
         mock.expect_print().with(eq("Sunshine!")).times(1).return_const(());
 
-        dbg!(m.mem.read_data(30));
-
-        let print = move |s: &_| {
-            mock.print(s);
-            dbg!(s);
-        };
-
+        let print = move |s: &_| mock.print(s);
         m.handlers.print.push(Box::new(print));
-        m.is_debug = true;
         m.run();
 
         assert_eq!(m.mem.read_stack(1), [0], "stack should be empty");
