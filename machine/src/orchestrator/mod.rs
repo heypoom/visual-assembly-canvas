@@ -58,15 +58,15 @@ impl Orchestrator {
         let message = self.rx.recv().unwrap();
 
         match message {
-            MessageEvent::Send { from, port, bytes } => {
-                println!("broker#recv: from={} port={} bytes={:?}", from, port, bytes);
+            MessageEvent::Send { from, to, bytes } => {
+                println!("broker#recv: from={} to={} bytes={:?}", from, to, bytes);
 
                 // TODO: add the port mechanism to the machine.
-                if let Some(m) = self.machines.get_mut(port as usize) {
+                if let Some(m) = self.machines.get_mut(to as usize) {
                     let id = m.id.unwrap_or(0);
 
                     // The message landed on the wrong machine.
-                    if id != port { return; }
+                    if id != to { return; }
 
                     println!("recv at {}: {:?}", id, bytes);
                     m.mem.write(MAPPED_START, &bytes);
@@ -79,21 +79,24 @@ impl Orchestrator {
 
 #[cfg(test)]
 mod tests {
-    use crate::Orchestrator;
+    use crate::{MAPPED_START, Orchestrator};
 
     #[test]
     fn test_send_message() {
         let mut o = Orchestrator::new();
 
         let m1_id = o.add();
-        o.add();
+        let m2_id = o.add();
 
         o.run_code(m1_id, r"
-            push 0xDE
-            push 0xAD
-            send 1 2
+            push 0xDEAD
+            push 0xBEEF
+            send 0x01 2
         ");
 
         o.read_message();
+
+        let m2 = o.machines.get_mut(m2_id as usize).unwrap();
+        assert_eq!(m2.mem.read(MAPPED_START, 2), [0xBEEF, 0xDEAD]);
     }
 }

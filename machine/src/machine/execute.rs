@@ -149,7 +149,7 @@ impl Execute for Machine {
                 for msg_handler in &self.handlers.message {
                     msg_handler(MessageEvent::Send {
                         from: self.id.unwrap_or(0),
-                        port,
+                        to: port,
                         bytes: packet.clone(),
                     });
                 }
