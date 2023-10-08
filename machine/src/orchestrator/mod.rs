@@ -1,6 +1,6 @@
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
-use crate::{Machine, Parser, Execute};
+use crate::{Machine, Parser, Execute, MAPPED_START};
 use crate::message::MessageEvent;
 
 pub mod message;
@@ -54,12 +54,23 @@ impl Orchestrator {
         machine.run();
     }
 
-    pub fn read_message(&self) {
+    pub fn read_message(&mut self) {
         let message = self.rx.recv().unwrap();
 
         match message {
             MessageEvent::Send { from, port, bytes } => {
                 println!("broker#recv: from={} port={} bytes={:?}", from, port, bytes);
+
+                // TODO: add the port mechanism to the machine.
+                if let Some(m) = self.machines.get_mut(port as usize) {
+                    let id = m.id.unwrap_or(0);
+
+                    // The message landed on the wrong machine.
+                    if id != port { return; }
+
+                    println!("recv at {}: {:?}", id, bytes);
+                    m.mem.write(MAPPED_START, &bytes);
+                }
             }
             MessageEvent::MapMemory { .. } => {}
         }
@@ -75,6 +86,7 @@ mod tests {
         let mut o = Orchestrator::new();
 
         let m1_id = o.add();
+        o.add();
 
         o.run_code(m1_id, r"
             push 0xDE
