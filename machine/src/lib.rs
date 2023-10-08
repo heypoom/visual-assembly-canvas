@@ -9,6 +9,9 @@ pub mod binary;
 pub mod cli;
 pub mod test_helper;
 
+#[cfg(target_arch = "wasm32")]
+pub mod wasm;
+
 pub use op::*;
 pub use machine::*;
 pub use mem::*;

@@ -3,3 +3,4 @@ target*
 .idea
 .vscode
 *.out
+pkg/
