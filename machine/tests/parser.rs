@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod parser_tests {
-    use opcodes_to_algorithms::{Parser, Op, load_test_file};
+    use machine::{load_test_file, Op, Parser};
 
     #[test]
     fn test_parse_call_stack() {

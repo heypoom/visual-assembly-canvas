@@ -184,6 +184,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
 
 [[package]]
+name = "machine"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "log",
+ "mockall",
+ "poom_macros",
+ "snafu",
+ "strum",
+ "strum_macros",
+]
+
+[[package]]
 name = "memchr"
 version = "2.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -229,19 +242,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f30b0abd723be7e2ffca1272140fac1a2f084c77ec3e123c192b66af1ee9e6c2"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "opcodes_to_algorithms"
-version = "0.1.0"
-dependencies = [
- "clap",
- "log",
- "mockall",
- "poom_macros",
- "snafu",
- "strum",
- "strum_macros",
 ]
 
 [[package]]

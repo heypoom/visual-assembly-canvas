@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod tests {
-    extern crate opcodes_to_algorithms as O;
+    extern crate machine as O;
 
-    use O::{Machine as M, Execute, Op};
+    use O::{Execute, Machine as M, Op};
 
     #[test]
     fn test_run_machine() {

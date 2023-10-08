@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod tests {
-    extern crate opcodes_to_algorithms as O;
+    extern crate machine as O;
 
-    use O::{Machine, Execute, Op, WithStringManager};
+    use O::{Execute, Machine, Op, WithStringManager};
 
     /// Loads string manually using the Load instruction.
     /// Note that the LoadString instruction is a more convenient alternative.

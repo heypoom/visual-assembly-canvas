@@ -1,14 +1,17 @@
 #[cfg(test)]
 mod call_stack_tests {
-    extern crate opcodes_to_algorithms as O;
+    extern crate machine as O;
 
-    use O::{Machine, Execute, Op, test_helper::load_test_program};
+    use O::{test_helper::load_test_program, Execute, Machine, Op};
 
     #[test]
     fn test_call_stack_asm() {
         let mut m: Machine = load_test_program("call-stack-1.asm");
         m.run();
-        assert_eq!(m.mem.read_stack(6), [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]);
+        assert_eq!(
+            m.mem.read_stack(6),
+            [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]
+        );
     }
 
     #[test]
@@ -19,11 +22,15 @@ mod call_stack_tests {
             Op::Push(0b11001100),
             Op::Push(01024),
             Op::Return,
-            Op::Call(2),    // [start]
+            Op::Call(2), // [start]
             Op::Call(2),
-        ].into();
+        ]
+        .into();
 
         m.run();
-        assert_eq!(m.mem.read_stack(6), [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]);
+        assert_eq!(
+            m.mem.read_stack(6),
+            [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]
+        );
     }
 }

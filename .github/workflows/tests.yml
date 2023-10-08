@@ -6,6 +6,9 @@ jobs:
   build_and_test:
     name: Test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./machine
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1

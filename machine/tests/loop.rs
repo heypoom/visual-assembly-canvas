@@ -1,25 +1,23 @@
 #[cfg(test)]
 mod loop_tests {
-    extern crate opcodes_to_algorithms as O;
+    extern crate machine as O;
 
-    use O::{Machine, Execute, Op};
+    use O::{Execute, Machine, Op};
 
     #[test]
     fn test_loop() {
         let mut m: Machine = vec![
-            Op::Push(0),  // i = 0
-
-            Op::Push(2),  // [loop_start]
-            Op::Add,      // i += 2
-            Op::Dup,      // B = i
+            Op::Push(0), // i = 0
+            Op::Push(2), // [loop_start]
+            Op::Add,     // i += 2
+            Op::Dup,     // B = i
             Op::Push(20), // A = 20
-
-            Op::GreaterThanOrEqual,      // 20 >= i?
+            Op::GreaterThanOrEqual, // 20 >= i?
             Op::JumpNotZero(1), // jump to [loop_start] if 20 >= i
-
             // i is now over 20. we are at the end of the loop.
             Op::Push(0xFF),
-        ].into();
+        ]
+        .into();
 
         m.run();
 

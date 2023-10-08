@@ -1,10 +1,10 @@
 #[cfg(test)]
 mod tests {
-    extern crate opcodes_to_algorithms as O;
+    extern crate machine as O;
 
+    use machine::{compile_to_binary, load_from_binary};
     use mockall::{automock, predicate::*};
-    use O::{Machine, Execute, Op, WithStringManager, load_test_program, load_test_file};
-    use opcodes_to_algorithms::{compile_to_binary, load_from_binary};
+    use O::{load_test_file, load_test_program, Execute, Machine, Op, WithStringManager};
 
     #[test]
     fn test_print_hello_world() {
@@ -14,7 +14,12 @@ mod tests {
         let hello_ptr = strings.add_str("Hello, world!");
         let sunshine_ptr = strings.add_str("Sunshine!");
 
-        m.mem.load_code(vec![Op::LoadString(hello_ptr), Op::Print, Op::LoadString(sunshine_ptr), Op::Print]);
+        m.mem.load_code(vec![
+            Op::LoadString(hello_ptr),
+            Op::Print,
+            Op::LoadString(sunshine_ptr),
+            Op::Print,
+        ]);
         expect_hello_world(&mut m);
     }
 
@@ -41,8 +46,14 @@ mod tests {
     /// Expect the machine to print "Hello, world!" and "Sunshine!".
     fn expect_hello_world(m: &mut Machine) {
         let mut mock = MockPrinter::new();
-        mock.expect_print().with(eq("Hello, world!")).times(1).return_const(());
-        mock.expect_print().with(eq("Sunshine!")).times(1).return_const(());
+        mock.expect_print()
+            .with(eq("Hello, world!"))
+            .times(1)
+            .return_const(());
+        mock.expect_print()
+            .with(eq("Sunshine!"))
+            .times(1)
+            .return_const(());
 
         let print = move |s: &_| mock.print(s);
         m.handlers.print.push(Box::new(print));

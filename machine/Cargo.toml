@@ -1,5 +1,5 @@
 [package]
-name = "opcodes_to_algorithms"
+name = "machine"
 version = "0.1.0"
 edition = "2021"
 
