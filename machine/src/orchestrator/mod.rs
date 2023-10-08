@@ -91,11 +91,18 @@ mod tests {
             push 0xDEAD
             push 0xBEEF
             send 0x01 0x02
+
+            push 0b1100
+            push 0b1010
+            send 0x01 0x02
         ");
 
         o.read_packet();
-
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
         assert_eq!(m2.mem.read(MAPPED_START, 2), [0xBEEF, 0xDEAD]);
+
+        o.read_packet();
+        let m2 = o.machines.get_mut(m2_id as usize).unwrap();
+        assert_eq!(m2.mem.read(MAPPED_START, 2), [10, 12]);
     }
 }
