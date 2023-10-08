@@ -1,14 +1,14 @@
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use crate::{Machine, Parser, Execute, MAPPED_START};
-use crate::message::MessageEvent;
+use crate::packet::{Message, Packet};
 
-pub mod message;
+pub mod packet;
 
 pub struct Orchestrator {
     pub machines: Vec<Machine>,
-    pub tx: Sender<MessageEvent>,
-    pub rx: Receiver<MessageEvent>,
+    pub tx: Sender<Packet>,
+    pub rx: Receiver<Packet>,
 }
 
 impl Orchestrator {
@@ -53,25 +53,25 @@ impl Orchestrator {
         machine.run();
     }
 
-    pub fn read_message(&mut self) {
-        let message = self.rx.recv().unwrap();
+    pub fn read_packet(&mut self) {
+        let Packet { from, to, message } = self.rx.recv().unwrap();
 
         match message {
-            MessageEvent::Send { from, to, bytes } => {
-                println!("broker#recv: from={} to={} bytes={:?}", from, to, bytes);
+            Message::Data { body } => {
+                println!("broker#recv: from={} to={} body={:?}", from, to, body);
 
-                // TODO: add the port mechanism to the machine.
                 if let Some(m) = self.machines.get_mut(to as usize) {
                     let id = m.id.unwrap_or(0);
 
                     // The message landed on the wrong machine.
                     if id != to { return; }
 
-                    println!("recv at {}: {:?}", id, bytes);
-                    m.mem.write(MAPPED_START, &bytes);
+                    println!("recv at {}: {:?}", id, body);
+                    m.mem.write(MAPPED_START, &body);
                 }
             }
-            MessageEvent::MapMemory { .. } => {}
+
+            Message::MapMemory { .. } => {}
         }
     }
 }
@@ -90,10 +90,10 @@ mod tests {
         o.run_code(m1_id, r"
             push 0xDEAD
             push 0xBEEF
-            send 0x01 2
+            send 0x01 0x02
         ");
 
-        o.read_message();
+        o.read_packet();
 
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
         assert_eq!(m2.mem.read(MAPPED_START, 2), [0xBEEF, 0xDEAD]);

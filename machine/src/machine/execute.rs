@@ -2,7 +2,7 @@ use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
-use crate::message::MessageEvent;
+use crate::packet::{Packet, Message};
 
 pub trait Execute {
     /// Execute an instruction.
@@ -140,22 +140,22 @@ impl Execute for Machine {
             }
 
             Op::Send(to, size) => {
-                let mut packet = vec![];
+                let mut body = vec![];
 
                 for _ in 0..size {
-                    packet.push(s.pop().expect("packet does not exist in stack"));
+                    body.push(s.pop().expect("packet body does not exist in stack"));
                 }
 
                 for msg_handler in &self.handlers.message {
-                    msg_handler(MessageEvent::Send {
+                    msg_handler(Packet {
+                        message: Message::Data { body: body.clone() },
                         from: self.id.unwrap_or(0),
                         to,
-                        bytes: packet.clone(),
                     });
                 }
             }
 
-            Op::MemoryMap(_port, _start, _size) => {}
+            Op::MemoryMap(..) => {}
         };
 
         // Advance or jump the program counter.
