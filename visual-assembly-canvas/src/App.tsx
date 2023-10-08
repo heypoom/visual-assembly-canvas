@@ -1,8 +1,7 @@
-import * as wasm from 'machine-wasm'
+import setup, {greet} from 'machine-wasm'
 
-const app = wasm.initSync({})
-
-app.greet()
+await setup()
+greet()
 
 function App() {
   return <div>22</div>
