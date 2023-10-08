@@ -30,7 +30,7 @@ impl Machine {
         }
     }
 
-    /// Returns a stack manager for the current machine.
+    /// Returns a stack orchestrator for the current machine.
     pub fn stack(&mut self) -> StackManager {
         let mut stack = StackManager::new(&mut self.mem, &mut self.reg);
         stack.is_debug = self.is_debug;

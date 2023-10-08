@@ -57,19 +57,27 @@ pub enum Op {
     GreaterThan,
     GreaterThanOrEqual,
 
-    // Print the text at the memory address of operand.
+    /// Print the text at the memory address of operand.
     Print,
 
-    // Stores the PC on the call stack and jumps to the address.
+    /// Stores the PC on the call stack and jumps to the address.
     Call(u16),
 
-    // Pop the return address from the call stack and jumps to it.
+    /// Pop the return address from the call stack and jumps to it.
     Return,
 
-    // Halt the program.
+    /// Send a message to the specified machine
+    /// Send(Port, Size)
+    Send(u16, u16),
+
+    /// Map a memory address to a port
+    /// Send(Port, Start, Size)
+    MemoryMap(u16, u16, u16),
+
+    /// Halt the program.
     Halt,
 
-    // End-of-file marker.
+    /// End-of-file marker.
     Eof,
 }
 

@@ -36,7 +36,11 @@ impl Scanner {
     }
 
     fn peek(&self) -> char {
-        self.source.chars().nth(self.current).expect("cannot peek at char")
+        if self.is_end() {
+            return '\0';
+        }
+
+        self.source.chars().nth(self.current).expect("peek exceeds source length")
     }
 
     fn is_end(&self) -> bool {
@@ -127,7 +131,7 @@ impl Scanner {
     }
 
     fn digit(&mut self) {
-        while self.peek().is_digit(10) {
+        while self.peek().is_digit(10) && !self.is_end() {
             self.advance();
         }
 
@@ -136,7 +140,7 @@ impl Scanner {
     }
 
     fn hex(&mut self) {
-        while self.peek().is_digit(16) {
+        while self.peek().is_digit(16) && !self.is_end() {
             self.advance();
         }
 
@@ -147,7 +151,7 @@ impl Scanner {
     }
 
     fn binary_digit(&mut self) {
-        while self.peek().is_digit(2) {
+        while self.peek().is_digit(2) && !self.is_end() {
             self.advance();
         }
 

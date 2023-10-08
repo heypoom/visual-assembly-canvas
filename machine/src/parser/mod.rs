@@ -57,6 +57,8 @@ impl Parser {
 
         // Pass 2: collect op with memory offsets in labels.
         self.parse_tokens();
+
+        println!("tokens={:?} | ops={:?}", self.tokens, self.ops);
     }
 
     pub fn parse_tokens(&mut self) {

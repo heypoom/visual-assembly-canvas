@@ -2,6 +2,7 @@ use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
+use crate::message::MessageEvent;
 
 pub trait Execute {
     /// Execute an instruction.
@@ -137,6 +138,23 @@ impl Execute for Machine {
                 // Return to to the return address, plus one.
                 jump = Some(address + 1);
             }
+
+            Op::Send(port, size) => {
+                let mut packet = vec![];
+
+                for _ in 0..size {
+                    packet.push(s.pop().expect("packet does not exist in stack"));
+                }
+
+                for msg_handler in &self.handlers.message {
+                    msg_handler(MessageEvent::Send {
+                        port,
+                        bytes: packet.clone(),
+                    });
+                }
+            }
+
+            Op::MemoryMap(_port, _start, _size) => {}
         };
 
         // Advance or jump the program counter.
