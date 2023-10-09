@@ -1,16 +1,26 @@
-import {Button} from '@radix-ui/themes'
-import {PlusCircledIcon} from '@radix-ui/react-icons'
+import { Button } from "@radix-ui/themes"
+import { PlayIcon, PlusCircledIcon } from "@radix-ui/react-icons"
 
-import {Canvas} from './canvas/Canvas'
-import {addMachine} from './store/machines'
+import { Canvas } from "./canvas/Canvas"
+import { addMachine, runAll } from "./store/machines"
 
 function App() {
   return (
     <div className="relative bg-stone">
-      <div className="absolute left-2 top-2 z-10">
+      <div className="absolute left-3 top-3 z-10 space-x-3">
         <Button onClick={addMachine} variant="soft" color="crimson">
           <PlusCircledIcon />
-          Machine
+          New
+        </Button>
+
+        <Button
+          color="green"
+          variant="soft"
+          onClick={runAll}
+          className="font-semibold"
+        >
+          <PlayIcon />
+          Run
         </Button>
       </div>
 

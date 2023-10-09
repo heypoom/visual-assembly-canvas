@@ -1,10 +1,12 @@
 import { nanoid } from "nanoid"
 import { produce } from "immer"
+import { load_machine } from "machine-wasm"
 
 import { $nodes, addNode } from "./nodes"
 
 import { Machine } from "../types/Machine"
 import { BlockNode } from "../types/Node"
+import { $errors, $outputs } from "./results.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
 
@@ -30,4 +32,23 @@ export const setSource = (id: string, source: string) => {
   })
 
   $nodes.set(nodes)
+}
+
+export function runCode(id: string, source: string) {
+  try {
+    const out = load_machine(source)
+    $outputs.setKey(id, out)
+    $errors.setKey(id, null)
+  } catch (err) {
+    if (err instanceof Error) {
+      $outputs.setKey(id, null)
+      $errors.setKey(id, err)
+    }
+  }
+}
+
+export function runAll() {
+  $nodes.get().forEach((node) => {
+    runCode(node.id, node.data.source)
+  })
 }

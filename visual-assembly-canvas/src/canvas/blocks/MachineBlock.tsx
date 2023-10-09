@@ -1,16 +1,15 @@
 import CodeMirror from "@uiw/react-codemirror"
 
 import { Handle, Position, NodeProps } from "reactflow"
-import { Button } from "@radix-ui/themes"
-import { PlayIcon } from "@radix-ui/react-icons"
+
 import { useStore } from "@nanostores/react"
 import { Extension } from "@uiw/react-codemirror"
 import { vim } from "@replit/codemirror-vim"
 import { keymap } from "@codemirror/view"
 
 import { Machine } from "../../types/Machine"
-import { setSource } from "../../store/machines"
-import { $errors, $outputs, runCode } from "../../store/results"
+import { setSource, runCode } from "../../store/machines"
+import { $errors, $outputs } from "../../store/results"
 
 import { cmTheme } from "../../editor/theme"
 import { vasmLanguage } from "../../editor/syntax"
@@ -41,8 +40,6 @@ export function MachineBlock(props: NodeProps<Machine>) {
 
   const outputs = useStore($outputs)
   const errors = useStore($errors)
-
-  const run = () => runCode(id, source)
 
   const error = errors[id]
   const rawOut = outputs[id]
@@ -89,16 +86,6 @@ export function MachineBlock(props: NodeProps<Machine>) {
               ))}
             </div>
           )}
-
-          <Button
-            color="crimson"
-            variant="soft"
-            onClick={run}
-            className="font-semibold"
-          >
-            <PlayIcon />
-            Run
-          </Button>
         </div>
       </div>
 
