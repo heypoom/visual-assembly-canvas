@@ -11,6 +11,7 @@ import {setSource} from '../../store/machines'
 import {$outputs, runCode} from '../../store/results'
 
 import {cmTheme} from '../../editor/theme'
+import {vasmLanguage} from '../../editor/syntax'
 
 export function MachineBlock(props: NodeProps<Machine>) {
   const {id, data} = props
@@ -36,7 +37,9 @@ export function MachineBlock(props: NodeProps<Machine>) {
               theme={cmTheme}
               value={source}
               height="150"
+              lang="vasm"
               onChange={(s: string) => setSource(id, s)}
+              extensions={[vasmLanguage]}
             />
           </div>
 

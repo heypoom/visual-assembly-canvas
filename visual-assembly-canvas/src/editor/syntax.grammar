@@ -1,0 +1,69 @@
+@precedence {
+  LabelDefinition,
+  StringDefinition @left,
+  ValueDefinition @left,
+  LabelDefinition @left,
+  InstructionExpression @left,
+  Instruction @left,
+  Value @right,
+  Identifier @right
+}
+
+@top Program {
+  (StringDefinition | ValueDefinition | InstructionExpression | LabelDefinition)*
+}
+
+@skip { space | Comment }
+
+StringDefinition {
+  ".string" Identifier String eol
+}
+
+ValueDefinition {
+  ".value" Identifier Value eol
+}
+
+InstructionExpression {
+  Instruction (Identifier | Value)+ eol
+}
+
+LabelDefinition {
+  label eol
+}
+
+Instruction { instruction }
+Comment { comment }
+Identifier { identifier }
+
+String {
+  string
+}
+
+Value {
+  hex_number | bin_number | number
+}
+
+@tokens {
+  instruction { "push" | "pop" | "jump" }
+
+  eol { $[\n\r] }
+  space { "\s" }
+  identifier { $[0-9a-zA-Z_]+ }
+  comment { ";" ![\n\r]* }
+  label { identifier ":" }
+
+  number { '-'? int frac? exp?  }
+  int  { '0' | $[1-9] @digit* }
+  frac { '.' @digit+ }
+  exp  { $[eE] $[+\-]? @digit+ }
+
+  string { '"' (identifier | space)* '"' }
+  hex  { $[0-9a-fA-F] }
+  hex_number { "0x" hex+ }
+  bin_number { "0b" hex+ }
+  // new_line { "\r\n" | "\n" | "\r" }
+
+  @precedence { bin_number, hex_number, number, label, instruction, identifier, space }
+}
+
+@detectDelim
