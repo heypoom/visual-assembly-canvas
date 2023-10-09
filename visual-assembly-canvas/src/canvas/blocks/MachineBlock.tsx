@@ -35,12 +35,12 @@ function getExtensions(m: Machine, config: EditorConfig) {
 }
 
 export function MachineBlock(props: NodeProps<Machine>) {
-  const { id, data } = props
+  const { data } = props
   const { source } = data
 
   const outputs = useStore($output)
 
-  const state = outputs[id] ?? {}
+  const state = outputs[data.id] ?? {}
   const stack = state.stack ? [...state.stack].map((x) => x) : null
 
   const config = useStore($editorConfig)
@@ -63,7 +63,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
                 theme={cmTheme}
                 value={source}
                 lang="vasm"
-                onChange={(s: string) => setSource(id, s)}
+                onChange={(s: string) => setSource(data.id, s)}
                 extensions={extensions}
               />
             </div>

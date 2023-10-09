@@ -63,6 +63,8 @@ export class MachineManager {
 
 export const manager = new MachineManager()
 await manager.setup()
+
+// @ts-ignore
 window.manager = manager
 
 export function runCode(id: number, source: string) {
@@ -71,7 +73,6 @@ export function runCode(id: number, source: string) {
 
   try {
     let result = manager.run(id, source) as RunResult
-    console.log(result)
 
     $output.setKey(id, {
       error: null,
