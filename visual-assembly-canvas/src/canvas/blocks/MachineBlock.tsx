@@ -1,16 +1,25 @@
-import {Node, Handle, Position, NodeProps} from 'reactflow'
+import {Handle, Position, NodeProps} from 'reactflow'
+import {TextArea} from '@radix-ui/themes'
 
-type MachineNodeData = {
-  label: string
-}
+import {Machine} from '../../types/Machine'
+import {useState} from 'react'
+import {setSource} from '../../store/machines'
 
-export function MachineBlock(props: NodeProps<MachineNodeData>) {
+export function MachineBlock(props: NodeProps<Machine>) {
+  const {id, data} = props
+
   return (
-    <div>
+    <div className="font-mono">
       <Handle type="target" position={Position.Top} />
 
-      <div className="bg-teal-400 px-4 py-2 rounded-full hover:bg-teal-500">
-        <div>id: {props.data.label}</div>
+      <div className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-sm">
+        <div className="nodrag">
+          <TextArea
+            value={data.source}
+            onChange={(e) => setSource(id, e.target.value)}
+            className="bg-gray-50 border-none"
+          />
+        </div>
       </div>
 
       <Handle type="source" position={Position.Bottom} id="a" />

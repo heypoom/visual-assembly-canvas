@@ -5,7 +5,11 @@ export default {
   // presets: [radixThemePreset],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        mono: '"IBM Plex Mono", monospace',
+      },
+    },
   },
   plugins: [],
 }

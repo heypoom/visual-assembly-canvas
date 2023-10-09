@@ -15,7 +15,7 @@ await setup()
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <Theme>
+    <Theme appearance="dark">
       <App />
     </Theme>
   </React.StrictMode>

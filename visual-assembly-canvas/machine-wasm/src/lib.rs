@@ -1,6 +1,8 @@
 mod utils;
 
-use machine::{Execute, Machine, Orchestrator};
+mod controller;
+
+use machine::{Execute, Machine};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
