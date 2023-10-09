@@ -1,12 +1,14 @@
-import setup, {load_machine} from 'machine-wasm'
+import {Button, Container} from '@radix-ui/themes'
 
-await setup()
-
-// @ts-ignore
-window.load_machine = load_machine
+import {Canvas} from './canvas/Canvas'
 
 function App() {
-  return <div>22</div>
+  return (
+    <div className="min-h-screen">
+      <Canvas />
+      <Button>Import</Button>
+    </div>
+  )
 }
 
 export default App

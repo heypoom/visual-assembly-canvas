@@ -11,9 +11,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nanostores/react": "^0.7.1",
+    "@radix-ui/themes": "^2.0.0",
     "machine-wasm": "link:/Users/poom/Projects/from-opcodes-to-algorithms.rs/visual-assembly-canvas/machine-wasm/pkg",
+    "nanostores": "^0.9.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "reactflow": "^11.9.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
@@ -21,10 +25,14 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.1",
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.31",
+    "radix-themes-tw": "^0.0.8",
+    "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vite-plugin-rsw": "^2.0.11",
