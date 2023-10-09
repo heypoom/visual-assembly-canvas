@@ -60,9 +60,12 @@ export function MachineBlock(props: NodeProps<Machine>) {
           <div className="nodrag">
             <CodeMirror
               basicSetup={{ lineNumbers: false, foldGutter: false }}
+              width="300px"
+              minWidth="300px"
+              minHeight="150px"
+              maxWidth="600px"
               theme={cmTheme}
               value={source}
-              height="150"
               lang="vasm"
               onChange={(s: string) => setSource(id, s)}
               extensions={extensions}
