@@ -6,8 +6,6 @@ export const $errors = map<Record<string, Error | null>>({})
 
 export function runCode(id: string, source: string) {
   try {
-    console.log(`id=${id}, src=${source}`)
-
     const out = load_machine(source)
     $outputs.setKey(id, out)
     $errors.setKey(id, null)
