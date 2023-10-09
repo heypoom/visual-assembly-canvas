@@ -155,6 +155,18 @@ impl Execute for Machine {
                 self.send_message(to, Action::Data { body: body.clone() });
             }
 
+            Op::Receive => {
+                let Some(message) = self.mailbox.pop() else { return; };
+
+                match message.action {
+                    Action::Data { body } => {
+                        for v in body.iter() {
+                            self.stack().push(*v).expect("push error");
+                        }
+                    }
+                }
+            }
+
             // TODO: implement the memory map operation.
             Op::MemoryMap(..) => {}
         };
@@ -174,6 +186,8 @@ impl Execute for Machine {
     }
 
     fn run(&mut self) {
+        self.reg.set(PC, 0);
+
         while !self.should_halt() {
             self.tick();
         }

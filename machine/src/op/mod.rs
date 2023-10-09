@@ -67,11 +67,14 @@ pub enum Op {
     Return,
 
     /// Send a message to the specified machine
-    /// Send(Port, Size)
+    /// Send(Address, Size)
     Send(u16, u16),
 
+    /// Push the received bytes onto the stack.
+    Receive,
+
     /// Map a memory address to a port
-    /// Send(Port, Start, Size)
+    /// Send(Address, Start, Size)
     MemoryMap(u16, u16, u16),
 
     /// Halt the program.

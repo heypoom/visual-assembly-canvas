@@ -40,6 +40,10 @@ impl Orchestrator {
         self.machines.len() as u16
     }
 
+    pub fn get(&mut self, id: u16) -> &mut Machine {
+        self.machines.get_mut(id as usize).expect("cannot get machine")
+    }
+
     pub fn run_code(&mut self, id: u16, code: &str) {
         let machine = &mut self.machines[id as usize];
 
@@ -83,7 +87,7 @@ mod tests {
 
         // First message is received.
         o.read_message();
-        let m2 = o.machines.get_mut(m2_id as usize).unwrap();
+        let m2 = o.get(m2_id);
 
         // The mailbox should contain one message.
         assert_eq!(m2.mailbox.len(), 1);
@@ -92,10 +96,28 @@ mod tests {
         o.read_message();
 
         // The mailbox should contain two messages.
-        let m2 = o.machines.get_mut(m2_id as usize).unwrap();
+        let m2 = o.get(m2_id);
         assert_eq!(m2.mailbox, [
             Message { action: Data { body: vec![0xBEEF, 0xDEAD] }, from: 0, to: 1 },
             Message { action: Data { body: vec![0b1010, 0b1100] }, from: 0, to: 1 }
         ]);
+
+        // Machine 2 should read the message.
+        o.run_code(m2_id, r"receive");
+
+        // The mailbox should now have only one message.
+        let m2 = o.get(m2_id);
+        assert_eq!(m2.mailbox.len(), 1);
+        assert_eq!(m2.mem.read_stack(2), [0b1010, 0b1100]);
+
+        // Machine 2 should read the message again.
+        o.run_code(m2_id, r"pop
+        pop
+        receive");
+
+        // The mailbox should now have zero message.
+        let m2 = o.get(m2_id);
+        assert_eq!(m2.mailbox, []);
+        assert_eq!(m2.mem.read_stack(2), [0xBEEF, 0xDEAD]);
     }
 }
