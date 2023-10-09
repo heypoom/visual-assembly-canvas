@@ -47,11 +47,8 @@ impl Controller {
         self.machines.get(id as usize)
     }
 
-    pub fn run(&mut self, id: u16, source: &str) -> Return {
-        // Advance to the next tick.
-        self.tick();
-
-        let Some(m) = self.get_mut(id) else { return Ok(NULL) };
+    pub fn load(&mut self, id: u16, source: &str) {
+        let Some(m) = self.get_mut(id) else { return };
 
         // Reset the memory and registers to avoid faulty state.
         m.reg.reset();
@@ -61,6 +58,13 @@ impl Controller {
         let parser: Parser = source.into();
         m.mem.load_code(parser.ops);
         m.mem.load_symbols(parser.symbols);
+    }
+
+    pub fn run(&mut self, id: u16, source: &str) -> Return {
+        self.update();
+        self.load(id, source);
+
+        let Some(m) = self.get_mut(id) else { return Ok(NULL) };
         m.run();
 
         // Return the stack and events.
@@ -99,7 +103,7 @@ impl Controller {
         to_value(&m.events).unwrap_or(NULL)
     }
 
-    pub fn tick(&mut self) {
+    pub fn update(&mut self) {
         let mut messages = vec![];
 
         // Collect messages from send events.
@@ -119,5 +123,27 @@ impl Controller {
         }
 
         // TODO: process mailboxes.
+    }
+
+    pub fn step(&mut self, id: u16) {
+        let Some(m) = self.get_mut(id) else { return };
+        m.tick();
+    }
+
+    pub fn reset(&mut self, id: u16) {
+        let Some(m) = self.get_mut(id) else { return };
+        m.reg.reset();
+    }
+
+    pub fn step_all(&mut self) {
+        for m in &mut self.machines {
+            m.tick();
+        }
+    }
+
+    pub fn reset_all(&mut self) {
+        for m in &mut self.machines {
+            m.reg.reset();
+        }
     }
 }

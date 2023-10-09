@@ -2,7 +2,7 @@ import { Button } from "@radix-ui/themes"
 import { PlayIcon, PlusCircledIcon, LapTimerIcon } from "@radix-ui/react-icons"
 
 import { Canvas } from "./canvas/Canvas"
-import { addMachine, manager, runAll } from "./store/machines"
+import { addMachine, manager } from "./store/machines"
 
 function App() {
   return (
@@ -16,14 +16,19 @@ function App() {
         <Button
           color="green"
           variant="soft"
-          onClick={runAll}
+          onClick={manager.runAll}
           className="font-semibold"
         >
           <PlayIcon />
           Run
         </Button>
 
-        <Button color="blue" variant="soft" className="font-semibold">
+        <Button
+          color="blue"
+          variant="soft"
+          className="font-semibold"
+          onClick={() => manager.stepAll()}
+        >
           <LapTimerIcon />
           Step
         </Button>

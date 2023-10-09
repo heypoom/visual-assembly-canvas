@@ -8,20 +8,20 @@ import { vim } from "@replit/codemirror-vim"
 import { keymap } from "@codemirror/view"
 
 import { Machine } from "../../types/Machine"
-import { setSource, runCode } from "../../store/machines"
+import { setSource, manager } from "../../store/machines"
 
 import { cmTheme } from "../../editor/theme"
 import { vasmLanguage } from "../../editor/syntax"
 import { $editorConfig, EditorConfig } from "../../store/editor.ts"
 import { useMemo } from "react"
-import {$output} from "../../store/results.ts";
+import { $output } from "../../store/results.ts"
 
 function getExtensions(m: Machine, config: EditorConfig) {
   const keymaps = keymap.of([
     {
       key: "Enter",
       shift: () => {
-        runCode(m.id, m.source)
+        manager.run(m.id, m.source)
         return true
       },
     },
@@ -55,6 +55,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
           <div className="min-h-[100px]">
             <div className="nodrag">
               <CodeMirror
+                onBlur={() => manager.load(data.id, data.source)}
                 basicSetup={{ lineNumbers: false, foldGutter: false }}
                 width="300px"
                 maxHeight="400px"
@@ -80,9 +81,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
           {state.logs?.length ? (
             <div className="text-cyan-11 text-1 font-medium rounded-sm px-1 bg-stone-800 mx-1">
               {state.logs.map((log, i) => (
-                <div key={i}>
-                  &gt; {log}
-                </div>
+                <div key={i}>&gt; {log}</div>
               ))}
             </div>
           ) : null}
@@ -90,7 +89,10 @@ export function MachineBlock(props: NodeProps<Machine>) {
           {stack && (
             <div className="flex">
               {stack.map((u, i) => (
-                <div className="text-1 text-crimson-11 rounded-sm px-1 bg-stone-800 mx-1" key={i}>
+                <div
+                  className="text-1 text-crimson-11 rounded-sm px-1 bg-stone-800 mx-1"
+                  key={i}
+                >
                   {u}
                 </div>
               ))}

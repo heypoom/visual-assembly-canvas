@@ -53,8 +53,54 @@ export class MachineManager {
     console.log("wasm ready!")
   }
 
-  run(id: number, source: string): RunResult {
-    return this.ctrl?.run(id, source)
+  load(id: number, source: string) {
+    this.ctrl?.load(id, source)
+  }
+
+  run(id: number, source: string) {
+    const state = $output.get()
+    const prev = state[id] ?? {}
+
+    try {
+      const result = this.ctrl.run(id, source)
+
+      $output.setKey(id, {
+        error: null,
+        stack: result.stack ?? [],
+        logs: getLogs(result.events) ?? [],
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log("run code error:", err)
+
+        $output.setKey(id, {
+          ...prev,
+          error: err,
+        })
+      }
+    }
+  }
+
+  runAll = () => {
+    $nodes.get().forEach((node) => {
+      this.run(node.data.id, node.data.source)
+    })
+  }
+
+  stepAll = () => {
+    this.ctrl?.step_all()
+
+    const prevs = $output.get()
+
+    $nodes.get().forEach((node) => {
+      const { id } = node.data
+      const prev = prevs[id]
+
+      $output.setKey(id, {
+        ...prev,
+        stack: this.ctrl?.read_stack(id, 10) ?? [],
+      })
+    })
   }
 }
 
@@ -63,33 +109,3 @@ await manager.setup()
 
 // @ts-ignore
 window.manager = manager
-
-export function runCode(id: number, source: string) {
-  const state = $output.get()
-  const prev = state[id] ?? {}
-
-  try {
-    let result = manager.run(id, source) as RunResult
-
-    $output.setKey(id, {
-      error: null,
-      stack: result.stack ?? [],
-      logs: getLogs(result.events) ?? [],
-    })
-  } catch (err) {
-    if (err instanceof Error) {
-      console.log("run code error:", err)
-
-      $output.setKey(id, {
-        ...prev,
-        error: err,
-      })
-    }
-  }
-}
-
-export function runAll() {
-  $nodes.get().forEach((node) => {
-    runCode(node.data.id, node.data.source)
-  })
-}
