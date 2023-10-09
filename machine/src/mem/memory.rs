@@ -19,6 +19,10 @@ impl Memory {
         self.buffer[addr as usize] = val;
     }
 
+    pub fn reset(&mut self) {
+        self.buffer.fill(0);
+    }
+
     pub fn get(&self, addr: u16) -> u16 {
         self.buffer[addr as usize]
     }

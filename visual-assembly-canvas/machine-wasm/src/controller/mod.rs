@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use machine::{Event, Execute, Machine, Parser};
+use machine::Register::SP;
 
 #[wasm_bindgen]
 pub struct Controller {
@@ -42,13 +43,19 @@ impl Controller {
     }
 
     pub fn run(&mut self, id: u16, source: &str) -> Result<JsValue, JsValue> {
-        let parser: Parser = source.into();
-
         let m = self.get_mut(id);
-        m.mem.load_symbols(parser.symbols);
+
+        // Reset the memory and registers to avoid faulty state.
+        m.reg.reset();
+        m.mem.reset();
+
+        // Load the code and symbols into memory.
+        let parser: Parser = source.into();
         m.mem.load_code(parser.ops);
+        m.mem.load_symbols(parser.symbols);
         m.run();
 
+        // Return the stack and events.
         let stack = m.mem.read_stack(10);
         let events = m.events.clone();
         let result = RunResult { stack, events };

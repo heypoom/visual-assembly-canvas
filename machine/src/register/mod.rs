@@ -29,17 +29,18 @@ impl Registers {
         let mut v = Registers {
             buffer: [0; REG_COUNT],
         };
-
-        // Initialize the stack pointer.
-        v.set(PC, 0);
-        v.set(SP, STACK_START - 1);
-        v.set(FP, CALL_STACK_START - 1);
-
+        v.reset();
         v
     }
 
     pub fn set(&mut self, r: R, val: u16) {
         self.buffer[r as usize] = val;
+    }
+
+    pub fn reset(&mut self) {
+        self.set(PC, 0);
+        self.set(SP, STACK_START - 1);
+        self.set(FP, CALL_STACK_START - 1);
     }
 
     pub fn get(&self, r: R) -> u16 {
