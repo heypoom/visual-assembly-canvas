@@ -39,7 +39,7 @@ export const setSource = (id: string, source: string) => {
 
 export function runCode(id: string, source: string) {
   try {
-    let stack = controller.run_code(source)
+    let result = controller.run_code(source)
 
     const state = $output.get()
     state[id].logs
@@ -47,6 +47,7 @@ export function runCode(id: string, source: string) {
     $output.setKey(id, {
       error: null,
       stack: out,
+      logs: [...state[id].logs ?? [], result],
     })
     $stack.setKey(id, out)
     $errors.setKey(id, null)
