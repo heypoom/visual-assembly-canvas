@@ -1,6 +1,6 @@
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
-use crate::{Machine, Parser, Execute, Message, Action, MAPPED_START};
+use crate::{Machine, Parser, Execute, Message, Action};
 
 pub struct Orchestrator {
     pub machines: Vec<Machine>,
@@ -51,20 +51,13 @@ impl Orchestrator {
     }
 
     pub fn read_message(&mut self) {
-        let Message { from, to, action } = self.rx.recv().unwrap();
+        let message = self.rx.recv().unwrap();
 
-        match action {
+        match message.action.clone() {
             Action::Data { body } => {
-                println!("broker#recv: from={} to={} body={:?}", from, to, body);
-
-                if let Some(m) = self.machines.get_mut(to as usize) {
-                    let id = m.id.unwrap_or(0);
-
-                    // The message landed on the wrong machine.
-                    if id != to { return; }
-
-                    println!("recv at {}: {:?}", id, body);
-                    m.mem.write(MAPPED_START, &body);
+                if let Some(m) = self.machines.get_mut(message.to as usize) {
+                    println!("recv at {}: {:?}", message.to, body);
+                    m.mailboxes.push(message);
                 }
             }
         }
@@ -73,7 +66,8 @@ impl Orchestrator {
 
 #[cfg(test)]
 mod tests {
-    use crate::{MAPPED_START, Orchestrator};
+    use crate::{Message, Orchestrator};
+    use crate::Action::Data;
 
     #[test]
     fn test_send_message() {
@@ -82,6 +76,7 @@ mod tests {
         let m1_id = o.add();
         let m2_id = o.add();
 
+        // Send two messages from 1 to 2.
         o.run_code(m1_id, r"
             push 0xDEAD
             push 0xBEEF
@@ -92,12 +87,21 @@ mod tests {
             send 0x01 0x02
         ");
 
+        // First message is received.
         o.read_message();
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
-        assert_eq!(m2.mem.read(MAPPED_START, 2), [0xBEEF, 0xDEAD]);
 
+        // The mailbox should contain one message.
+        assert_eq!(m2.mailboxes.len(), 1);
+
+        // Second message is received.
         o.read_message();
+
+        // The mailbox should contain two messages.
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
-        assert_eq!(m2.mem.read(MAPPED_START, 2), [10, 12]);
+        assert_eq!(m2.mailboxes, [
+            Message { action: Data { body: vec![48879, 57005] }, from: 0, to: 1 },
+            Message { action: Data { body: vec![10, 12] }, from: 0, to: 1 }
+        ]);
     }
 }
