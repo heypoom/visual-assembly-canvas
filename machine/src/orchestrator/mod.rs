@@ -1,6 +1,6 @@
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
-use crate::{Machine, Parser, Execute, Message, Action};
+use crate::{Machine, Parser, Execute, Message};
 
 pub struct Orchestrator {
     pub machines: Vec<Machine>,
@@ -28,7 +28,6 @@ impl Orchestrator {
             let tx = self.tx.clone();
 
             m.handlers.message = Some(Box::new(move |m| {
-                println!("on_message: {:?}", m);
                 tx.clone().send(m).unwrap();
             }));
         };
@@ -53,13 +52,8 @@ impl Orchestrator {
     pub fn read_message(&mut self) {
         let message = self.rx.recv().unwrap();
 
-        match message.action.clone() {
-            Action::Data { body } => {
-                if let Some(m) = self.machines.get_mut(message.to as usize) {
-                    println!("recv at {}: {:?}", message.to, body);
-                    m.mailbox.push(message);
-                }
-            }
+        if let Some(m) = self.machines.get_mut(message.to as usize) {
+            m.mailbox.push(message);
         }
     }
 }
