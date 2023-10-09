@@ -11,9 +11,11 @@ import { $output } from "./results"
 
 const rand = () => Math.floor(Math.random() * 500)
 
+type MachineEvent = {Print: {text: string}}
+
 export interface RunResult {
   stack: number[],
-  logs: string[]
+  events: MachineEvent[]
 }
 
 export function addMachine() {
@@ -40,17 +42,20 @@ export const setSource = (id: string, source: string) => {
   $nodes.set(nodes)
 }
 
+const getLogs = (events: MachineEvent[]): string[] => events.filter(e => 'Print' in e).map(e => e.Print.text)
+
 export function runCode(id: string, source: string) {
   const state = $output.get()
   const prev = state[id] ?? {}
 
   try {
     let result = Controller.run_code(source) as RunResult
+    console.log(result)
 
     $output.setKey(id, {
       error: null,
       stack: result.stack ?? [],
-      logs: result.logs ?? [],
+      logs: getLogs(result.events) ?? [],
     })
   } catch (err) {
     if (err instanceof Error) {

@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, PartialEq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Message {
     /// Action sent to the machine.
     pub action: Action,
@@ -11,7 +13,7 @@ pub struct Message {
 }
 
 /// Messages that can be sent between nodes and machines.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Action {
     /// Send information to the specified node.
     Data {
