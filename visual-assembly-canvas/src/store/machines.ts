@@ -1,23 +1,23 @@
-import {nanoid} from 'nanoid'
-import {produce} from 'immer'
+import { nanoid } from "nanoid"
+import { produce } from "immer"
 
-import {$nodes, addNode} from './nodes'
+import { $nodes, addNode } from "./nodes"
 
-import {Machine} from '../types/Machine'
-import {BlockNode} from '../types/Node'
+import { Machine } from "../types/Machine"
+import { BlockNode } from "../types/Node"
 
 const rand = () => Math.floor(Math.random() * 500)
 
 export function addMachine() {
   const id = nanoid(4)
 
-  const machine: Machine = {id, source: 'push 5'}
+  const machine: Machine = { id, source: "push 5" }
 
   const node: BlockNode = {
-    id: `M${id}`,
-    type: 'machine',
+    id: id,
+    type: "machine",
     data: machine,
-    position: {x: rand(), y: rand()},
+    position: { x: rand(), y: rand() },
   }
 
   addNode(node)

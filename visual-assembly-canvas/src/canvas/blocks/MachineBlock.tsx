@@ -1,29 +1,55 @@
-import CodeMirror from '@uiw/react-codemirror'
+import CodeMirror from "@uiw/react-codemirror"
 
-import {Handle, Position, NodeProps} from 'reactflow'
-import {Button} from '@radix-ui/themes'
-import {PlayIcon} from '@radix-ui/react-icons'
-import {useStore} from '@nanostores/react'
-import {useHotkeys} from 'react-hotkeys-hook'
+import { Handle, Position, NodeProps } from "reactflow"
+import { Button } from "@radix-ui/themes"
+import { PlayIcon } from "@radix-ui/react-icons"
+import { useStore } from "@nanostores/react"
+import { Extension } from "@uiw/react-codemirror"
+import { vim } from "@replit/codemirror-vim"
+import { keymap } from "@codemirror/view"
 
-import {Machine} from '../../types/Machine'
-import {setSource} from '../../store/machines'
-import {$outputs, runCode} from '../../store/results'
+import { Machine } from "../../types/Machine"
+import { setSource } from "../../store/machines"
+import { $errors, $outputs, runCode } from "../../store/results"
 
-import {cmTheme} from '../../editor/theme'
-import {vasmLanguage} from '../../editor/syntax'
+import { cmTheme } from "../../editor/theme"
+import { vasmLanguage } from "../../editor/syntax"
+import { $editorConfig, EditorConfig } from "../../store/editor.ts"
+import { useMemo } from "react"
+
+function getExtensions(m: Machine, config: EditorConfig) {
+  const keymaps = keymap.of([
+    {
+      key: "Enter",
+      shift: () => {
+        runCode(m.id, m.source)
+        return true
+      },
+    },
+  ])
+
+  const extensions: Extension[] = [vasmLanguage, keymaps]
+
+  if (config.vim) extensions.push(vim())
+
+  return extensions
+}
 
 export function MachineBlock(props: NodeProps<Machine>) {
-  const {id, data} = props
-  const {source} = data
+  const { id, data } = props
+  const { source } = data
 
   const outputs = useStore($outputs)
+  const errors = useStore($errors)
+
   const run = () => runCode(id, source)
 
+  const error = errors[id]
   const rawOut = outputs[id]
   const out = rawOut ? [...rawOut].map((x) => x) : null
 
-  useHotkeys('shift+enter', run)
+  const config = useStore($editorConfig)
+  const extensions = useMemo(() => getExtensions(data, config), [data, config])
 
   return (
     <div className="font-mono">
@@ -33,15 +59,23 @@ export function MachineBlock(props: NodeProps<Machine>) {
         <div className="flex flex-col space-y-4 text-gray-50">
           <div className="nodrag">
             <CodeMirror
-              basicSetup={{lineNumbers: false, foldGutter: false}}
+              basicSetup={{ lineNumbers: false, foldGutter: false }}
               theme={cmTheme}
               value={source}
               height="150"
               lang="vasm"
               onChange={(s: string) => setSource(id, s)}
-              extensions={[vasmLanguage]}
+              extensions={extensions}
             />
           </div>
+
+          {error && (
+            <div>
+              <div className="text-1 text-orange-11">
+                <pre>{error.stack}</pre>
+              </div>
+            </div>
+          )}
 
           {out && (
             <div className="flex">
