@@ -1,7 +1,6 @@
-import {atom} from 'nanostores'
+import { atom } from "nanostores"
 
 import {
-  Node,
   Edge,
   addEdge,
   NodeChange,
@@ -9,11 +8,11 @@ import {
   Connection,
   applyEdgeChanges,
   applyNodeChanges,
-} from 'reactflow'
+} from "reactflow"
 
-import {initialEdges, initialNodes} from './initial-nodes'
+import { initialEdges, initialNodes } from "./initial-nodes"
 
-import {BlockNode} from '../types/Node'
+import { BlockNode } from "../types/Node"
 
 export const $nodes = atom<BlockNode[]>(initialNodes)
 export const $edges = atom<Edge[]>(initialEdges)
