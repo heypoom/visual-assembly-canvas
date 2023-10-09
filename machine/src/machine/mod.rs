@@ -5,6 +5,7 @@ mod event;
 mod message;
 
 use crate::{Op, Registers, Register::FP, Parser, CALL_STACK_END, CALL_STACK_START};
+use crate::Event::Send;
 use crate::machine::handlers::Handlers;
 use crate::mem::{Memory, StackManager};
 
@@ -71,10 +72,8 @@ impl Machine {
         // If the machine has no address, it cannot send messages.
         let Some(id) = self.id else { return };
 
-        // If the machine does not have a message handler, it cannot send messages.
-        let Some(handle) = &self.handlers.message else { return };
-        let mut handle = handle.borrow_mut();
-        handle(Message { from: id, to, action });
+        // Add the message to the mailbox.
+        self.events.push(Send { message: Message { from: id, to, action }})
     }
 }
 
