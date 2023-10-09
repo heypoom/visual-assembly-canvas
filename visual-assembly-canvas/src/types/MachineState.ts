@@ -4,4 +4,4 @@ export interface MachineState {
   logs: string[]
 }
 
-export type MachineStates = Record<string, MachineState>
+export type MachineStates = Record<number, MachineState>

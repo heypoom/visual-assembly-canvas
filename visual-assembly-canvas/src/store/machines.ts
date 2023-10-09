@@ -1,6 +1,5 @@
-import { nanoid } from "nanoid"
 import { produce } from "immer"
-import { Controller } from "machine-wasm"
+import setup, { Controller } from "machine-wasm"
 
 import { $nodes, addNode } from "./nodes"
 
@@ -19,12 +18,13 @@ export interface RunResult {
 }
 
 export function addMachine() {
-  const id = nanoid(4)
+  const id = manager.add();
+  if (id === undefined) return
 
   const machine: Machine = { id, source: "push 5\n\n\n\n" }
 
   const node: BlockNode = {
-    id: id,
+    id: id.toString(),
     type: "machine",
     data: machine,
     position: { x: rand(), y: rand() },
@@ -33,10 +33,9 @@ export function addMachine() {
   addNode(node)
 }
 
-export const setSource = (id: string, source: string) => {
+export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
-    const i = nodes.findIndex((node) => node.id === id)
-    nodes[i].data.source = source
+    nodes[id].data.source = source
   })
 
   $nodes.set(nodes)
@@ -44,12 +43,34 @@ export const setSource = (id: string, source: string) => {
 
 const getLogs = (events: MachineEvent[]): string[] => events.filter(e => 'Print' in e).map(e => e.Print.text)
 
-export function runCode(id: string, source: string) {
+export class MachineManager {
+  ctrl: Controller | null = null
+
+  async setup() {
+    await setup()
+    this.ctrl = Controller.create()
+    console.log('wasm ready!')
+  }
+
+  add() {
+    return this.ctrl?.add()
+  }
+
+  run(id: number, source: string): RunResult {
+    return this.ctrl?.run(id, source)
+  }
+}
+
+export const manager = new MachineManager()
+await manager.setup()
+window.manager = manager
+
+export function runCode(id: number, source: string) {
   const state = $output.get()
   const prev = state[id] ?? {}
 
   try {
-    let result = Controller.run_code(source) as RunResult
+    let result = manager.run(id, source) as RunResult
     console.log(result)
 
     $output.setKey(id, {
@@ -71,6 +92,6 @@ export function runCode(id: string, source: string) {
 
 export function runAll() {
   $nodes.get().forEach((node) => {
-    runCode(node.id, node.data.source)
+    runCode(node.data.id, node.data.source)
   })
 }

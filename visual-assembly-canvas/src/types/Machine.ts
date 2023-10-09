@@ -1,6 +1,6 @@
 export interface Machine {
   // Machine identifier.
-  id: string
+  id: number
 
   // Current source code of the machine.
   source: string

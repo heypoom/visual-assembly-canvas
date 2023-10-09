@@ -52,25 +52,27 @@ export function MachineBlock(props: NodeProps<Machine>) {
 
       <div className="px-3 py-3 border rounded-2">
         <div className="flex flex-col space-y-2 text-gray-50">
-          <div className="nodrag min-h-[100px]">
-            <CodeMirror
-              basicSetup={{ lineNumbers: false, foldGutter: false }}
-              width="300px"
-              maxHeight="400px"
-              minWidth="300px"
-              maxWidth="600px"
-              theme={cmTheme}
-              value={source}
-              lang="vasm"
-              onChange={(s: string) => setSource(id, s)}
-              extensions={extensions}
-            />
+          <div className="min-h-[100px]">
+            <div className="nodrag">
+              <CodeMirror
+                basicSetup={{ lineNumbers: false, foldGutter: false }}
+                width="300px"
+                maxHeight="400px"
+                minWidth="300px"
+                maxWidth="600px"
+                theme={cmTheme}
+                value={source}
+                lang="vasm"
+                onChange={(s: string) => setSource(id, s)}
+                extensions={extensions}
+              />
+            </div>
           </div>
 
           {state.error && (
             <div>
               <div className="text-1 text-orange-11">
-                <pre>{state.error.name}</pre>
+                <pre>{state.error.stack}</pre>
               </div>
             </div>
           )}
