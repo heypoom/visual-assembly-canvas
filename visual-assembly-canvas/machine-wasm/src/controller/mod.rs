@@ -28,8 +28,9 @@ impl Controller {
     }
 
     pub fn add(&mut self) -> u16 {
-        let m = Machine::new();
+        let mut m = Machine::new();
         let id = self.id();
+        m.id = Some(id);
         self.machines.push(m);
         id
     }
