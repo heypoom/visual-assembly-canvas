@@ -11,12 +11,15 @@ import { $output } from "./results"
 
 const rand = () => Math.floor(Math.random() * 500)
 
-const controller = new Controller()
+export interface RunResult {
+  stack: number[],
+  logs: string[]
+}
 
 export function addMachine() {
   const id = nanoid(4)
 
-  const machine: Machine = { id, source: "push 5" }
+  const machine: Machine = { id, source: "push 5\n\n\n\n" }
 
   const node: BlockNode = {
     id: id,
@@ -38,23 +41,25 @@ export const setSource = (id: string, source: string) => {
 }
 
 export function runCode(id: string, source: string) {
-  try {
-    let result = controller.run_code(source)
+  const state = $output.get()
+  const prev = state[id] ?? {}
 
-    const state = $output.get()
-    state[id].logs
+  try {
+    let result = Controller.run_code(source) as RunResult
 
     $output.setKey(id, {
       error: null,
-      stack: out,
-      logs: [...state[id].logs ?? [], result],
+      stack: result.stack ?? [],
+      logs: result.logs ?? [],
     })
-    $stack.setKey(id, out)
-    $errors.setKey(id, null)
   } catch (err) {
     if (err instanceof Error) {
-      $stack.setKey(id, null)
-      $errors.setKey(id, err)
+      console.log('run code error:', err)
+
+      $output.setKey(id, {
+        ...prev,
+        error: err,
+      })
     }
   }
 }

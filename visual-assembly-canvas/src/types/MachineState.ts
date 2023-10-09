@@ -1,7 +1,7 @@
 export interface MachineState {
   error: Error | null
-  stack: Uint16Array | null
-  logs: string[] | null
+  stack: number[]
+  logs: string[]
 }
 
 export type MachineStates = Record<string, MachineState>

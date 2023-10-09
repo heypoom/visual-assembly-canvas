@@ -1,22 +1,24 @@
 use serde::{Deserialize, Serialize};
-use machine::{Execute, Machine};
 use wasm_bindgen::prelude::*;
+use machine::{Execute, Machine};
 
 #[wasm_bindgen]
-pub struct Controller {
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Controller {}
 
-}
-
-#[wasm_bindgen]
 #[derive(Serialize, Deserialize)]
 pub struct RunResult {
-    stack: Vec<u16>,
-    logs: Vec<String>
+    pub stack: Vec<u16>,
+    pub logs: Vec<String>
 }
 
 #[wasm_bindgen]
 impl Controller {
-    pub fn run_code(&self, source: &str) -> RunResult {
+    pub fn create() -> Controller {
+        Controller {}
+    }
+
+    pub fn run_code(source: &str) -> Result<JsValue, JsValue> {
         let mut m: Machine = source.into();
         m.run();
 
@@ -27,6 +29,8 @@ impl Controller {
         }).collect();
 
         let stack = m.mem.read_stack(10);
-        RunResult { stack, logs }
+        let result = RunResult { stack, logs };
+
+        Ok(serde_wasm_bindgen::to_value(&result)?)
     }
 }

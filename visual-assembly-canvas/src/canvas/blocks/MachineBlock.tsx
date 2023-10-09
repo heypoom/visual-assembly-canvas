@@ -9,12 +9,12 @@ import { keymap } from "@codemirror/view"
 
 import { Machine } from "../../types/Machine"
 import { setSource, runCode } from "../../store/machines"
-import { $errors, $stack } from "../../store/results"
 
 import { cmTheme } from "../../editor/theme"
 import { vasmLanguage } from "../../editor/syntax"
 import { $editorConfig, EditorConfig } from "../../store/editor.ts"
 import { useMemo } from "react"
+import {$output} from "../../store/results.ts";
 
 function getExtensions(m: Machine, config: EditorConfig) {
   const keymaps = keymap.of([
@@ -38,12 +38,10 @@ export function MachineBlock(props: NodeProps<Machine>) {
   const { id, data } = props
   const { source } = data
 
-  const outputs = useStore($stack)
-  const errors = useStore($errors)
+  const outputs = useStore($output)
 
-  const error = errors[id]
-  const rawOut = outputs[id]
-  const out = rawOut ? [...rawOut].map((x) => x) : null
+  const state = outputs[id] ?? {}
+  const stack = state.stack ? [...state.stack].map((x) => x) : null
 
   const config = useStore($editorConfig)
   const extensions = useMemo(() => getExtensions(data, config), [data, config])
@@ -54,12 +52,12 @@ export function MachineBlock(props: NodeProps<Machine>) {
 
       <div className="px-3 py-3 border rounded-2">
         <div className="flex flex-col space-y-2 text-gray-50">
-          <div className="nodrag">
+          <div className="nodrag min-h-[100px]">
             <CodeMirror
               basicSetup={{ lineNumbers: false, foldGutter: false }}
               width="300px"
+              maxHeight="400px"
               minWidth="300px"
-              minHeight="150px"
               maxWidth="600px"
               theme={cmTheme}
               value={source}
@@ -69,18 +67,28 @@ export function MachineBlock(props: NodeProps<Machine>) {
             />
           </div>
 
-          {error && (
+          {state.error && (
             <div>
               <div className="text-1 text-orange-11">
-                <pre>{error.name}</pre>
+                <pre>{state.error.name}</pre>
               </div>
             </div>
           )}
 
-          {out && (
+          {state.logs?.length ? (
+            <div className="text-cyan-11 text-1 font-medium rounded-sm px-1 bg-stone-800 mx-1">
+              {state.logs.map((log, i) => (
+                <div key={i}>
+                  &gt; {log}
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {stack && (
             <div className="flex">
-              {out.map((u, i) => (
-                <div className="rounded-sm px-1 bg-stone-800 mx-1" key={i}>
+              {stack.map((u, i) => (
+                <div className="text-1 text-crimson-11 rounded-sm px-1 bg-stone-800 mx-1" key={i}>
                   {u}
                 </div>
               ))}
