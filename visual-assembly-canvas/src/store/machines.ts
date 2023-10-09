@@ -7,6 +7,7 @@ import { Machine } from "../types/Machine"
 import { BlockNode } from "../types/Node"
 
 import { $output } from "./results"
+import { MachineState } from "../types/MachineState.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
 
@@ -44,6 +45,12 @@ export const setSource = (id: number, source: string) => {
 const getLogs = (events: MachineEvent[]): string[] =>
   events.filter((e) => "Print" in e).map((e) => e.Print.text)
 
+const toState = (result: RunResult): MachineState => ({
+  error: null,
+  stack: result.stack ?? [],
+  logs: getLogs(result.events) ?? [],
+})
+
 export class MachineManager {
   ctrl: Controller | null = null
 
@@ -64,11 +71,7 @@ export class MachineManager {
     try {
       const result = this.ctrl.run(id, source)
 
-      $output.setKey(id, {
-        error: null,
-        stack: result.stack ?? [],
-        logs: getLogs(result.events) ?? [],
-      })
+      $output.setKey(id, toState(result))
     } catch (err) {
       if (err instanceof Error) {
         console.log("run code error:", err)
@@ -99,6 +102,7 @@ export class MachineManager {
       $output.setKey(id, {
         ...prev,
         stack: this.ctrl?.read_stack(id, 10) ?? [],
+        logs: getLogs(this.ctrl?.read_events(id)),
       })
     })
   }
