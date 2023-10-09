@@ -52,7 +52,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
   const extensions = useMemo(() => getExtensions(data, config), [data, config])
 
   return (
-    <div className="font-mono">
+    <div className="font-mono bg-slate-1">
       <Handle type="source" position={Position.Left} id="ls" />
 
       <div className="px-3 py-3 border rounded-2">
