@@ -1,5 +1,4 @@
 import {nanoid} from 'nanoid'
-import {action} from 'nanostores'
 import {produce} from 'immer'
 
 import {$nodes, addNode} from './nodes'

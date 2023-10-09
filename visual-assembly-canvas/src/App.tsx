@@ -5,9 +5,9 @@ import {addMachine} from './store/machines'
 
 function App() {
   return (
-    <div className="relative">
-      <div className="">
-        <Button onClick={() => addMachine()}>Add Machine</Button>
+    <div className="relative bg-stone-900">
+      <div className="absolute left-2 top-2 z-10">
+        <Button onClick={addMachine}>Add Machine</Button>
       </div>
 
       <Canvas />
