@@ -48,10 +48,7 @@ impl Controller {
     }
 
     pub fn run(&mut self, id: u16, source: &str) -> Return {
-        // If the machine does not exist, return NULL.
-        let Some(m) = self.get_mut(id) else {
-            return Ok(JsValue::NULL)
-        };
+        let Some(m) = self.get_mut(id) else { return Ok(NULL) };
 
         // Reset the memory and registers to avoid faulty state.
         m.reg.reset();
@@ -72,7 +69,6 @@ impl Controller {
     }
 
     pub fn read(&self, id: u16, addr: u16, count: u16) -> Return {
-        // If the machine does not exist, return NULL.
         let Some(m) = self.get(id) else { return Ok(NULL) };
 
         let stack = m.mem.read(addr, count);
@@ -80,7 +76,6 @@ impl Controller {
     }
 
     pub fn read_stack(&self, id: u16, size: u16) -> Return {
-        // If the machine does not exist, return NULL.
         let Some(m) = self.get(id) else { return Ok(NULL) };
 
         let stack = m.mem.read_stack(size);
@@ -88,7 +83,6 @@ impl Controller {
     }
 
     pub fn read_mail(&self, id: u16) -> JsValue {
-        // If the machine does not exist, return NULL.
         let Some(m) = self.get(id) else { return NULL };
 
         // Return the mailbox.
@@ -96,10 +90,31 @@ impl Controller {
     }
 
     pub fn read_events(&self, id: u16) -> JsValue {
-        // If the machine does not exist, return NULL.
         let Some(m) = self.get(id) else { return NULL };
 
         // Return the events.
         to_value(&m.events).unwrap_or(NULL)
+    }
+
+    pub fn tick(&mut self) {
+        let mut messages = vec![];
+
+        // Collect messages from send events.
+        for m in &mut self.machines {
+            let Some(event) = m.events.pop() else {continue};
+
+            if let Event::Send {message} = event {
+                messages.push(message);
+            }
+        }
+
+        // Send messages to machines.
+        for message in messages {
+            let Some(dst) = self.get_mut(message.to) else { return };
+
+            dst.mailbox.push(message);
+        }
+
+        // TODO: process mailboxes.
     }
 }
