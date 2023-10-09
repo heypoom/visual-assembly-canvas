@@ -57,7 +57,7 @@ impl Orchestrator {
             Action::Data { body } => {
                 if let Some(m) = self.machines.get_mut(message.to as usize) {
                     println!("recv at {}: {:?}", message.to, body);
-                    m.mailboxes.push(message);
+                    m.mailbox.push(message);
                 }
             }
         }
@@ -92,14 +92,14 @@ mod tests {
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
 
         // The mailbox should contain one message.
-        assert_eq!(m2.mailboxes.len(), 1);
+        assert_eq!(m2.mailbox.len(), 1);
 
         // Second message is received.
         o.read_message();
 
         // The mailbox should contain two messages.
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
-        assert_eq!(m2.mailboxes, [
+        assert_eq!(m2.mailbox, [
             Message { action: Data { body: vec![0xBEEF, 0xDEAD] }, from: 0, to: 1 },
             Message { action: Data { body: vec![0b1010, 0b1100] }, from: 0, to: 1 }
         ]);
