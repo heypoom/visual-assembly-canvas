@@ -25,15 +25,8 @@ impl Controller {
     }
 
     pub fn add(&mut self) -> u16 {
-        let mut m = Machine::new();
+        let m = Machine::new();
         let id = self.id();
-
-        m.handlers.message = Some(Box::new(|msg| {
-            if let Some(m) = self.get_mut(msg.to) {
-                m.mailbox.push(msg);
-            }
-        }));
-
         self.machines.push(m);
         id
     }
