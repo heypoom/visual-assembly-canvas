@@ -3,9 +3,17 @@ import {tags as t} from '@lezer/highlight'
 
 const BG_DARK = '#111113'
 const FG_TEXT = '#ffffff'
-const BG_HIGHLIGHT = BG_DARK
+const BG_HIGHLIGHT = '#2d2d30'
 const BG_SELECT = '#036dd626'
 const FG_CARET = '#ffffff'
+const FG_COMMENT = '#6272a4'
+
+const PINK = '#ff79c6'
+const PURPLE	 = '#bd93f9'
+const WHITE = '#f8f8f2'
+const YELLOW = '#f1fa8c'
+const CYAN = '#8be9fd'
+const GREEN = '#50fa7b'
 
 export const cmTheme = createTheme({
   theme: 'dark',
@@ -24,22 +32,14 @@ export const cmTheme = createTheme({
   },
 
   styles: [
-    {tag: t.comment, color: 'pink'},
-    {tag: t.variableName, color: 'green'},
-    {tag: t.string, color: 'yellow'},
-    {tag: t.number, color: 'red'},
-    {tag: t.bool, color: FG_TEXT},
-    {tag: t.atom, color: 'lightblue'},
-    {tag: t.null, color: FG_TEXT},
-    {tag: t.keyword, color: 'orange'},
-    {tag: t.definitionKeyword, color: 'blue'},
-    {tag: t.labelName, color: 'pink'},
-    {tag: t.operator, color: FG_TEXT},
-    {tag: t.className, color: FG_TEXT},
-    {tag: t.definition(t.typeName), color: FG_TEXT},
-    {tag: t.typeName, color: FG_TEXT},
-    {tag: t.angleBracket, color: FG_TEXT},
-    {tag: t.tagName, color: FG_TEXT},
-    {tag: t.attributeName, color: FG_TEXT},
+    {tag: t.keyword, color: PINK},
+    {tag: t.number, color: PURPLE},
+    {tag: t.variableName, color: WHITE},
+    {tag: t.labelName, color: CYAN},
+    {tag: t.string, color: YELLOW},
+    {tag: t.definitionKeyword, color: GREEN},
+
+    {tag: t.comment, color: FG_COMMENT},
+    {tag: t.lineComment, color: FG_COMMENT},
   ],
 })
