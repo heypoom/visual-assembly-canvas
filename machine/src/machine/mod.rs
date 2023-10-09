@@ -73,7 +73,15 @@ impl Machine {
         let Some(id) = self.id else { return };
 
         // Add the message to the mailbox.
-        self.events.push(Send { message: Message { from: id, to, action }})
+        let message = Message { from: id, to, action };
+        self.events.push(Send { message: message.clone() });
+
+        // Invoke the event listener if it is defined.
+        if let Some(handle) = &self.handlers.message {
+            let mut handle = handle.borrow_mut();
+            handle(message);
+        };
+
     }
 }
 
