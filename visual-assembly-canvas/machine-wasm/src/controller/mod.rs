@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use machine::{Event, Execute, Machine, Parser};
-use machine::Register::SP;
 
 #[wasm_bindgen]
 pub struct Controller {
@@ -34,16 +33,19 @@ impl Controller {
         self.machines.len() as u16
     }
 
-    fn get_mut(&mut self, id: u16) -> &mut Machine {
-        self.machines.get_mut(id as usize).expect("cannot get machine")
+    fn get_mut(&mut self, id: u16) -> Option<&mut Machine> {
+        self.machines.get_mut(id as usize)
     }
 
-    fn get(&self, id: u16) -> &Machine {
-        self.machines.get(id as usize).expect("cannot get machine")
+    fn get(&self, id: u16) -> Option<&Machine> {
+        self.machines.get(id as usize)
     }
 
     pub fn run(&mut self, id: u16, source: &str) -> Result<JsValue, JsValue> {
-        let m = self.get_mut(id);
+        // If the machine does not exist, return null.
+        let Some(m) = self.get_mut(id) else {
+            return Ok(JsValue::NULL)
+        };
 
         // Reset the memory and registers to avoid faulty state.
         m.reg.reset();
@@ -64,7 +66,11 @@ impl Controller {
     }
 
     pub fn read_stack(&self, id: u16, size: u16) -> Result<JsValue, JsValue> {
-        let m = self.get(id);
+        // If the machine does not exist, return null.
+        let Some(m) = self.get(id) else {
+            return Ok(JsValue::NULL)
+        };
+
         let stack = m.mem.read_stack(size);
 
         Ok(serde_wasm_bindgen::to_value(&stack)?)
