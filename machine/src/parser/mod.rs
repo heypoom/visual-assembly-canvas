@@ -87,12 +87,17 @@ impl Parser {
             T::Identifier => {}
             T::String(..) => {}
             T::Value(..) => {}
+            T::Eof => {}
         }
 
         self.current += 1;
     }
 
     fn advance(&mut self) {
+        if self.current >= self.tokens.len() - 1 {
+            return;
+        }
+
         self.current += 1;
     }
 
@@ -123,7 +128,7 @@ impl Parser {
     }
 
     fn peek(&self) -> &Token {
-        self.tokens.get(self.current).expect("missing token!")
+        self.tokens.get(self.current).expect(&format!("cannot peek at {}", self.current))
     }
 
     fn string_value(&self) -> String {

@@ -20,6 +20,9 @@ pub enum TokenType {
 
     /// Name of the label or symbol.
     Identifier,
+
+    /// End of file.
+    Eof,
 }
 
 #[derive(Clone, Debug)]

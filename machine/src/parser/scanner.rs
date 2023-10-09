@@ -48,6 +48,10 @@ impl Scanner {
     }
 
     fn advance(&mut self) -> char {
+        if self.is_end() {
+            panic!("reached end of line");
+        }
+
         let v = self.peek();
         self.current += 1;
         v
@@ -55,6 +59,10 @@ impl Scanner {
 
     fn scan_token(&mut self) {
         let c = self.advance();
+
+        if self.is_end() {
+            return;
+        }
 
         match c {
             ' ' | '\r' | '\t' => {}

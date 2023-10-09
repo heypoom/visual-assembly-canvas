@@ -26,4 +26,12 @@ mod parser_tests {
         assert_eq!(p.symbols.data["bar"][0], 0xDEAD);
         assert_eq!(p.symbols.data["baz"][0], 0xBEEF);
     }
+
+    #[test]
+    fn test_parse_zero() {
+        let source = "push 0";
+        let mut p = Parser::new(source);
+        p.parse();
+        assert_eq!(p.ops, [Op::Push(0)])
+    }
 }
