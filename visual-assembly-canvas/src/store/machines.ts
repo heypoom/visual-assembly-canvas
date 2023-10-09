@@ -10,15 +10,15 @@ import { $output } from "./results"
 
 const rand = () => Math.floor(Math.random() * 500)
 
-type MachineEvent = {Print: {text: string}}
+type MachineEvent = { Print: { text: string } }
 
 export interface RunResult {
-  stack: number[],
+  stack: number[]
   events: MachineEvent[]
 }
 
 export function addMachine() {
-  const id = manager.add();
+  const id = manager.ctrl?.add()
   if (id === undefined) return
 
   const machine: Machine = { id, source: "push 5\n\n\n\n" }
@@ -41,7 +41,8 @@ export const setSource = (id: number, source: string) => {
   $nodes.set(nodes)
 }
 
-const getLogs = (events: MachineEvent[]): string[] => events.filter(e => 'Print' in e).map(e => e.Print.text)
+const getLogs = (events: MachineEvent[]): string[] =>
+  events.filter((e) => "Print" in e).map((e) => e.Print.text)
 
 export class MachineManager {
   ctrl: Controller | null = null
@@ -49,11 +50,7 @@ export class MachineManager {
   async setup() {
     await setup()
     this.ctrl = Controller.create()
-    console.log('wasm ready!')
-  }
-
-  add() {
-    return this.ctrl?.add()
+    console.log("wasm ready!")
   }
 
   run(id: number, source: string): RunResult {
@@ -81,7 +78,7 @@ export function runCode(id: number, source: string) {
     })
   } catch (err) {
     if (err instanceof Error) {
-      console.log('run code error:', err)
+      console.log("run code error:", err)
 
       $output.setKey(id, {
         ...prev,

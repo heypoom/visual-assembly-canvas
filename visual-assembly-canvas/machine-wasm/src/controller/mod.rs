@@ -48,6 +48,10 @@ impl Controller {
     }
 
     pub fn run(&mut self, id: u16, source: &str) -> Return {
+        // Advance to the next tick.
+        self.tick();
+
+        // Get the machine.
         let Some(m) = self.get_mut(id) else { return Ok(NULL) };
 
         // Reset the memory and registers to avoid faulty state.
@@ -59,6 +63,9 @@ impl Controller {
         m.mem.load_code(parser.ops);
         m.mem.load_symbols(parser.symbols);
         m.run();
+
+        // Advance to the next tick.
+        self.tick();
 
         // Return the stack and events.
         let stack = m.mem.read_stack(10);
