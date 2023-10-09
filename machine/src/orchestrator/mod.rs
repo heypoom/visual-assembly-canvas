@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
 use crate::{Machine, Parser, Execute, Message};
@@ -27,9 +29,9 @@ impl Orchestrator {
         {
             let tx = self.tx.clone();
 
-            m.handlers.message = Some(Box::new(move |m| {
+            m.handlers.message = Some(Rc::new(RefCell::new(move |m| {
                 tx.clone().send(m).unwrap();
-            }));
+            })));
         };
 
         self.machines.push(m);

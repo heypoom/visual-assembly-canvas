@@ -73,6 +73,7 @@ impl Machine {
 
         // If the machine does not have a message handler, it cannot send messages.
         let Some(handle) = &self.handlers.message else { return };
+        let mut handle = handle.borrow_mut();
         handle(Message { from: id, to, action });
     }
 }

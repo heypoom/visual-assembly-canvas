@@ -1,9 +1,11 @@
+use std::cell::RefCell;
 use std::fmt::{Debug, Formatter};
+use std::rc::Rc;
 use crate::Message;
 
 pub struct Handlers {
     pub print: Vec<Box<dyn Fn(&str)>>,
-    pub message: Option<Box<dyn Fn(Message)>>,
+    pub message: Option<Rc<RefCell<dyn FnMut(Message)>>>,
 }
 
 impl Debug for Handlers {

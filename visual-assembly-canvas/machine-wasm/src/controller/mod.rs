@@ -14,6 +14,8 @@ pub struct RunResult {
     pub events: Vec<Event>
 }
 
+type Return = Result<JsValue, JsValue>;
+
 #[wasm_bindgen]
 impl Controller {
     pub fn create() -> Controller {
@@ -23,8 +25,15 @@ impl Controller {
     }
 
     pub fn add(&mut self) -> u16 {
-        let m = Machine::new();
+        let mut m = Machine::new();
         let id = self.id();
+
+        m.handlers.message = Some(Box::new(|msg| {
+            if let Some(m) = self.get_mut(msg.to) {
+                m.mailbox.push(msg);
+            }
+        }));
+
         self.machines.push(m);
         id
     }
@@ -41,7 +50,7 @@ impl Controller {
         self.machines.get(id as usize)
     }
 
-    pub fn run(&mut self, id: u16, source: &str) -> Result<JsValue, JsValue> {
+    pub fn run(&mut self, id: u16, source: &str) -> Return {
         // If the machine does not exist, return null.
         let Some(m) = self.get_mut(id) else {
             return Ok(JsValue::NULL)
@@ -65,14 +74,27 @@ impl Controller {
         Ok(serde_wasm_bindgen::to_value(&result)?)
     }
 
-    pub fn read_stack(&self, id: u16, size: u16) -> Result<JsValue, JsValue> {
+    pub fn read(&self, id: u16, addr: u16, count: u16) -> Return {
         // If the machine does not exist, return null.
-        let Some(m) = self.get(id) else {
-            return Ok(JsValue::NULL)
-        };
+        let Some(m) = self.get(id) else { return Ok(JsValue::NULL) };
+
+        let stack = m.mem.read(addr, count);
+        Ok(serde_wasm_bindgen::to_value(&stack)?)
+    }
+
+    pub fn read_stack(&self, id: u16, size: u16) -> Return {
+        // If the machine does not exist, return null.
+        let Some(m) = self.get(id) else { return Ok(JsValue::NULL) };
 
         let stack = m.mem.read_stack(size);
-
         Ok(serde_wasm_bindgen::to_value(&stack)?)
+    }
+
+    pub fn read_mail(&self, id: u16) -> JsValue {
+        // If the machine does not exist, return null.
+        let Some(m) = self.get(id) else { return JsValue::NULL };
+
+        // Return the mailbox.
+        serde_wasm_bindgen::to_value(&m.mailbox).unwrap()
     }
 }
