@@ -1,8 +1,9 @@
-// import {radixThemePreset} from 'radix-themes-tw'
+import {radixThemePreset} from 'radix-themes-tw'
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  // presets: [radixThemePreset],
+  darkMode: 'class',
+  presets: [radixThemePreset],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {

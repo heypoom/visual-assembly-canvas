@@ -1,14 +1,16 @@
 import CodeMirror from '@uiw/react-codemirror'
-import {dracula} from '@uiw/codemirror-theme-dracula'
 
 import {Handle, Position, NodeProps} from 'reactflow'
 import {Button} from '@radix-ui/themes'
+import {PlayIcon} from '@radix-ui/react-icons'
 import {useStore} from '@nanostores/react'
 import {useHotkeys} from 'react-hotkeys-hook'
 
 import {Machine} from '../../types/Machine'
 import {setSource} from '../../store/machines'
 import {$outputs, runCode} from '../../store/results'
+
+import {cmTheme} from '../../editor/theme'
 
 export function MachineBlock(props: NodeProps<Machine>) {
   const {id, data} = props
@@ -26,15 +28,17 @@ export function MachineBlock(props: NodeProps<Machine>) {
     <div className="font-mono">
       <Handle type="source" position={Position.Left} id="ls" />
 
-      <div className="px-4 py-4 bg-stone-900 border border-gray-100 rounded-sm shadow-sm">
+      <div className="px-3 py-3 border rounded-2">
         <div className="flex flex-col space-y-4 text-gray-50">
-          <CodeMirror
-            basicSetup={{lineNumbers: false, foldGutter: false}}
-            theme={dracula}
-            value={source}
-            height="150"
-            onChange={(s: string) => setSource(id, s)}
-          />
+          <div className="nodrag">
+            <CodeMirror
+              basicSetup={{lineNumbers: false, foldGutter: false}}
+              theme={cmTheme}
+              value={source}
+              height="150"
+              onChange={(s: string) => setSource(id, s)}
+            />
+          </div>
 
           {out && (
             <div className="flex">
@@ -46,7 +50,13 @@ export function MachineBlock(props: NodeProps<Machine>) {
             </div>
           )}
 
-          <Button color="crimson" onClick={run}>
+          <Button
+            color="crimson"
+            variant="soft"
+            onClick={run}
+            className="font-semibold"
+          >
+            <PlayIcon />
             Run
           </Button>
         </div>

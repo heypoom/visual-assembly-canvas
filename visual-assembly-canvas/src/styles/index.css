@@ -2,3 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
+.cm-line {
+  padding: 0 !important;
+}

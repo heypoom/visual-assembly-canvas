@@ -1,38 +1,42 @@
 import {createTheme} from '@uiw/codemirror-themes'
-import {dracula} from '@uiw/codemirror-theme-dracula'
 import {tags as t} from '@lezer/highlight'
 
-/*
+const BG_DARK = '#111113'
+const FG_TEXT = '#ffffff'
+const BG_HIGHLIGHT = BG_DARK
+const BG_SELECT = '#036dd626'
+const FG_CARET = '#ffffff'
+
 export const cmTheme = createTheme({
   theme: 'dark',
 
   settings: {
-    // background: '#ffffff',
-    // backgroundImage: '',
-    // foreground: '#75baff',
-    // caret: '#5d00ff',
-    // selection: '#036dd626',
-    // selectionMatch: '#036dd626',
-    // lineHighlight: '#8a91991a',
-    // gutterBackground: '#fff',
-    // gutterForeground: '#8a919966',
+    background: BG_DARK,
+    backgroundImage: '',
+    foreground: FG_TEXT,
+    caret: FG_CARET,
+    selection: BG_SELECT,
+    selectionMatch: BG_SELECT,
+    lineHighlight: BG_HIGHLIGHT,
+    gutterBackground: BG_DARK,
+    gutterForeground: BG_DARK,
+    fontFamily: 'IBM Plex Mono, monospace',
   },
 
-  // styles: [
-  //   {tag: t.comment, color: '#787b8099'},
-  //   {tag: t.variableName, color: '#0080ff'},
-  //   {tag: [t.string, t.special(t.brace)], color: '#5c6166'},
-  //   {tag: t.number, color: '#5c6166'},
-  //   {tag: t.bool, color: '#5c6166'},
-  //   {tag: t.null, color: '#5c6166'},
-  //   {tag: t.keyword, color: '#5c6166'},
-  //   {tag: t.operator, color: '#5c6166'},
-  //   {tag: t.className, color: '#5c6166'},
-  //   {tag: t.definition(t.typeName), color: '#5c6166'},
-  //   {tag: t.typeName, color: '#5c6166'},
-  //   {tag: t.angleBracket, color: '#5c6166'},
-  //   {tag: t.tagName, color: '#5c6166'},
-  //   {tag: t.attributeName, color: '#5c6166'},
-  // ],
+  styles: [
+    {tag: t.comment, color: FG_TEXT},
+    {tag: t.variableName, color: FG_TEXT},
+    {tag: [t.string, t.special(t.brace)], color: FG_TEXT},
+    {tag: t.number, color: FG_TEXT},
+    {tag: t.bool, color: FG_TEXT},
+    {tag: t.null, color: FG_TEXT},
+    {tag: t.keyword, color: FG_TEXT},
+    {tag: t.operator, color: FG_TEXT},
+    {tag: t.className, color: FG_TEXT},
+    {tag: t.definition(t.typeName), color: FG_TEXT},
+    {tag: t.typeName, color: FG_TEXT},
+    {tag: t.angleBracket, color: FG_TEXT},
+    {tag: t.tagName, color: FG_TEXT},
+    {tag: t.attributeName, color: FG_TEXT},
+  ],
 })
-*/
