@@ -50,7 +50,7 @@ impl Orchestrator {
         machine.run();
     }
 
-    pub fn read_packet(&mut self) {
+    pub fn read_message(&mut self) {
         let Message { from, to, action } = self.rx.recv().unwrap();
 
         match action {
@@ -92,11 +92,11 @@ mod tests {
             send 0x01 0x02
         ");
 
-        o.read_packet();
+        o.read_message();
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
         assert_eq!(m2.mem.read(MAPPED_START, 2), [0xBEEF, 0xDEAD]);
 
-        o.read_packet();
+        o.read_message();
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
         assert_eq!(m2.mem.read(MAPPED_START, 2), [10, 12]);
     }
