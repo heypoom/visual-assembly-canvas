@@ -143,7 +143,7 @@ impl Scanner {
             self.advance();
         }
 
-        let num = self.peek_lexeme().parse::<u16>().expect("invalid decimal");
+        let num = self.peek_lexeme().trim().parse::<u16>().expect("invalid decimal");
         self.add_token(TokenType::Value(num));
     }
 
@@ -153,6 +153,7 @@ impl Scanner {
         }
 
         let text = self.peek_lexeme();
+        let text = text.trim();
         let hex_str = text.strip_prefix("0x").expect("no hex prefix");
         let num = u16::from_str_radix(hex_str, 16).expect("invalid hex");
         self.add_token(TokenType::Value(num));

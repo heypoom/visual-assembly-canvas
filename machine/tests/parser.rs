@@ -34,4 +34,17 @@ mod parser_tests {
         p.parse();
         assert_eq!(p.ops, [Op::Push(0)])
     }
+
+    #[test]
+    fn test_skip_eol() {
+        let source = r"push 0
+
+
+
+
+        ";
+        let mut p = Parser::new(source);
+        p.parse();
+        assert_eq!(p.ops, [Op::Push(0)])
+    }
 }
