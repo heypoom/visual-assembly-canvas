@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
+use serde_wasm_bindgen::to_value;
 use machine::{Event, Execute, Machine, Parser};
+
+const NULL: JsValue = JsValue::NULL;
 
 #[wasm_bindgen]
 pub struct Controller {
@@ -44,7 +47,7 @@ impl Controller {
     }
 
     pub fn run(&mut self, id: u16, source: &str) -> Return {
-        // If the machine does not exist, return null.
+        // If the machine does not exist, return NULL.
         let Some(m) = self.get_mut(id) else {
             return Ok(JsValue::NULL)
         };
@@ -64,30 +67,38 @@ impl Controller {
         let events = m.events.clone();
         let result = RunResult { stack, events };
 
-        Ok(serde_wasm_bindgen::to_value(&result)?)
+        Ok(to_value(&result)?)
     }
 
     pub fn read(&self, id: u16, addr: u16, count: u16) -> Return {
-        // If the machine does not exist, return null.
-        let Some(m) = self.get(id) else { return Ok(JsValue::NULL) };
+        // If the machine does not exist, return NULL.
+        let Some(m) = self.get(id) else { return Ok(NULL) };
 
         let stack = m.mem.read(addr, count);
-        Ok(serde_wasm_bindgen::to_value(&stack)?)
+        Ok(to_value(&stack)?)
     }
 
     pub fn read_stack(&self, id: u16, size: u16) -> Return {
-        // If the machine does not exist, return null.
-        let Some(m) = self.get(id) else { return Ok(JsValue::NULL) };
+        // If the machine does not exist, return NULL.
+        let Some(m) = self.get(id) else { return Ok(NULL) };
 
         let stack = m.mem.read_stack(size);
-        Ok(serde_wasm_bindgen::to_value(&stack)?)
+        Ok(to_value(&stack)?)
     }
 
     pub fn read_mail(&self, id: u16) -> JsValue {
-        // If the machine does not exist, return null.
-        let Some(m) = self.get(id) else { return JsValue::NULL };
+        // If the machine does not exist, return NULL.
+        let Some(m) = self.get(id) else { return NULL };
 
         // Return the mailbox.
-        serde_wasm_bindgen::to_value(&m.mailbox).unwrap()
+        to_value(&m.mailbox).unwrap_or(NULL)
+    }
+
+    pub fn read_events(&self, id: u16) -> JsValue {
+        // If the machine does not exist, return NULL.
+        let Some(m) = self.get(id) else { return NULL };
+
+        // Return the events.
+        to_value(&m.events).unwrap_or(NULL)
     }
 }

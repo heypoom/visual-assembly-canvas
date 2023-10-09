@@ -81,7 +81,6 @@ impl Machine {
             let mut handle = handle.borrow_mut();
             handle(message);
         };
-
     }
 }
 

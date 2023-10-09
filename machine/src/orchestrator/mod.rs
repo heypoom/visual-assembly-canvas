@@ -87,6 +87,10 @@ mod tests {
             send 0x01 0x02
         ");
 
+        // Event log should contain two Send events.
+        let m1 = o.get(m1_id);
+        assert_eq!(m1.events.len(), 2);
+
         // First message is received.
         o.read_message();
         let m2 = o.get(m2_id);
