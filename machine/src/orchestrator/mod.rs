@@ -100,8 +100,8 @@ mod tests {
         // The mailbox should contain two messages.
         let m2 = o.machines.get_mut(m2_id as usize).unwrap();
         assert_eq!(m2.mailboxes, [
-            Message { action: Data { body: vec![48879, 57005] }, from: 0, to: 1 },
-            Message { action: Data { body: vec![10, 12] }, from: 0, to: 1 }
+            Message { action: Data { body: vec![0xBEEF, 0xDEAD] }, from: 0, to: 1 },
+            Message { action: Data { body: vec![0b1010, 0b1100] }, from: 0, to: 1 }
         ]);
     }
 }
