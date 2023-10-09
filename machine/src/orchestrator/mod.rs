@@ -1,14 +1,11 @@
 use std::sync::mpsc;
 use std::sync::mpsc::{Sender, Receiver};
-use crate::{Machine, Parser, Execute, MAPPED_START};
-use crate::packet::{Message, Packet};
-
-pub mod packet;
+use crate::{Machine, Parser, Execute, Message, Action, MAPPED_START};
 
 pub struct Orchestrator {
     pub machines: Vec<Machine>,
-    pub tx: Sender<Packet>,
-    pub rx: Receiver<Packet>,
+    pub tx: Sender<Message>,
+    pub rx: Receiver<Message>,
 }
 
 impl Orchestrator {
@@ -27,14 +24,14 @@ impl Orchestrator {
         let id = self.machine_id();
         m.id = Some(id);
 
-        m.handlers.message.push({
+        {
             let tx = self.tx.clone();
 
-            Box::new(move |m| {
+            m.handlers.message = Some(Box::new(move |m| {
                 println!("on_message: {:?}", m);
                 tx.clone().send(m).unwrap();
-            })
-        });
+            }));
+        };
 
         self.machines.push(m);
         id
@@ -54,10 +51,10 @@ impl Orchestrator {
     }
 
     pub fn read_packet(&mut self) {
-        let Packet { from, to, message } = self.rx.recv().unwrap();
+        let Message { from, to, action } = self.rx.recv().unwrap();
 
-        match message {
-            Message::Data { body } => {
+        match action {
+            Action::Data { body } => {
                 println!("broker#recv: from={} to={} body={:?}", from, to, body);
 
                 if let Some(m) = self.machines.get_mut(to as usize) {
@@ -70,8 +67,6 @@ impl Orchestrator {
                     m.mem.write(MAPPED_START, &body);
                 }
             }
-
-            Message::MapMemory { .. } => {}
         }
     }
 }

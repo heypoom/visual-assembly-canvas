@@ -1,14 +1,17 @@
 import { nanoid } from "nanoid"
 import { produce } from "immer"
-import { load_machine } from "machine-wasm"
+import { Controller } from "machine-wasm"
 
 import { $nodes, addNode } from "./nodes"
 
 import { Machine } from "../types/Machine"
 import { BlockNode } from "../types/Node"
-import { $errors, $outputs } from "./results.ts"
+
+import { $output } from "./results"
 
 const rand = () => Math.floor(Math.random() * 500)
+
+const controller = new Controller()
 
 export function addMachine() {
   const id = nanoid(4)
@@ -36,12 +39,20 @@ export const setSource = (id: string, source: string) => {
 
 export function runCode(id: string, source: string) {
   try {
-    const out = load_machine(source)
-    $outputs.setKey(id, out)
+    let stack = controller.run_code(source)
+
+    const state = $output.get()
+    state[id].logs
+
+    $output.setKey(id, {
+      error: null,
+      stack: out,
+    })
+    $stack.setKey(id, out)
     $errors.setKey(id, null)
   } catch (err) {
     if (err instanceof Error) {
-      $outputs.setKey(id, null)
+      $stack.setKey(id, null)
       $errors.setKey(id, err)
     }
   }

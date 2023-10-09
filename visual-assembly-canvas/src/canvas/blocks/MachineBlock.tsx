@@ -9,7 +9,7 @@ import { keymap } from "@codemirror/view"
 
 import { Machine } from "../../types/Machine"
 import { setSource, runCode } from "../../store/machines"
-import { $errors, $outputs } from "../../store/results"
+import { $errors, $stack } from "../../store/results"
 
 import { cmTheme } from "../../editor/theme"
 import { vasmLanguage } from "../../editor/syntax"
@@ -38,7 +38,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
   const { id, data } = props
   const { source } = data
 
-  const outputs = useStore($outputs)
+  const outputs = useStore($stack)
   const errors = useStore($errors)
 
   const error = errors[id]

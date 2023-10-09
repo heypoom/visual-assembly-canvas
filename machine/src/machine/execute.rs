@@ -1,8 +1,9 @@
+use crate::Event;
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
-use crate::packet::{Packet, Message};
+use crate::machine::{Action};
 
 pub trait Execute {
     /// Execute an instruction.
@@ -112,9 +113,13 @@ impl Execute for Machine {
 
                 let text = self.mem.string().get_str_from_bytes(bytes).expect("invalid string");
 
+                // Print the text to the screen.
                 for handler in &self.handlers.print {
                     handler(&text);
                 }
+
+                // Add the event to the event queue.
+                self.events.push(Event::Print { text });
             }
 
             Op::LoadString(addr) => {
@@ -143,18 +148,14 @@ impl Execute for Machine {
                 let mut body = vec![];
 
                 for _ in 0..size {
-                    body.push(s.pop().expect("packet body does not exist in stack"));
+                    body.push(s.pop().expect("message body does not exist in stack"));
                 }
 
-                for msg_handler in &self.handlers.message {
-                    msg_handler(Packet {
-                        message: Message::Data { body: body.clone() },
-                        from: self.id.unwrap_or(0),
-                        to,
-                    });
-                }
+                // Sends the message to the message handler.
+                self.send_message(to, Action::Data { body: body.clone() });
             }
 
+            // TODO: implement the memory map operation.
             Op::MemoryMap(..) => {}
         };
 

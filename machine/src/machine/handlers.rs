@@ -1,9 +1,9 @@
 use std::fmt::{Debug, Formatter};
-use crate::packet::Packet;
+use crate::Message;
 
 pub struct Handlers {
     pub print: Vec<Box<dyn Fn(&str)>>,
-    pub message: Vec<Box<dyn Fn(Packet) + 'static>>,
+    pub message: Option<Box<dyn Fn(Message)>>,
 }
 
 impl Debug for Handlers {
@@ -15,6 +15,6 @@ impl Debug for Handlers {
 
 impl Handlers {
     pub fn new() -> Handlers {
-        Handlers { print: vec![], message: vec![] }
+        Handlers { print: vec![], message: None }
     }
 }

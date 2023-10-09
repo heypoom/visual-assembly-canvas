@@ -7,6 +7,8 @@ use std::panic;
 use machine::{Execute, Machine};
 use wasm_bindgen::prelude::*;
 
+pub use controller::Controller;
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
