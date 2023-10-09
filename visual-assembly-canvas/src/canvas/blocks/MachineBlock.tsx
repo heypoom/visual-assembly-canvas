@@ -56,7 +56,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
       <Handle type="source" position={Position.Left} id="ls" />
 
       <div className="px-3 py-3 border rounded-2">
-        <div className="flex flex-col space-y-4 text-gray-50">
+        <div className="flex flex-col space-y-2 text-gray-50">
           <div className="nodrag">
             <CodeMirror
               basicSetup={{ lineNumbers: false, foldGutter: false }}
@@ -72,7 +72,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
           {error && (
             <div>
               <div className="text-1 text-orange-11">
-                <pre>{error.stack}</pre>
+                <pre>{error.name}</pre>
               </div>
             </div>
           )}

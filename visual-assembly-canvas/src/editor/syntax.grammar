@@ -57,11 +57,13 @@ Value {
   frac { '.' @digit+ }
   exp  { $[eE] $[+\-]? @digit+ }
 
-  string { '"' (identifier | space)* '"' }
+  string { '"' char* '"' }
+  char { $[\u{20}\u{21}\u{23}-\u{5b}\u{5d}-\u{10ffff}] | "\\" esc }
+  esc  { $["\\\/bfnrt] | "u" hex hex hex hex }
   hex  { $[0-9a-fA-F] }
+
   hex_number { "0x" hex+ }
   bin_number { "0b" hex+ }
-  // new_line { "\r\n" | "\n" | "\r" }
 
   @precedence { bin_number, hex_number, number, label, instruction, identifier, space }
 }
