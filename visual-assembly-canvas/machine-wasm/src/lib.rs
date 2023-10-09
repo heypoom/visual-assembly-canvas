@@ -1,7 +1,6 @@
 extern crate console_error_panic_hook;
 
 mod utils;
-
 mod controller;
 
 use std::panic;
@@ -14,10 +13,13 @@ extern "C" {
     fn log(text: &str);
 }
 
-#[wasm_bindgen]
-pub fn setup_system() {
+// Called when the module is instantiated.
+#[wasm_bindgen(start)]
+pub fn setup_system() -> Result<(), JsValue> {
     // Setup panic hook.
     panic::set_hook(Box::new(console_error_panic_hook::hook));
+
+    Ok(())
 }
 
 #[wasm_bindgen]
