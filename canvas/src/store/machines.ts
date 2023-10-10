@@ -69,7 +69,7 @@ export class MachineManager {
     const prev = state[id] ?? {}
 
     try {
-      const result = this.ctrl.run(id, source)
+      const result = this.ctrl?.run(id, source)
 
       $output.setKey(id, toState(result))
     } catch (err) {
