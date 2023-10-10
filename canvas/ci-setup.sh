@@ -52,3 +52,6 @@ else
 fi
 
 wasm-pack --version
+
+# Export the cargo binaries.
+export PATH="$PATH:$HOME/.cargo/bin"
