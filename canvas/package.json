@@ -1,5 +1,5 @@
 {
-  "name": "visual-assembly-canvas",
+  "name": "canvas",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -26,7 +26,7 @@
     "@uiw/codemirror-themes": "^4.21.19",
     "@uiw/react-codemirror": "^4.21.19",
     "immer": "^10.0.3",
-    "machine-wasm": "link:/Users/poom/Projects/from-opcodes-to-algorithms.rs/visual-assembly-canvas/machine-wasm/pkg",
+    "machine-wasm": "link:/Users/poom/Projects/visual-assembly-canvas/canvas/machine-wasm/pkg",
     "nanoid": "^5.0.1",
     "nanostores": "^0.9.3",
     "react": "^18.2.0",
