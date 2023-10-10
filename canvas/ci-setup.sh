@@ -22,6 +22,8 @@ fi
 # Add WebAssembly target
 if command -v rustup &>/dev/null
 then
+  rustup --version
+
   echo "setting up webassembly target"
   rustup target add wasm32-unknown-unknown
 else
@@ -48,3 +50,5 @@ else
   echo "installing wasm-pack"
   cargo install wasm-pack
 fi
+
+wasm-pack --version
