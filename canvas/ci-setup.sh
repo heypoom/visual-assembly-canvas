@@ -17,8 +17,9 @@ fi
 rustc --version
 
 # Source the cargo environment if that exists
-if [ -e $HOME/cargo/env ]
+if [ -e $HOME/.cargo/env ]
 then
+  echo "sourcing cargo/env"
   source $HOME/.cargo/env
 fi
 
