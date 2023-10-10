@@ -38,3 +38,12 @@ else
 fi
 
 rsw --version
+
+# Setup wasm-pack
+if command -v wasm-pack &>/dev/null
+then
+  echo "wasm-pack is installed."
+else
+  # Install the `wasm-pack` tool using Cargo
+  cargo install wasm-pack
+fi
