@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"rsw watch\" \"vite\"",
-    "prebuild": "./ci-setup.sh",
-    "build": "npm run prebuild && rsw build && tsc && vite build",
+    "build": "./ci-setup.sh && rsw build && tsc && vite build",
     "rsw": "rsw",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
