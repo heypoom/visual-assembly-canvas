@@ -9,12 +9,8 @@ then
   echo "rustc already is installed."
 else
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-  rustup install stable
-  rustup target add wasm32-unknown-unknown
+  echo "rustup is installed"
 fi
-
-rustc --version
 
 # Source the cargo environment if that exists
 if [ -e $HOME/.cargo/env ]
@@ -23,6 +19,16 @@ then
   source $HOME/.cargo/env
 fi
 
+# Add WebAssembly target
+if command -v rustup &>/dev/null
+then
+  echo "setting up webassembly target"
+  rustup target add wasm32-unknown-unknown
+else
+  echo "rustup command not found, not adding webassembly target!"
+fi
+
+# Setup rsw
 if command -v rsw &>/dev/null
 then
   echo "rsw already is installed."
