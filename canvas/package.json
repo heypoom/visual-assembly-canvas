@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"rsw watch\" \"vite\"",
-    "build": "rsw build && tsc && vite build",
+    "prebuild": "cargo install rsw",
+    "build": "npm run prebuild && rsw build && tsc && vite build",
     "rsw": "rsw",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
