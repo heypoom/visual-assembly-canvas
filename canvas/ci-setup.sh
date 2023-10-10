@@ -33,7 +33,7 @@ if command -v rsw &>/dev/null
 then
   echo "rsw already is installed."
 else
-  # Install the `rsw` tool using Cargo
+  echo "installing rsw"
   cargo install rsw
 fi
 
@@ -45,5 +45,6 @@ then
   echo "wasm-pack is installed."
 else
   # Install the `wasm-pack` tool using Cargo
+  echo "installing wasm-pack"
   cargo install wasm-pack
 fi
