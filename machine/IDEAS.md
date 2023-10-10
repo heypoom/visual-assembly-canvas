@@ -1,5 +1,10 @@
 # Ideas
 
+- Build key data structures and algorithms in the Rust runtime, e.g. our own `ArrayList` data structure is actually
+  built on top of our own allocator and memory manager, which just operates on a single `[u16; 0xFFFF]`
+
+- Then, build a language on top of that, which can invoke these algorithms and functions on our core runtime.
+
 ## 01: Contiguous Memory
 
 ```rust
@@ -25,7 +30,7 @@ Code segment.
 
 Data segment.
   Read-only.
-  
+
 Call stack.
   Read-write.
 
@@ -83,5 +88,6 @@ We expose a bytecode compile and run mode.
 
 ## 06. String & Symbol Definition
 
-``````
+```
 
+```

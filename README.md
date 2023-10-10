@@ -1,9 +1,14 @@
-# From Opcodes to Algorithms in Rust
+# Visual Assembly Canvas
 
-An attempt to implement the most basic build blocks such as memory management, registers, assembly-like instruction
-sets, compilers, interpreters, up to data structures and algorithms, all the way up to working programs.
+A highly visual assembly editor, infinite canvas for wiring blocks and machines together, bytecode virtual machine runnable natively and on WebAssembly, and a command-line bytecode compiler.
 
-Let's build it all from scratch in Rust, building one on top of another! For educational purposes, of course.
+## Logbook
+
+See my journal of design decisions and daily progress in my [digital garden page](https://poom.dev/from-opcodes-to-algorithms).
+
+## Part of the "From Opcodes to Algorithms" project
+
+From Opcodes to Algorithms is my 100-day project to implement the most basic build blocks such as memory management, registers, assembly-like instruction sets, compilers, interpreters, up to data structures, algorithms, all the way up to working programs. Maybe even operating systems and neural networks in the future.Let's build it all from scratch in Rust, building one on top of another!
 
 ## Checklist
 
@@ -26,6 +31,13 @@ Let's build it all from scratch in Rust, building one on top of another! For edu
 - [x] Instruction: CALL, RETURN
 - [x] Scanner and Parser
 - [x] Assembler
+- [x] Bytecode Compiler
+- [x] Command Line Compiler/Interpreter
+- [x] Node-based Visual Editor
+- [x] Actor Model, Mailboxes and Machine Queues
+- [x] Native Orchestrator
+- [x] WebAssembly-based Orchestrator using Actor Model
+- [x] Basic Run and Step
 - [ ] Palindrome
 - [ ] Array
 - [ ] ArrayList
@@ -37,10 +49,3 @@ Let's build it all from scratch in Rust, building one on top of another! For edu
 - [ ] Breadth-First Search
 - [ ] Binary Tree
 - [ ] Binary Search Tree
-
-## Implementation Ideas
-
-- Build key data structures and algorithms in the Rust runtime, e.g. our own `ArrayList` data structure is actually
-  built on top of our own allocator and memory manager, which just operates on a single `[u16; 0xFFFF]`
-
-- Then, build a language on top of that, which can invoke these algorithms and functions on our core runtime.
