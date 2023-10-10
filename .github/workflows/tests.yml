@@ -1,4 +1,4 @@
-on: [ push ]
+on: [push]
 
 name: Test
 
@@ -6,15 +6,10 @@ jobs:
   build_and_test:
     name: Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./machine
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --release --all-features
+      - run: cargo test --release --all-features
+        working-directory: ./machine
