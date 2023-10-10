@@ -1,6 +1,6 @@
 # Visual Assembly Canvas
 
-![Screenshot of Visual Assembly Canvas](./docs/images/screenshot-1.jpg)
+![Screenshot of Visual Assembly Canvas](./docs/images/canvas-1.jpg)
 
 A highly visual assembly editor, infinite canvas for wiring blocks and machines together, bytecode virtual machine runnable natively and on WebAssembly, and a command-line bytecode compiler.
 
