@@ -152,7 +152,7 @@ impl Execute for Machine {
                 }
 
                 // Sends the message to the message handler.
-                self.send_message(to, Action::Data { body: body.clone() });
+                self.send_message(to, Action::Data { body });
             }
 
             Op::Receive => {
