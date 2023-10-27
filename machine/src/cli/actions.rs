@@ -16,7 +16,6 @@ pub fn run_from_binary_file(path: &str, is_debug: bool) {
 
     let mut m = load_from_binary(&u8_vec_to_u16(bytes));
     m.is_debug = is_debug;
-    m.handlers.print.push(Box::new(|s: &_| print!("{}", s)));
     m.run();
 
     if is_debug {
@@ -29,7 +28,6 @@ pub fn run_from_source(path: &str, is_debug: bool) {
 
     let mut m: Machine = (*source).into();
     m.is_debug = is_debug;
-    m.handlers.print.push(Box::new(|s: &_| print!("{}", s)));
     m.run();
 
     if is_debug {

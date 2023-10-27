@@ -1,20 +1,20 @@
-use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
-use serde_wasm_bindgen::to_value;
 use machine::{Event, Execute, Machine, Parser};
+use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::to_value;
+use wasm_bindgen::prelude::*;
 
 const NULL: JsValue = JsValue::NULL;
 
 #[wasm_bindgen]
 pub struct Controller {
     #[wasm_bindgen(skip)]
-    pub machines: Vec<Machine>
+    pub machines: Vec<Machine>,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct RunResult {
     pub stack: Vec<u16>,
-    pub events: Vec<Event>
+    pub events: Vec<Event>,
 }
 
 type Return = Result<JsValue, JsValue>;
@@ -22,9 +22,7 @@ type Return = Result<JsValue, JsValue>;
 #[wasm_bindgen]
 impl Controller {
     pub fn create() -> Controller {
-        Controller {
-            machines: vec![]
-        }
+        Controller { machines: vec![] }
     }
 
     pub fn add(&mut self) -> u16 {
@@ -64,7 +62,9 @@ impl Controller {
         self.update();
         self.load(id, source);
 
-        let Some(m) = self.get_mut(id) else { return Ok(NULL) };
+        let Some(m) = self.get_mut(id) else {
+            return Ok(NULL);
+        };
         m.run();
 
         // Return the stack and events.
@@ -76,14 +76,18 @@ impl Controller {
     }
 
     pub fn read(&self, id: u16, addr: u16, count: u16) -> Return {
-        let Some(m) = self.get(id) else { return Ok(NULL) };
+        let Some(m) = self.get(id) else {
+            return Ok(NULL);
+        };
 
         let stack = m.mem.read(addr, count);
         Ok(to_value(&stack)?)
     }
 
     pub fn read_stack(&self, id: u16, size: u16) -> Return {
-        let Some(m) = self.get(id) else { return Ok(NULL) };
+        let Some(m) = self.get(id) else {
+            return Ok(NULL);
+        };
 
         let stack = m.mem.read_stack(size);
         Ok(to_value(&stack)?)
@@ -106,23 +110,29 @@ impl Controller {
     pub fn update(&mut self) {
         let mut messages = vec![];
 
-        // Collect messages from send events.
+        // Process events from the machines until the queue is empty.
         for m in &mut self.machines {
-            let Some(event) = m.events.pop() else {continue};
+            // These events will be processed later.
+            let mut pending = vec![];
 
-            if let Event::Send {message} = event {
-                messages.push(message);
+            while m.events.len() > 0 {
+                let Some(event) = m.events.pop() else { break };
+
+                match event {
+                    Event::Send { message } => messages.push(message),
+                    _ => pending.push(event),
+                }
             }
+
+            m.events = pending;
         }
 
         // Send messages to machines.
         for message in messages {
-            let Some(dst) = self.get_mut(message.to) else { return };
-
-            dst.mailbox.push(message);
+            if let Some(dst) = self.get_mut(message.to) {
+                dst.mailbox.push(message);
+            };
         }
-
-        // TODO: process mailboxes.
     }
 
     pub fn step(&mut self, id: u16) {

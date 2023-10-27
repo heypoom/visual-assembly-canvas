@@ -113,11 +113,6 @@ impl Execute for Machine {
 
                 let text = self.mem.string().get_str_from_bytes(bytes).expect("invalid string");
 
-                // Print the text to the screen.
-                for handler in &self.handlers.print {
-                    handler(&text);
-                }
-
                 // Add the event to the event queue.
                 self.events.push(Event::Print { text });
             }

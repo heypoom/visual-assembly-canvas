@@ -4,7 +4,6 @@ use std::rc::Rc;
 use crate::Message;
 
 pub struct Handlers {
-    pub print: Vec<Box<dyn Fn(&str)>>,
     pub message: Option<Rc<RefCell<dyn FnMut(Message)>>>,
 }
 
@@ -17,6 +16,6 @@ impl Debug for Handlers {
 
 impl Handlers {
     pub fn new() -> Handlers {
-        Handlers { print: vec![], message: None }
+        Handlers { message: None }
     }
 }
