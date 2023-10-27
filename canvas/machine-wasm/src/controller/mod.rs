@@ -116,7 +116,7 @@ impl Controller {
             // These events will be processed on the JavaScript side.
             let mut pending = vec![];
 
-            while m.events.len() > 0 {
+            while !m.events.is_empty() {
                 let Some(event) = m.events.pop() else { break };
 
                 match event {

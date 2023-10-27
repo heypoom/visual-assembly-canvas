@@ -150,6 +150,8 @@ impl Execute for Machine {
             }
 
             Op::Receive => {
+                if self.mailbox.is_empty() { return; }
+
                 let Some(message) = self.mailbox.pop() else { return; };
 
                 match message.action {

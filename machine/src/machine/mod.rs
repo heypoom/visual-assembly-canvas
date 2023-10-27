@@ -30,7 +30,7 @@ pub struct Machine {
     pub events: Vec<Event>,
 
     /// Mailbox contains messages sent to this machine.
-    pub mailbox: Vec<Message>,
+    pub mailbox: Vec<Message>
 }
 
 impl Machine {
