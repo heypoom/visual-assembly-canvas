@@ -108,11 +108,12 @@ impl Controller {
     }
 
     pub fn update(&mut self) {
+        // Collect messages from every machine.
         let mut messages = vec![];
 
         // Process events from the machines until the queue is empty.
         for m in &mut self.machines {
-            // These events will be processed later.
+            // These events will be processed on the JavaScript side.
             let mut pending = vec![];
 
             while m.events.len() > 0 {
@@ -133,6 +134,18 @@ impl Controller {
                 dst.mailbox.push(message);
             };
         }
+    }
+
+    pub fn consume(&mut self, id: u16) -> JsValue {
+        let Some(m) = self.get_mut(id) else {
+            return NULL;
+        };
+
+        let mailbox = m.mailbox.clone();
+        m.mailbox = vec![];
+
+        // Return the mailbox.
+        to_value(&mailbox).unwrap_or(NULL)
     }
 
     pub fn step(&mut self, id: u16) {
