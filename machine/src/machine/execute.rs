@@ -146,7 +146,6 @@ impl Execute for Machine {
                     body.push(s.pop().expect("message body does not exist in stack"));
                 }
 
-                // Sends the message to the message handler.
                 self.send_message(to, Action::Data { body });
             }
 
