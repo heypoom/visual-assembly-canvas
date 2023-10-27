@@ -30,7 +30,7 @@ pub struct Machine {
     pub events: Vec<Event>,
 
     /// Mailbox contains messages sent to this machine.
-    pub mailbox: Vec<Message>
+    pub mailbox: Vec<Message>,
 }
 
 impl Machine {
@@ -46,7 +46,7 @@ impl Machine {
         }
     }
 
-    /// Returns a stack orchestrator for the current machine.
+    /// Returns a stack manager for the current machine.
     pub fn stack(&mut self) -> StackManager {
         let mut stack = StackManager::new(&mut self.mem, &mut self.reg);
         stack.is_debug = self.is_debug;

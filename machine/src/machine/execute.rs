@@ -150,17 +150,17 @@ impl Execute for Machine {
             }
 
             Op::Receive => {
-                if self.mailbox.is_empty() { return; }
-
-                let Some(message) = self.mailbox.pop() else { return; };
-
-                match message.action {
-                    Action::Data { body } => {
-                        for v in body.iter() {
-                            self.stack().push(*v).expect("push error");
-                        }
-                    }
-                }
+                // if self.mailbox.is_empty() { return; }
+                //
+                // let Some(message) = self.mailbox.pop() else { return; };
+                //
+                // match message.action {
+                //     Action::Data { body } => {
+                //         for v in body.iter() {
+                //             self.stack().push(*v).expect("push error");
+                //         }
+                //     }
+                // }
             }
 
             // TODO: implement the memory map operation.
