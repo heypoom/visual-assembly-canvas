@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use mockall::{automock, predicate::*};
     use machine::{compile_to_binary, load_from_binary, load_test_file, load_test_program, Execute, Machine, Op, WithStringManager};
     use machine::Event::Print;
 
@@ -30,20 +29,15 @@ mod tests {
     #[test]
     fn test_print_hello_world_compiled() {
         let src = load_test_file("hello-world.asm");
-        let bin = compile_to_binary(&src);
+        let bin = compile_to_binary(&src).expect("cannot compile the test program");
         let mut m = load_from_binary(&bin);
 
         expect_hello_world(&mut m);
     }
 
-    #[cfg_attr(test, automock)]
-    trait Printer {
-        fn print(&self, s: &str);
-    }
-
     /// Expect the machine to print "Hello, world!" and "Sunshine!".
     fn expect_hello_world(m: &mut Machine) {
-        m.run();
+        m.run().expect("cannot run the test program");
 
         assert_eq!(m.events, [
             Print { text: "Hello, world!".into() },

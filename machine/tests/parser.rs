@@ -4,7 +4,8 @@ mod parser_tests {
 
     #[test]
     fn test_parse_call_stack() {
-        let p: Parser = (*load_test_file("call-stack-1.asm")).into();
+        let p: Result<Parser, _> = (*load_test_file("call-stack-1.asm")).try_into();
+        let p = p.expect("cannot parse the tests file");
 
         assert_eq!(p.symbols.offsets["start"], 9);
         assert_eq!(p.symbols.offsets["add_pattern"], 2);
@@ -15,7 +16,8 @@ mod parser_tests {
 
     #[test]
     fn test_parse_strings() {
-        let p: Parser = (*load_test_file("hello-world.asm")).into();
+        let p: Result<Parser, _> = (*load_test_file("hello-world.asm")).try_into();
+        let p = p.expect("cannot parse the tests file");
 
         assert_eq!(p.symbols.strings["hello_world"], "Hello, world!");
         assert_eq!(p.symbols.offsets["hello_world"], 0);

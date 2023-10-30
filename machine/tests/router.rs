@@ -25,7 +25,7 @@ mod router_tests {
         r.load(1, src_2)?;
         r.run()?;
 
-        assert_eq!(r.get_mut(1).unwrap().stack().peek(), 180);
+        assert_eq!(r.get_mut(1).expect("cannot get second machine").stack().peek(), 180);
 
         Ok(())
     }

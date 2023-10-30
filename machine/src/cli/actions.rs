@@ -2,14 +2,17 @@ use std::fs;
 use crate::binary::bytes::{u16_vec_to_u8, u8_vec_to_u16};
 use crate::{Execute, Machine};
 use crate::cli::CLIError;
-use crate::cli::CLIError::{CannotParse, CannotWriteToFile, RunFailed};
+use crate::cli::CLIError::{CannotParse, CannotReadFile, CannotWriteToFile, RunFailed};
 use crate::compile::compile_to_binary;
 use crate::run::load_from_binary;
 
 type Errorable = Result<(), CLIError>;
 
 pub fn compile_to_file(src_path: &str, out_path: &str) -> Errorable {
-    let source = fs::read_to_string(&src_path).expect("cannot read file");
+    let source = match fs::read_to_string(&src_path) {
+        Ok(source) => source,
+        Err(_) => return Err(CannotReadFile),
+    };
 
     match compile_to_binary(&source) {
         Ok(bytecode) => {

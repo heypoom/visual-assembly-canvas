@@ -85,7 +85,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_str() -> Errorable {
+    fn test_str() -> Result<(), ParseError> {
         let mut m = Memory::new();
         let mut s = m.string();
 
