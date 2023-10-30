@@ -3,22 +3,19 @@ mod execute;
 mod event;
 mod message;
 
-use crate::{Op, Registers, Register::FP, Parser, CALL_STACK_END, CALL_STACK_START};
+use crate::{CALL_STACK_END, CALL_STACK_START, Op, Parser, Register::FP, Registers};
 use crate::Event::Send;
 use crate::mem::{Memory, StackManager};
 
 pub use self::decode::Decode;
 pub use self::execute::Execute;
-pub use self::event::{Event};
-pub use self::message::{Message, Action};
+pub use self::event::Event;
+pub use self::message::{Action, Message};
 
 #[derive(Debug)]
 pub struct Machine {
     /// Addressable identifier of the machine.
     pub id: Option<u16>,
-
-    /// Is the machine in debug mode?
-    pub is_debug: bool,
 
     /// Memory buffer of the machine.
     pub mem: Memory,
@@ -31,6 +28,12 @@ pub struct Machine {
 
     /// Mailbox contains messages sent to this machine.
     pub mailbox: Vec<Message>,
+
+    /// Is the machine in debug mode?
+    pub is_debug: bool,
+
+    /// How many messages does the machine expect to receive?
+    pub expected_receives: u16,
 }
 
 impl Machine {
@@ -38,11 +41,15 @@ impl Machine {
     pub fn new() -> Machine {
         Machine {
             id: None,
-            is_debug: false,
+
             mem: Memory::new(),
             reg: Registers::new(),
+
             events: vec![],
             mailbox: vec![],
+
+            is_debug: false,
+            expected_receives: 0,
         }
     }
 
@@ -61,6 +68,12 @@ impl Machine {
         stack
     }
 
+    /// Reset the memory and registers to avoid faulty state.
+    pub fn reset(&mut self) {
+        self.reg.reset();
+        self.mem.reset();
+    }
+
     /// Push a message to a recipient's mailbox.
     pub fn send_message(&mut self, to: u16, action: Action) {
         // If the machine has no address, it cannot send messages.
@@ -69,6 +82,25 @@ impl Machine {
         // Add the message to the mailbox.
         let message = Message { from: id, to, action };
         self.events.push(Send { message: message.clone() });
+    }
+
+    /// Processes incoming messages
+    /// TODO: do we use the `receive` instruction for every kind of message?
+    pub fn process_message(&mut self) {
+        while self.expected_receives > 0 {
+            self.expected_receives -= 1;
+
+            let Some(message) = self.mailbox.pop() else { break; };
+
+            match message.action {
+                // If the message is a data message, push the data onto the stack.
+                Action::Data { body } => {
+                    for v in body.iter() {
+                        self.stack().push(*v).expect("push error");
+                    }
+                }
+            }
+        }
     }
 }
 

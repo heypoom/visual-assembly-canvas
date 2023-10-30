@@ -1,6 +1,8 @@
 extern crate console_error_panic_hook;
 
 mod controller;
+
+#[macro_use]
 mod utils;
 
 use std::panic;

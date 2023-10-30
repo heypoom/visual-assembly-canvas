@@ -1,4 +1,4 @@
-use crate::Event;
+use crate::{Event};
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
@@ -150,17 +150,7 @@ impl Execute for Machine {
             }
 
             Op::Receive => {
-                // if self.mailbox.is_empty() { return; }
-                //
-                // let Some(message) = self.mailbox.pop() else { return; };
-                //
-                // match message.action {
-                //     Action::Data { body } => {
-                //         for v in body.iter() {
-                //             self.stack().push(*v).expect("push error");
-                //         }
-                //     }
-                // }
+                self.expected_receives += 1;
             }
 
             // TODO: implement the memory map operation.
@@ -177,6 +167,9 @@ impl Execute for Machine {
 
     // Fetch, decode and execute the instruction.
     fn tick(&mut self) {
+        // Before each instruction cycle, we collect and process the messages sequentially.
+        self.process_message();
+
         let op = self.decode();
         self.exec_op(op);
     }

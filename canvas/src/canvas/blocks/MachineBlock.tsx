@@ -21,7 +21,7 @@ function getExtensions(m: Machine, config: EditorConfig) {
     {
       key: "Enter",
       shift: () => {
-        manager.run(m.id, m.source)
+        manager.runIsolated(m.id, m.source)
         return true
       },
     },

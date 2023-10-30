@@ -1,20 +1,23 @@
-use machine::{Event, Execute, Machine, Parser};
+use machine::{Event, Execute, Message, Router};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
+use web_sys::console;
 
 const NULL: JsValue = JsValue::NULL;
 
 #[wasm_bindgen]
 pub struct Controller {
     #[wasm_bindgen(skip)]
-    pub machines: Vec<Machine>,
+    pub router: Router,
 }
 
+/// Machine state returned by the inspection function.
 #[derive(Serialize, Deserialize)]
-pub struct RunResult {
+pub struct InspectState {
     pub stack: Vec<u16>,
     pub events: Vec<Event>,
+    pub mailbox: Vec<Message>,
 }
 
 type Return = Result<JsValue, JsValue>;
@@ -22,151 +25,58 @@ type Return = Result<JsValue, JsValue>;
 #[wasm_bindgen]
 impl Controller {
     pub fn create() -> Controller {
-        Controller { machines: vec![] }
+        Controller {
+            router: Router::new(),
+        }
     }
 
+    /// Add a machine.
     pub fn add(&mut self) -> u16 {
-        let mut m = Machine::new();
-        let id = self.id();
-        m.id = Some(id);
-        self.machines.push(m);
-        id
+        self.router.add()
     }
 
-    pub fn id(&self) -> u16 {
-        self.machines.len() as u16
-    }
-
-    fn get_mut(&mut self, id: u16) -> Option<&mut Machine> {
-        self.machines.get_mut(id as usize)
-    }
-
-    fn get(&self, id: u16) -> Option<&Machine> {
-        self.machines.get(id as usize)
-    }
-
+    /// Load a program into the machine.
     pub fn load(&mut self, id: u16, source: &str) {
-        let Some(m) = self.get_mut(id) else { return };
-
-        // Reset the memory and registers to avoid faulty state.
-        m.reg.reset();
-        m.mem.reset();
-
-        // Load the code and symbols into memory.
-        let parser: Parser = source.into();
-        m.mem.load_code(parser.ops);
-        m.mem.load_symbols(parser.symbols);
+        self.router.load(id, source)
     }
 
-    pub fn run(&mut self, id: u16, source: &str) -> Return {
-        self.update();
+    /// Check if every machine is halted.
+    pub fn is_halted(&self) -> bool {
+        self.router.is_halted()
+    }
+
+    /// Run a single machine in isolation.
+    pub fn run_isolated(&mut self, id: u16, source: &str) {
         self.load(id, source);
 
-        let Some(m) = self.get_mut(id) else {
-            return Ok(NULL);
-        };
-        m.run();
-
-        // Return the stack and events.
-        let stack = m.mem.read_stack(10);
-        let events = m.events.clone();
-        let result = RunResult { stack, events };
-
-        Ok(to_value(&result)?)
-    }
-
-    pub fn read(&self, id: u16, addr: u16, count: u16) -> Return {
-        let Some(m) = self.get(id) else {
-            return Ok(NULL);
+        let Some(m) = self.router.get_mut(id) else {
+            return;
         };
 
-        let stack = m.mem.read(addr, count);
-        Ok(to_value(&stack)?)
-    }
-
-    pub fn read_stack(&self, id: u16, size: u16) -> Return {
-        let Some(m) = self.get(id) else {
-            return Ok(NULL);
-        };
-
-        let stack = m.mem.read_stack(size);
-        Ok(to_value(&stack)?)
-    }
-
-    pub fn read_mail(&self, id: u16) -> JsValue {
-        let Some(m) = self.get(id) else { return NULL };
-
-        // Return the mailbox.
-        to_value(&m.mailbox).unwrap_or(NULL)
-    }
-
-    pub fn read_events(&self, id: u16) -> JsValue {
-        let Some(m) = self.get(id) else { return NULL };
-
-        // Return the events.
-        to_value(&m.events).unwrap_or(NULL)
-    }
-
-    pub fn update(&mut self) {
-        // Collect messages from every machine.
-        let mut messages = vec![];
-
-        // Process events from the machines until the queue is empty.
-        for m in &mut self.machines {
-            // These events will be processed on the JavaScript side.
-            let mut pending = vec![];
-
-            while !m.events.is_empty() {
-                let Some(event) = m.events.pop() else { break };
-
-                match event {
-                    Event::Send { message } => messages.push(message),
-                    _ => pending.push(event),
-                }
-            }
-
-            m.events = pending;
-        }
-
-        // Send messages to machines.
-        for message in messages {
-            if let Some(dst) = self.get_mut(message.to) {
-                dst.mailbox.push(message);
-            };
-        }
-    }
-
-    pub fn consume(&mut self, id: u16) -> JsValue {
-        let Some(m) = self.get_mut(id) else {
-            return NULL;
-        };
-
-        let mailbox = m.mailbox.clone();
-        m.mailbox = vec![];
-
-        // Return the mailbox.
-        to_value(&mailbox).unwrap_or(NULL)
-    }
-
-    pub fn step(&mut self, id: u16) {
-        let Some(m) = self.get_mut(id) else { return };
         m.tick();
     }
 
-    pub fn reset(&mut self, id: u16) {
-        let Some(m) = self.get_mut(id) else { return };
-        m.reg.reset();
+    pub fn inspect(&mut self, id: u16) -> Return {
+        let Some(m) = self.router.get_mut(id) else {
+            return Ok(NULL);
+        };
+
+        let state = InspectState {
+            events: m.events.clone(),
+            mailbox: m.mailbox.clone(),
+            stack: m.mem.read_stack(10),
+        };
+
+        Ok(to_value(&state)?)
     }
 
     pub fn step_all(&mut self) {
-        for m in &mut self.machines {
-            m.tick();
-        }
+        self.router.step();
     }
+}
 
-    pub fn reset_all(&mut self) {
-        for m in &mut self.machines {
-            m.reg.reset();
-        }
-    }
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_step() {}
 }

@@ -13,13 +13,14 @@ const rand = () => Math.floor(Math.random() * 500)
 
 type MachineEvent = { Print: { text: string } }
 
-export interface RunResult {
+export interface InspectionState {
   stack: number[]
   events: MachineEvent[]
+  messages: any[]
 }
 
 export function addMachine() {
-  const id = manager.ctrl?.add()
+  const id = manager.core?.add()
   if (id === undefined) return
 
   const machine: Machine = { id, source: "push 5\n\n\n\n" }
@@ -45,53 +46,62 @@ export const setSource = (id: number, source: string) => {
 const getLogs = (events: MachineEvent[]): string[] =>
   events.filter((e) => "Print" in e).map((e) => e.Print.text)
 
-const toState = (result: RunResult): MachineState => ({
+const toState = (result: InspectionState): MachineState => ({
   error: null,
   stack: result.stack ?? [],
   logs: getLogs(result.events) ?? [],
 })
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 export class MachineManager {
-  ctrl: Controller | null = null
+  core: Controller | null = null
+
+  // How long do we delay, in milliseconds.
+  delayMs = 800
 
   async setup() {
     await setup()
-    this.ctrl = Controller.create()
+    this.core = Controller.create()
     console.log("wasm ready!")
   }
 
   load(id: number, source: string) {
-    this.ctrl?.load(id, source)
+    this.core?.load(id, source)
   }
 
-  run(id: number, source: string) {
+  inspect(id: number): InspectionState {
+    return this.core?.inspect(id)
+  }
+
+  runIsolated(id: number, source: string) {
     const state = $output.get()
     const prev = state[id] ?? {}
 
     try {
-      const result = this.ctrl?.run(id, source)
-
-      $output.setKey(id, toState(result))
+      this.core?.run_isolated(id, source)
+      $output.setKey(id, toState(this.inspect(id)))
     } catch (err) {
       if (err instanceof Error) {
         console.log("run code error:", err)
 
-        $output.setKey(id, {
-          ...prev,
-          error: err,
-        })
+        $output.setKey(id, { ...prev, error: err })
       }
     }
   }
 
-  runAll = () => {
-    $nodes.get().forEach((node) => {
-      this.run(node.data.id, node.data.source)
-    })
+  runAll = async () => {
+    while (!this.core?.is_halted()) {
+      this.stepAll()
+      console.log("> stepping...")
+
+      // Add an artificial delay to allow the user to see the changes
+      if (this.delayMs > 0) await delay(this.delayMs)
+    }
   }
 
   stepAll = () => {
-    this.ctrl?.step_all()
+    this.core?.step_all()
 
     const prevs = $output.get()
 
@@ -101,8 +111,7 @@ export class MachineManager {
 
       $output.setKey(id, {
         ...prev,
-        stack: this.ctrl?.read_stack(id, 10) ?? [],
-        logs: getLogs(this.ctrl?.read_events(id)),
+        ...toState(this.inspect(id)),
       })
     })
   }
@@ -111,5 +120,6 @@ export class MachineManager {
 export const manager = new MachineManager()
 await manager.setup()
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 window.manager = manager
