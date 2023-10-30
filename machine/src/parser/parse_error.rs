@@ -38,4 +38,7 @@ pub enum ParseError {
 
     #[snafu(display("cannot peek at a token"))]
     CannotPeekAtToken,
+
+    #[snafu(display("peek exceeds source length"))]
+    PeekExceedsSourceLength,
 }

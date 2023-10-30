@@ -1,4 +1,8 @@
+use crate::ParseError;
+use crate::ParseError::PeekExceedsSourceLength;
 use super::token::*;
+
+type Errorable = Result<(), ParseError>;
 
 #[derive(Debug)]
 pub struct Scanner {
@@ -28,26 +32,29 @@ impl Scanner {
         }
     }
 
-    pub fn scan_tokens(&mut self) {
+    pub fn scan_tokens(&mut self) -> Errorable {
         while !self.is_end() {
             self.start = self.current;
-            self.scan_token()
+            self.scan_token()?;
         }
+
+        Ok(())
     }
 
-    fn peek(&self) -> char {
-        if self.is_end() {
-            return '\0';
-        }
+    fn peek(&self) -> Result<char, ParseError> {
+        if self.is_end() { return Ok('\0'); }
 
-        self.source.chars().nth(self.current).expect("peek exceeds source length")
+        match self.source.chars().nth(self.current) {
+            Some(char) => Ok(char),
+            None => Err(PeekExceedsSourceLength)
+        }
     }
 
     fn is_end(&self) -> bool {
         self.current >= self.source.len()
     }
 
-    fn advance(&mut self) -> char {
+    fn advance(&mut self) -> Result<char, ParseError> {
         if self.is_end() {
             panic!("reached end of line");
         }
@@ -57,24 +64,25 @@ impl Scanner {
         v
     }
 
-    fn scan_token(&mut self) {
-        let c = self.advance();
+    fn scan_token(&mut self) -> Result<(), ParseError> {
+        let char = match self.advance() {
+            Ok(char) => char,
+            Err(error) => return Err(error)
+        };
 
-        if self.is_end() {
-            return;
-        }
+        if self.is_end() { return Ok(()); }
 
-        match c {
+        match char {
             ' ' | '\r' | '\t' => {}
 
             // Comments
             ';' => {
-                while self.peek() != '\n' {
-                    self.advance();
+                while self.peek()? != '\n' {
+                    self.advance()?;
                 }
             }
 
-            '"' => self.string(),
+            '"' => self.string()?,
 
             // Newlines
             '\n' => {
@@ -85,13 +93,11 @@ impl Scanner {
 
             // Data definition
             '.' => {
-                // TODO: handle `.` in identifiers.
-                if self.in_instruction || self.in_definition {
-                    return;
-                }
+                if self.in_instruction || self.in_definition { return Ok(()); }
 
-                while is_identifier(self.peek()) {
-                    self.advance();
+
+                while is_identifier(self.peek()?) {
+                    self.advance()?;
                 }
 
                 let text = self.peek_lexeme();
@@ -111,45 +117,54 @@ impl Scanner {
 
             // Parse hexadecimals.
             c if c == '0' => {
-                match self.advance() {
+                let char = match self.advance() {
+                    Ok(char) => char,
+                    Err(error) => return Err(error)
+                };
+
+                match char {
                     'x' => {
-                        self.advance();
-                        self.hex()
+                        self.advance()?;
+                        self.hex()?
                     }
 
                     'b' => {
-                        self.advance();
-                        self.binary_digit()
+                        self.advance()?;
+                        self.binary_digit()?
                     }
 
                     _ => {
-                        self.digit()
+                        self.digit()?
                     }
                 }
             }
 
             // Parse decimals.
-            c if c.is_digit(10) => self.digit(),
+            c if c.is_digit(10) => self.digit()?,
 
             // Parse identifiers.
-            c if is_identifier(c) => self.identifier(),
+            c if is_identifier(c) => self.identifier()?,
 
             _ => {}
         }
+
+        Ok(())
     }
 
-    fn digit(&mut self) {
-        while self.peek().is_digit(10) && !self.is_end() {
-            self.advance();
+    fn digit(&mut self) -> Errorable {
+        while self.peek()?.is_digit(16) && !self.is_end() {
+            self.advance()?;
         }
 
         let num = self.peek_lexeme().trim().parse::<u16>().expect("invalid decimal");
         self.add_token(TokenType::Value(num));
+
+        Ok(())
     }
 
-    fn hex(&mut self) {
-        while self.peek().is_digit(16) && !self.is_end() {
-            self.advance();
+    fn hex(&mut self) -> Errorable {
+        while self.peek()?.is_digit(16) && !self.is_end() {
+            self.advance()?;
         }
 
         let text = self.peek_lexeme();
@@ -157,45 +172,51 @@ impl Scanner {
         let hex_str = text.strip_prefix("0x").expect("no hex prefix");
         let num = u16::from_str_radix(hex_str, 16).expect("invalid hex");
         self.add_token(TokenType::Value(num));
+
+        Ok(())
     }
 
-    fn binary_digit(&mut self) {
-        while self.peek().is_digit(2) && !self.is_end() {
-            self.advance();
+    fn binary_digit(&mut self) -> Errorable {
+        while self.peek()?.is_digit(2) && !self.is_end() {
+            self.advance()?;
         }
 
         let text = self.peek_lexeme();
         let hex_str = text.strip_prefix("0b").expect("no binary prefix");
         let num = u16::from_str_radix(hex_str, 2).expect("invalid binary");
         self.add_token(TokenType::Value(num));
+
+        Ok(())
     }
 
-    fn string(&mut self) {
-        while self.peek() != '"' && !self.is_end() {
-            if self.peek() == '\n' {
+    fn string(&mut self) -> Errorable {
+        while self.peek()? != '"' && !self.is_end() {
+            if self.peek()? == '\n' {
                 self.line += 1;
-            };
+            }
 
-            self.advance();
+            self.advance()?;
         }
 
         // The closing quotes.
-        self.advance();
+        self.advance()?;
 
         // Trim the surrounding quotes.
         let text = self.source[(self.start + 1)..(self.current - 1)].to_string();
-        self.add_token(TokenType::String(text))
+        self.add_token(TokenType::String(text));
+
+        Ok(())
     }
 
-    fn identifier(&mut self) {
-        while is_identifier(self.peek()) {
-            self.advance();
+    fn identifier(&mut self) -> Errorable {
+        while is_identifier(self.peek()?) {
+            self.advance()?;
         }
 
-        match self.peek() {
+        match self.peek()? {
             // Label definition
             ':' => {
-                self.advance();
+                self.advance()?;
                 self.add_token(TokenType::LabelDefinition);
             }
 
@@ -212,6 +233,8 @@ impl Scanner {
                 self.add_token(TokenType::Identifier);
             }
         }
+
+        Ok(())
     }
 
     fn add_token(&mut self, t: TokenType) {
@@ -227,11 +250,13 @@ impl Scanner {
     }
 }
 
-impl From<&str> for Scanner {
-    fn from(source: &str) -> Self {
+impl TryFrom<&str> for Scanner {
+    type Error = ParseError;
+
+    fn try_from(source: &str) -> Result<Self, Self::Error> {
         let mut s = Scanner::new(source);
-        s.scan_tokens();
-        s
+        s.scan_tokens()?;
+        Ok(s)
     }
 }
 
@@ -241,7 +266,8 @@ mod tests {
 
     #[test]
     fn test_string_data_in_assembly() {
-        let s: Scanner = (*load_test_file("hello-world.asm")).into();
+        let s: Result<Scanner, _> = (*load_test_file("hello-world.asm")).try_into();
+        let s = s.expect("cannot read test file");
 
         assert_eq!(s.tokens[0].token_type, TokenType::StringDefinition);
         assert_eq!(s.tokens[1].token_type, TokenType::Identifier);

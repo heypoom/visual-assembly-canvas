@@ -41,7 +41,8 @@ pub struct Parser {
 
 impl Parser {
     pub fn new(source: &str) -> Parser {
-        let scanner: Scanner = source.into();
+        let scanner: Result<Scanner, _> = source.try_into();
+        let scanner = scanner.expect("failed to scan tokens!");
 
         Parser {
             tokens: scanner.tokens,
