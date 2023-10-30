@@ -50,7 +50,10 @@ pub fn run_from_binary_file(path: &str, is_debug: bool) -> Errorable {
 }
 
 pub fn run_from_source(path: &str, is_debug: bool) -> Errorable {
-    let source = fs::read_to_string(path).expect("cannot read source file");
+    let source = match fs::read_to_string(path) {
+        Ok(source) => source,
+        Err(_) => return Err(CannotReadFile),
+    };
 
     let m: Result<Machine, _> = (*source).try_into();
 
