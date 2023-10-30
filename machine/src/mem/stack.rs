@@ -113,26 +113,28 @@ mod tests {
         let mut m = Machine::new();
         let mut s = StackManager::new(&mut m.mem, &mut m.reg);
 
-        s.push(10).unwrap();
-        s.push(20).unwrap();
-        s.push(30).unwrap();
-        assert_eq!(s.pop().unwrap(), 30);
-        assert_eq!(s.pop().unwrap(), 20);
-        s.push(40).unwrap();
-        assert_eq!(s.pop().unwrap(), 40);
-        assert_eq!(s.pop().unwrap(), 10);
+        s.push(10)?;
+        s.push(20)?;
+        s.push(30)?;
+        assert_eq!(s.pop()?, 30);
+        assert_eq!(s.pop()?, 20);
+        s.push(40)?;
+        assert_eq!(s.pop()?, 40);
+        assert_eq!(s.pop()?, 10);
 
         Ok(())
     }
 
     #[test]
-    fn test_stack_underflow() {
+    fn test_stack_underflow() -> Result<(), RuntimeError> {
         let mut m = Machine::new();
         let mut s = StackManager::new(&mut m.mem, &mut m.reg);
 
-        s.push(10).unwrap();
-        s.pop().unwrap();
+        s.push(10)?;
+        s.pop()?;
         s.pop().expect_err("should fail to pop from empty stack");
+
+        Ok(())
     }
 
     #[test]
