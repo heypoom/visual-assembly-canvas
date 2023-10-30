@@ -3,7 +3,8 @@ use snafu::prelude::*;
 use crate::mem::Memory;
 use crate::register::{Register, Register::SP, Registers};
 
-use crate::{RuntimeError, STACK_END, STACK_START, StackOverflowSnafu, StackUnderflowSnafu};
+use crate::{RuntimeError, STACK_END, STACK_START};
+use crate::machine::runtime_error::{StackOverflowSnafu, StackUnderflowSnafu};
 
 #[derive(Debug)]
 pub struct StackManager<'a> {

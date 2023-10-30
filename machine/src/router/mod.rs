@@ -1,14 +1,19 @@
-use std::collections::HashMap;
-use crate::{Actor, Event, Execute, Machine, Parser, RuntimeError};
-use crate::router::status::MachineStatus;
-use crate::router::status::MachineStatus::{Awaiting, Halted, Running};
+pub mod status;
+pub mod router_error;
 
-mod status;
+use std::collections::HashMap;
+use crate::{Actor, Event, Execute, Machine, Parser};
+
+use status::MachineStatus;
+use status::MachineStatus::{Awaiting, Halted, Running};
+
+pub use router_error::RouterError::*;
+pub use router_error::RouterError;
 
 // Limit the max number of execution cycles to prevent an infinite loop.
 const MAX_ITER: u16 = 1000;
 
-type Errorable = Result<(), RuntimeError>;
+type Errorable = Result<(), RouterError>;
 
 pub struct Router {
     pub machines: Vec<Machine>,
@@ -50,13 +55,22 @@ impl Router {
     }
 
     /// Load the code and symbols into memory.
-    pub fn load(&mut self, id: u16, source: &str) {
-        let Some(m) = self.get_mut(id) else { return; };
+    pub fn load(&mut self, id: u16, source: &str) -> Errorable {
+        let Some(m) = self.get_mut(id) else { return Err(MissingMachineId { id }); };
+
         m.reset();
 
-        let parser: Parser = source.into();
+        let parser: Result<Parser, _> = (*source).try_into();
+
+        let parser = match parser {
+            Ok(parser) => parser,
+            Err(error) => return Err(CannotParse { error }),
+        };
+
         m.mem.load_code(parser.ops);
         m.mem.load_symbols(parser.symbols);
+
+        Ok(())
     }
 
     /// Mark the machines as ready for execution.
@@ -83,7 +97,9 @@ impl Router {
             }
 
             // Before each instruction cycle, we collect and process the messages sequentially.
-            m.receive_messages()?;
+            if let Err(error) = m.receive_messages() {
+                return Err(ReceiveFailed { error });
+            };
 
             // Do not tick in await mode.
             if status == &Awaiting {
@@ -96,7 +112,9 @@ impl Router {
             }
 
             // Execute the instruction.
-            m.tick()?;
+            if let Err(error) = m.tick() {
+                return Err(ExecutionFailed { error });
+            };
 
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.

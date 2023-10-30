@@ -3,7 +3,6 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 
 mod enums;
-
 mod arity;
 mod with_arg;
 mod field_values;

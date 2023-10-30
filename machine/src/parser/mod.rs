@@ -1,14 +1,19 @@
-mod token;
-mod scanner;
-mod symbols;
+pub mod token;
+pub mod scanner;
+pub mod symbols;
+pub mod parse_error;
 
 pub use token::*;
 pub use scanner::*;
 pub use symbols::*;
+pub use parse_error::*;
 
 use std::str::FromStr;
 use TokenType as T;
 use crate::{DATA_START, Op};
+use crate::ParseError::{DuplicateLabelDefinition, InvalidArgToken, InvalidIdentifier, InvalidInstruction, InvalidLabelDescription, UndefinedSymbols};
+
+type Errorable = Result<(), ParseError>;
 
 #[derive(Clone)]
 pub struct Parser {
@@ -51,15 +56,17 @@ impl Parser {
         }
     }
 
-    pub fn parse(&mut self) {
+    pub fn parse(&mut self) -> Errorable {
         // Pass 1: collect labels.
-        self.parse_tokens();
+        self.parse_tokens()?;
 
         // Pass 2: collect op with memory offsets in labels.
-        self.parse_tokens();
+        self.parse_tokens()?;
+
+        Ok(())
     }
 
-    pub fn parse_tokens(&mut self) {
+    pub fn parse_tokens(&mut self) -> Errorable {
         // Reset the parser state.
         self.current = 0;
         self.code_offset = 0;
@@ -69,19 +76,21 @@ impl Parser {
         // Parse each token.
         while self.current < self.tokens.len() {
             let token = self.peek();
-            self.parse_token(&token.clone());
+            self.parse_token(&token.clone())?;
         }
 
         // Mark symbol scanning phase to be completed.
         if !self.symbol_scanned {
             self.symbol_scanned = true;
         }
+
+        Ok(())
     }
 
-    fn parse_token(&mut self, token: &Token) {
+    fn parse_token(&mut self, token: &Token) -> Errorable {
         match token.token_type {
-            T::LabelDefinition => self.save_label(token),
-            T::Instruction => self.save_instruction(token),
+            T::LabelDefinition => self.save_label(token)?,
+            T::Instruction => self.save_instruction(token)?,
             T::StringDefinition => self.save_string(),
             T::ValueDefinition => self.save_value(),
             T::Identifier => {}
@@ -91,6 +100,8 @@ impl Parser {
         }
 
         self.current += 1;
+
+        Ok(())
     }
 
     fn advance(&mut self) {
@@ -101,20 +112,26 @@ impl Parser {
         self.current += 1;
     }
 
-    fn save_label(&mut self, token: &Token) {
+    fn save_label(&mut self, token: &Token) -> Errorable {
         // Do not process labels if the label is already scanned in the first pass.
-        if self.symbol_scanned { return; }
+        if self.symbol_scanned { return Ok(()); }
 
         let key = token.lexeme.clone();
-        let key = key.trim().strip_suffix(":").expect("label definition should end with :");
+        let Some(key) = key.trim().strip_suffix(":") else {
+            return Err(InvalidLabelDescription);
+        };
 
         // Abort if the label already exists.
         // TODO: warn the user if they defined duplicate labels!
-        if self.symbols.offsets.contains_key(key) { return; }
+        if self.symbols.offsets.contains_key(key) {
+            return Err(DuplicateLabelDefinition);
+        }
 
         // Define labels based on the token.
         let offset = self.code_offset;
         self.symbols.offsets.insert(key.to_owned(), offset);
+
+        Ok(())
     }
 
     fn identifier_name(&self) -> String {
@@ -187,61 +204,90 @@ impl Parser {
         self.data_offset += 1;
     }
 
-    fn save_instruction(&mut self, token: &Token) {
+    fn save_instruction(&mut self, token: &Token) -> Errorable {
         // Build the instruction from token.
         let op_str = token.lexeme.clone();
-        let op = self.instruction(&op_str);
+
+        let Ok(op) = self.instruction(&op_str) else {
+            return Err(InvalidInstruction);
+        };
+
         let arity = op.arity() as u16;
 
-        if op == Op::Noop { return; }
+        if op == Op::Noop { return Ok(()); }
 
         self.ops.push(op);
         self.code_offset += arity + 1;
+
+        Ok(())
     }
 
-    fn instruction(&mut self, op: &str) -> Op {
-        Op::from_str(op).expect("invalid instruction").with_arg(|| self.arg())
+    fn instruction(&mut self, op: &str) -> Result<Op, ParseError> {
+        let arg_fn = || {
+            match self.arg() {
+                Ok(value) => value,
+
+                // TODO: throw on invalid instruction cases.
+                Err(_) => 0x00,
+            }
+        };
+
+        let Ok(op) = Op::from_str(op) else {
+            return Err(InvalidInstruction);
+        };
+
+        Ok(op.with_arg(arg_fn))
     }
 
-    fn arg(&mut self) -> u16 {
+    fn arg(&mut self) -> Result<u16, ParseError> {
         self.advance();
         let token = self.peek();
 
         match token.token_type {
-            TokenType::Value(v) => v,
-            TokenType::Identifier => self.op_arg(&token.clone()),
-            _ => 0x00
+            TokenType::Value(v) => Ok(v),
+            TokenType::Identifier => Ok(self.op_arg(&token.clone())?),
+            _ => Err(InvalidArgToken)
         }
     }
 
     /// Return the memory offset of the label.
-    fn op_arg(&mut self, token: &Token) -> u16 {
+    fn op_arg(&mut self, token: &Token) -> Result<u16, ParseError> {
         // Return a placeholder for the scanning phase.
-        if !self.symbol_scanned { return 0x00; }
+        if !self.symbol_scanned { return Ok(0x00); }
 
         let key = token.lexeme.trim();
-        let offset = *self.symbols.offsets.get(key).expect("invalid identifier");
+        let Some(offset) = self.symbols.offsets.get(key) else {
+            return Err(InvalidIdentifier);
+        };
 
         // Strings should be loaded from the data segment.
         if self.symbols.strings.contains_key(key) {
-            return DATA_START + offset;
+            return Ok(DATA_START + *offset);
         }
 
         // Raw bytes are loaded directly into the code segment.
         if self.symbols.data.contains_key(key) {
-            let value = self.symbols.data.get(key).unwrap();
-            return *value.get(0).unwrap();
+            let Some(value) = self.symbols.data.get(key) else {
+                return Err(UndefinedSymbols);
+            };
+
+            return match value.get(0) {
+                Some(v) => Ok(*v),
+                None => Err(UndefinedSymbols)
+            };
         }
 
         // Labels stores the offsets within the code segment.
-        offset
+        Ok(*offset)
     }
 }
 
-impl From<&str> for Parser {
-    fn from(source: &str) -> Self {
+impl TryFrom<&str> for Parser {
+    type Error = ParseError;
+
+    fn try_from(source: &str) -> Result<Self, Self::Error> {
         let mut p = Parser::new(source);
-        p.parse();
-        p
+        p.parse()?;
+        Ok(p)
     }
 }

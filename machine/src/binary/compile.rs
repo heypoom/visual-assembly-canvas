@@ -1,4 +1,4 @@
-use crate::{Op, Parser};
+use crate::{Op, ParseError, Parser};
 
 /// Signature of the binary file.
 pub static MAGIC_BYTES: [u16; 2] = [0xDEAD, 0xBEEF];
@@ -15,8 +15,13 @@ pub fn compile_to_bytecode(ops: Vec<Op>) -> Vec<u16> {
     bytecode
 }
 
-pub fn compile_to_binary(source: &str) -> Vec<u16> {
-    let parser: Parser = (*source).into();
+pub fn compile_to_binary(source: &str) -> Result<Vec<u16>, ParseError> {
+    let parser: Result<Parser, _> = (*source).try_into();
+
+    let parser = match parser {
+        Ok(parser) => parser,
+        Err(error) => return Err(error),
+    };
 
     // [code_start, code_size, data_start, data_size]
     let mut header: [u16; 4] = [0x00, 0x00, 0x00, 0x00];
@@ -39,7 +44,8 @@ pub fn compile_to_binary(source: &str) -> Vec<u16> {
     bytes.extend(header.to_vec());
     bytes.extend(code_segment);
     bytes.extend(data_segment);
-    bytes
+
+    Ok(bytes)
 }
 
 #[cfg(test)]

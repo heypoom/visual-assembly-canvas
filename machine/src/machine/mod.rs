@@ -1,11 +1,11 @@
-mod decode;
-mod execute;
-mod event;
-mod message;
-mod actor;
-mod error;
+pub mod decode;
+pub mod execute;
+pub mod event;
+pub mod message;
+pub mod actor;
+pub mod runtime_error;
 
-use crate::{CALL_STACK_END, CALL_STACK_START, Op, Parser, Register::FP, Registers};
+use crate::{CALL_STACK_END, CALL_STACK_START, Op, ParseError, Parser, Register::FP, Registers};
 use crate::mem::{Memory, StackManager};
 
 pub use self::decode::Decode;
@@ -13,7 +13,7 @@ pub use self::execute::Execute;
 pub use self::event::Event;
 pub use self::message::{Action, Message};
 pub use self::actor::{Actor};
-pub use self::error::*;
+pub use self::runtime_error::RuntimeError;
 
 #[derive(Debug)]
 pub struct Machine {
@@ -86,12 +86,20 @@ impl From<Vec<Op>> for Machine {
     }
 }
 
-impl From<&str> for Machine {
-    fn from(source: &str) -> Self {
-        let p: Parser = source.into();
-        let mut m: Self = p.ops.into();
-        m.mem.load_symbols(p.symbols);
-        m
+impl TryFrom<&str> for Machine {
+    type Error = ParseError;
+
+    fn try_from(source: &str) -> Result<Self, Self::Error> {
+        let parser: Result<Parser, _> = source.try_into();
+
+        match parser {
+            Ok(parser) => {
+                let mut m: Self = parser.ops.into();
+                m.mem.load_symbols(parser.symbols);
+                Ok(m)
+            }
+            Err(err) => Err(err),
+        }
     }
 }
 

@@ -1,7 +1,7 @@
-mod memory;
-mod stack;
-mod segments;
-mod string;
+pub mod memory;
+pub mod stack;
+pub mod segments;
+pub mod string;
 
 pub use self::memory::*;
 pub use self::stack::*;

@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod router_tests {
-    use machine::{Router, RuntimeError};
+    use machine::{Router, RouterError};
 
     #[test]
-    fn test_send_and_receive() -> Result<(), RuntimeError> {
+    fn test_send_and_receive() -> Result<(), RouterError> {
         let src_1 = r"
             push 10
             push 20
@@ -21,8 +21,8 @@ mod router_tests {
         r.add();
         r.add();
 
-        r.load(0, src_1);
-        r.load(1, src_2);
+        r.load(0, src_1)?;
+        r.load(1, src_2)?;
         r.run()?;
 
         assert_eq!(r.get_mut(1).unwrap().stack().peek(), 180);
