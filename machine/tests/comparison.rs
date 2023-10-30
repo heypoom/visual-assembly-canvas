@@ -1,26 +1,32 @@
 #[cfg(test)]
 mod tests {
-    use machine::{Execute, Machine as M, Op};
+    use machine::{Execute, Machine as M, Op, RuntimeError};
+
+    type Errorable = Result<(), RuntimeError>;
 
     #[test]
-    fn test_eq() {
+    fn test_eq() -> Errorable {
         let mut m: M = vec![Op::Push(10), Op::Push(10), Op::Equal].into();
-        m.run();
+        m.run()?;
         assert_eq!(m.stack().peek(), 1);
 
         let mut m: M = vec![Op::Push(5), Op::Push(2), Op::Equal].into();
-        m.run();
+        m.run()?;
         assert_eq!(m.stack().peek(), 0);
+
+        Ok(())
     }
 
     #[test]
-    fn test_le_ge() {
+    fn test_le_ge() -> Errorable {
         let mut m: M = vec![Op::Push(5), Op::Push(2), Op::LessThan].into();
-        m.run();
+        m.run()?;
         assert_eq!(m.stack().peek(), 1);
 
         let mut m: M = vec![Op::Push(2), Op::Push(5), Op::GreaterThan].into();
-        m.run();
+        m.run()?;
         assert_eq!(m.stack().peek(), 1);
+
+        Ok(())
     }
 }

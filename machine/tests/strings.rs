@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod tests {
-    use machine::{Execute, Machine, Op, WithStringManager};
+    use machine::{Execute, Machine, Op, RuntimeError, WithStringManager};
 
     /// Loads string manually using the Load instruction.
     /// Note that the LoadString instruction is a more convenient alternative.
     #[test]
-    fn test_load_string_manually() {
+    fn test_load_string_manually() -> Result<(), RuntimeError> {
         let msg = "hello";
         let mut ops: Vec<Op> = vec![];
 
@@ -19,7 +19,9 @@ mod tests {
         m.mem.load_code(ops);
         assert_eq!(m.mem.read_stack(5), [0, 0, 0, 0, 0]);
 
-        m.run();
+        m.run()?;
         assert_eq!(m.mem.read_stack(5), [104, 101, 108, 108, 111]);
+
+        Ok(())
     }
 }

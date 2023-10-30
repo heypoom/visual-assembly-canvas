@@ -33,7 +33,7 @@ mod parser_tests {
     fn test_parse_zero() {
         let source = "push 0";
         let mut p = Parser::new(source);
-        p.parse();
+        p.parse().expect("cannot parse the source");
         assert_eq!(p.ops, [Op::Push(0)])
     }
 
@@ -45,8 +45,9 @@ mod parser_tests {
 
 
         ";
+
         let mut p = Parser::new(source);
-        p.parse();
+        p.parse().expect("cannot parse the source with empty lines");
         assert_eq!(p.ops, [Op::Push(0)])
     }
 }

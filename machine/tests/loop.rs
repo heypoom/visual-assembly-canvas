@@ -17,7 +17,7 @@ mod loop_tests {
         ]
             .into();
 
-        m.run();
+        m.run().expect("cannot run the test program");
 
         assert_eq!(m.mem.read_stack(2), [22, 255]);
     }

@@ -5,7 +5,8 @@ mod call_stack_tests {
     #[test]
     fn test_call_stack_asm() {
         let mut m: Machine = load_test_program("call-stack-1.asm");
-        m.run();
+        m.run().expect("cannot run the test program");
+
         assert_eq!(
             m.mem.read_stack(6),
             [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]
@@ -22,10 +23,10 @@ mod call_stack_tests {
             Op::Return,
             Op::Call(2), // [start]
             Op::Call(2),
-        ]
-            .into();
+        ].into();
 
-        m.run();
+        m.run().expect("cannot run the test program");
+
         assert_eq!(
             m.mem.read_stack(6),
             [0xAA, 0b11001100, 1024, 0xAA, 0b11001100, 1024]

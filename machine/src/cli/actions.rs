@@ -30,7 +30,10 @@ pub fn compile_to_file(src_path: &str, out_path: &str) -> Errorable {
 }
 
 pub fn run_from_binary_file(path: &str, is_debug: bool) -> Errorable {
-    let bytes = fs::read(path).expect("cannot read bytecode file");
+    let bytes = match fs::read(path) {
+        Ok(bytes) => bytes,
+        Err(_) => return Err(CannotReadFile),
+    };
 
     let mut m = load_from_binary(&u8_vec_to_u16(bytes));
     m.is_debug = is_debug;
