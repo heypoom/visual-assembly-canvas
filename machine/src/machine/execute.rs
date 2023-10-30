@@ -1,19 +1,21 @@
-use crate::{Event};
+use crate::{Event, RuntimeError};
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
 
+type Errorable = Result<(), RuntimeError>;
+
 pub trait Execute {
     /// Execute an instruction.
-    fn exec_op(&mut self, op: Op);
+    fn exec_op(&mut self, op: Op) -> Errorable;
 
     /// Executes the current instruction.
-    fn tick(&mut self);
+    fn tick(&mut self) -> Errorable;
 
     /// Runs the machine until it halts.
-    fn run(&mut self);
+    fn run(&mut self) -> Errorable;
 
     /// Returns whether the machine should halt.
     fn should_halt(&self) -> bool;
@@ -21,7 +23,7 @@ pub trait Execute {
 
 impl Execute for Machine {
     /// Execute an instruction.
-    fn exec_op(&mut self, op: Op) {
+    fn exec_op(&mut self, op: Op) -> Errorable {
         // Should we jump to a different instruction?
         let mut jump: Option<u16> = None;
 
@@ -29,9 +31,7 @@ impl Execute for Machine {
         let mut s = self.stack();
 
         match op {
-            Op::Noop => {}
-            Op::Halt => {}
-            Op::Eof => {}
+            Op::Noop | Op::Halt | Op::Eof => {}
 
             Op::Push(v) => { s.push(v).expect("push error"); }
             Op::Pop => { s.pop().expect("pop error"); }
@@ -47,22 +47,22 @@ impl Execute for Machine {
             }
 
             // Addition, subtraction, multiplication and division.
-            Op::Add => s.apply_two(|a, b| a + b),
-            Op::Sub => s.apply_two(|a, b| b - a),
-            Op::Mul => s.apply_two(|a, b| a * b),
-            Op::Div => s.apply_two(|a, b| b / a),
+            Op::Add => s.apply_two(|a, b| a + b)?,
+            Op::Sub => s.apply_two(|a, b| b - a)?,
+            Op::Mul => s.apply_two(|a, b| a * b)?,
+            Op::Div => s.apply_two(|a, b| b / a)?,
 
             // Increment and decrement.
-            Op::Inc => s.apply(|v| v + 1),
-            Op::Dec => s.apply(|v| v - 1),
+            Op::Inc => s.apply(|v| v + 1)?,
+            Op::Dec => s.apply(|v| v - 1)?,
 
             // Equality and comparison operations.
-            Op::Equal => s.apply_two(|a, b| (a == b).into()),
-            Op::NotEqual => s.apply_two(|a, b| (a != b).into()),
-            Op::LessThan => s.apply_two(|a, b| (a < b).into()),
-            Op::LessThanOrEqual => s.apply_two(|a, b| (a <= b).into()),
-            Op::GreaterThan => s.apply_two(|a, b| (a > b).into()),
-            Op::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into()),
+            Op::Equal => s.apply_two(|a, b| (a == b).into())?,
+            Op::NotEqual => s.apply_two(|a, b| (a != b).into())?,
+            Op::LessThan => s.apply_two(|a, b| (a < b).into())?,
+            Op::LessThanOrEqual => s.apply_two(|a, b| (a <= b).into())?,
+            Op::GreaterThan => s.apply_two(|a, b| (a > b).into())?,
+            Op::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into())?,
 
             // TODO: write a unit test for jump, and op that uses jump.
             //       there was a bug caused by using set(PC) instead of assigning to jump
@@ -71,33 +71,35 @@ impl Execute for Machine {
             }
 
             Op::JumpZero(addr) => {
-                if s.pop().unwrap() == 0 {
+                if let Ok(0) = s.pop() {
                     jump = Some(addr);
                 }
             }
 
             Op::JumpNotZero(addr) => {
-                if s.pop().unwrap() != 0 {
-                    jump = Some(addr);
-                }
+                if let Ok(v) = s.pop() {
+                    if v != 0 {
+                        jump = Some(addr);
+                    }
+                };
             }
 
             Op::Dup => {
                 let v = s.peek();
-                s.push(v).unwrap();
+                s.push(v)?;
             }
 
             Op::Swap => {
-                let a = s.pop().unwrap();
-                let b = s.pop().unwrap();
+                let a = s.pop()?;
+                let b = s.pop()?;
 
-                s.push(a).unwrap();
-                s.push(b).unwrap();
+                s.push(a)?;
+                s.push(b)?;
             }
 
             Op::Over => {
                 let v = s.get(1);
-                s.push(v).unwrap();
+                s.push(v)?;
             }
 
             Op::Print => {
@@ -163,20 +165,25 @@ impl Execute for Machine {
         } else {
             self.reg.inc(PC);
         }
+
+        Ok(())
     }
 
     // Fetch, decode and execute the instruction.
-    fn tick(&mut self) {
+    fn tick(&mut self) -> Errorable {
         let op = self.decode();
-        self.exec_op(op);
+
+        self.exec_op(op)
     }
 
-    fn run(&mut self) {
+    fn run(&mut self) -> Errorable {
         self.reg.set(PC, 0);
 
         while !self.should_halt() {
-            self.tick();
+            self.tick()?;
         }
+
+        Ok(())
     }
 
     fn should_halt(&self) -> bool {

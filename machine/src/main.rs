@@ -10,14 +10,14 @@ fn main() {
         None => {}
         Some(Commands::Compile { src, out }) => compile_to_file(&src, &out),
         Some(Commands::Run {
-            path,
-            from_source,
-            debug,
-        }) => {
+                 path,
+                 from_source,
+                 debug,
+             }) => {
             if from_source {
-                run_from_source(&path, debug);
+                run_from_source(&path, debug).expect("an error occurred");
             } else {
-                run_from_binary_file(&path, debug);
+                run_from_binary_file(&path, debug).expect("an error occurred");
             }
         }
     }

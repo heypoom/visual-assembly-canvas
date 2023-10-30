@@ -3,6 +3,7 @@ mod execute;
 mod event;
 mod message;
 mod actor;
+mod error;
 
 use crate::{CALL_STACK_END, CALL_STACK_START, Op, Parser, Register::FP, Registers};
 use crate::mem::{Memory, StackManager};
@@ -12,6 +13,7 @@ pub use self::execute::Execute;
 pub use self::event::Event;
 pub use self::message::{Action, Message};
 pub use self::actor::{Actor};
+pub use self::error::*;
 
 #[derive(Debug)]
 pub struct Machine {
@@ -29,6 +31,9 @@ pub struct Machine {
 
     /// Mailbox contains messages sent to this machine.
     pub mailbox: Vec<Message>,
+
+    /// User-friendly errors to expose to the user.
+    pub errors: Vec<RuntimeError>,
 
     /// Is the machine in debug mode?
     pub is_debug: bool,
@@ -48,6 +53,7 @@ impl Machine {
 
             events: vec![],
             mailbox: vec![],
+            errors: vec![],
 
             is_debug: false,
             expected_receives: 0,
@@ -73,6 +79,10 @@ impl Machine {
     pub fn reset(&mut self) {
         self.reg.reset();
         self.mem.reset();
+    }
+
+    pub fn error(&mut self, error: RuntimeError) {
+        self.errors.push(error);
     }
 }
 

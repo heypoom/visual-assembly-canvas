@@ -1,10 +1,9 @@
 use snafu::prelude::*;
-use snafu::Whatever;
 
 use crate::mem::Memory;
 use crate::register::{Register, Register::SP, Registers};
 
-use crate::{STACK_END, STACK_START};
+use crate::{RuntimeError, STACK_END, STACK_START, StackOverflowSnafu, StackUnderflowSnafu};
 
 #[derive(Debug)]
 pub struct StackManager<'a> {
@@ -38,10 +37,8 @@ impl<'a> StackManager<'a> {
         self.mem.set(self.top(), val);
     }
 
-    pub fn push(&mut self, val: u16) -> Result<(), Whatever> {
-        if self.top() >= self.max {
-            whatever!("stack overflow")
-        }
+    pub fn push(&mut self, val: u16) -> Result<(), RuntimeError> {
+        ensure!(self.top() < self.max, StackOverflowSnafu { top: self.top(), max: self.max });
 
         // DEBUG: log the pushed value.
         if self.is_debug {
@@ -65,10 +62,8 @@ impl<'a> StackManager<'a> {
         self.mem.get(self.top() - index)
     }
 
-    pub fn pop(&mut self) -> Result<u16, Whatever> {
-        if self.top() < self.min {
-            whatever!("stack underflow. top={}, min={}", self.top(), self.min)
-        }
+    pub fn pop(&mut self) -> Result<u16, RuntimeError> {
+        ensure!(self.top() >= self.min, StackUnderflowSnafu { top: self.top(), min: self.min });
 
         let v = self.peek();
 
@@ -87,20 +82,24 @@ impl<'a> StackManager<'a> {
         Ok(v)
     }
 
-    pub fn apply<F>(&mut self, f: F)
+    pub fn apply<F>(&mut self, f: F) -> Result<(), RuntimeError>
         where F: FnOnce(u16) -> u16 {
-        let a = self.pop().unwrap();
+        let a = self.pop()?;
         let value = f(a);
-        self.push(value).unwrap();
+        self.push(value)?;
+
+        Ok(())
     }
 
-    pub fn apply_two<F>(&mut self, f: F)
+    pub fn apply_two<F>(&mut self, f: F) -> Result<(), RuntimeError>
         where F: FnOnce(u16, u16) -> u16 {
-        let a = self.pop().unwrap();
-        let b = self.pop().unwrap();
+        let a = self.pop()?;
+        let b = self.pop()?;
 
         let value = f(a, b);
-        self.push(value).unwrap();
+        self.push(value)?;
+
+        Ok(())
     }
 }
 
@@ -110,7 +109,7 @@ mod tests {
     use crate::machine::Machine;
 
     #[test]
-    fn test_stack() {
+    fn test_stack() -> Result<(), RuntimeError> {
         let mut m = Machine::new();
         let mut s = StackManager::new(&mut m.mem, &mut m.reg);
 
@@ -122,6 +121,8 @@ mod tests {
         s.push(40).unwrap();
         assert_eq!(s.pop().unwrap(), 40);
         assert_eq!(s.pop().unwrap(), 10);
+
+        Ok(())
     }
 
     #[test]

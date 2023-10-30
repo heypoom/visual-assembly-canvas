@@ -56,14 +56,14 @@ impl Symbols {
     fn value(&self, key: &str) -> Option<Vec<u16>> {
         // Strings.
         if self.strings.contains_key(key) {
-            let value = self.strings.get(key).unwrap();
+            let value = self.strings.get(key)?;
 
             return Some(str_to_u16(value));
         }
 
         // Raw bytes.
         if self.data.contains_key(key) {
-            let value = self.data.get(key).unwrap();
+            let value = self.data.get(key)?;
 
             return Some(value.clone());
         }

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{Actor, Event, Execute, Machine, Parser};
+use crate::{Actor, Event, Execute, Machine, Parser, RuntimeError};
 use crate::router::status::MachineStatus;
 use crate::router::status::MachineStatus::{Awaiting, Halted, Running};
 
@@ -7,6 +7,8 @@ mod status;
 
 // Limit the max number of execution cycles to prevent an infinite loop.
 const MAX_ITER: u16 = 1000;
+
+type Errorable = Result<(), RuntimeError>;
 
 pub struct Router {
     pub machines: Vec<Machine>,
@@ -36,13 +38,15 @@ impl Router {
     }
 
     /// Run every machine until all halts.
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> Errorable {
         self.ready();
 
         for _ in 1..MAX_ITER {
             if self.is_halted() { break; }
-            self.step();
+            self.step()?;
         }
+
+        Ok(())
     }
 
     /// Load the code and symbols into memory.
@@ -65,7 +69,7 @@ impl Router {
     }
 
     /// Step once for all machines.
-    pub fn step(&mut self) {
+    pub fn step(&mut self) -> Errorable {
         self.route_messages();
 
         for m in &mut self.machines {
@@ -92,7 +96,7 @@ impl Router {
             }
 
             // Execute the instruction.
-            m.tick();
+            m.tick()?;
 
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.
@@ -100,6 +104,8 @@ impl Router {
                 self.statuses.insert(id, Awaiting);
             }
         }
+
+        Ok(())
     }
 
     pub fn is_halted(&self) -> bool {
