@@ -11,7 +11,7 @@ pub use parse_error::*;
 use std::str::FromStr;
 use TokenType as T;
 use crate::{DATA_START, Op};
-use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, DuplicateStringDefinition, InvalidArgToken, InvalidArgument, InvalidByteValue, InvalidIdentifier, InvalidInstruction, InvalidLabelDescription, InvalidStringValue, UndefinedSymbols};
+use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, DuplicateStringDefinition, InvalidArgToken, InvalidArgument, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
 
 type Errorable = Result<(), ParseError>;
 
@@ -217,10 +217,7 @@ impl Parser {
     fn save_instruction(&mut self, token: &Token) -> Errorable {
         // Build the instruction from token.
         let op_str = token.lexeme.clone();
-
-        let Ok(op) = self.instruction(&op_str) else {
-            return Err(InvalidInstruction);
-        };
+        let op = self.instruction(&op_str)?;
 
         let arity = op.arity() as u16;
 
@@ -233,27 +230,26 @@ impl Parser {
     }
 
     fn instruction(&mut self, op_str: &str) -> Result<Op, ParseError> {
-        let mut invalid_arg = false;
+        let mut errors: Vec<ParseError> = vec![];
 
         let arg_fn = || {
             match self.arg() {
                 Ok(value) => value,
 
                 // TODO: invalid arguments must throw an error!
-                Err(error) => {
-                    println!("invalid argument! {:?}", error);
-                    invalid_arg = true;
+                Err(err) => {
+                    errors.push(err);
                     0x00
                 }
             }
         };
 
         let Ok(op) = Op::from_str(op_str) else {
-            return Err(InvalidInstruction);
+            return Err(UndefinedInstruction { name: op_str.into() });
         };
 
         let op = op.with_arg(arg_fn);
-        if invalid_arg { return Err(InvalidArgument); }
+        if !errors.is_empty() { return Err(InvalidArgument { errors }); }
 
         Ok(op)
     }

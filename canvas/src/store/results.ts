@@ -4,9 +4,8 @@ import { MachineError, MachineStates } from "../types/MachineState"
 
 export const $output = map<MachineStates>({})
 
-export function setError(id: number, error: MachineError) {
+export function setError(id: number, error: MachineError | null) {
   const output = $output.get()
 
   $output.setKey(id, { ...output[id], error })
-  console.log(`error of ${id} set to`, error)
 }

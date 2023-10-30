@@ -72,6 +72,7 @@ export class MachineManager {
   load(id: number, source: string) {
     try {
       this.ctx?.load(id, source)
+      setError(id, null)
     } catch (error) {
       setError(id, error as MachineError)
     }
@@ -81,7 +82,13 @@ export class MachineManager {
     return this.ctx?.inspect(id)
   }
 
+  get hasParseErrors(): boolean {
+    return Object.values($output.get()).some((o) => o.error?.CannotParse)
+  }
+
   run = async () => {
+    if (this.hasParseErrors) return
+
     this.ctx?.ready()
     $output.set({})
 
@@ -114,12 +121,17 @@ export class MachineManager {
       const { id } = node.data
       const events = this.ctx?.consume_events(id)
 
-      const prev = output[id]
-      const state = toState({ ...this.inspect(id), events })
+      const curr = output[id]
+      const next = toState({ ...this.inspect(id), events })
 
       $output.setKey(id, {
-        ...state,
-        logs: [...(prev?.logs ?? []), ...state.logs],
+        ...next,
+
+        // Preserve logs between steps.
+        logs: [...(curr?.logs ?? []), ...next.logs],
+
+        // Preserve parse errors between steps.
+        error: curr?.error?.CannotParse ? curr.error : next.error,
       })
     })
   }

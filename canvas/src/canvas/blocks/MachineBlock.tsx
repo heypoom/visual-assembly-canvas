@@ -15,6 +15,7 @@ import { vasmLanguage } from "../../editor/syntax"
 import { $editorConfig, EditorConfig } from "../../store/editor.ts"
 import { useMemo } from "react"
 import { $output } from "../../store/results.ts"
+import { MachineError } from "../../types/MachineState.ts"
 
 function getExtensions(m: Machine, config: EditorConfig) {
   const keymaps = keymap.of([
@@ -23,6 +24,7 @@ function getExtensions(m: Machine, config: EditorConfig) {
       shift: () => {
         manager.load(m.id, m.source)
         manager.run()
+
         return true
       },
     },
@@ -33,6 +35,18 @@ function getExtensions(m: Machine, config: EditorConfig) {
   if (config.vim) extensions.push(vim())
 
   return extensions
+}
+
+const ErrorIndicator = ({ error }: { error: MachineError }) => {
+  if (error.CannotParse) {
+    return (
+      <pre>
+        Syntax errors found: {JSON.stringify(error.CannotParse.error, null, 2)}
+      </pre>
+    )
+  }
+
+  return <pre>{JSON.stringify(error, null, 2)}</pre>
 }
 
 export function MachineBlock(props: NodeProps<Machine>) {
@@ -72,10 +86,8 @@ export function MachineBlock(props: NodeProps<Machine>) {
           </div>
 
           {state.error && (
-            <div>
-              <div className="text-1 text-orange-11">
-                <pre>{JSON.stringify(state.error, null, 2)}</pre>
-              </div>
+            <div className="text-1 text-orange-11">
+              <ErrorIndicator error={state.error} />
             </div>
           )}
 

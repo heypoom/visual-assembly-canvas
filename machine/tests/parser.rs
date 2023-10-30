@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod parser_tests {
     use machine::{load_test_file, Op, Parser};
-    use machine::ParseError::InvalidInstruction;
+    use machine::ParseError::{InvalidArgument, InvalidIdentifier};
 
     #[test]
     fn test_parse_call_stack() {
@@ -54,6 +54,6 @@ mod parser_tests {
     #[test]
     fn test_undefined_value() {
         let mut p = Parser::new("push ham_cheese");
-        assert_eq!(p.parse(), Err(InvalidInstruction));
+        assert_eq!(p.parse(), Err(InvalidArgument { errors: vec![InvalidIdentifier] }));
     }
 }

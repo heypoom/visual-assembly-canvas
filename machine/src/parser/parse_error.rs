@@ -13,8 +13,8 @@ pub enum ParseError {
     #[snafu(display("invalid identifier"))]
     InvalidIdentifier,
 
-    #[snafu(display("instruction does not exist!"))]
-    InvalidInstruction,
+    #[snafu(display("instruction '{name}' does not exist!"))]
+    UndefinedInstruction { name: String },
 
     #[snafu(display("label definition should end with :"))]
     InvalidLabelDescription,
@@ -26,7 +26,7 @@ pub enum ParseError {
     DuplicateStringDefinition,
 
     #[snafu(display("invalid argument"))]
-    InvalidArgument,
+    InvalidArgument { errors: Vec<ParseError> },
 
     #[snafu(display("invalid string value"))]
     InvalidStringValue,
