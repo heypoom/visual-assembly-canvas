@@ -113,7 +113,7 @@ impl Router {
 
             // Execute the instruction.
             if let Err(error) = m.tick() {
-                return Err(ExecutionFailed { error });
+                return Err(ExecutionFailed { id, error });
             };
 
             // Pause execution until subsequent cycles

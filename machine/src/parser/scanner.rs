@@ -70,8 +70,6 @@ impl Scanner {
             Err(error) => return Err(error)
         };
 
-        if self.is_end() { return Ok(()); }
-
         match char {
             ' ' | '\r' | '\t' => {}
 
@@ -116,7 +114,7 @@ impl Scanner {
             }
 
             // Parse hexadecimals.
-            c if c == '0' => {
+            c if c == '0' && !self.is_end() => {
                 let char = match self.advance() {
                     Ok(char) => char,
                     Err(error) => return Err(error)
@@ -147,6 +145,8 @@ impl Scanner {
 
             _ => {}
         }
+
+        if self.is_end() { return Ok(()); }
 
         Ok(())
     }

@@ -1,7 +1,9 @@
 export interface MachineState {
-  error: Error | null
+  error: MachineError | null
   stack: number[]
   logs: string[]
 }
+
+export type MachineError = { CannotParse: { error: any } }
 
 export type MachineStates = Record<number, MachineState>

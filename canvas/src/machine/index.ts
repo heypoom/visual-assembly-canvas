@@ -6,8 +6,8 @@ import { $nodes, addNode } from "../store/nodes.ts"
 import { Machine } from "../types/Machine.ts"
 import { BlockNode } from "../types/Node.ts"
 
-import { $output } from "../store/results.ts"
-import { MachineState } from "../types/MachineState.ts"
+import { $output, setError } from "../store/results.ts"
+import { MachineError, MachineState } from "../types/MachineState.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
 
@@ -70,7 +70,11 @@ export class MachineManager {
   }
 
   load(id: number, source: string) {
-    this.ctx?.load(id, source)
+    try {
+      this.ctx?.load(id, source)
+    } catch (error) {
+      setError(id, error as MachineError)
+    }
   }
 
   inspect(id: number): InspectionState {
@@ -98,7 +102,11 @@ export class MachineManager {
   }
 
   step = () => {
-    this.ctx?.step()
+    try {
+      this.ctx?.step()
+    } catch (error) {
+      console.error("runtime:err", error)
+    }
 
     const output = $output.get()
 

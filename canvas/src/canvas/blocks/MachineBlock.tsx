@@ -74,7 +74,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
           {state.error && (
             <div>
               <div className="text-1 text-orange-11">
-                <pre>{state.error.stack}</pre>
+                <pre>{JSON.stringify(state.error, null, 2)}</pre>
               </div>
             </div>
           )}

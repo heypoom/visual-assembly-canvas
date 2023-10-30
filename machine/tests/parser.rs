@@ -31,8 +31,7 @@ mod parser_tests {
 
     #[test]
     fn test_parse_zero() {
-        let source = "push 0";
-        let mut p = Parser::new(source);
+        let mut p = Parser::new("push 0");
         p.parse().expect("cannot parse the source");
         assert_eq!(p.ops, [Op::Push(0)])
     }

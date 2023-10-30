@@ -8,8 +8,8 @@ pub enum RouterError {
     #[snafu(display("cannot parse the code"))]
     CannotParse { error: ParseError },
 
-    #[snafu(display("program execution results in an error"))]
-    ExecutionFailed { error: RuntimeError },
+    #[snafu(display("program execution for machine {id} results in an error"))]
+    ExecutionFailed { id: u16, error: RuntimeError },
 
     #[snafu(display("the machine with id of {id} does not exist"))]
     MissingMachineId { id: u16 },

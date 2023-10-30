@@ -26,7 +26,7 @@ pub enum ParseError {
     DuplicateStringDefinition,
 
     #[snafu(display("invalid argument"))]
-    InvalidArg,
+    InvalidArgument,
 
     #[snafu(display("invalid string value"))]
     InvalidStringValue,

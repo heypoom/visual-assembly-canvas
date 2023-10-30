@@ -24,7 +24,7 @@ type Return = Result<JsValue, JsValue>;
 fn returns(value: Result<(), RouterError>) -> Return {
     match value {
         Ok(()) => Ok(NULL),
-        Err(error) => Err(JsValue::from_str(&format!("{:?}", error))),
+        Err(error) => Err(to_value(&error)?),
     }
 }
 

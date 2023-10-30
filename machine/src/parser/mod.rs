@@ -11,7 +11,7 @@ pub use parse_error::*;
 use std::str::FromStr;
 use TokenType as T;
 use crate::{DATA_START, Op};
-use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, DuplicateStringDefinition, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidInstruction, InvalidLabelDescription, InvalidStringValue, UndefinedSymbols};
+use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, DuplicateStringDefinition, InvalidArgToken, InvalidArgument, InvalidByteValue, InvalidIdentifier, InvalidInstruction, InvalidLabelDescription, InvalidStringValue, UndefinedSymbols};
 
 type Errorable = Result<(), ParseError>;
 
@@ -107,6 +107,7 @@ impl Parser {
 
     fn advance(&mut self) {
         if self.current >= self.tokens.len() - 1 {
+            println!("cannot advance! {} >= {}", self.current, self.tokens.len());
             return;
         }
 
@@ -231,21 +232,30 @@ impl Parser {
         Ok(())
     }
 
-    fn instruction(&mut self, op: &str) -> Result<Op, ParseError> {
+    fn instruction(&mut self, op_str: &str) -> Result<Op, ParseError> {
+        let mut invalid_arg = false;
+
         let arg_fn = || {
             match self.arg() {
                 Ok(value) => value,
 
-                // TODO: throw on invalid instruction cases.
-                Err(_) => 0x00,
+                // TODO: invalid arguments must throw an error!
+                Err(error) => {
+                    println!("invalid argument! {:?}", error);
+                    invalid_arg = true;
+                    0x00
+                }
             }
         };
 
-        let Ok(op) = Op::from_str(op) else {
+        let Ok(op) = Op::from_str(op_str) else {
             return Err(InvalidInstruction);
         };
 
-        Ok(op.with_arg(arg_fn))
+        let op = op.with_arg(arg_fn);
+        if invalid_arg { return Err(InvalidArgument); }
+
+        Ok(op)
     }
 
     fn arg(&mut self) -> Result<u16, ParseError> {
@@ -254,7 +264,10 @@ impl Parser {
         match self.peek() {
             Ok(Token { token_type: TokenType::Value(v), .. }) => Ok(*v),
             Ok(token) if token.token_type == TokenType::Identifier => Ok(self.op_arg(&token.clone())?),
-            _ => Err(InvalidArgToken)
+            _otherwise => {
+                println!("otherwise {:?}", _otherwise);
+                Err(InvalidArgToken)
+            }
         }
     }
 
