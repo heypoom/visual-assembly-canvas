@@ -21,7 +21,7 @@ export interface InspectionState {
 }
 
 export function addMachine() {
-  const id = manager.core?.add()
+  const id = manager.ctx?.add()
   if (id === undefined) return
 
   const machine: Machine = { id, source: "push 5\n\n\n\n" }
@@ -56,33 +56,34 @@ const toState = (result: InspectionState): MachineState => ({
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export class MachineManager {
-  core: Controller | null = null
+  ctx: Controller | null = null
 
   /** How long do we delay, in milliseconds. */
-  delayMs = 1
+  delayMs = 0
 
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
 
   async setup() {
     await setup()
-    this.core = Controller.create()
+    this.ctx = Controller.create()
   }
 
   load(id: number, source: string) {
-    this.core?.load(id, source)
+    this.ctx?.load(id, source)
   }
 
   inspect(id: number): InspectionState {
-    return this.core?.inspect(id)
+    return this.ctx?.inspect(id)
   }
 
   run = async () => {
-    this.core?.ready()
+    this.ctx?.ready()
+    $output.set({})
 
     let cycle = 0
 
-    while (cycle < this.maxCycle && !this.core?.is_halted()) {
+    while (cycle < this.maxCycle && !this.ctx?.is_halted()) {
       this.step()
 
       // Add an artificial delay to allow the user to see the changes
@@ -91,23 +92,26 @@ export class MachineManager {
       cycle++
     }
 
-    if (cycle >= this.maxCycle && !this.core?.is_halted()) {
+    if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
       console.warn("Machine did not halt within cycle limit!")
     }
   }
 
   step = () => {
-    this.core?.step()
+    this.ctx?.step()
 
-    const prevs = $output.get()
+    const output = $output.get()
 
     $nodes.get().forEach((node) => {
       const { id } = node.data
-      const prev = prevs[id]
+      const events = this.ctx?.consume_events(id)
+
+      const prev = output[id]
+      const state = toState({ ...this.inspect(id), events })
 
       $output.setKey(id, {
-        ...prev,
-        ...toState(this.inspect(id)),
+        ...state,
+        logs: [...(prev?.logs ?? []), ...state.logs],
       })
     })
   }

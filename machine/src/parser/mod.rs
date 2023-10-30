@@ -64,7 +64,7 @@ impl Parser {
         self.current = 0;
         self.code_offset = 0;
         self.data_offset = 0;
-        self.ops = vec![];
+        self.ops.clear();
 
         // Parse each token.
         while self.current < self.tokens.len() {

@@ -1,4 +1,4 @@
-use machine::{Event, Execute, Message, Router};
+use machine::{Event, Execute, Message, Router, RuntimeError};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
@@ -67,6 +67,17 @@ impl Controller {
         };
 
         Ok(to_value(&state)?)
+    }
+
+    pub fn consume_events(&mut self, id: u16) -> Return {
+        let Some(m) = self.router.get_mut(id) else {
+            return Ok(NULL);
+        };
+
+        let events = m.events.clone();
+        m.events.clear();
+
+        Ok(to_value(&events)?)
     }
 }
 

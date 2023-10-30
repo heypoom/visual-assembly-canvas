@@ -32,9 +32,6 @@ pub struct Machine {
     /// Mailbox contains messages sent to this machine.
     pub mailbox: Vec<Message>,
 
-    /// User-friendly errors to expose to the user.
-    pub errors: Vec<RuntimeError>,
-
     /// Is the machine in debug mode?
     pub is_debug: bool,
 
@@ -53,7 +50,6 @@ impl Machine {
 
             events: vec![],
             mailbox: vec![],
-            errors: vec![],
 
             is_debug: false,
             expected_receives: 0,
@@ -79,10 +75,6 @@ impl Machine {
     pub fn reset(&mut self) {
         self.reg.reset();
         self.mem.reset();
-    }
-
-    pub fn error(&mut self, error: RuntimeError) {
-        self.errors.push(error);
     }
 }
 
