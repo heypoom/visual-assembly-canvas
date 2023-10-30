@@ -57,6 +57,10 @@ impl Controller {
         returns(self.router.run())
     }
 
+    pub fn statuses(&mut self) -> Return {
+        Ok(to_value(&self.router.get_statuses())?)
+    }
+
     pub fn is_halted(&self) -> bool {
         self.router.is_halted()
     }

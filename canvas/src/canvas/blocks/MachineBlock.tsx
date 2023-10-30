@@ -38,7 +38,17 @@ function getExtensions(m: Machine, config: EditorConfig) {
 }
 
 const ErrorIndicator = ({ error }: { error: MachineError }) => {
-  if (error.CannotParse) {
+  if ("ExecutionCycleExceeded" in error) {
+    const { status } = error.ExecutionCycleExceeded
+
+    if (status === "Awaiting") {
+      return <pre>Machine is expecting a message which never arrives.</pre>
+    }
+
+    return <pre>Execution cycle exceeded.</pre>
+  }
+
+  if ("CannotParse" in error) {
     return (
       <pre>
         Syntax errors found: {JSON.stringify(error.CannotParse.error, null, 2)}

@@ -130,6 +130,10 @@ impl Router {
         self.statuses.values().all(|s| s == &Halted)
     }
 
+    pub fn get_statuses(&self) -> HashMap<u16, MachineStatus> {
+        self.statuses.clone()
+    }
+
     pub fn get(&self, id: u16) -> Option<&Machine> {
         self.machines.iter().find(|m| m.id == Some(id))
     }

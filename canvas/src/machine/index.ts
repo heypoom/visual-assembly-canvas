@@ -7,7 +7,12 @@ import { Machine } from "../types/Machine.ts"
 import { BlockNode } from "../types/Node.ts"
 
 import { $output, setError } from "../store/results.ts"
-import { MachineError, MachineState } from "../types/MachineState.ts"
+import {
+  MachineError,
+  MachineState,
+  MachineStates,
+  MachineStatus,
+} from "../types/MachineState.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
 
@@ -86,7 +91,9 @@ export class MachineManager {
   }
 
   get hasParseErrors(): boolean {
-    return Object.values($output.get()).some((o) => o.error?.CannotParse)
+    return Object.values($output.get()).some(
+      (o) => o.error && "CannotParse" in o.error,
+    )
   }
 
   prepare = () => {
@@ -112,8 +119,16 @@ export class MachineManager {
     }
 
     if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
-      console.warn("Machine did not halt within cycle limit!")
+      this.statuses.forEach((status, id) => {
+        if (status !== "Halted") {
+          setError(id, { ExecutionCycleExceeded: { id, status } })
+        }
+      })
     }
+  }
+
+  get statuses(): Map<number, MachineStatus> {
+    return this.ctx?.statuses()
   }
 
   step = () => {
@@ -123,7 +138,11 @@ export class MachineManager {
     try {
       this.ctx?.step()
     } catch (error) {
-      console.error("runtime:err", error)
+      const err = error as MachineError
+
+      if ("ExecutionFailed" in err) {
+        setError(err.ExecutionFailed.id, err)
+      }
     }
 
     const output = $output.get()

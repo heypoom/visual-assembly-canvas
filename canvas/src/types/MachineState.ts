@@ -4,6 +4,13 @@ export interface MachineState {
   logs: string[]
 }
 
-export type MachineError = { CannotParse: { error: any } }
+export type ParseError = { CannotParse: { error: any } }
+export type RuntimeError = { ExecutionFailed: { id: number; error: any } }
+
+export type MachineError =
+  | ParseError
+  | RuntimeError
+  | { ExecutionCycleExceeded: { id: number; status: MachineStatus } }
 
 export type MachineStates = Record<number, MachineState>
+export type MachineStatus = "Running" | "Awaiting" | "Halted"
