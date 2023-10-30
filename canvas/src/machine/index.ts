@@ -64,6 +64,8 @@ export class MachineManager {
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
 
+  ready = false
+
   async setup() {
     await setup()
     this.ctx = Controller.create()
@@ -73,6 +75,7 @@ export class MachineManager {
     try {
       this.ctx?.load(id, source)
       setError(id, null)
+      this.ready = false
     } catch (error) {
       setError(id, error as MachineError)
     }
@@ -86,11 +89,16 @@ export class MachineManager {
     return Object.values($output.get()).some((o) => o.error?.CannotParse)
   }
 
+  prepare = () => {
+    if (this.ready) return
+    this.ctx?.ready()
+    this.ready = true
+  }
+
   run = async () => {
     if (this.hasParseErrors) return
-
-    this.ctx?.ready()
     $output.set({})
+    this.prepare()
 
     let cycle = 0
 
@@ -109,6 +117,9 @@ export class MachineManager {
   }
 
   step = () => {
+    if (this.hasParseErrors) return
+    this.prepare()
+
     try {
       this.ctx?.step()
     } catch (error) {
