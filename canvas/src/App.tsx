@@ -2,7 +2,7 @@ import { Button } from "@radix-ui/themes"
 import { PlayIcon, PlusCircledIcon, LapTimerIcon } from "@radix-ui/react-icons"
 
 import { Canvas } from "./canvas/Canvas"
-import { addMachine, manager } from "./store/machines"
+import { addMachine, manager } from "./machine"
 
 function App() {
   return (

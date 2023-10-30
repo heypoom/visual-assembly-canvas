@@ -8,7 +8,7 @@ import { vim } from "@replit/codemirror-vim"
 import { keymap } from "@codemirror/view"
 
 import { Machine } from "../../types/Machine"
-import { setSource, manager } from "../../store/machines"
+import { setSource, manager } from "../../machine/index.ts"
 
 import { cmTheme } from "../../editor/theme"
 import { vasmLanguage } from "../../editor/syntax"

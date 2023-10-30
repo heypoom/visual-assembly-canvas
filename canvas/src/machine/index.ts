@@ -1,24 +1,23 @@
 import { produce } from "immer"
 import setup, { Controller } from "machine-wasm"
 
-import { $nodes, addNode } from "./nodes"
+import { $nodes, addNode } from "../store/nodes.ts"
 
-import { Machine } from "../types/Machine"
-import { BlockNode } from "../types/Node"
+import { Machine } from "../types/Machine.ts"
+import { BlockNode } from "../types/Node.ts"
 
-import { $output } from "./results"
+import { $output } from "../store/results.ts"
 import { MachineState } from "../types/MachineState.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
 
 type MachineEvent = { Print: { text: string } }
 
-const MAX_CYCLE = 1000
-
 export interface InspectionState {
   stack: number[]
   events: MachineEvent[]
-  messages: any[]
+
+  messages: unknown[]
 }
 
 export function addMachine() {
@@ -59,8 +58,11 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 export class MachineManager {
   core: Controller | null = null
 
-  // How long do we delay, in milliseconds.
-  delayMs = 800
+  /** How long do we delay, in milliseconds. */
+  delayMs = 1
+
+  /** What is the limit on number of cycles? This prevents crashes. */
+  maxCycle = 200
 
   async setup() {
     await setup()
@@ -77,18 +79,21 @@ export class MachineManager {
   }
 
   run = async () => {
-    let cycle = 0
-
     this.core?.ready()
 
-    while (cycle < MAX_CYCLE && !this.core?.is_halted()) {
+    let cycle = 0
+
+    while (cycle < this.maxCycle && !this.core?.is_halted()) {
       this.step()
-      console.log("> stepping...")
 
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
 
       cycle++
+    }
+
+    if (cycle >= this.maxCycle && !this.core?.is_halted()) {
+      console.warn("Machine did not halt within cycle limit!")
     }
   }
 

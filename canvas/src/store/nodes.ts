@@ -10,12 +10,10 @@ import {
   applyNodeChanges,
 } from "reactflow"
 
-import { initialEdges, initialNodes } from "./initial-nodes"
-
 import { BlockNode } from "../types/Node"
 
-export const $nodes = atom<BlockNode[]>(initialNodes)
-export const $edges = atom<Edge[]>(initialEdges)
+export const $nodes = atom<BlockNode[]>([])
+export const $edges = atom<Edge[]>([])
 
 export const onNodesChange = (changes: NodeChange[]) =>
   $nodes.set(applyNodeChanges(changes, $nodes.get()))
