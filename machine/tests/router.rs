@@ -5,25 +5,26 @@ mod router_tests {
     #[test]
     fn test_send_and_receive() {
         let src_1 = r"
-            push 1
-            push 2
+            push 10
+            push 20
             add
             send 1 1
         ";
 
         let src_2 = r"
-            push 3
+            push 6
             receive
+            mul
         ";
 
         let mut r = Router::new();
-        let m1_id = r.add();
-        let m2_id = r.add();
+        r.add();
+        r.add();
 
-        r.load(m1_id, src_1);
-        r.load(m2_id, src_2);
+        r.load(0, src_1);
+        r.load(1, src_2);
+        r.run();
 
-        r.ready();
-        r.step();
+        assert_eq!(r.get_mut(1).unwrap().stack().peek(), 180);
     }
 }

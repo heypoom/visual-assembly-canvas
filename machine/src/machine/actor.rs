@@ -18,7 +18,6 @@ impl Actor for Machine {
         self.events.push(Event::Send { message: message.clone() });
     }
 
-    // TODO: do we use the `receive` instruction for every kind of message?
     fn receive_messages(&mut self) {
         while self.expected_receives > 0 {
             // The machine expects a message,

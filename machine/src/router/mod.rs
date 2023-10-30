@@ -5,6 +5,9 @@ use crate::router::status::MachineStatus::{Awaiting, Halted, Running};
 
 mod status;
 
+// Limit the max number of execution cycles to prevent an infinite loop.
+const MAX_ITER: u16 = 1000;
+
 pub struct Router {
     pub machines: Vec<Machine>,
 
@@ -32,6 +35,16 @@ impl Router {
         id
     }
 
+    /// Run the
+    pub fn run(&mut self) {
+        self.ready();
+
+        for _ in 1..MAX_ITER {
+            if self.is_halted() { break; }
+            self.step();
+        }
+    }
+
     /// Load the code and symbols into memory.
     pub fn load(&mut self, id: u16, source: &str) {
         let Some(m) = self.get_mut(id) else { return; };
@@ -57,7 +70,8 @@ impl Router {
 
         for m in &mut self.machines {
             let Some(id) = m.id else { continue; };
-            if self.statuses.get(&id) == Some(&Halted) { continue; };
+            let Some(status) = self.statuses.get(&id) else { continue; };
+            if status == &Halted { continue; };
 
             if m.should_halt() {
                 self.statuses.insert(id, Halted);
@@ -67,14 +81,24 @@ impl Router {
             // Before each instruction cycle, we collect and process the messages sequentially.
             m.receive_messages();
 
+            // Do not tick in await mode.
+            if status == &Awaiting {
+                if m.expected_receives > 0 {
+                    println!("{}: i am awaiting for {} messages", id, m.expected_receives);
+                    continue;
+                } else {
+                    self.statuses.insert(id, Running);
+                }
+            }
+
+            // Execute the instruction.
+            m.tick();
+
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.
             if m.expected_receives > 0 {
                 self.statuses.insert(id, Awaiting);
-                continue;
             }
-
-            m.tick()
         }
     }
 
