@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use crate::{Event, Execute, Machine, Parser};
+use crate::{Actor, Event, Execute, Machine, Parser};
 use crate::router::status::MachineStatus;
-use crate::router::status::MachineStatus::{Halted, Running};
+use crate::router::status::MachineStatus::{Awaiting, Halted, Running};
 
 mod status;
 
@@ -32,24 +32,24 @@ impl Router {
         id
     }
 
-    /// Start the machine.
-    pub fn begin(&mut self) {
-        for m in &mut self.machines {
-            let Some(id) = m.id else { continue; };
-            m.reset();
-            self.statuses.insert(id, Running);
-        }
-    }
-
     /// Load the code and symbols into memory.
     pub fn load(&mut self, id: u16, source: &str) {
         let Some(m) = self.get_mut(id) else { return; };
+        m.reset();
 
         let parser: Parser = source.into();
         m.mem.load_code(parser.ops);
         m.mem.load_symbols(parser.symbols);
     }
 
+    /// Mark the machines as ready for execution.
+    pub fn ready(&mut self) {
+        for m in &mut self.machines {
+            let Some(id) = m.id else { continue; };
+            m.reg.reset();
+            self.statuses.insert(id, Running);
+        }
+    }
 
     /// Step once for all machines.
     pub fn step(&mut self) {
@@ -61,6 +61,16 @@ impl Router {
 
             if m.should_halt() {
                 self.statuses.insert(id, Halted);
+                continue;
+            }
+
+            // Before each instruction cycle, we collect and process the messages sequentially.
+            m.receive_messages();
+
+            // Pause execution until subsequent cycles
+            // if the machine is awaiting for messages.
+            if m.expected_receives > 0 {
+                self.statuses.insert(id, Awaiting);
                 continue;
             }
 
@@ -113,4 +123,3 @@ impl Router {
         }
     }
 }
-

@@ -2,15 +2,16 @@ mod decode;
 mod execute;
 mod event;
 mod message;
+mod actor;
 
 use crate::{CALL_STACK_END, CALL_STACK_START, Op, Parser, Register::FP, Registers};
-use crate::Event::Send;
 use crate::mem::{Memory, StackManager};
 
 pub use self::decode::Decode;
 pub use self::execute::Execute;
 pub use self::event::Event;
 pub use self::message::{Action, Message};
+pub use self::actor::{Actor};
 
 #[derive(Debug)]
 pub struct Machine {
@@ -72,35 +73,6 @@ impl Machine {
     pub fn reset(&mut self) {
         self.reg.reset();
         self.mem.reset();
-    }
-
-    /// Push a message to a recipient's mailbox.
-    pub fn send_message(&mut self, to: u16, action: Action) {
-        // If the machine has no address, it cannot send messages.
-        let Some(id) = self.id else { return; };
-
-        // Add the message to the mailbox.
-        let message = Message { from: id, to, action };
-        self.events.push(Send { message: message.clone() });
-    }
-
-    /// Processes incoming messages
-    /// TODO: do we use the `receive` instruction for every kind of message?
-    pub fn process_message(&mut self) {
-        while self.expected_receives > 0 {
-            self.expected_receives -= 1;
-
-            let Some(message) = self.mailbox.pop() else { break; };
-
-            match message.action {
-                // If the message is a data message, push the data onto the stack.
-                Action::Data { body } => {
-                    for v in body.iter() {
-                        self.stack().push(*v).expect("push error");
-                    }
-                }
-            }
-        }
     }
 }
 

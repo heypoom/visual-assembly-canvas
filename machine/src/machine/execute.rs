@@ -3,7 +3,7 @@ use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
-use crate::machine::{Action};
+use crate::machine::{Action, Actor};
 
 pub trait Execute {
     /// Execute an instruction.
@@ -167,9 +167,6 @@ impl Execute for Machine {
 
     // Fetch, decode and execute the instruction.
     fn tick(&mut self) {
-        // Before each instruction cycle, we collect and process the messages sequentially.
-        self.process_message();
-
         let op = self.decode();
         self.exec_op(op);
     }
