@@ -1,8 +1,7 @@
-use machine::{Event, Execute, Message, Router, RuntimeError};
+use machine::{Event, Message, Router, RouterError};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
-use web_sys::console;
 
 const NULL: JsValue = JsValue::NULL;
 
@@ -22,6 +21,13 @@ pub struct InspectState {
 
 type Return = Result<JsValue, JsValue>;
 
+fn returns(value: Result<(), RouterError>) -> Return {
+    match value {
+        Ok(()) => Ok(NULL),
+        Err(error) => Err(JsValue::from_str(&format!("{:?}", error))),
+    }
+}
+
 /// Controls the interaction between machines and blocks.
 #[wasm_bindgen]
 impl Controller {
@@ -35,20 +41,20 @@ impl Controller {
         self.router.add()
     }
 
-    pub fn load(&mut self, id: u16, source: &str) {
-        self.router.load(id, source)
-    }
-
-    pub fn run(&mut self) {
-        self.router.run();
+    pub fn load(&mut self, id: u16, source: &str) -> Return {
+        returns(self.router.load(id, source))
     }
 
     pub fn ready(&mut self) {
-        self.router.ready();
+        self.router.ready()
     }
 
-    pub fn step(&mut self) {
-        self.router.step();
+    pub fn step(&mut self) -> Return {
+        returns(self.router.step())
+    }
+
+    pub fn run(&mut self) -> Return {
+        returns(self.router.run())
     }
 
     pub fn is_halted(&self) -> bool {

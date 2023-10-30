@@ -1,6 +1,7 @@
+use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
 
-#[derive(Debug, Snafu)]
+#[derive(Debug, Snafu, Serialize, Deserialize)]
 #[snafu(visibility(pub))]
 pub enum RuntimeError {
     #[snafu(display("stack underflow. pointer {top} is below {min}"))]
