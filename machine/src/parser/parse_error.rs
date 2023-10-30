@@ -21,9 +21,21 @@ pub enum ParseError {
     #[snafu(display("duplicate label definition"))]
     DuplicateLabelDefinition,
 
+    #[snafu(display("duplicate string definition"))]
+    DuplicateStringDefinition,
+
     #[snafu(display("invalid argument"))]
     InvalidArg,
 
+    #[snafu(display("invalid string value"))]
+    InvalidStringValue,
+
+    #[snafu(display("invalid byte value"))]
+    InvalidByteValue,
+
     #[snafu(display("invalid argument token"))]
     InvalidArgToken,
+
+    #[snafu(display("cannot peek at a token"))]
+    CannotPeekAtToken,
 }

@@ -11,7 +11,7 @@ pub use parse_error::*;
 use std::str::FromStr;
 use TokenType as T;
 use crate::{DATA_START, Op};
-use crate::ParseError::{DuplicateLabelDefinition, InvalidArgToken, InvalidIdentifier, InvalidInstruction, InvalidLabelDescription, UndefinedSymbols};
+use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, DuplicateStringDefinition, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidInstruction, InvalidLabelDescription, InvalidStringValue, UndefinedSymbols};
 
 type Errorable = Result<(), ParseError>;
 
@@ -75,7 +75,7 @@ impl Parser {
 
         // Parse each token.
         while self.current < self.tokens.len() {
-            let token = self.peek();
+            let token = self.peek()?;
             self.parse_token(&token.clone())?;
         }
 
@@ -91,8 +91,8 @@ impl Parser {
         match token.token_type {
             T::LabelDefinition => self.save_label(token)?,
             T::Instruction => self.save_instruction(token)?,
-            T::StringDefinition => self.save_string(),
-            T::ValueDefinition => self.save_value(),
+            T::StringDefinition => self.save_string()?,
+            T::ValueDefinition => self.save_value()?,
             T::Identifier => {}
             T::String(..) => {}
             T::Value(..) => {}
@@ -134,74 +134,82 @@ impl Parser {
         Ok(())
     }
 
-    fn identifier_name(&self) -> String {
-        let token = self.peek();
-
-        if token.token_type != TokenType::Identifier {
-            panic!("token is not a valid identifier");
+    fn identifier_name(&self) -> Result<String, ParseError> {
+        match self.peek() {
+            Ok(Token { token_type: TokenType::Identifier, lexeme, .. }) => Ok(lexeme.into()),
+            _ => Err(InvalidIdentifier),
         }
-
-        token.lexeme.clone()
     }
 
-    fn peek(&self) -> &Token {
-        self.tokens.get(self.current).expect(&format!("cannot peek at {}", self.current))
-    }
-
-    fn string_value(&self) -> String {
-        let token = self.peek();
-
-        if let TokenType::String(value) = token.token_type.clone() {
-            return value;
+    fn peek(&self) -> Result<&Token, ParseError> {
+        match self.tokens.get(self.current) {
+            Some(token) => Ok(token),
+            None => Err(CannotPeekAtToken),
         }
-
-        panic!("missing string value!")
     }
 
-    fn byte_value(&self) -> u16 {
-        let token = self.peek();
-
-        if let TokenType::Value(value) = token.token_type.clone() {
-            return value;
+    fn string_value(&self) -> Result<String, ParseError> {
+        match self.peek() {
+            Ok(Token { token_type: TokenType::String(value), .. }) => Ok(value.into()),
+            _ => Err(InvalidStringValue),
         }
-
-        panic!("missing value!")
     }
 
-    fn symbol(&mut self) -> Option<String> {
+    fn byte_value(&self) -> Result<u16, ParseError> {
+        match self.peek() {
+            Ok(Token { token_type: TokenType::Value(value), .. }) => Ok(*value),
+            _ => Err(InvalidByteValue),
+        }
+    }
+
+    fn symbol(&mut self) -> Result<Option<String>, ParseError> {
         // Do not process if the symbol is already scanned in the first pass.
-        if self.symbol_scanned { return None; }
+        if self.symbol_scanned { return Ok(None); }
 
         self.advance();
-        let key = self.identifier_name();
+        let key = self.identifier_name()?;
 
         // Abort if the string is already defined.
         // TODO: warn the user if they defined strings with the same name!
-        if self.symbols.offsets.contains_key(&key) { return None; }
+        if self.symbols.offsets.contains_key(&key) { return Ok(None); }
         self.symbols.offsets.insert(key.clone(), self.data_offset);
 
         self.advance();
         self.data_offset += 1;
 
-        Some(key)
+        Ok(Some(key))
     }
 
-    fn save_string(&mut self) {
-        let Some(key) = self.symbol() else { return; };
-        if self.symbols.strings.contains_key(&key) { return; }
+    fn save_string(&mut self) -> Errorable {
+        let key = match self.symbol() {
+            Ok(Some(key)) => key,
+            Ok(None) => return Ok(()),
+            _ => return Err(InvalidIdentifier),
+        };
 
-        let value = self.string_value();
+        // The same string is defined twice.
+        if self.symbols.strings.contains_key(&key) { return Err(DuplicateStringDefinition); }
+
+        let value = self.string_value()?;
         let len = value.len() as u16;
         self.data_offset += len;
 
         self.symbols.strings.insert(key.clone(), value);
+
+        Ok(())
     }
 
-    fn save_value(&mut self) {
-        let Some(key) = self.symbol() else { return; };
+    fn save_value(&mut self) -> Errorable {
+        let key = match self.symbol() {
+            Ok(Some(key)) => key,
+            Ok(None) => return Ok(()),
+            _ => return Err(InvalidIdentifier),
+        };
 
-        self.symbols.data.insert(key.clone(), vec![self.byte_value()]);
+        self.symbols.data.insert(key.clone(), vec![self.byte_value()?]);
         self.data_offset += 1;
+
+        Ok(())
     }
 
     fn save_instruction(&mut self, token: &Token) -> Errorable {
@@ -241,11 +249,10 @@ impl Parser {
 
     fn arg(&mut self) -> Result<u16, ParseError> {
         self.advance();
-        let token = self.peek();
 
-        match token.token_type {
-            TokenType::Value(v) => Ok(v),
-            TokenType::Identifier => Ok(self.op_arg(&token.clone())?),
+        match self.peek() {
+            Ok(Token { token_type: TokenType::Value(v), .. }) => Ok(*v),
+            Ok(token) if token.token_type == TokenType::Identifier => Ok(self.op_arg(&token.clone())?),
             _ => Err(InvalidArgToken)
         }
     }

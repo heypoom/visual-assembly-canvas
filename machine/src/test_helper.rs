@@ -7,5 +7,5 @@ pub fn load_test_file(path: &str) -> String {
 }
 
 pub fn load_test_program(path: &str) -> Machine {
-    (*load_test_file(path)).try_into().expect("cannot compile test program")
+    (*load_test_file(path)).try_into().expect("cannot the compile test program")
 }

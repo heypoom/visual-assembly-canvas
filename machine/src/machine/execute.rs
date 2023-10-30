@@ -4,7 +4,7 @@ use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
-use crate::RuntimeError::{CallStackExceeded, CannotLoadFromMemory, CannotLoadString, InvalidString, MissingMessageBody, MissingReturnAddress};
+use crate::RuntimeError::{CallStackExceeded, CannotLoadFromMemory, MissingMessageBody, MissingReturnAddress};
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -41,7 +41,7 @@ impl Execute for Machine {
                 let v = self.mem.get(addr);
 
                 if let Err(_) = self.stack().push(v) {
-                    return Err(CannotLoadFromMemory)
+                    return Err(CannotLoadFromMemory);
                 }
             }
 
@@ -122,7 +122,7 @@ impl Execute for Machine {
                 // Add the print event to the event queue.
                 match self.mem.string().get_str_from_bytes(bytes) {
                     Ok(text) => self.events.push(Event::Print { text }),
-                    Err(_) => return Err(InvalidString),
+                    Err(error) => return Err(error),
                 }
             }
 
@@ -130,9 +130,7 @@ impl Execute for Machine {
                 let text = self.mem.string().get_str_bytes(addr);
 
                 for v in text.iter() {
-                    if let Err(_) = self.stack().push(*v) {
-                        return Err(CannotLoadString);
-                    };
+                    self.stack().push(*v)?;
                 }
             }
 

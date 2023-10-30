@@ -1,10 +1,8 @@
 extern crate snafu;
 
 use crate::mem::{DATA_END, DATA_START, Memory};
-use crate::ParseError;
-use crate::ParseError::InvalidString;
-
-type Errorable = Result<String, ParseError>;
+use crate::RuntimeError;
+use crate::RuntimeError::CannotReadStringFromBytes;
 
 pub struct StringManager<'a> {
     pub mem: &'a mut Memory,
@@ -30,21 +28,15 @@ impl<'a> StringManager<'a> {
         self.add_data(&str_to_u16(value))
     }
 
-    /// Get the string at the given address.
-    pub fn get_str(&self, addr: u16) -> Errorable {
-        let v16 = self.get_str_bytes(addr);
-
-        self.get_str_from_bytes(v16)
-    }
 
     /// Get the string at the given address.
-    pub fn get_str_from_bytes(&self, v16: Vec<u16>) -> Errorable {
+    pub fn get_str_from_bytes(&self, v16: Vec<u16>) -> Result<String, RuntimeError> {
         // TODO: Properly decode high UTF-8 bytes such as emojis.
         let v8: Vec<u8> = v16.iter().map(|&x| x as u8).collect();
 
         match String::from_utf8(v8) {
             Ok(s) => Ok(s),
-            Err(_) => Err(InvalidString)
+            Err(_) => Err(CannotReadStringFromBytes)
         }
     }
 
@@ -77,27 +69,6 @@ pub trait WithStringManager {
 impl WithStringManager for Memory {
     fn string(&mut self) -> StringManager {
         StringManager::new(self)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_str() -> Result<(), ParseError> {
-        let mut m = Memory::new();
-        let mut s = m.string();
-
-        let hello_ptr = s.add_str("hello");
-        let hello = s.get_str(hello_ptr)?;
-        assert_eq!(hello, "hello");
-
-        let world_ptr = s.add_str("world");
-        let world = s.get_str(world_ptr)?;
-        assert_eq!(world, "world");
-
-        Ok(())
     }
 }
 

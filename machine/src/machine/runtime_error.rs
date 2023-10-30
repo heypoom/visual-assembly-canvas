@@ -24,11 +24,8 @@ pub enum RuntimeError {
     #[snafu(display("message body does not exist in stack"))]
     MissingMessageBody,
 
-    #[snafu(display("cannot load string"))]
-    CannotLoadString,
-
-    #[snafu(display("invalid string"))]
-    InvalidString,
+    #[snafu(display("unable to convert sequences of bytes to string"))]
+    CannotReadStringFromBytes,
 
     #[snafu(display("cannot load data from memory"))]
     CannotLoadFromMemory,
