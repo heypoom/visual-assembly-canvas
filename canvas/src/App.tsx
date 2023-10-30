@@ -16,7 +16,7 @@ function App() {
         <Button
           color="green"
           variant="soft"
-          onClick={manager.runAll}
+          onClick={manager.run}
           className="font-semibold"
         >
           <PlayIcon />
@@ -27,7 +27,7 @@ function App() {
           color="blue"
           variant="soft"
           className="font-semibold"
-          onClick={() => manager.stepAll()}
+          onClick={() => manager.step()}
         >
           <LapTimerIcon />
           Step

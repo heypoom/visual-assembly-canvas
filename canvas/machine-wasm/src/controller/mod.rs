@@ -22,6 +22,7 @@ pub struct InspectState {
 
 type Return = Result<JsValue, JsValue>;
 
+/// Controls the interaction between machines and blocks.
 #[wasm_bindgen]
 impl Controller {
     pub fn create() -> Controller {
@@ -30,30 +31,28 @@ impl Controller {
         }
     }
 
-    /// Add a machine.
     pub fn add(&mut self) -> u16 {
         self.router.add()
     }
 
-    /// Load a program into the machine.
     pub fn load(&mut self, id: u16, source: &str) {
         self.router.load(id, source)
     }
 
-    /// Check if every machine is halted.
-    pub fn is_halted(&self) -> bool {
-        self.router.is_halted()
+    pub fn run(&mut self) {
+        self.router.run();
     }
 
-    /// Run a single machine in isolation.
-    pub fn run_isolated(&mut self, id: u16, source: &str) {
-        self.load(id, source);
+    pub fn ready(&mut self) {
+        self.router.ready();
+    }
 
-        let Some(m) = self.router.get_mut(id) else {
-            return;
-        };
+    pub fn step(&mut self) {
+        self.router.step();
+    }
 
-        m.tick();
+    pub fn is_halted(&self) -> bool {
+        self.router.is_halted()
     }
 
     pub fn inspect(&mut self, id: u16) -> Return {
@@ -68,10 +67,6 @@ impl Controller {
         };
 
         Ok(to_value(&state)?)
-    }
-
-    pub fn step_all(&mut self) {
-        self.router.step();
     }
 }
 

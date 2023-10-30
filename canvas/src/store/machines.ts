@@ -13,6 +13,8 @@ const rand = () => Math.floor(Math.random() * 500)
 
 type MachineEvent = { Print: { text: string } }
 
+const MAX_CYCLE = 1000
+
 export interface InspectionState {
   stack: number[]
   events: MachineEvent[]
@@ -74,34 +76,24 @@ export class MachineManager {
     return this.core?.inspect(id)
   }
 
-  runIsolated(id: number, source: string) {
-    const state = $output.get()
-    const prev = state[id] ?? {}
+  run = async () => {
+    let cycle = 0
 
-    try {
-      this.core?.run_isolated(id, source)
-      $output.setKey(id, toState(this.inspect(id)))
-    } catch (err) {
-      if (err instanceof Error) {
-        console.log("run code error:", err)
+    this.core?.ready()
 
-        $output.setKey(id, { ...prev, error: err })
-      }
-    }
-  }
-
-  runAll = async () => {
-    while (!this.core?.is_halted()) {
-      this.stepAll()
+    while (cycle < MAX_CYCLE && !this.core?.is_halted()) {
+      this.step()
       console.log("> stepping...")
 
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
+
+      cycle++
     }
   }
 
-  stepAll = () => {
-    this.core?.step_all()
+  step = () => {
+    this.core?.step()
 
     const prevs = $output.get()
 

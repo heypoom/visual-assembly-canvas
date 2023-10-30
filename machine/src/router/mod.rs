@@ -35,7 +35,7 @@ impl Router {
         id
     }
 
-    /// Run the
+    /// Run every machine until all halts.
     pub fn run(&mut self) {
         self.ready();
 
