@@ -1,11 +1,13 @@
-use crate::{Action, Event, Machine, Message};
+use crate::{Action, Event, Machine, Message, RuntimeError};
+
+type Errorable = Result<(), RuntimeError>;
 
 pub trait Actor {
     /// Push a message to a recipient's mailbox.
     fn send_message(&mut self, to: u16, action: Action);
 
     /// Receive incoming messages from our mailbox.
-    fn receive_messages(&mut self);
+    fn receive_messages(&mut self) -> Errorable;
 }
 
 impl Actor for Machine {
@@ -18,7 +20,7 @@ impl Actor for Machine {
         self.events.push(Event::Send { message: message.clone() });
     }
 
-    fn receive_messages(&mut self) {
+    fn receive_messages(&mut self) -> Errorable {
         while self.expected_receives > 0 {
             // The machine expects a message,
             // but the message has yet to arrive in the mailbox at this time.
@@ -33,10 +35,12 @@ impl Actor for Machine {
                 // If the message is a data message, push the data onto the stack.
                 Action::Data { body } => {
                     for v in body.iter() {
-                        self.stack().push(*v).expect("push error");
+                        self.stack().push(*v)?;
                     }
                 }
             }
         }
+
+        Ok(())
     }
 }

@@ -14,4 +14,22 @@ pub enum RuntimeError {
         top: u16,
         max: u16,
     },
+
+    #[snafu(display("call stack exceeded"))]
+    CallStackExceeded,
+
+    #[snafu(display("missing return address"))]
+    MissingReturnAddress,
+
+    #[snafu(display("message body does not exist in stack"))]
+    MissingMessageBody,
+
+    #[snafu(display("cannot load string"))]
+    CannotLoadString,
+
+    #[snafu(display("invalid string"))]
+    InvalidString,
+
+    #[snafu(display("cannot load data from memory"))]
+    CannotLoadFromMemory,
 }

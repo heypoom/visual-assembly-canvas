@@ -4,6 +4,7 @@ use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
+use crate::RuntimeError::{CallStackExceeded, CannotLoadFromMemory, CannotLoadString, InvalidString, MissingMessageBody, MissingReturnAddress};
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -33,17 +34,22 @@ impl Execute for Machine {
         match op {
             Op::Noop | Op::Halt | Op::Eof => {}
 
-            Op::Push(v) => { s.push(v).expect("push error"); }
-            Op::Pop => { s.pop().expect("pop error"); }
+            Op::Push(v) => { s.push(v)?; }
+            Op::Pop => { s.pop()?; }
 
             Op::Load(addr) => {
                 let v = self.mem.get(addr);
-                self.stack().push(v).expect("load error");
+
+                if let Err(_) = self.stack().push(v) {
+                    return Err(CannotLoadFromMemory)
+                }
             }
 
             Op::Store(addr) => {
-                let v = s.pop().expect("store read error");
-                self.mem.set(addr, v);
+                match s.pop() {
+                    Ok(value) => self.mem.set(addr, value),
+                    Err(_) => return Err(CannotLoadFromMemory)
+                }
             }
 
             // Addition, subtraction, multiplication and division.
@@ -113,39 +119,47 @@ impl Execute for Machine {
                 // The op are popped in reverse-order.
                 bytes.reverse();
 
-                let text = self.mem.string().get_str_from_bytes(bytes).expect("invalid string");
-
-                // Add the event to the event queue.
-                self.events.push(Event::Print { text });
+                // Add the print event to the event queue.
+                match self.mem.string().get_str_from_bytes(bytes) {
+                    Ok(text) => self.events.push(Event::Print { text }),
+                    Err(_) => return Err(InvalidString),
+                }
             }
 
             Op::LoadString(addr) => {
                 let text = self.mem.string().get_str_bytes(addr);
 
                 for v in text.iter() {
-                    self.stack().push(*v).expect("push error");
+                    if let Err(_) = self.stack().push(*v) {
+                        return Err(CannotLoadString);
+                    };
                 }
             }
 
             Op::Call(address) => {
                 let pc = self.reg.get(PC);
 
-                self.call_stack().push(pc).expect("call stack exceeded");
-                jump = Some(address);
+                match self.call_stack().push(pc) {
+                    Ok(_) => { jump = Some(address) }
+                    Err(_) => return Err(CallStackExceeded),
+                }
             }
 
             Op::Return => {
-                let address = self.call_stack().pop().expect("cannot pop the return address");
-
-                // Return to to the return address, plus one.
-                jump = Some(address + 1);
+                match self.call_stack().pop() {
+                    Ok(address) => { jump = Some(address + 1) }
+                    Err(_) => return Err(MissingReturnAddress)
+                }
             }
 
             Op::Send(to, size) => {
                 let mut body = vec![];
 
                 for _ in 0..size {
-                    body.push(s.pop().expect("message body does not exist in stack"));
+                    match s.pop() {
+                        Ok(v) => body.push(v),
+                        Err(_) => return Err(MissingMessageBody),
+                    }
                 }
 
                 self.send_message(to, Action::Data { body });

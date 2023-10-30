@@ -83,7 +83,7 @@ impl Router {
             }
 
             // Before each instruction cycle, we collect and process the messages sequentially.
-            m.receive_messages();
+            m.receive_messages()?;
 
             // Do not tick in await mode.
             if status == &Awaiting {
