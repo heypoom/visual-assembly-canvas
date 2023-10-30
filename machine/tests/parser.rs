@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod parser_tests {
     use machine::{load_test_file, Op, Parser};
+    use machine::ParseError::InvalidInstruction;
 
     #[test]
     fn test_parse_call_stack() {
@@ -48,5 +49,11 @@ mod parser_tests {
         let mut p = Parser::new(source);
         p.parse().expect("cannot parse the source with empty lines");
         assert_eq!(p.ops, [Op::Push(0)])
+    }
+
+    #[test]
+    fn test_undefined_value() {
+        let mut p = Parser::new("push ham_cheese");
+        assert_eq!(p.parse(), Err(InvalidInstruction));
     }
 }

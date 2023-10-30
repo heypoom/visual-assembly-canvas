@@ -264,10 +264,7 @@ impl Parser {
         match self.peek() {
             Ok(Token { token_type: TokenType::Value(v), .. }) => Ok(*v),
             Ok(token) if token.token_type == TokenType::Identifier => Ok(self.op_arg(&token.clone())?),
-            _otherwise => {
-                println!("otherwise {:?}", _otherwise);
-                Err(InvalidArgToken)
-            }
+            _ => Err(InvalidArgToken)
         }
     }
 
