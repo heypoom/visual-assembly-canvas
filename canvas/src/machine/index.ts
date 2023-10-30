@@ -67,7 +67,6 @@ export class MachineManager {
   async setup() {
     await setup()
     this.core = Controller.create()
-    console.log("wasm ready!")
   }
 
   load(id: number, source: string) {
