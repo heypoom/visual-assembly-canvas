@@ -18,7 +18,10 @@ type Errorable = Result<(), ParseError>;
 
 #[derive(Clone)]
 pub struct Parser {
-    /// Input a set of tokens.
+    /// Source code.
+    source: String,
+
+    /// Tokens generated from the source code by the scanner.
     tokens: Vec<Token>,
 
     /// Output a set of operations.
@@ -26,9 +29,6 @@ pub struct Parser {
 
     /// Output a set of symbols.
     pub symbols: Symbols,
-
-    /// Errors encountered during scanning phase.
-    pub scan_error: Option<ParseError>,
 
     /// Is the first pass of symbol scanning completed?
     symbol_scanned: bool,
@@ -45,22 +45,11 @@ pub struct Parser {
 
 impl Parser {
     pub fn new(source: &str) -> Parser {
-        let scanner: Result<Scanner, _> = source.try_into();
-
-        let mut scan_error = None;
-        let mut tokens = vec![];
-
-        match scanner {
-            Ok(scanner) => { tokens = scanner.tokens; }
-            Err(error) => { scan_error = Some(error); }
-        }
-
         Parser {
-            tokens,
+            source: source.into(),
+            tokens: vec![],
             ops: vec![],
             symbols: Symbols::new(),
-
-            scan_error,
             symbol_scanned: false,
 
             current: 0,
@@ -70,8 +59,10 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Errorable {
-        // Return errors from the scanning phase.
-        if let Some(error) = self.scan_error.clone() { return Err(error); }
+        // Scan tokens from the source code.
+        let mut scanner = Scanner::new(&self.source);
+        scanner.scan_tokens()?;
+        self.tokens = scanner.tokens;
 
         // Pass 1: collect labels.
         self.parse_tokens()?;
