@@ -27,7 +27,7 @@ function App() {
           color="blue"
           variant="soft"
           className="font-semibold"
-          onClick={manager.step}
+          onClick={() => manager.step()}
         >
           <LapTimerIcon />
           Step
