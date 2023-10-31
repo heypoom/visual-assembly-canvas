@@ -264,7 +264,7 @@ impl Parser {
         if !self.symbol_scanned { return Ok(0x00); }
 
         let key = token.lexeme.trim();
-        let offset = self.symbols.offsets.get(key).ok_or(InvalidIdentifier)?;
+        let offset = self.symbols.offsets.get(key).ok_or(UndefinedSymbols)?;
 
         // Strings should be loaded from the data segment.
         if self.symbols.strings.contains_key(key) {

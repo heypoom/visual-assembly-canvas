@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod parser_tests {
     use machine::{load_test_file, Op, ParseError, Parser};
-    use machine::ParseError::{InvalidArgument, InvalidIdentifier};
+    use machine::ParseError::{InvalidArgument, InvalidIdentifier, UndefinedSymbols};
 
     type Errorable = Result<(), ParseError>;
 
@@ -58,6 +58,6 @@ mod parser_tests {
     #[test]
     fn test_undefined_value() {
         let mut p = Parser::new("push ham_cheese");
-        assert_eq!(p.parse(), Err(InvalidArgument { errors: vec![InvalidIdentifier] }));
+        assert_eq!(p.parse(), Err(InvalidArgument { errors: vec![UndefinedSymbols] }));
     }
 }
