@@ -48,6 +48,12 @@ impl Scanner {
         self.source.chars().nth(self.current).ok_or(PeekExceedsSourceLength)
     }
 
+    fn peek_next(&self) -> Result<char, ParseError> {
+        if self.is_end() { return Ok('\0'); }
+
+        self.source.chars().nth(self.current).ok_or(PeekExceedsSourceLength)
+    }
+
     fn is_end(&self) -> bool {
         self.current >= self.source.len()
     }
@@ -106,7 +112,7 @@ impl Scanner {
             }
 
             // Parse hexadecimals.
-            c if c == '0' && !self.is_end() => {
+            c if c == '0' && !self.is_end() && self.peek_next()? != ' ' => {
                 let char = self.advance()?;
 
                 match char {
@@ -120,13 +126,7 @@ impl Scanner {
                         self.binary_digit()?
                     }
 
-                    ' ' => {
-                        self.advance()?;
-                    }
-
-                    _ => {
-                        self.decimal()?
-                    }
+                    _ => self.decimal()?
                 }
             }
 
@@ -274,6 +274,8 @@ mod tests {
     fn parse_decimal_zero() {
         let s: Scanner = "send 0 1".try_into().expect("cannot parse decimal zero");
 
-        println!("{:?}", s.tokens);
+        assert_eq!(s.tokens[0].token_type, TokenType::Instruction);
+        assert_eq!(s.tokens[1].token_type, TokenType::Value(0));
+        assert_eq!(s.tokens[2].token_type, TokenType::Value(1));
     }
 }
