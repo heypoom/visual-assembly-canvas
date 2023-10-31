@@ -5,10 +5,14 @@ import {
   Decoration,
 } from "@uiw/react-codemirror"
 
+import { slateDark } from "@radix-ui/colors"
+
 export const addLineHighlight = StateEffect.define<number>()
 
+const HIGHLIGHT_COLOR = slateDark.slate4
+
 const lineHighlightMark = Decoration.line({
-  attributes: { style: "background-color: #d2ffff" },
+  attributes: { style: `background-color: ${HIGHLIGHT_COLOR}` },
 })
 
 export const lineHighlighter = StateField.define({

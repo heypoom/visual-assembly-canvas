@@ -2,19 +2,19 @@ import { createTheme } from "@uiw/codemirror-themes"
 import { tags as t } from "@lezer/highlight"
 import { slateDark } from "@radix-ui/colors"
 
-const BG_DARK = slateDark.slate1
-const FG_TEXT = "#ffffff"
-const BG_HIGHLIGHT = slateDark.slate2
-const BG_SELECT = slateDark.slate3
-const FG_CARET = "#ffffff"
-const FG_COMMENT = "#6272a4"
+export const BG_DARK = slateDark.slate1
+export const FG_TEXT = "#ffffff"
+export const BG_HIGHLIGHT = slateDark.slate2
+export const BG_SELECT = slateDark.slate3
+export const FG_CARET = "#ffffff"
+export const FG_COMMENT = "#6272a4"
 
-const PINK = "#ff79c6"
-const PURPLE = "#bd93f9"
-const WHITE = "#f8f8f2"
-const YELLOW = "#f1fa8c"
-const CYAN = "#8be9fd"
-const GREEN = "#50fa7b"
+export const PINK = "#ff79c6"
+export const PURPLE = "#bd93f9"
+export const WHITE = "#f8f8f2"
+export const YELLOW = "#f1fa8c"
+export const CYAN = "#8be9fd"
+export const GREEN = "#50fa7b"
 
 export const cmTheme = createTheme({
   theme: "dark",

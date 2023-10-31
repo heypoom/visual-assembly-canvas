@@ -176,11 +176,9 @@ export class MachineManager {
 
       const state = output[id]
       const pc = state?.registers?.pc ?? 0
-      const lineNo = mapping?.get(pc) ?? 0
+      const lineNo = (mapping?.get(pc) ?? 0) + 1
 
-      console.log(`[HL:${id}] highlighting line ${lineNo}. PC = ${pc}`)
-
-      highlight(lineNo ?? 0)
+      highlight(lineNo)
     })
   }
 }

@@ -105,8 +105,6 @@ export function MachineBlock(props: NodeProps<Machine>) {
                 extensions={extensions}
                 onCreateEditor={(view) => {
                   manager.highlighters.set(data.id, (lineNo) => {
-                    if (lineNo <= 0) return
-
                     const pos = view.state.doc.line(lineNo).from
                     view.dispatch({ effects: addLineHighlight.of(pos) })
                   })
