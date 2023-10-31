@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { getHighlightedSourceLine } from "./getHighlightedSourceLine"
+import { getSourceHighlightMap } from "./getHighlightedSourceLine"
 
 test("should be able to get highlighted source line", () => {
   const S1 = `
@@ -9,7 +9,8 @@ test("should be able to get highlighted source line", () => {
     push 1024
   `
 
-  expect(getHighlightedSourceLine(S1, 8)).toBe(4)
+  const M1 = getSourceHighlightMap(S1)
+  expect(M1.get(8)).toBe(4)
 
   const S2 = `
     .string hello_world "Hello, world!"
@@ -30,5 +31,6 @@ test("should be able to get highlighted source line", () => {
     push baz
   `
 
-  expect(getHighlightedSourceLine(S2, 8)).toBe(15)
+  const M2 = getSourceHighlightMap(S2)
+  expect(M2.get(8)).toBe(15)
 })

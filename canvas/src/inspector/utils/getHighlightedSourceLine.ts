@@ -1,27 +1,25 @@
-export function getHighlightedSourceLine(
-  source: string,
-  pc: number,
-): number | null {
+export function getSourceHighlightMap(source: string): Map<number, number> {
   const lines = source.split("\n")
+  const mapping = new Map<number, number>()
 
-  let curr = 0
-  let currLine = 0
+  let pc = 0
+  let linePos = 0
 
   for (const line of lines) {
     const [opcode, ...args] = line.trim().split(" ")
+    linePos++
 
-    currLine++
-
-    // Skip comments and directives.
+    // Skip comments, labels and directives.
     if (line.length === 0) continue
+    if (opcode.endsWith(":")) continue
     if (opcode.startsWith("//")) continue
     if (opcode.startsWith(".")) continue
 
     const argCount = args.length
-    curr += 1 + argCount
+    pc += 1 + argCount
 
-    if (curr >= pc) return currLine - 1
+    mapping.set(pc, linePos - 1)
   }
 
-  return null
+  return mapping
 }
