@@ -1,9 +1,9 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 
-import {Theme} from "@radix-ui/themes"
+import { Theme } from "@radix-ui/themes"
 
-import App from "./App.tsx"
+import App from "./App"
 
 import "./store/logger.ts"
 import "./styles/index.css"

@@ -1,23 +1,23 @@
 import { produce } from "immer"
 import setup, { Controller } from "machine-wasm"
 
-import { $nodes, addNode } from "../store/nodes.ts"
+import { $nodes, addNode } from "../store/nodes"
 
-import { Machine } from "../types/Machine.ts"
-import { BlockNode } from "../types/Node.ts"
+import { Machine } from "../types/Machine"
+import { BlockNode } from "../types/Node"
 
 import {
   setError,
   setMachineState,
   clearPreviousRun,
   $output,
-} from "../store/results.ts"
+} from "../store/results"
 
-import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine.ts"
+import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 
-import { MachineError, MachineStatus } from "../types/MachineState.ts"
-import { InspectionState } from "../types/MachineEvent.ts"
-import { $status } from "../store/status.ts"
+import { MachineError, MachineStatus } from "../types/MachineState"
+import { InspectionState } from "../types/MachineEvent"
+import { $status } from "../store/status"
 
 const rand = () => Math.floor(Math.random() * 500)
 
