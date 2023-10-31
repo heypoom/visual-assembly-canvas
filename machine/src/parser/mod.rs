@@ -120,15 +120,10 @@ impl Parser {
         if self.symbol_scanned { return Ok(()); }
 
         let key = token.lexeme.clone();
-        let Some(key) = key.trim().strip_suffix(":") else {
-            return Err(InvalidLabelDescription);
-        };
+        let key = key.trim().strip_suffix(":").ok_or(InvalidLabelDescription)?;
 
-        // Abort if the label already exists.
-        // TODO: warn the user if they defined duplicate labels!
-        if self.symbols.offsets.contains_key(key) {
-            return Err(DuplicateLabelDefinition);
-        }
+        // Raise an error if the label was defined before.
+        ensure!(!self.symbols.offsets.contains_key(key), DuplicateLabelDefinitionSnafu);
 
         // Define labels based on the token.
         let offset = self.code_offset;
@@ -259,9 +254,7 @@ impl Parser {
         if !self.symbol_scanned { return Ok(0x00); }
 
         let key = token.lexeme.trim();
-        let Some(offset) = self.symbols.offsets.get(key) else {
-            return Err(InvalidIdentifier);
-        };
+        let offset = self.symbols.offsets.get(key).ok_or(InvalidIdentifier)?;
 
         // Strings should be loaded from the data segment.
         if self.symbols.strings.contains_key(key) {
@@ -270,14 +263,9 @@ impl Parser {
 
         // Raw bytes are loaded directly into the code segment.
         if self.symbols.data.contains_key(key) {
-            let Some(value) = self.symbols.data.get(key) else {
-                return Err(UndefinedSymbols);
-            };
+            let value = self.symbols.data.get(key).ok_or(UndefinedSymbols)?;
 
-            return match value.get(0) {
-                Some(v) => Ok(*v),
-                None => Err(UndefinedSymbols)
-            };
+            return value.get(0).copied().ok_or(UndefinedSymbols);
         }
 
         // Labels stores the offsets within the code segment.
