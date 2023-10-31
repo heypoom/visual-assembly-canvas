@@ -68,7 +68,7 @@ export class MachineManager {
     this.ctx = Controller.create()
   }
 
-  load(id: number, source: string, force: boolean) {
+  load(id: number, source: string, force?: boolean) {
     // If the source is the same, we don't need to reload.
     if (this.sources.get(id) === source && !force) {
       this.ready = false

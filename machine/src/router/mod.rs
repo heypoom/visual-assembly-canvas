@@ -154,19 +154,13 @@ impl Router {
     }
 
     /// Route the messages to the appropriate machines.
-    /// Scans the machine's event queue for Send events,
-    /// then push the messages to destination's mailbox.
     fn route_messages(&mut self) {
-        let mut messages = vec![];
-
-        for machine in &mut self.machines {
-            messages.extend(machine.outbox.drain(..));
-        }
+        let messages: Vec<_> = self.machines.iter_mut().flat_map(|machine| machine.outbox.drain(..)).collect();
 
         for message in messages {
             if let Some(dst) = self.get_mut(message.to) {
                 dst.inbox.push(message);
-            };
+            }
         }
     }
 
@@ -174,9 +168,6 @@ impl Router {
     pub fn consume_side_effects(&mut self, id: u16) -> Vec<Event> {
         let Some(machine) = self.get_mut(id) else { return vec![]; };
 
-        let events = machine.events.clone();
-        machine.events.clear();
-
-        events
+        machine.events.drain(..).collect()
     }
 }

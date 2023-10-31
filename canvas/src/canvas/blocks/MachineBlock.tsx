@@ -94,7 +94,6 @@ export function MachineBlock(props: NodeProps<Machine>) {
               <CodeMirror
                 onBlur={() => manager.load(data.id, data.source)}
                 basicSetup={{ lineNumbers: false, foldGutter: false }}
-                width="300px"
                 maxHeight="400px"
                 minWidth="300px"
                 maxWidth="600px"
