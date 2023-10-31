@@ -4,7 +4,7 @@ use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
-use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow, MissingMessageBody, MissingReturnAddress};
+use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow, MissingMessageBody, MissingReturnAddress, MissingValueToStore};
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -43,7 +43,7 @@ impl Execute for Machine {
             }
 
             Op::Store(addr) => {
-                let value = s.pop().map_err(|_| CannotLoadFromMemory)?;
+                let value = s.pop().map_err(|_| MissingValueToStore)?;
                 self.mem.set(addr, value);
             }
 

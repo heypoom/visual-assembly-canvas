@@ -39,4 +39,7 @@ pub enum RuntimeError {
 
     #[snafu(display("integer underflow"))]
     IntegerUnderflow,
+
+    #[snafu(display("missing value to store"))]
+    MissingValueToStore,
 }

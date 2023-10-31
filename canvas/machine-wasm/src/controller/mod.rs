@@ -93,6 +93,14 @@ impl Controller {
         Ok(to_value(&state)?)
     }
 
+    pub fn read_code(&mut self, id: u16, size: u16) -> Return {
+        let Some(m) = self.router.get_mut(id) else {
+            return Ok(NULL);
+        };
+
+        Ok(to_value(&m.mem.read_code(size))?)
+    }
+
     /// Allows the frontend to consume events from the machine.
     pub fn consume_side_effects(&mut self, id: u16) -> Return {
         Ok(to_value(&self.router.consume_side_effects(id))?)
