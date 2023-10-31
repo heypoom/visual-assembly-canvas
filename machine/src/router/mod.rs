@@ -114,9 +114,7 @@ impl Router {
             }
 
             // Before each instruction cycle, we collect and process the messages sequentially.
-            if let Err(error) = machine.receive_messages() {
-                return Err(ReceiveFailed { error });
-            };
+            machine.receive_messages().map_err(|error| ReceiveFailed { error: error.into() })?;
 
             // Do not tick if the machine is awaiting for messages.
             if status == Awaiting {

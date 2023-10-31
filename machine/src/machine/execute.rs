@@ -39,17 +39,12 @@ impl Execute for Machine {
 
             Op::Load(addr) => {
                 let v = self.mem.get(addr);
-
-                if let Err(_) = self.stack().push(v) {
-                    return Err(CannotLoadFromMemory);
-                }
+                self.stack().push(v).map_err(|_| CannotLoadFromMemory)?;
             }
 
             Op::Store(addr) => {
-                match s.pop() {
-                    Ok(value) => self.mem.set(addr, value),
-                    Err(_) => return Err(CannotLoadFromMemory)
-                }
+                let value = s.pop().map_err(|_| CannotLoadFromMemory)?;
+                self.mem.set(addr, value);
             }
 
             // Addition, subtraction, multiplication and division.
@@ -77,22 +72,19 @@ impl Execute for Machine {
             }
 
             Op::JumpZero(addr) => {
-                if let Ok(0) = s.pop() {
+                if s.pop()? == 0 {
                     jump = Some(addr);
                 }
             }
 
             Op::JumpNotZero(addr) => {
-                if let Ok(v) = s.pop() {
-                    if v != 0 {
-                        jump = Some(addr);
-                    }
-                };
+                if s.pop()? != 0 {
+                    jump = Some(addr);
+                }
             }
 
             Op::Dup => {
-                let v = s.peek();
-                s.push(v)?;
+                s.push(s.peek())?;
             }
 
             Op::Swap => {
@@ -104,8 +96,7 @@ impl Execute for Machine {
             }
 
             Op::Over => {
-                let v = s.get(1);
-                s.push(v)?;
+                s.push(s.get(1))?;
             }
 
             Op::Print => {

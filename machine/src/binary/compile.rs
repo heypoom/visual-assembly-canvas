@@ -16,12 +16,7 @@ pub fn compile_to_bytecode(ops: Vec<Op>) -> Vec<u16> {
 }
 
 pub fn compile_to_binary(source: &str) -> Result<Vec<u16>, ParseError> {
-    let parser: Result<Parser, _> = (*source).try_into();
-
-    let parser = match parser {
-        Ok(parser) => parser,
-        Err(error) => return Err(error),
-    };
+    let parser: Parser = (*source).try_into()?;
 
     // [code_start, code_size, data_start, data_size]
     let mut header: [u16; 4] = [0x00, 0x00, 0x00, 0x00];

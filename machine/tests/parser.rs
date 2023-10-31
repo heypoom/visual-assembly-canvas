@@ -1,24 +1,26 @@
 #[cfg(test)]
 mod parser_tests {
-    use machine::{load_test_file, Op, Parser};
+    use machine::{load_test_file, Op, ParseError, Parser};
     use machine::ParseError::{InvalidArgument, InvalidIdentifier};
 
+    type Errorable = Result<(), ParseError>;
+
     #[test]
-    fn test_parse_call_stack() {
-        let p: Result<Parser, _> = (*load_test_file("call-stack-1.asm")).try_into();
-        let p = p.expect("cannot parse the tests file");
+    fn test_parse_call_stack() -> Errorable {
+        let p: Parser = (*load_test_file("call-stack-1.asm")).try_into()?;
 
         assert_eq!(p.symbols.offsets["start"], 9);
         assert_eq!(p.symbols.offsets["add_pattern"], 2);
 
         assert_eq!(p.ops[0], Op::Jump(9));
         assert_eq!(p.ops[5], Op::Call(2));
+
+        Ok(())
     }
 
     #[test]
-    fn test_parse_strings() {
-        let p: Result<Parser, _> = (*load_test_file("hello-world.asm")).try_into();
-        let p = p.expect("cannot parse the tests file");
+    fn test_parse_strings() -> Errorable {
+        let p: Parser = (*load_test_file("hello-world.asm")).try_into()?;
 
         assert_eq!(p.symbols.strings["hello_world"], "Hello, world!");
         assert_eq!(p.symbols.offsets["hello_world"], 0);
@@ -28,6 +30,8 @@ mod parser_tests {
 
         assert_eq!(p.symbols.data["bar"][0], 0xDEAD);
         assert_eq!(p.symbols.data["baz"][0], 0xBEEF);
+
+        Ok(())
     }
 
     #[test]
