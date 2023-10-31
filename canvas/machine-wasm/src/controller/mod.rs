@@ -74,6 +74,14 @@ impl Controller {
         self.router.is_halted()
     }
 
+    pub fn partial_reset(&mut self, id: u16) {
+        let Some(m) = self.router.get_mut(id) else {
+            return;
+        };
+
+        m.partial_reset();
+    }
+
     pub fn inspect(&mut self, id: u16) -> Return {
         let Some(m) = self.router.get_mut(id) else {
             return Ok(NULL);

@@ -110,7 +110,7 @@ impl Router {
             // Before each instruction cycle, we collect and process the messages sequentially.
             machine.receive_messages().map_err(|error| ReceiveFailed { error: error.into() })?;
 
-            // Do not tick if the machine is awaiting for messages.
+            // Do not tick if the machine is still awaiting for messages.
             if status == Awaiting {
                 if machine.expected_receives > 0 { continue; }
                 self.statuses.insert(id, Running);
@@ -126,6 +126,7 @@ impl Router {
             // if the machine is awaiting for messages.
             if machine.expected_receives > 0 {
                 self.statuses.insert(id, Awaiting);
+                continue;
             }
 
             // Halt the machine if we reached the end of the program.

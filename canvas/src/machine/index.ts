@@ -125,7 +125,11 @@ export class MachineManager {
       if (cycle >= this.maxCycle && !this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getCycleError(id, status)
-          if (error) setError(id, error)
+
+          if (error) {
+            this.ctx?.partial_reset(id)
+            setError(id, error)
+          }
         })
       }
     }, 10)
@@ -160,7 +164,7 @@ export class MachineManager {
     if (!config.batch || this.delayMs > 0) this.highlightCurrent()
 
     // If running in steps, we should reset the machine once it halts.
-    if (!config.batch && this.isHalted) this.reload()
+    if (!config.batch && this.isHalted) this.reloadAll()
   }
 
   highlightCurrent() {
@@ -181,7 +185,7 @@ export class MachineManager {
     })
   }
 
-  reload() {
+  reloadAll() {
     this.sources.forEach((source, id) => {
       this.load(id, source, true)
     })

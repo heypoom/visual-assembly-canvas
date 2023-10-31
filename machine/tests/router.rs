@@ -32,6 +32,28 @@ mod router_tests {
     }
 
     #[test]
+    fn test_receive_only() -> Result<(), RouterError> {
+        let src_1 = r"
+            push 10
+            push 20
+            add
+            send 1 1
+        ";
+
+        let mut r = Router::new();
+        r.add();
+        r.add();
+
+        r.load(0, src_1)?;
+        r.load(1, "receive")?;
+        r.run()?;
+
+        assert_eq!(r.get_mut(1).expect("cannot get second machine").stack().peek(), 30);
+
+        Ok(())
+    }
+
+    #[test]
     fn test_stepping() -> Result<(), RouterError> {
         let src_1 = r"
             push 0xAA
