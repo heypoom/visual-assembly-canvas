@@ -25,6 +25,9 @@ pub enum ParseError {
     #[snafu(display("duplicate string definition"))]
     DuplicateStringDefinition,
 
+    #[snafu(display("duplicate symbol definition"))]
+    DuplicateSymbolDefinition,
+
     #[snafu(display("invalid argument"))]
     InvalidArgument { errors: Vec<ParseError> },
 

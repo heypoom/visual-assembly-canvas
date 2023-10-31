@@ -12,7 +12,7 @@ use std::str::FromStr;
 use snafu::ensure;
 use TokenType as T;
 use crate::{DATA_START, Op};
-use crate::ParseError::{CannotPeekAtToken, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
+use crate::ParseError::{CannotPeekAtToken, DuplicateStringDefinition, DuplicateSymbolDefinition, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
 
 type Errorable = Result<(), ParseError>;
 
@@ -175,8 +175,8 @@ impl Parser {
         self.advance();
         let key = self.identifier_name()?;
 
-        // Abort if the string was already defined in the offset table.
-        ensure!(!self.symbols.offsets.contains_key(&key), DuplicateStringDefinitionSnafu);
+        // The same symbol is defined twice.
+        ensure!(!self.symbols.offsets.contains_key(&key), DuplicateSymbolDefinitionSnafu);
 
         self.symbols.offsets.insert(key.clone(), self.data_offset);
 
