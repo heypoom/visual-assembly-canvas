@@ -70,6 +70,7 @@ export class MachineManager {
   maxCycle = 200
 
   ready = false
+  hasSyntaxError: Record<number, boolean> = {}
 
   async setup() {
     await setup()
@@ -79,21 +80,20 @@ export class MachineManager {
   load(id: number, source: string) {
     try {
       this.ctx?.load(id, source)
-      setError(id, null)
+      this.setSyntaxError(id, null)
       this.ready = false
     } catch (error) {
-      setError(id, error as MachineError)
+      this.setSyntaxError(id, error)
     }
+  }
+
+  setSyntaxError(id: number, error: unknown | null) {
+    setError(id, error as MachineError)
+    this.hasSyntaxError = { ...this.hasSyntaxError, [id]: !!error }
   }
 
   inspect(id: number): InspectionState {
     return this.ctx?.inspect(id)
-  }
-
-  get hasParseErrors(): boolean {
-    return Object.values($output.get()).some(
-      (o) => o.error && "CannotParse" in o.error,
-    )
   }
 
   prepare = () => {
@@ -103,7 +103,6 @@ export class MachineManager {
   }
 
   run = async () => {
-    if (this.hasParseErrors) return
     $output.set({})
     this.prepare()
 
@@ -121,13 +120,18 @@ export class MachineManager {
     setTimeout(() => {
       if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
         this.statuses().forEach((status, id) => {
-          if (status !== "Halted") {
-            console.warn(`Execution cycle exceeded! ${id} is still ${status}`)
-            setError(id, { ExecutionCycleExceeded: { id, status } })
-          }
+          setError(id, this.getCycleError(id, status))
         })
       }
     }, 10)
+  }
+
+  getCycleError(id: number, status: MachineStatus): MachineError | null {
+    if (status === "Halted") return { ExecutionCycleExceeded: { id } }
+    if (status === "Awaiting") return { HangingAwaits: { id } }
+    if (status === "Invalid") return { InvalidProgram: { id } }
+
+    return null
   }
 
   statuses(): Map<number, MachineStatus> {
@@ -135,7 +139,6 @@ export class MachineManager {
   }
 
   step = () => {
-    if (this.hasParseErrors) return
     this.prepare()
 
     try {
