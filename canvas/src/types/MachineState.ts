@@ -9,7 +9,6 @@ export type MachineError =
   | { ExecutionFailed: { id: number; error: any } }
   | { ExecutionCycleExceeded: { id: number } }
   | { HangingAwaits: { id: number } }
-  | { InvalidProgram: { id: number } }
 
 export type MachineStates = Record<number, MachineState>
 

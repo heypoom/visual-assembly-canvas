@@ -5,6 +5,7 @@ import { Theme } from "@radix-ui/themes"
 
 import App from "./App.tsx"
 
+import "./store/logger.ts"
 import "./styles/index.css"
 
 import "@radix-ui/themes/styles.css"

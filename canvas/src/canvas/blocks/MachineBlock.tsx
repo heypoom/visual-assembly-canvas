@@ -39,13 +39,11 @@ function getExtensions(m: Machine, config: EditorConfig) {
 
 const ErrorIndicator = ({ error }: { error: MachineError }) => {
   if ("ExecutionCycleExceeded" in error) {
-    const { status } = error.ExecutionCycleExceeded
-
-    if (status === "Awaiting") {
-      return <pre>Machine is expecting a message which never arrives.</pre>
-    }
-
     return <pre>Execution cycle exceeded.</pre>
+  }
+
+  if ("HangingAwaits" in error) {
+    return <pre>Machine is expecting a message which never arrives.</pre>
   }
 
   if ("CannotParse" in error) {

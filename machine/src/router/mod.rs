@@ -83,6 +83,9 @@ impl Router {
         for machine in &mut self.machines {
             let Some(id) = machine.id else { continue; };
 
+            // Do not reset the machine if it is invalid.
+            if self.statuses.get(&id) == Some(&Invalid) { continue; }
+
             machine.reg.reset();
             self.statuses.insert(id, Ready);
         }
@@ -133,7 +136,7 @@ impl Router {
     }
 
     pub fn is_halted(&self) -> bool {
-        self.statuses.values().all(|s| s == &Halted)
+        self.statuses.values().all(|s| s == &Halted || s == &Invalid)
     }
 
     pub fn get_statuses(&self) -> HashMap<u16, MachineStatus> {

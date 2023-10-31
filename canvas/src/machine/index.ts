@@ -6,24 +6,16 @@ import { $nodes, addNode } from "../store/nodes.ts"
 import { Machine } from "../types/Machine.ts"
 import { BlockNode } from "../types/Node.ts"
 
-import { $output, setError } from "../store/results.ts"
 import {
-  MachineError,
-  MachineState,
-  MachineStates,
-  MachineStatus,
-} from "../types/MachineState.ts"
+  $output,
+  clearPreviousRun,
+  setError,
+  setMachineState,
+} from "../store/results.ts"
+import { MachineError, MachineStatus } from "../types/MachineState.ts"
+import { InspectionState } from "../types/MachineEvent.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
-
-type MachineEvent = { Print: { text: string } }
-
-export interface InspectionState {
-  stack: number[]
-  events: MachineEvent[]
-
-  messages: unknown[]
-}
 
 export function addMachine() {
   const id = manager.ctx?.add()
@@ -49,15 +41,6 @@ export const setSource = (id: number, source: string) => {
   $nodes.set(nodes)
 }
 
-const getLogs = (events: MachineEvent[]): string[] =>
-  events.filter((e) => "Print" in e).map((e) => e.Print.text)
-
-const toState = (result: InspectionState): MachineState => ({
-  error: null,
-  stack: result.stack ?? [],
-  logs: getLogs(result.events) ?? [],
-})
-
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export class MachineManager {
@@ -79,7 +62,7 @@ export class MachineManager {
 
   load(id: number, source: string) {
     try {
-      this.ctx?.load(id, source)
+      this.ctx?.load(Number(id), source)
       this.setSyntaxError(id, null)
       this.ready = false
     } catch (error) {
@@ -100,10 +83,11 @@ export class MachineManager {
     if (this.ready) return
     this.ctx?.ready()
     this.ready = true
+
+    clearPreviousRun(this)
   }
 
   run = async () => {
-    $output.set({})
     this.prepare()
 
     let cycle = 0
@@ -119,22 +103,22 @@ export class MachineManager {
 
     setTimeout(() => {
       if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
-        this.statuses().forEach((status, id) => {
-          setError(id, this.getCycleError(id, status))
+        this.statuses.forEach((status, id) => {
+          const error = this.getCycleError(id, status)
+          if (error) {
+            setError(id, error)
+          }
         })
       }
     }, 10)
   }
 
-  getCycleError(id: number, status: MachineStatus): MachineError | null {
+  getCycleError(id: number, status: MachineStatus): MachineError | undefined {
     if (status === "Halted") return { ExecutionCycleExceeded: { id } }
     if (status === "Awaiting") return { HangingAwaits: { id } }
-    if (status === "Invalid") return { InvalidProgram: { id } }
-
-    return null
   }
 
-  statuses(): Map<number, MachineStatus> {
+  get statuses(): Map<number, MachineStatus> {
     return this.ctx?.statuses()
   }
 
@@ -151,25 +135,7 @@ export class MachineManager {
       }
     }
 
-    const output = $output.get()
-
-    $nodes.get().forEach((node) => {
-      const { id } = node.data
-      const events = this.ctx?.consume_events(id)
-
-      const curr = output[id]
-      const next = toState({ ...this.inspect(id), events })
-
-      $output.setKey(id, {
-        ...next,
-
-        // Preserve logs between steps.
-        logs: [...(curr?.logs ?? []), ...next.logs],
-
-        // Preserve parse errors between steps.
-        error: curr?.error?.CannotParse ? curr.error : next.error,
-      })
-    })
+    setMachineState(this)
   }
 }
 
