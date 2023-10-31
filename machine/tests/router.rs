@@ -33,7 +33,7 @@ mod router_tests {
     }
 
     #[test]
-    fn test_receive_only() -> Result<(), RouterError> {
+    fn test_bare_receive() -> Result<(), RouterError> {
         let src_1 = r"
             push 10
             push 20
