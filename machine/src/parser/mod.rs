@@ -71,7 +71,7 @@ impl Parser {
 
     pub fn parse(&mut self) -> Errorable {
         // Return errors from the scanning phase.
-        if let Some(error) = self.scan_error { return Err(error); }
+        if let Some(error) = self.scan_error.clone() { return Err(error); }
 
         // Pass 1: collect labels.
         self.parse_tokens()?;

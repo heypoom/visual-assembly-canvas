@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
 
-#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Copy, Clone)]
+#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
 pub enum ParseError {
     #[snafu(display("string is invalid"))]
