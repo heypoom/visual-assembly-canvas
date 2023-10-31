@@ -113,6 +113,13 @@ impl Router {
             // Do not tick if the machine is still awaiting for messages.
             if status == Awaiting {
                 if machine.expected_receives > 0 { continue; }
+
+                // If it's the last instruction, we halt the machine as the message is received.
+                if machine.should_halt() {
+                    self.statuses.insert(id, Halted);
+                    continue;
+                }
+
                 self.statuses.insert(id, Running);
             }
 

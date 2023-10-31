@@ -27,6 +27,7 @@ mod router_tests {
         r.run()?;
 
         assert_eq!(r.get_mut(1).expect("cannot get second machine").stack().peek(), 180);
+        assert_eq!(r.statuses[&1], Halted, "machine must be halted after message is received");
 
         Ok(())
     }
@@ -48,7 +49,9 @@ mod router_tests {
         r.load(1, "receive")?;
         r.run()?;
 
-        assert_eq!(r.get_mut(1).expect("cannot get second machine").stack().peek(), 30);
+        let m1 = r.get_mut(1).expect("cannot get second machine");
+        assert_eq!(m1.stack().peek(), 30);
+        assert_eq!(r.statuses[&1], Halted, "machine must be halted after message is received");
 
         Ok(())
     }
