@@ -18,15 +18,15 @@ export const MachineValueViewer = (props: Props) => {
   const stack = state.stack ? [...state.stack].map((x) => x) : null
 
   return (
-    <div>
+    <div className="space-y-1">
       {state.error && (
-        <div className="text-1 text-orange-11">
+        <div className="text-1 text-orange-11 px-1 mx-1">
           <ErrorIndicator error={state.error} />
         </div>
       )}
 
       {state.logs?.length ? (
-        <div className="text-cyan-11 text-1 font-medium rounded-sm px-1 bg-stone-800 mx-1">
+        <div className="text-cyan-11 text-1 font-medium px-1 bg-stone-800 mx-1">
           {state.logs.map((log, i) => (
             <div key={i}>&gt; {log}</div>
           ))}
@@ -34,7 +34,7 @@ export const MachineValueViewer = (props: Props) => {
       ) : null}
 
       {registers && (
-        <div className="text-green-11 text-1 rounded-sm px-1 bg-stone-800 mx-1 flex gap-x-2">
+        <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
           <div>
             <span>PC</span> <strong>{registers.pc}</strong>
           </div>
@@ -57,7 +57,7 @@ export const MachineValueViewer = (props: Props) => {
         <div className="flex">
           {stack.map((u, i) => (
             <div
-              className="text-1 text-crimson-11 rounded-sm px-1 bg-stone-800 mx-1"
+              className="text-1 text-crimson-11 px-1 bg-stone-800 mx-1"
               key={i}
             >
               {u}

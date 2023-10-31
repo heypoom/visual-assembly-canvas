@@ -13,7 +13,9 @@ export const ErrorIndicator = ({ error }: { error: MachineError }) => {
     return (
       <pre>
         Your program produced an error:{" "}
-        {JSON.stringify(error.ExecutionFailed.error, null, 2)}
+        <strong>
+          <code>{JSON.stringify(error.ExecutionFailed.error, null, 2)}</code>
+        </strong>
       </pre>
     )
   }
@@ -21,7 +23,10 @@ export const ErrorIndicator = ({ error }: { error: MachineError }) => {
   if (errors.cannotParse(error)) {
     return (
       <pre>
-        Syntax is incorrect: {JSON.stringify(error.CannotParse.error, null, 2)}
+        Syntax is incorrect:{" "}
+        <strong>
+          <code>{JSON.stringify(error.CannotParse.error, null, 2)}</code>
+        </strong>
       </pre>
     )
   }
