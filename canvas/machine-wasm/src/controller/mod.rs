@@ -1,3 +1,4 @@
+use machine::Register::{FP, PC, SP};
 use machine::{Event, Message, Router, RouterError};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
@@ -11,12 +12,20 @@ pub struct Controller {
     pub router: Router,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct InspectRegister {
+    pc: u16,
+    sp: u16,
+    fp: u16,
+}
+
 /// Machine state returned by the inspection function.
 #[derive(Serialize, Deserialize)]
 pub struct InspectState {
     pub stack: Vec<u16>,
     pub events: Vec<Event>,
     pub mailbox: Vec<Message>,
+    pub registers: InspectRegister,
 }
 
 type Return = Result<JsValue, JsValue>;
@@ -74,11 +83,17 @@ impl Controller {
             events: m.events.clone(),
             mailbox: m.mailbox.clone(),
             stack: m.mem.read_stack(10),
+            registers: InspectRegister {
+                pc: m.reg.get(PC),
+                sp: m.reg.get(SP),
+                fp: m.reg.get(FP),
+            },
         };
 
         Ok(to_value(&state)?)
     }
 
+    /// Allows the frontend to consume events from the machine.
     pub fn consume_events(&mut self, id: u16) -> Return {
         let Some(m) = self.router.get_mut(id) else {
             return Ok(NULL);

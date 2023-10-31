@@ -2,6 +2,7 @@ export interface MachineState {
   error: MachineError | null
   stack: number[]
   logs: string[]
+  registers: { pc: number; sp: number; fp: number }
 }
 
 export type MachineError =

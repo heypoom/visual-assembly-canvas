@@ -78,6 +78,8 @@ export function MachineBlock(props: NodeProps<Machine>) {
   const config = useStore($editorConfig)
   const extensions = useMemo(() => getExtensions(data, config), [data, config])
 
+  const { registers } = state
+
   return (
     <div className="font-mono bg-slate-1">
       <Handle type="source" position={Position.Left} id="ls" />
@@ -115,6 +117,22 @@ export function MachineBlock(props: NodeProps<Machine>) {
               ))}
             </div>
           ) : null}
+
+          {registers && (
+            <div className="text-green-11 text-1 rounded-sm px-1 bg-stone-800 mx-1 flex gap-x-2">
+              <div>
+                <span>PC</span> <strong>{registers.pc}</strong>
+              </div>
+
+              <div>
+                <span>FP</span> <strong>{registers.fp}</strong>
+              </div>
+
+              <div>
+                <span>SP</span> <strong>{registers.sp}</strong>
+              </div>
+            </div>
+          )}
 
           {stack && (
             <div className="flex">

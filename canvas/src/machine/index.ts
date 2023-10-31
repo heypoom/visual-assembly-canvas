@@ -53,6 +53,8 @@ export class MachineManager {
   maxCycle = 200
 
   ready = false
+
+  sources: Record<number, string> = {}
   hasSyntaxError: Record<number, boolean> = {}
 
   async setup() {
@@ -61,10 +63,17 @@ export class MachineManager {
   }
 
   load(id: number, source: string) {
+    // If the source is the same, we don't need to reload.
+    if (this.sources[id] === source) {
+      this.ready = false
+      return
+    }
+
     try {
       this.ctx?.load(Number(id), source)
       this.setSyntaxError(id, null)
       this.ready = false
+      this.sources = { ...this.sources, [id]: source }
     } catch (error) {
       this.setSyntaxError(id, error)
     }
@@ -81,10 +90,16 @@ export class MachineManager {
 
   prepare = () => {
     if (this.ready) return
+
+    console.log(">> preparing new runs...")
     this.ctx?.ready()
     this.ready = true
 
     clearPreviousRun(this)
+  }
+
+  get isHalted(): boolean {
+    return this.ctx?.is_halted() ?? false
   }
 
   run = async () => {
@@ -92,8 +107,8 @@ export class MachineManager {
 
     let cycle = 0
 
-    while (cycle < this.maxCycle && !this.ctx?.is_halted()) {
-      this.step()
+    while (cycle < this.maxCycle && !this.isHalted) {
+      this.step({ batch: true })
 
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
@@ -102,7 +117,7 @@ export class MachineManager {
     }
 
     setTimeout(() => {
-      if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
+      if (cycle >= this.maxCycle && !this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getCycleError(id, status)
           if (error) setError(id, error)
@@ -120,7 +135,7 @@ export class MachineManager {
     return this.ctx?.statuses()
   }
 
-  step = () => {
+  step = (config: { batch?: boolean } = {}) => {
     this.prepare()
 
     try {
@@ -131,6 +146,12 @@ export class MachineManager {
       if ("ExecutionFailed" in err) {
         setError(err.ExecutionFailed.id, err)
       }
+    }
+
+    // If running in steps, we should reset the machine once it halts.
+    if (!config.batch && this.isHalted) {
+      console.log(">> step completed! resetting...")
+      this.ready = false
     }
 
     setMachineState(this)
