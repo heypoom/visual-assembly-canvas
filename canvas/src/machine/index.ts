@@ -97,7 +97,6 @@ export class MachineManager {
   prepare = () => {
     if (this.ready) return
 
-    console.log(">> preparing new runs...")
     this.ctx?.ready()
     this.ready = true
 
@@ -142,8 +141,6 @@ export class MachineManager {
   }
 
   step = (config: { batch?: boolean } = {}) => {
-    console.log("step...")
-
     this.prepare()
 
     try {
