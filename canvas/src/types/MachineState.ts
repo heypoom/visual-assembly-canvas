@@ -19,3 +19,4 @@ export type MachineStatus =
   | "Running"
   | "Awaiting"
   | "Halted"
+  | "Errored"

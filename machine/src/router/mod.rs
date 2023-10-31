@@ -9,7 +9,7 @@ use status::MachineStatus::{Awaiting, Halted, Running};
 
 pub use router_error::RouterError::*;
 pub use router_error::RouterError;
-use crate::status::MachineStatus::{Invalid, Loaded, Ready};
+use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready};
 
 // Limit the max number of execution cycles to prevent an infinite loop.
 const MAX_ITER: u16 = 1000;
@@ -102,10 +102,8 @@ impl Router {
 
             // Manage state transitions of the machine.
             match status {
-                Halted | Invalid | Loaded => continue,
-                Ready => {
-                    self.statuses.insert(id, Running);
-                }
+                Halted | Invalid | Loaded | Errored => continue,
+                Ready => { self.statuses.insert(id, Running); }
                 _ if machine.should_halt() => {
                     self.statuses.insert(id, Halted);
                     continue;
@@ -123,7 +121,10 @@ impl Router {
             }
 
             // Execute the instruction.
-            machine.tick().map_err(|error| ExecutionFailed { id, error: error.into() })?;
+            machine.tick().map_err(|error| {
+                self.statuses.insert(id, Errored);
+                ExecutionFailed { id, error: error.into() }
+            })?;
 
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.
@@ -136,7 +137,7 @@ impl Router {
     }
 
     pub fn is_halted(&self) -> bool {
-        self.statuses.values().all(|s| s == &Halted || s == &Invalid)
+        self.statuses.values().all(|s| s == &Halted || s == &Invalid || s == &Errored)
     }
 
     pub fn get_statuses(&self) -> HashMap<u16, MachineStatus> {

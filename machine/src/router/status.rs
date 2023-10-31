@@ -21,4 +21,7 @@ pub enum MachineStatus {
 
     /// Machine has reached the end of execution.
     Halted,
+
+    /// Machine has produced a runtime error.
+    Errored,
 }

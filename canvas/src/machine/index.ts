@@ -7,11 +7,11 @@ import { Machine } from "../types/Machine.ts"
 import { BlockNode } from "../types/Node.ts"
 
 import {
-  $output,
-  clearPreviousRun,
   setError,
   setMachineState,
+  clearPreviousRun,
 } from "../store/results.ts"
+
 import { MachineError, MachineStatus } from "../types/MachineState.ts"
 import { InspectionState } from "../types/MachineEvent.ts"
 
