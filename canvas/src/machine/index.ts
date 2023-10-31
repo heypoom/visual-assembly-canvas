@@ -105,16 +105,14 @@ export class MachineManager {
       if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
         this.statuses.forEach((status, id) => {
           const error = this.getCycleError(id, status)
-          if (error) {
-            setError(id, error)
-          }
+          if (error) setError(id, error)
         })
       }
     }, 10)
   }
 
   getCycleError(id: number, status: MachineStatus): MachineError | undefined {
-    if (status === "Halted") return { ExecutionCycleExceeded: { id } }
+    if (status === "Running") return { ExecutionCycleExceeded: { id } }
     if (status === "Awaiting") return { HangingAwaits: { id } }
   }
 
