@@ -5,29 +5,29 @@ mod router_tests {
 
     #[test]
     fn test_send_and_receive() -> Result<(), RouterError> {
+        let src_0 = r"
+            push 6
+            receive
+            mul
+        ";
+
         let src_1 = r"
             push 10
             push 20
             add
-            send 1 1
-        ";
-
-        let src_2 = r"
-            push 6
-            receive
-            mul
+            send 0 1
         ";
 
         let mut r = Router::new();
         r.add();
         r.add();
 
-        r.load(0, src_1)?;
-        r.load(1, src_2)?;
+        r.load(0, src_0)?;
+        r.load(1, src_1)?;
         r.run()?;
 
-        assert_eq!(r.get_mut(1).expect("cannot get second machine").stack().peek(), 180);
-        assert_eq!(r.statuses[&1], Halted, "machine must be halted after message is received");
+        assert_eq!(r.get_mut(0).expect("cannot get first machine").stack().peek(), 180);
+        assert_eq!(r.statuses[&0], Halted, "machine must be halted after message is received");
 
         Ok(())
     }
@@ -38,18 +38,18 @@ mod router_tests {
             push 10
             push 20
             add
-            send 1 1
+            send 0 1
         ";
 
         let mut r = Router::new();
         r.add();
         r.add();
 
-        r.load(0, src_1)?;
-        r.load(1, "receive")?;
+        r.load(0, "receive")?;
+        r.load(1, src_1)?;
         r.run()?;
 
-        let m1 = r.get_mut(1).expect("cannot get second machine");
+        let m1 = r.get_mut(0).expect("cannot get second machine");
         assert_eq!(m1.stack().peek(), 30);
         assert_eq!(r.statuses[&1], Halted, "machine must be halted after message is received");
 
