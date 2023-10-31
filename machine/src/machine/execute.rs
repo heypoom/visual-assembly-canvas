@@ -111,10 +111,8 @@ impl Execute for Machine {
                 bytes.reverse();
 
                 // Add the print event to the event queue.
-                match self.mem.string().get_str_from_bytes(bytes) {
-                    Ok(text) => self.events.push(Event::Print { text }),
-                    Err(error) => return Err(error),
-                }
+                let text = self.mem.string().get_str_from_bytes(bytes)?;
+                self.events.push(Event::Print { text })
             }
 
             Op::LoadString(addr) => {
@@ -127,28 +125,22 @@ impl Execute for Machine {
 
             Op::Call(address) => {
                 let pc = self.reg.get(PC);
+                self.call_stack().push(pc).map_err(|_| CallStackExceeded)?;
 
-                match self.call_stack().push(pc) {
-                    Ok(_) => { jump = Some(address) }
-                    Err(_) => return Err(CallStackExceeded),
-                }
+                jump = Some(address)
             }
 
             Op::Return => {
-                match self.call_stack().pop() {
-                    Ok(address) => { jump = Some(address + 1) }
-                    Err(_) => return Err(MissingReturnAddress)
-                }
+                let address = self.call_stack().pop().map_err(|_| MissingReturnAddress)?;
+                jump = Some(address + 1)
             }
 
             Op::Send(to, size) => {
                 let mut body = vec![];
 
                 for _ in 0..size {
-                    match s.pop() {
-                        Ok(v) => body.push(v),
-                        Err(_) => return Err(MissingMessageBody),
-                    }
+                    let v = s.pop().map_err(|_| MissingMessageBody)?;
+                    body.push(v);
                 }
 
                 self.send_message(to, Action::Data { body });
