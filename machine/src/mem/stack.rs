@@ -84,20 +84,20 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn apply<F>(&mut self, f: F) -> Result<(), RuntimeError>
-        where F: FnOnce(u16) -> u16 {
+        where F: FnOnce(u16) -> Result<u16, RuntimeError> {
         let a = self.pop()?;
-        let value = f(a);
+        let value = f(a)?;
         self.push(value)?;
 
         Ok(())
     }
 
     pub fn apply_two<F>(&mut self, f: F) -> Result<(), RuntimeError>
-        where F: FnOnce(u16, u16) -> u16 {
+        where F: FnOnce(u16, u16) -> Result<u16, RuntimeError> {
         let a = self.pop()?;
         let b = self.pop()?;
 
-        let value = f(a, b);
+        let value = f(a, b)?;
         self.push(value)?;
 
         Ok(())

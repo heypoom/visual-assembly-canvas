@@ -33,4 +33,10 @@ pub enum RuntimeError {
 
     #[snafu(display("cannot divide by zero"))]
     CannotDivideByZero,
+
+    #[snafu(display("integer overflow"))]
+    IntegerOverflow,
+
+    #[snafu(display("integer underflow"))]
+    IntegerUnderflow,
 }

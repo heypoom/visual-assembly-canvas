@@ -4,7 +4,7 @@ use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
-use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, MissingMessageBody, MissingReturnAddress};
+use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow, MissingMessageBody, MissingReturnAddress};
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -47,30 +47,23 @@ impl Execute for Machine {
                 self.mem.set(addr, value);
             }
 
-            // Addition, subtraction, multiplication.
-            Op::Add => s.apply_two(|a, b| a + b)?,
-            Op::Sub => s.apply_two(|a, b| b - a)?,
-            Op::Mul => s.apply_two(|a, b| a * b)?,
-
-            // Checked division.
-            Op::Div => {
-                let a = s.pop()?;
-                let b = s.pop()?;
-
-                s.push(b.checked_div(a).ok_or(CannotDivideByZero)?)?;
-            }
+            // Addition, subtraction, multiplication and division.
+            Op::Add => s.apply_two(|a, b| a.checked_add(b).ok_or(IntegerOverflow))?,
+            Op::Sub => s.apply_two(|a, b| b.checked_sub(a).ok_or(IntegerUnderflow))?,
+            Op::Mul => s.apply_two(|a, b| a.checked_mul(b).ok_or(IntegerOverflow))?,
+            Op::Div => s.apply_two(|a, b| b.checked_div(a).ok_or(CannotDivideByZero))?,
 
             // Increment and decrement.
-            Op::Inc => s.apply(|v| v + 1)?,
-            Op::Dec => s.apply(|v| v - 1)?,
+            Op::Inc => s.apply(|v| v.checked_add(1).ok_or(IntegerOverflow))?,
+            Op::Dec => s.apply(|v| v.checked_sub(1).ok_or(IntegerUnderflow))?,
 
             // Equality and comparison operations.
-            Op::Equal => s.apply_two(|a, b| (a == b).into())?,
-            Op::NotEqual => s.apply_two(|a, b| (a != b).into())?,
-            Op::LessThan => s.apply_two(|a, b| (a < b).into())?,
-            Op::LessThanOrEqual => s.apply_two(|a, b| (a <= b).into())?,
-            Op::GreaterThan => s.apply_two(|a, b| (a > b).into())?,
-            Op::GreaterThanOrEqual => s.apply_two(|a, b| (a >= b).into())?,
+            Op::Equal => s.apply_two(|a, b| Ok((a == b).into()))?,
+            Op::NotEqual => s.apply_two(|a, b| Ok((a != b).into()))?,
+            Op::LessThan => s.apply_two(|a, b| Ok((a < b).into()))?,
+            Op::LessThanOrEqual => s.apply_two(|a, b| Ok((a <= b).into()))?,
+            Op::GreaterThan => s.apply_two(|a, b| Ok((a > b).into()))?,
+            Op::GreaterThanOrEqual => s.apply_two(|a, b| Ok((a >= b).into()))?,
 
             // TODO: write a unit test for jump, and op that uses jump.
             //       there was a bug caused by using set(PC) instead of assigning to jump
