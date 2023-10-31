@@ -1,5 +1,5 @@
 use crate::ParseError;
-use crate::ParseError::PeekExceedsSourceLength;
+use crate::ParseError::{InvalidDecimalDigit, InvalidHexDigit, PeekExceedsSourceLength};
 use super::token::*;
 
 type Errorable = Result<(), ParseError>;
@@ -44,10 +44,7 @@ impl Scanner {
     fn peek(&self) -> Result<char, ParseError> {
         if self.is_end() { return Ok('\0'); }
 
-        match self.source.chars().nth(self.current) {
-            Some(char) => Ok(char),
-            None => Err(PeekExceedsSourceLength)
-        }
+        self.source.chars().nth(self.current).ok_or(PeekExceedsSourceLength)
     }
 
     fn is_end(&self) -> bool {
@@ -65,10 +62,7 @@ impl Scanner {
     }
 
     fn scan_token(&mut self) -> Result<(), ParseError> {
-        let char = match self.advance() {
-            Ok(char) => char,
-            Err(error) => return Err(error)
-        };
+        let char = self.advance()?;
 
         match char {
             ' ' | '\r' | '\t' => {}
@@ -93,7 +87,6 @@ impl Scanner {
             '.' => {
                 if self.in_instruction || self.in_definition { return Ok(()); }
 
-
                 while is_identifier(self.peek()?) {
                     self.advance()?;
                 }
@@ -115,10 +108,7 @@ impl Scanner {
 
             // Parse hexadecimals.
             c if c == '0' && !self.is_end() => {
-                let char = match self.advance() {
-                    Ok(char) => char,
-                    Err(error) => return Err(error)
-                };
+                let char = self.advance()?;
 
                 match char {
                     'x' => {
@@ -132,13 +122,13 @@ impl Scanner {
                     }
 
                     _ => {
-                        self.digit()?
+                        self.decimal()?
                     }
                 }
             }
 
             // Parse decimals.
-            c if c.is_digit(10) => self.digit()?,
+            c if c.is_digit(10) => self.decimal()?,
 
             // Parse identifiers.
             c if is_identifier(c) => self.identifier()?,
@@ -151,14 +141,15 @@ impl Scanner {
         Ok(())
     }
 
-    fn digit(&mut self) -> Errorable {
-        while self.peek()?.is_digit(16) && !self.is_end() {
+    fn decimal(&mut self) -> Errorable {
+        while self.peek()?.is_digit(10) && !self.is_end() {
             self.advance()?;
         }
 
-        let num = self.peek_lexeme().trim().parse::<u16>().expect("invalid decimal");
-        self.add_token(TokenType::Value(num));
+        let lexeme = self.peek_lexeme();
+        let number = lexeme.trim().parse::<u16>().map_err(|_| InvalidDecimalDigit { text: lexeme.trim().into() })?;
 
+        self.add_token(TokenType::Value(number));
         Ok(())
     }
 
@@ -169,8 +160,10 @@ impl Scanner {
 
         let text = self.peek_lexeme();
         let text = text.trim();
-        let hex_str = text.strip_prefix("0x").expect("no hex prefix");
-        let num = u16::from_str_radix(hex_str, 16).expect("invalid hex");
+
+        let hex_str = text.strip_prefix("0x").ok_or_else(|| InvalidHexDigit { text: text.into() })?;
+        let num = u16::from_str_radix(hex_str, 16).map_err(|_| InvalidHexDigit { text: text.into() })?;
+
         self.add_token(TokenType::Value(num));
 
         Ok(())

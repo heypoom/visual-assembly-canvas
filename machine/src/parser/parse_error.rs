@@ -42,4 +42,10 @@ pub enum ParseError {
 
     #[snafu(display("peek exceeds source length"))]
     PeekExceedsSourceLength,
+
+    #[snafu(display("invalid decimal digit"))]
+    InvalidDecimalDigit { text: String },
+
+    #[snafu(display("invalid hex digit"))]
+    InvalidHexDigit { text: String },
 }
