@@ -16,6 +16,7 @@ import {
 import { MachineError, MachineStatus } from "../types/MachineState.ts"
 import { InspectionState } from "../types/MachineEvent.ts"
 import { getSourceHighlightMap } from "../inspector/utils/getHighlightedSourceLine.ts"
+import { $status } from "../store/status.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
 
@@ -110,6 +111,7 @@ export class MachineManager {
 
   run = async () => {
     this.prepare()
+    $status.setKey("running", true)
 
     let cycle = 0
 
@@ -123,6 +125,7 @@ export class MachineManager {
     }
 
     this.invalidate()
+    $status.setKey("running", false)
 
     setTimeout(() => {
       if (cycle >= this.maxCycle && !this.isHalted) {
