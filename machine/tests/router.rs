@@ -127,4 +127,17 @@ mod router_tests {
 
         Ok(())
     }
+
+    #[test]
+    fn test_hanging_bidirectional() -> Result<(), RouterError> {
+        let mut r = Router::new();
+        r.add();
+        r.add();
+
+        r.load(0, "receive")?;
+        r.load(1, "receive")?;
+        assert_eq!(r.run(), Err(MessageNeverReceived { id: 1 }));
+
+        Ok(())
+    }
 }

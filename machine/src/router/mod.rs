@@ -203,7 +203,7 @@ impl Router {
 /// Are there no more active peers?
 pub fn peers_halted(statuses: Statuses, id: u16) -> bool {
     let active = statuses.iter()
-        .filter(|(m_id, status)| id != **m_id && (status == &&Running || status == &&Ready || status == &&Awaiting))
+        .filter(|(m_id, status)| id != **m_id && (status == &&Running || status == &&Ready))
         .count();
 
     return active == 0;
