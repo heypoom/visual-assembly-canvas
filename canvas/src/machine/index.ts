@@ -170,7 +170,7 @@ export class MachineManager {
     this.highlighters.forEach((highlight, id) => {
       const mapping = this.highlightMaps.get(id)
       if (!mapping) {
-        console.log("[HL:${id}] no mapping found!!")
+        console.log(`[HL:${id}] no mapping found!!`)
         return
       }
 
