@@ -44,14 +44,16 @@ export const setMachineState = action(
       const curr = output[id]
       const next = toState({ ...manager.inspect(id), events })
 
+      // Preserve parse errors between steps, but discard cycle errors.
+      const error =
+        curr?.error && !isCycleError(curr.error) ? curr.error : next.error
+
       store.setKey(id, {
         ...next,
+        error,
 
         // Preserve logs between steps.
         logs: [...(curr?.logs ?? []), ...next.logs],
-
-        // Preserve parse errors between steps.
-        error: curr?.error ? curr.error : next.error,
       })
     })
   },
