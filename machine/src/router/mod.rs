@@ -1,5 +1,4 @@
 pub mod status;
-pub mod splits;
 pub mod router_error;
 
 use std::collections::HashMap;
@@ -7,7 +6,6 @@ use crate::{Actor, Event, Execute, Machine, Parser};
 
 use status::MachineStatus;
 use status::MachineStatus::{Awaiting, Halted, Running};
-use splits::split_send_events;
 
 pub use router_error::RouterError::*;
 pub use router_error::RouterError;
@@ -161,22 +159,13 @@ impl Router {
     fn route_messages(&mut self) {
         let mut messages = vec![];
 
-        // Process "send" events from the machines until the queue is empty.
         for machine in &mut self.machines {
-            let (sides, sends) = split_send_events(&mut machine.events);
-            machine.events = sides;
-
-            for event in sends {
-                if let Event::Send { message } = event {
-                    messages.push(message);
-                }
-            }
+            messages.extend(machine.outbox.drain(..));
         }
 
-        // Push messages to machines' mailbox.
         for message in messages {
             if let Some(dst) = self.get_mut(message.to) {
-                dst.mailbox.push(message);
+                dst.inbox.push(message);
             };
         }
     }
@@ -184,9 +173,10 @@ impl Router {
     /// Consume the side effect events in the frontend.
     pub fn consume_side_effects(&mut self, id: u16) -> Vec<Event> {
         let Some(machine) = self.get_mut(id) else { return vec![]; };
-        let (side, sends) = split_send_events(&mut machine.events);
 
-        machine.events = sends;
-        side
+        let events = machine.events.clone();
+        machine.events.clear();
+
+        events
     }
 }

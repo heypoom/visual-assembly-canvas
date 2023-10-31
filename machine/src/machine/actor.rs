@@ -1,4 +1,4 @@
-use crate::{Action, Event, Machine, Message, RuntimeError};
+use crate::{Action, Machine, Message, RuntimeError};
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -16,19 +16,18 @@ impl Actor for Machine {
         let Some(id) = self.id else { return; };
 
         // Add the message to the mailbox.
-        let message = Message { from: id, to, action };
-        self.events.push(Event::Send { message: message.clone() });
+        self.outbox.push(Message { from: id, to, action });
     }
 
     fn receive_messages(&mut self) -> Errorable {
         while self.expected_receives > 0 {
             // The machine expects a message,
             // but the message has yet to arrive in the mailbox at this time.
-            if self.mailbox.is_empty() { break; }
+            if self.inbox.is_empty() { break; }
 
             // A new message arrived!
             // We can process them now.
-            let Some(message) = self.mailbox.pop() else { break; };
+            let Some(message) = self.inbox.pop() else { break; };
             self.expected_receives -= 1;
 
             match message.action {
