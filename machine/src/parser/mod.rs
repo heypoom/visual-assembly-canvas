@@ -12,7 +12,7 @@ use std::str::FromStr;
 use snafu::ensure;
 use TokenType as T;
 use crate::{DATA_START, Op};
-use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
+use crate::ParseError::{CannotPeekAtToken, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
 
 type Errorable = Result<(), ParseError>;
 

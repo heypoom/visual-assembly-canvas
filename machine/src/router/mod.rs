@@ -125,9 +125,7 @@ impl Router {
             }
 
             // Execute the instruction.
-            if let Err(error) = machine.tick() {
-                return Err(ExecutionFailed { id, error });
-            };
+            machine.tick().map_err(|error| ExecutionFailed { id, error: error.into() })?;
 
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.
