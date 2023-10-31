@@ -81,6 +81,8 @@ impl Machine {
         self.partial_reset();
         self.mem.reset();
         self.inbox.clear();
+        self.outbox.clear();
+        self.events.clear();
     }
 
     /// Reset the execution state of the machine only.
