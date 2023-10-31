@@ -71,7 +71,7 @@ export class MachineManager {
   }
 
   setSyntaxError(id: number, error: unknown | null) {
-    setError(id, error as MachineError)
+    if (error) setError(id, error as MachineError)
     this.hasSyntaxError = { ...this.hasSyntaxError, [id]: !!error }
   }
 

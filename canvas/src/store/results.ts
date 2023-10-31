@@ -64,7 +64,7 @@ export const clearPreviousRun = action(
 
     manager.statuses.forEach((status, id) => {
       // Do not clear if the machine is still invalid.
-      if (status === "Invalid") return
+      if (status === "Invalid" || status === "Errored") return
 
       store.setKey(id, {
         ...curr[id],
