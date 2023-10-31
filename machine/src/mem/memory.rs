@@ -1,4 +1,4 @@
-use crate::{compile_to_bytecode, Symbols, Op, CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START, DATA_START};
+use crate::{compile_to_bytecode, Symbols, Op, CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START, DATA_START, STACK_END, CALL_STACK_END};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -19,8 +19,19 @@ impl Memory {
         self.buffer[addr as usize] = val;
     }
 
+    /// Reset the entire memory to zero.
     pub fn reset(&mut self) {
-        self.buffer.fill(0);
+        self.buffer.fill(0)
+    }
+
+    pub fn reset_range(&mut self, from: u16, to: u16) {
+        self.buffer[(from as usize)..(to as usize)].fill(0);
+    }
+
+    /// Reset the stack and call stack memory.
+    pub fn reset_stacks(&mut self) {
+        self.reset_range(CALL_STACK_START, CALL_STACK_END);
+        self.reset_range(STACK_START, STACK_END);
     }
 
     pub fn get(&self, addr: u16) -> u16 {
@@ -90,5 +101,22 @@ mod tests {
         let mut m = Memory::new();
         m.load_code(vec![Op::Push(5), Op::Push(10)]);
         assert_eq!(&m.buffer[0..4], [0x01, 5, 0x01, 10])
+    }
+
+    #[test]
+    fn test_reset_stack() {
+        let mut m = Memory::new();
+        m.write(CODE_START, &[1, 2, 3]);
+        m.write(STACK_START, &[4, 5, 6]);
+        m.write(CALL_STACK_START, &[7, 8, 9]);
+
+        assert_eq!(m.read_stack(3), [4, 5, 6]);
+        assert_eq!(m.read_call_stack(3), [7, 8, 9]);
+
+        m.reset_stacks();
+
+        assert_eq!(m.read_code(3), [1, 2, 3]);
+        assert_eq!(m.read_stack(3), [0, 0, 0]);
+        assert_eq!(m.read_call_stack(3), [0, 0, 0]);
     }
 }

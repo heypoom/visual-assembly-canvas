@@ -85,10 +85,10 @@ impl Machine {
         self.events.clear();
     }
 
-    /// Reset the execution state of the machine only.
-    /// TODO: should we partially reset the memory as well?
+    /// Reset the execution state and execution memory of the machine only.
     pub fn partial_reset(&mut self) {
         self.reg.reset();
+        self.mem.reset_stacks();
         self.expected_receives = 0;
     }
 }
