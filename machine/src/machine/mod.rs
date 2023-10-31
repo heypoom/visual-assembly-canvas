@@ -71,10 +71,16 @@ impl Machine {
         stack
     }
 
-    /// Reset the memory and registers to avoid faulty state.
-    pub fn reset(&mut self) {
-        self.reg.reset();
+    /// Reset the machine completely.
+    pub fn full_reset(&mut self) {
+        self.partial_reset();
         self.mem.reset();
+    }
+
+    /// Reset the execution state of the machine only.
+    /// TODO: should we partially reset the memory as well?
+    pub fn partial_reset(&mut self) {
+        self.reg.reset();
         self.expected_receives = 0;
     }
 }

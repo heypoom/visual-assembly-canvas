@@ -58,7 +58,7 @@ impl Router {
     /// Load the code and symbols into memory.
     pub fn load(&mut self, id: u16, source: &str) -> Errorable {
         let machine = self.get_mut(id).ok_or(MissingMachineId { id })?;
-        machine.reset();
+        machine.full_reset();
 
         let parser: Result<Parser, _> = (*source).try_into();
 
@@ -85,8 +85,8 @@ impl Router {
 
             // Do not reset the machine if it is invalid.
             if self.statuses.get(&id) == Some(&Invalid) { continue; }
+            machine.partial_reset();
 
-            machine.reg.reset();
             self.statuses.insert(id, Ready);
         }
     }
