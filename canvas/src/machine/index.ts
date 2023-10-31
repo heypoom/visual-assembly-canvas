@@ -76,12 +76,13 @@ export class MachineManager {
       return
     }
 
+    this.sources.set(id, source)
+
     try {
       this.ctx?.load(id, source)
       this.setSyntaxError(id, null)
       this.highlightMaps.set(id, getSourceHighlightMap(source))
       this.ready = false
-      this.sources.set(id, source)
     } catch (error) {
       this.setSyntaxError(id, error)
     }
@@ -173,11 +174,6 @@ export class MachineManager {
 
     this.highlighters.forEach((highlight, id) => {
       const mapping = this.highlightMaps.get(id)
-      if (!mapping) {
-        console.log(`[HL:${id}] no mapping found!!`)
-        return
-      }
-
       const state = output[id]
       const pc = state?.registers?.pc ?? 0
       const lineNo = (mapping?.get(pc) ?? 0) + 1
