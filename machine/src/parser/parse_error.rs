@@ -51,4 +51,7 @@ pub enum ParseError {
 
     #[snafu(display("invalid hex digit"))]
     InvalidHexDigit { text: String },
+
+    #[snafu(display("scanner reached end of line without terminating"))]
+    ScannerReachedEndOfLine,
 }

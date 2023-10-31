@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod parser_tests {
     use machine::{load_test_file, Op, ParseError, Parser};
-    use machine::ParseError::{InvalidArgument, InvalidIdentifier, UndefinedSymbols};
+    use machine::ParseError::{InvalidArgument, UndefinedSymbols};
 
     type Errorable = Result<(), ParseError>;
 

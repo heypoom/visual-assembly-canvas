@@ -30,7 +30,7 @@ mod tests {
     fn test_print_hello_world_compiled() {
         let src = load_test_file("hello-world.asm");
         let bin = compile_to_binary(&src).expect("cannot compile the test program");
-        let mut m = load_from_binary(&bin);
+        let mut m = load_from_binary(&bin).expect("cannot load test program from compiled bytecode");
 
         expect_hello_world(&mut m);
     }

@@ -1,4 +1,5 @@
-use crate::ParseError;
+use snafu::ensure;
+use crate::{ParseError, ScannerReachedEndOfLineSnafu};
 use crate::ParseError::{InvalidDecimalDigit, InvalidHexDigit, PeekExceedsSourceLength};
 use super::token::*;
 
@@ -52,9 +53,7 @@ impl Scanner {
     }
 
     fn advance(&mut self) -> Result<char, ParseError> {
-        if self.is_end() {
-            panic!("reached end of line");
-        }
+        ensure!(!self.is_end(), ScannerReachedEndOfLineSnafu);
 
         let v = self.peek();
         self.current += 1;

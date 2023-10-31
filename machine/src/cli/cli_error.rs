@@ -5,6 +5,12 @@ use crate::{ParseError, RuntimeError};
 #[snafu(visibility(pub))]
 pub enum CLIError {
     #[snafu(display(""))]
+    IncorrectMagicBytes,
+
+    #[snafu(display(""))]
+    IncorrectFileHeader,
+
+    #[snafu(display(""))]
     CannotReadFile,
 
     #[snafu(display(""))]
@@ -17,5 +23,5 @@ pub enum CLIError {
     CannotWriteToFile,
 
     #[snafu(display(""))]
-    RunFailed { error: RuntimeError }
+    RunFailed { error: RuntimeError },
 }
