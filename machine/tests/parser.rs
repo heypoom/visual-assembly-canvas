@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod parser_tests {
     use machine::{load_test_file, Op, ParseError, Parser};
-    use machine::ParseError::{InvalidArgument, UndefinedSymbols};
+    use machine::ParseError::{EmptyProgram, InvalidArgument, UndefinedSymbols};
 
     type Errorable = Result<(), ParseError>;
 
@@ -59,5 +59,11 @@ mod parser_tests {
     fn test_undefined_value() {
         let mut p = Parser::new("push ham_cheese");
         assert_eq!(p.parse(), Err(InvalidArgument { errors: vec![UndefinedSymbols] }));
+    }
+
+    #[test]
+    fn test_empty_program() {
+        let mut p = Parser::new("");
+        assert_eq!(p.parse(), Err(EmptyProgram));
     }
 }

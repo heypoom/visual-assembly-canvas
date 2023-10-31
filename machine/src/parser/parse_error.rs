@@ -54,4 +54,7 @@ pub enum ParseError {
 
     #[snafu(display("scanner reached end of line without terminating"))]
     ScannerReachedEndOfLine,
+
+    #[snafu(display("program does not contain any instructions to run"))]
+    EmptyProgram,
 }

@@ -64,6 +64,9 @@ impl Parser {
         scanner.scan_tokens()?;
         self.tokens = scanner.tokens;
 
+        // Raise an error if the program is empty.
+        ensure!(!self.tokens.is_empty(), EmptyProgramSnafu);
+
         // Pass 1: collect labels.
         self.parse_tokens()?;
 

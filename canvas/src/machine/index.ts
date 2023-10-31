@@ -19,11 +19,14 @@ import { getSourceHighlightMap } from "../inspector/utils/getHighlightedSourceLi
 
 const rand = () => Math.floor(Math.random() * 500)
 
+const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
+
 export function addMachine() {
   const id = manager.ctx?.add()
   if (id === undefined) return
 
-  const machine: Machine = { id, source: "push 5\n\n\n\n" }
+  const machine: Machine = { id, source: DEFAULT_SOURCE }
+  manager.load(id, machine.source)
 
   const node: BlockNode = {
     id: id.toString(),
@@ -71,18 +74,14 @@ export class MachineManager {
 
   load(id: number, source: string, force?: boolean) {
     // If the source is the same, we don't need to reload.
-    if (this.sources.get(id) === source && !force) {
-      this.ready = false
-      return
-    }
-
+    if (this.sources.get(id) === source && !force) return this.invalidate()
     this.sources.set(id, source)
 
     try {
       this.ctx?.load(id, source)
       this.setSyntaxError(id, null)
       this.highlightMaps.set(id, getSourceHighlightMap(source))
-      this.ready = false
+      this.invalidate()
     } catch (error) {
       this.setSyntaxError(id, error)
     }
@@ -127,14 +126,16 @@ export class MachineManager {
       if (cycle >= this.maxCycle && !this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getCycleError(id, status)
+          this.invalidate()
 
-          if (error) {
-            setError(id, error)
-            this.ready = false
-          }
+          if (error) setError(id, error)
         })
       }
     }, 10)
+  }
+
+  invalidate() {
+    this.ready = false
   }
 
   getCycleError(id: number, status: MachineStatus): MachineError | undefined {
