@@ -153,24 +153,6 @@ impl Router {
         self.machines.iter_mut().find(|m| m.id == Some(id))
     }
 
-    /// Consume the side effect events.
-    pub fn consume_side_effects(&mut self, id: u16) -> Vec<Event> {
-        let Some(machine) = self.get_mut(id) else { return vec![]; };
-
-        let mut side_effects = vec![];
-        let mut process_queue = vec![];
-
-        while let Some(event) = machine.events.pop() {
-            match event {
-                Event::Send { .. } => process_queue.push(event),
-                _ => side_effects.push(event),
-            }
-        }
-
-        machine.events = process_queue;
-        side_effects
-    }
-
     /// Route the messages to the appropriate machines.
     /// Scans the machine's event queue for Send events,
     /// then push the messages to destination's mailbox.
@@ -202,5 +184,23 @@ impl Router {
                 dst.mailbox.push(message);
             };
         }
+    }
+
+    /// Consume the side effect events in the frontend.
+    pub fn consume_side_effects(&mut self, id: u16) -> Vec<Event> {
+        let Some(machine) = self.get_mut(id) else { return vec![]; };
+
+        let mut side_effects = vec![];
+        let mut process_queue = vec![];
+
+        while let Some(event) = machine.events.pop() {
+            match event {
+                Event::Send { .. } => process_queue.push(event),
+                _ => side_effects.push(event),
+            }
+        }
+
+        machine.events = process_queue;
+        side_effects
     }
 }
