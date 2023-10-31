@@ -75,6 +75,7 @@ impl Machine {
     pub fn reset(&mut self) {
         self.reg.reset();
         self.mem.reset();
+        self.expected_receives = 0;
     }
 }
 
