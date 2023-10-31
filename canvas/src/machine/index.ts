@@ -122,12 +122,12 @@ export class MachineManager {
       cycle++
     }
 
+    this.invalidate()
+
     setTimeout(() => {
       if (cycle >= this.maxCycle && !this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getCycleError(id, status)
-          this.invalidate()
-
           if (error) setError(id, error)
         })
       }
