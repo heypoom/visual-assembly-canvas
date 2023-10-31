@@ -46,10 +46,19 @@ const ErrorIndicator = ({ error }: { error: MachineError }) => {
     return <pre>Machine is expecting a message which never arrives.</pre>
   }
 
+  if ("ExecutionFailed" in error) {
+    return (
+      <pre>
+        Your program produced an error:{" "}
+        {JSON.stringify(error.ExecutionFailed.error, null, 2)}
+      </pre>
+    )
+  }
+
   if ("CannotParse" in error) {
     return (
       <pre>
-        Syntax errors found: {JSON.stringify(error.CannotParse.error, null, 2)}
+        Syntax is incorrect: {JSON.stringify(error.CannotParse.error, null, 2)}
       </pre>
     )
   }
