@@ -71,7 +71,7 @@ const ErrorIndicator = ({ error }: { error: MachineError }) => {
 
 export function MachineBlock(props: NodeProps<Machine>) {
   const { data } = props
-  const { source } = data
+  const { id, source } = data
 
   const outputs = useStore($output)
 
@@ -133,11 +133,15 @@ export function MachineBlock(props: NodeProps<Machine>) {
               </div>
 
               <div>
+                <span>SP</span> <strong>{registers.sp}</strong>
+              </div>
+
+              <div>
                 <span>FP</span> <strong>{registers.fp}</strong>
               </div>
 
               <div>
-                <span>SP</span> <strong>{registers.sp}</strong>
+                <span>ID</span> <strong>{id}</strong>
               </div>
             </div>
           )}
