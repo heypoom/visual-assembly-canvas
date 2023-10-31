@@ -67,11 +67,20 @@ export const clearPreviousRun = action(
       // Do not clear if the machine is still invalid.
       if (status === "Invalid" || status === "Errored") return
 
+      const state = curr[id]
+      const { error } = state ?? {}
+
       store.setKey(id, {
-        ...curr[id],
+        ...state,
         logs: [],
-        error: null,
+        error: isCycleError(error) ? error : null,
       })
     })
   },
 )
+
+const isCycleError = (error: MachineError | null) => {
+  if (!error) return false
+
+  return "ExecutionCycleExceeded" in error || "HangingAwaits" in error
+}

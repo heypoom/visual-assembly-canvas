@@ -120,6 +120,10 @@ impl Scanner {
                         self.binary_digit()?
                     }
 
+                    ' ' => {
+                        self.advance()?;
+                    }
+
                     _ => {
                         self.decimal()?
                     }
@@ -264,5 +268,12 @@ mod tests {
         assert_eq!(s.tokens[0].token_type, TokenType::StringDefinition);
         assert_eq!(s.tokens[1].token_type, TokenType::Identifier);
         assert_eq!(s.tokens[2].token_type, TokenType::String("Hello, world!".into()));
+    }
+
+    #[test]
+    fn parse_decimal_zero() {
+        let s: Scanner = "send 0 1".try_into().expect("cannot parse decimal zero");
+
+        println!("{:?}", s.tokens);
     }
 }

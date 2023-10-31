@@ -128,8 +128,8 @@ export class MachineManager {
           const error = this.getCycleError(id, status)
 
           if (error) {
-            this.ready = false
             setError(id, error)
+            this.ready = false
           }
         })
       }
