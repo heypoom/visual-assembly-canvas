@@ -56,6 +56,7 @@ export class MachineManager {
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
 
+  /** Is every machine ready to run? */
   ready = false
 
   sources: Map<number, string> = new Map()
@@ -127,7 +128,7 @@ export class MachineManager {
           const error = this.getCycleError(id, status)
 
           if (error) {
-            this.ctx?.partial_reset(id)
+            this.ready = false
             setError(id, error)
           }
         })
