@@ -1,8 +1,8 @@
-import ReactFlow from 'reactflow'
+import ReactFlow from "reactflow"
 
-import {useStore} from '@nanostores/react'
+import { useStore } from "@nanostores/react"
 
-import 'reactflow/dist/style.css'
+import "reactflow/dist/style.css"
 
 import {
   $edges,
@@ -10,9 +10,9 @@ import {
   onConnect,
   onEdgesChange,
   onNodesChange,
-} from '../store/nodes'
+} from "../store/nodes"
 
-import {nodeTypes} from '../nodes'
+import { nodeTypes } from "./blocks"
 
 export const Canvas = () => {
   const nodes = useStore($nodes)
@@ -27,7 +27,7 @@ export const Canvas = () => {
         onConnect={onConnect}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        proOptions={{hideAttribution: true}}
+        proOptions={{ hideAttribution: true }}
       />
     </div>
   )

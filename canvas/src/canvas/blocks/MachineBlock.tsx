@@ -1,24 +1,21 @@
 import CodeMirror from "@uiw/react-codemirror"
 
-import { Handle, Position, NodeProps } from "reactflow"
+import {Handle, Position, NodeProps} from "reactflow"
 
-import { useStore } from "@nanostores/react"
-import { Extension, keymap } from "@uiw/react-codemirror"
-import { vim } from "@replit/codemirror-vim"
+import {useStore} from "@nanostores/react"
+import {Extension, keymap} from "@uiw/react-codemirror"
+import {vim} from "@replit/codemirror-vim"
 
-import { Machine } from "../../types/Machine"
-import { setSource, manager } from "../../machine/index.ts"
+import {Machine} from "../../types/Machine"
+import {setSource, manager} from "../../machine/index.ts"
 
-import { cmTheme } from "../../editor/theme"
-import { vasmLanguage } from "../../editor/syntax"
-import { $editorConfig, EditorConfig } from "../../store/editor.ts"
-import { useMemo } from "react"
-import { $output } from "../../store/results.ts"
-import { MachineError } from "../../types/MachineState.ts"
-import {
-  addLineHighlight,
-  lineHighlighter,
-} from "../../editor/highlight-line.ts"
+import {cmTheme} from "../../editor/theme"
+import {vasmLanguage} from "../../editor/syntax"
+import {$editorConfig, EditorConfig} from "../../store/editor.ts"
+import {useMemo} from "react"
+import {$output} from "../../store/results.ts"
+import {MachineError} from "../../types/MachineState.ts"
+import {addLineHighlight, lineHighlighter} from "../../editor/highlight-line.ts"
 
 function getExtensions(m: Machine, config: EditorConfig) {
   const keymaps = keymap.of([
@@ -40,7 +37,7 @@ function getExtensions(m: Machine, config: EditorConfig) {
   return extensions
 }
 
-const ErrorIndicator = ({ error }: { error: MachineError }) => {
+const ErrorIndicator = ({error}: {error: MachineError}) => {
   if ("ExecutionCycleExceeded" in error) {
     return <pre>Execution cycle exceeded.</pre>
   }
@@ -70,8 +67,8 @@ const ErrorIndicator = ({ error }: { error: MachineError }) => {
 }
 
 export function MachineBlock(props: NodeProps<Machine>) {
-  const { data } = props
-  const { id, source } = data
+  const {data} = props
+  const {id, source} = data
 
   const outputs = useStore($output)
 
@@ -81,7 +78,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
   const config = useStore($editorConfig)
   const extensions = useMemo(() => getExtensions(data, config), [data, config])
 
-  const { registers } = state
+  const {registers} = state
 
   return (
     <div className="font-mono bg-slate-1">
@@ -93,7 +90,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
             <div className="nodrag">
               <CodeMirror
                 onBlur={() => manager.load(data.id, data.source)}
-                basicSetup={{ lineNumbers: false, foldGutter: false }}
+                basicSetup={{lineNumbers: false, foldGutter: false}}
                 maxHeight="400px"
                 minWidth="300px"
                 maxWidth="600px"
@@ -105,7 +102,7 @@ export function MachineBlock(props: NodeProps<Machine>) {
                 onCreateEditor={(view) => {
                   manager.highlighters.set(data.id, (lineNo) => {
                     const pos = view.state.doc.line(lineNo).from
-                    view.dispatch({ effects: addLineHighlight.of(pos) })
+                    view.dispatch({effects: addLineHighlight.of(pos)})
                   })
                 }}
               />

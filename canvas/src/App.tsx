@@ -1,5 +1,5 @@
-import { Canvas } from "./canvas/Canvas"
-import { Toolbar } from "./toolbar/Toolbar"
+import {Canvas} from "./canvas/Canvas"
+import {Toolbar} from "./toolbar/Toolbar"
 
 function App() {
   return (

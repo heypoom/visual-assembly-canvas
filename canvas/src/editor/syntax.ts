@@ -1,8 +1,8 @@
-import {parser} from './syntax.grammar'
+import { parser } from "./syntax.grammar"
 
-import {LRLanguage, LanguageSupport} from '@codemirror/language'
+import { LRLanguage, LanguageSupport } from "@codemirror/language"
 
-import {styleTags, tags as t} from '@lezer/highlight'
+import { styleTags, tags as t } from "@lezer/highlight"
 
 const VasmLR = LRLanguage.define({
   parser: parser.configure({
@@ -21,7 +21,7 @@ const VasmLR = LRLanguage.define({
     ],
   }),
   languageData: {
-    commentTokens: {line: ';'},
+    commentTokens: { line: ";" },
   },
 })
 

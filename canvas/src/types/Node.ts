@@ -1,6 +1,6 @@
-import {Node, NodeProps} from 'reactflow'
+import { Node, NodeProps } from "reactflow"
 
-import {Machine} from './Machine'
+import { Machine } from "./Machine"
 
 export interface NodeTypeMap {
   machine: Machine

@@ -1,5 +1,5 @@
-import { expect, test } from "vitest"
-import { getSourceHighlightMap } from "./getHighlightedSourceLine"
+import {expect, test} from "vitest"
+import {getSourceHighlightMap} from "./getHighlightedSourceLine"
 
 test("should be able to get highlighted source line", () => {
   const S1 = `
