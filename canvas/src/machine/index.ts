@@ -51,7 +51,7 @@ export class MachineManager {
   ctx: Controller | null = null
 
   /** How long do we delay, in milliseconds. */
-  delayMs = 0
+  delayMs = 40
 
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
