@@ -3,6 +3,9 @@ use serde::{Deserialize, Serialize};
 /// The machine status models the possible states of a machine.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Copy, Clone)]
 pub enum MachineStatus {
+    /// Machine's state is reset.
+    Ready,
+
     /// Machine is running.
     Running,
 

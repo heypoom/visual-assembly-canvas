@@ -118,16 +118,19 @@ export class MachineManager {
       cycle++
     }
 
-    if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
-      this.statuses.forEach((status, id) => {
-        if (status !== "Halted") {
-          setError(id, { ExecutionCycleExceeded: { id, status } })
-        }
-      })
-    }
+    setTimeout(() => {
+      if (cycle >= this.maxCycle && !this.ctx?.is_halted()) {
+        this.statuses().forEach((status, id) => {
+          if (status !== "Halted") {
+            console.warn(`Execution cycle exceeded! ${id} is still ${status}`)
+            setError(id, { ExecutionCycleExceeded: { id, status } })
+          }
+        })
+      }
+    }, 10)
   }
 
-  get statuses(): Map<number, MachineStatus> {
+  statuses(): Map<number, MachineStatus> {
     return this.ctx?.statuses()
   }
 

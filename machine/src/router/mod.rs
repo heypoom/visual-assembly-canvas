@@ -9,6 +9,7 @@ use status::MachineStatus::{Awaiting, Halted, Running};
 
 pub use router_error::RouterError::*;
 pub use router_error::RouterError;
+use crate::status::MachineStatus::Ready;
 
 // Limit the max number of execution cycles to prevent an infinite loop.
 const MAX_ITER: u16 = 1000;
@@ -77,8 +78,11 @@ impl Router {
     pub fn ready(&mut self) {
         for m in &mut self.machines {
             let Some(id) = m.id else { continue; };
+
+            // Reset the registers.
             m.reg.reset();
-            self.statuses.insert(id, Running);
+
+            self.statuses.insert(id, Ready);
         }
     }
 
@@ -89,7 +93,15 @@ impl Router {
         for m in &mut self.machines {
             let Some(id) = m.id else { continue; };
             let Some(status) = self.statuses.get(&id) else { continue; };
-            if status == &Halted { continue; };
+            let status = status.clone();
+
+            // Do not continue execution if the machine is halted.
+            if status == Halted { continue; };
+
+            // Transition to the "Running" state on first run.
+            if status == Ready {
+                self.statuses.insert(id, Running);
+            };
 
             if m.should_halt() {
                 self.statuses.insert(id, Halted);
@@ -102,7 +114,7 @@ impl Router {
             };
 
             // Do not tick in await mode.
-            if status == &Awaiting {
+            if status == Awaiting {
                 if m.expected_receives > 0 {
                     println!("{}: i am awaiting for {} messages", id, m.expected_receives);
                     continue;
