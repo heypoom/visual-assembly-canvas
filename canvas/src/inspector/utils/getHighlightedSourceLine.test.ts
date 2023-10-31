@@ -42,5 +42,27 @@ test("should be able to get highlighted source line", () => {
   `.trim()
 
   const M3 = getSourceHighlightMap(S3)
-  console.log(M3)
+  expect(M3.get(2)).toBe(0)
+  expect(M3.get(4)).toBe(1)
+  expect(M3.get(8)).toBe(3)
+
+  const S4 = `
+    jump start
+
+    add_pattern:
+      push 0xAA        ; 170
+      push 0b11001100  ; 204
+      push 01024       ; 1024
+      return
+
+    start:
+          call add_pattern
+          call add_pattern
+  `.trim()
+
+  const M4 = getSourceHighlightMap(S4)
+  expect(M4.get(2)).toBe(0)
+  expect(M4.get(6)).toBe(4)
+  expect(M4.get(9)).toBe(6)
+  expect(M4.get(13)).toBe(10)
 })

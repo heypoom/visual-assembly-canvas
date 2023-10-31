@@ -13,10 +13,17 @@ export function getSourceHighlightMap(source: string): Map<number, number> {
     if (line.length === 0) continue
     if (opcode.endsWith(":")) continue
     if (opcode.startsWith("//")) continue
+    if (opcode.startsWith(";")) continue
     if (opcode.startsWith(".")) continue
 
-    const argCount = args.length
-    pc += 1 + argCount
+    pc++
+
+    for (const arg of args) {
+      if (arg.trim().length === 0) continue
+      if (arg.startsWith(";")) break
+
+      pc++
+    }
 
     mapping.set(pc, linePos - 1)
   }
