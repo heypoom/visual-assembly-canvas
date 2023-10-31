@@ -94,15 +94,8 @@ impl Controller {
     }
 
     /// Allows the frontend to consume events from the machine.
-    pub fn consume_events(&mut self, id: u16) -> Return {
-        let Some(m) = self.router.get_mut(id) else {
-            return Ok(NULL);
-        };
-
-        let events = m.events.clone();
-        m.events.clear();
-
-        Ok(to_value(&events)?)
+    pub fn consume_side_effects(&mut self, id: u16) -> Return {
+        Ok(to_value(&self.router.consume_side_effects(id))?)
     }
 }
 

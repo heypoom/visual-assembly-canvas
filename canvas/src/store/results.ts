@@ -39,7 +39,7 @@ export const setMachineState = action(
 
     $nodes.get().forEach((node) => {
       const { id } = node.data
-      const events = manager.ctx?.consume_events(id)
+      const events = manager.ctx?.consume_side_effects(id)
 
       const curr = output[id]
       const next = toState({ ...manager.inspect(id), events })
