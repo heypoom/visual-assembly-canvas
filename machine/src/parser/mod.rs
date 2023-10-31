@@ -175,9 +175,9 @@ impl Parser {
         self.advance();
         let key = self.identifier_name()?;
 
-        // Abort if the string is already defined.
-        // TODO: warn the user if they defined strings with the same name!
-        if self.symbols.offsets.contains_key(&key) { return Ok(None); }
+        // Abort if the string was already defined in the offset table.
+        ensure!(!self.symbols.offsets.contains_key(&key), DuplicateStringDefinitionSnafu);
+
         self.symbols.offsets.insert(key.clone(), self.data_offset);
 
         self.advance();
