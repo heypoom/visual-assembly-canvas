@@ -75,6 +75,7 @@ impl Machine {
     pub fn full_reset(&mut self) {
         self.partial_reset();
         self.mem.reset();
+        self.mailbox.clear();
     }
 
     /// Reset the execution state of the machine only.

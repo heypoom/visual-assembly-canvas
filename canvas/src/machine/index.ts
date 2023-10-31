@@ -68,9 +68,9 @@ export class MachineManager {
     this.ctx = Controller.create()
   }
 
-  load(id: number, source: string) {
+  load(id: number, source: string, force: boolean) {
     // If the source is the same, we don't need to reload.
-    if (this.sources.get(id) === source) {
+    if (this.sources.get(id) === source && !force) {
       this.ready = false
       return
     }
@@ -161,7 +161,7 @@ export class MachineManager {
     if (!config.batch || this.delayMs > 0) this.highlightCurrent()
 
     // If running in steps, we should reset the machine once it halts.
-    if (!config.batch && this.isHalted) this.ready = false
+    if (!config.batch && this.isHalted) this.reload()
   }
 
   highlightCurrent() {
@@ -179,6 +179,12 @@ export class MachineManager {
       const lineNo = (mapping?.get(pc) ?? 0) + 1
 
       highlight(lineNo)
+    })
+  }
+
+  reload() {
+    this.sources.forEach((source, id) => {
+      this.load(id, source, true)
     })
   }
 }
