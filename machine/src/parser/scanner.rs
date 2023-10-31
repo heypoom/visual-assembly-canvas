@@ -161,7 +161,7 @@ impl Scanner {
         let text = self.peek_lexeme();
         let text = text.trim();
 
-        let hex_str = text.strip_prefix("0x").ok_or_else(|| InvalidHexDigit { text: text.into() })?;
+        let hex_str = text.strip_prefix("0x").ok_or(InvalidHexDigit { text: text.into() })?;
         let num = u16::from_str_radix(hex_str, 16).map_err(|_| InvalidHexDigit { text: text.into() })?;
 
         self.add_token(TokenType::Value(num));

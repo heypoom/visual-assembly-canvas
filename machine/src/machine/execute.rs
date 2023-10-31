@@ -4,7 +4,7 @@ use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
-use crate::RuntimeError::{CallStackExceeded, CannotLoadFromMemory, MissingMessageBody, MissingReturnAddress};
+use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, MissingMessageBody, MissingReturnAddress};
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -47,11 +47,18 @@ impl Execute for Machine {
                 self.mem.set(addr, value);
             }
 
-            // Addition, subtraction, multiplication and division.
+            // Addition, subtraction, multiplication.
             Op::Add => s.apply_two(|a, b| a + b)?,
             Op::Sub => s.apply_two(|a, b| b - a)?,
             Op::Mul => s.apply_two(|a, b| a * b)?,
-            Op::Div => s.apply_two(|a, b| b / a)?,
+
+            // Checked division.
+            Op::Div => {
+                let a = s.pop()?;
+                let b = s.pop()?;
+
+                s.push(b.checked_div(a).ok_or(CannotDivideByZero)?)?;
+            }
 
             // Increment and decrement.
             Op::Inc => s.apply(|v| v + 1)?,

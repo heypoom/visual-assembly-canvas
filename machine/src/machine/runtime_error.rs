@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
 
-#[derive(Debug, Snafu, Serialize, Deserialize)]
+#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
 pub enum RuntimeError {
     #[snafu(display("stack underflow. pointer {top} is below {min}"))]
@@ -30,4 +30,7 @@ pub enum RuntimeError {
 
     #[snafu(display("cannot load data from memory"))]
     CannotLoadFromMemory,
+
+    #[snafu(display("cannot divide by zero"))]
+    CannotDivideByZero,
 }
