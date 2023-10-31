@@ -9,7 +9,7 @@ use status::MachineStatus::{Awaiting, Halted, Running};
 
 pub use router_error::RouterError::*;
 pub use router_error::RouterError;
-use crate::status::MachineStatus::Ready;
+use crate::status::MachineStatus::{Invalid, Loaded, Ready};
 
 // Limit the max number of execution cycles to prevent an infinite loop.
 const MAX_ITER: u16 = 1000;
@@ -33,13 +33,13 @@ impl Router {
 
     /// Add a machine.
     pub fn add(&mut self) -> u16 {
-        let mut m = Machine::new();
+        let mut machine = Machine::new();
 
         // Assign a machine identifier.
         let id = self.machines.len() as u16;
-        m.id = Some(id);
+        machine.id = Some(id);
 
-        self.machines.push(m);
+        self.machines.push(machine);
         id
     }
 
@@ -57,31 +57,36 @@ impl Router {
 
     /// Load the code and symbols into memory.
     pub fn load(&mut self, id: u16, source: &str) -> Errorable {
-        let Some(m) = self.get_mut(id) else { return Err(MissingMachineId { id }); };
+        let Some(machine) = self.get_mut(id) else {
+            return Err(MissingMachineId { id });
+        };
 
-        m.reset();
+        machine.reset();
 
         let parser: Result<Parser, _> = (*source).try_into();
 
         let parser = match parser {
             Ok(parser) => parser,
-            Err(error) => return Err(CannotParse { error }),
+            Err(error) => {
+                self.statuses.insert(id, Invalid);
+                return Err(CannotParse { error });
+            }
         };
 
-        m.mem.load_code(parser.ops);
-        m.mem.load_symbols(parser.symbols);
+        machine.mem.load_code(parser.ops);
+        machine.mem.load_symbols(parser.symbols);
+
+        self.statuses.insert(id, Loaded);
 
         Ok(())
     }
 
     /// Mark the machines as ready for execution.
     pub fn ready(&mut self) {
-        for m in &mut self.machines {
-            let Some(id) = m.id else { continue; };
+        for machine in &mut self.machines {
+            let Some(id) = machine.id else { continue; };
 
-            // Reset the registers.
-            m.reg.reset();
-
+            machine.reg.reset();
             self.statuses.insert(id, Ready);
         }
     }
@@ -90,47 +95,43 @@ impl Router {
     pub fn step(&mut self) -> Errorable {
         self.route_messages();
 
-        for m in &mut self.machines {
-            let Some(id) = m.id else { continue; };
+        for machine in &mut self.machines {
+            let Some(id) = machine.id else { continue; };
             let Some(status) = self.statuses.get(&id) else { continue; };
             let status = status.clone();
 
-            // Do not continue execution if the machine is halted.
-            if status == Halted { continue; };
-
-            // Transition to the "Running" state on first run.
-            if status == Ready {
-                self.statuses.insert(id, Running);
-            };
-
-            if m.should_halt() {
-                self.statuses.insert(id, Halted);
-                continue;
+            // Manage state transitions of the machine.
+            match status {
+                Halted | Invalid | Loaded => continue,
+                Ready => {
+                    self.statuses.insert(id, Running);
+                }
+                _ if machine.should_halt() => {
+                    self.statuses.insert(id, Halted);
+                    continue;
+                }
+                _ => {}
             }
 
             // Before each instruction cycle, we collect and process the messages sequentially.
-            if let Err(error) = m.receive_messages() {
+            if let Err(error) = machine.receive_messages() {
                 return Err(ReceiveFailed { error });
             };
 
-            // Do not tick in await mode.
+            // Do not tick if the machine is awaiting for messages.
             if status == Awaiting {
-                if m.expected_receives > 0 {
-                    println!("{}: i am awaiting for {} messages", id, m.expected_receives);
-                    continue;
-                } else {
-                    self.statuses.insert(id, Running);
-                }
+                if machine.expected_receives > 0 { continue; }
+                self.statuses.insert(id, Running);
             }
 
             // Execute the instruction.
-            if let Err(error) = m.tick() {
+            if let Err(error) = machine.tick() {
                 return Err(ExecutionFailed { id, error });
             };
 
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.
-            if m.expected_receives > 0 {
+            if machine.expected_receives > 0 {
                 self.statuses.insert(id, Awaiting);
             }
         }
@@ -161,13 +162,13 @@ impl Router {
         let mut messages = vec![];
 
         // Process "send" events from the machines until the queue is empty.
-        for m in &mut self.machines {
+        for machine in &mut self.machines {
             // These events are "side effects" that will be processed
             // later in the client, such as in JavaScript side.
             let mut side_effects = vec![];
 
-            while !m.events.is_empty() {
-                let Some(event) = m.events.pop() else { break; };
+            while !machine.events.is_empty() {
+                let Some(event) = machine.events.pop() else { break; };
 
                 match event {
                     // Collect messages from each machine.
@@ -176,7 +177,7 @@ impl Router {
                 }
             }
 
-            m.events = side_effects;
+            machine.events = side_effects;
         }
 
         // Push messages to machines' mailbox.
