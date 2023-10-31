@@ -1,15 +1,15 @@
-import { MachineError } from "../../../types/MachineState"
+import { MachineError, errors } from "../../../types/MachineState"
 
 export const ErrorIndicator = ({ error }: { error: MachineError }) => {
-  if ("ExecutionCycleExceeded" in error) {
+  if (errors.executionCycleExceeded(error)) {
     return <pre>Execution cycle exceeded.</pre>
   }
 
-  if ("HangingAwaits" in error) {
+  if (errors.messageNeverReceived(error)) {
     return <pre>Machine is expecting a message which never arrives.</pre>
   }
 
-  if ("ExecutionFailed" in error) {
+  if (errors.executionFailed(error)) {
     return (
       <pre>
         Your program produced an error:{" "}
@@ -18,7 +18,7 @@ export const ErrorIndicator = ({ error }: { error: MachineError }) => {
     )
   }
 
-  if ("CannotParse" in error) {
+  if (errors.cannotParse(error)) {
     return (
       <pre>
         Syntax is incorrect: {JSON.stringify(error.CannotParse.error, null, 2)}
