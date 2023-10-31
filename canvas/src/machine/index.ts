@@ -142,6 +142,8 @@ export class MachineManager {
   }
 
   step = (config: { batch?: boolean } = {}) => {
+    console.log("step...")
+
     this.prepare()
 
     try {

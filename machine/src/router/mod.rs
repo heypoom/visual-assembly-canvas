@@ -104,10 +104,6 @@ impl Router {
             match status {
                 Halted | Invalid | Loaded | Errored => continue,
                 Ready => { self.statuses.insert(id, Running); }
-                _ if machine.should_halt() => {
-                    self.statuses.insert(id, Halted);
-                    continue;
-                }
                 _ => {}
             }
 
@@ -130,6 +126,11 @@ impl Router {
             // if the machine is awaiting for messages.
             if machine.expected_receives > 0 {
                 self.statuses.insert(id, Awaiting);
+            }
+
+            // Halt the machine if we reached the end of the program.
+            if machine.should_halt() {
+                self.statuses.insert(id, Halted);
             }
         }
 
