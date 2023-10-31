@@ -5,11 +5,20 @@ export interface MachineState {
   registers: { pc: number; sp: number; fp: number }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
+  ? I
+  : never
+
 export type MachineError =
-  | { CannotParse: { error: unknown } }
+  | { CannotParse: { id: number; error: unknown } }
   | { ExecutionFailed: { id: number; error: unknown } }
   | { ExecutionCycleExceeded: { id: number } }
-  | { HangingAwaits: { id: number } }
+  | { MessageNeverReceived: { id: number } }
+
+export type ErrorKeys = keyof UnionToIntersection<MachineError>
 
 export type MachineStates = Record<number, MachineState>
 

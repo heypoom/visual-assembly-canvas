@@ -2,11 +2,11 @@ use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
 use crate::{ParseError, RuntimeError};
 
-#[derive(Debug, Snafu, Serialize, Deserialize)]
+#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
 pub enum RouterError {
     #[snafu(display("cannot parse the code"))]
-    CannotParse { error: ParseError },
+    CannotParse { id: u16, error: ParseError },
 
     #[snafu(display("program execution for machine {id} results in an error"))]
     ExecutionFailed { id: u16, error: RuntimeError },
@@ -16,5 +16,8 @@ pub enum RouterError {
 
     #[snafu(display("program failed to process the incoming message"))]
     ReceiveFailed { error: RuntimeError },
+
+    #[snafu(display("program expects a message but they are never received"))]
+    MessageNeverReceived { id: u16 },
 }
 

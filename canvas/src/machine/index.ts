@@ -15,7 +15,7 @@ import {
 
 import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 
-import { MachineError, MachineStatus } from "../types/MachineState"
+import { ErrorKeys, MachineError, MachineStatus } from "../types/MachineState"
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 
@@ -144,7 +144,7 @@ export class MachineManager {
 
   getCycleError(id: number, status: MachineStatus): MachineError | undefined {
     if (status === "Running") return { ExecutionCycleExceeded: { id } }
-    if (status === "Awaiting") return { HangingAwaits: { id } }
+    if (status === "Awaiting") return { MessageNeverReceived: { id } }
   }
 
   get statuses(): Map<number, MachineStatus> {
@@ -157,11 +157,9 @@ export class MachineManager {
     try {
       this.ctx?.step()
     } catch (error) {
-      const err = error as MachineError
-
-      if ("ExecutionFailed" in err) {
-        setError(err.ExecutionFailed.id, err)
-      }
+      // Determine the runtime error type and report them.
+      this.detectError(error, "ExecutionFailed")
+      this.detectError(error, "MessageNeverReceived")
     }
 
     // Synchronize the machine state with the store.
@@ -172,6 +170,12 @@ export class MachineManager {
 
     // If running in steps, we should reset the machine once it halts.
     if (!config.batch && this.isHalted) this.reloadAll()
+  }
+
+  /** If the error matches the defined type, report them. */
+  detectError<K extends ErrorKeys>(error: unknown, type: K) {
+    const e = error as Record<K, { id: number }>
+    if (type in e) setError(e[type].id, e as MachineError)
   }
 
   highlightCurrent() {

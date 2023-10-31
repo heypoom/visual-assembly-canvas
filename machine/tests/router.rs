@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod router_tests {
-    use machine::{Router, RouterError};
+    use machine::{MessageNeverReceived, Router, RouterError};
     use machine::status::MachineStatus::{Halted, Running};
 
     #[test]
@@ -76,6 +76,29 @@ mod router_tests {
 
         r.step()?;
         assert_eq!(r.statuses.get(&0), Some(&Halted));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_hanging_receive() -> Result<(), RouterError> {
+        let mut r = Router::new();
+        r.add();
+        r.add();
+        r.load(0, "receive")?;
+        r.load(1, "push 5")?;
+
+        assert_eq!(r.run(), Err(MessageNeverReceived { id: 0 }));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_hanging_receive_single() -> Result<(), RouterError> {
+        let mut r = Router::new();
+        r.add();
+        r.load(0, "receive")?;
+        assert_eq!(r.run(), Err(MessageNeverReceived { id: 0 }));
 
         Ok(())
     }

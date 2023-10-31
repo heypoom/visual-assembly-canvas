@@ -66,7 +66,7 @@ impl Router {
             Ok(parser) => parser,
             Err(error) => {
                 self.statuses.insert(id, Invalid);
-                return Err(CannotParse { error });
+                return Err(CannotParse { id, error });
             }
         };
 
@@ -132,6 +132,13 @@ impl Router {
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.
             if machine.expected_receives > 0 {
+                // Ensure that there is at least one machine that might send a message.
+                let running = self.statuses.iter().filter(|(m_id, status)| id != **m_id && status == &&Running).count();
+                if running == 0 {
+                    self.statuses.insert(id, Errored);
+                    return Err(MessageNeverReceived { id });
+                }
+
                 self.statuses.insert(id, Awaiting);
                 continue;
             }
