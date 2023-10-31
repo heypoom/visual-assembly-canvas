@@ -6,8 +6,8 @@ export interface MachineState {
 }
 
 export type MachineError =
-  | { CannotParse: { error: any } }
-  | { ExecutionFailed: { id: number; error: any } }
+  | { CannotParse: { error: unknown } }
+  | { ExecutionFailed: { id: number; error: unknown } }
   | { ExecutionCycleExceeded: { id: number } }
   | { HangingAwaits: { id: number } }
 

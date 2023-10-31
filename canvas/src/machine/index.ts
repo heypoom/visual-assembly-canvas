@@ -13,9 +13,10 @@ import {
   $output,
 } from "../store/results.ts"
 
+import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine.ts"
+
 import { MachineError, MachineStatus } from "../types/MachineState.ts"
 import { InspectionState } from "../types/MachineEvent.ts"
-import { getSourceHighlightMap } from "../inspector/utils/getHighlightedSourceLine.ts"
 import { $status } from "../store/status.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
