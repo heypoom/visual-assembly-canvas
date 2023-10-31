@@ -15,12 +15,17 @@ use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready};
 const MAX_ITER: u16 = 1000;
 
 type Errorable = Result<(), RouterError>;
+type Statuses = HashMap<u16, MachineStatus>;
 
 pub struct Router {
     pub machines: Vec<Machine>,
 
     /// Stores the statuses of the machine.
-    pub statuses: HashMap<u16, MachineStatus>,
+    pub statuses: Statuses,
+
+    /// Are all machines incapable of sending messages?
+    /// Use this to prevent the `receive` instruction from blocking forever.
+    peers_halted: bool,
 }
 
 impl Router {
@@ -28,6 +33,7 @@ impl Router {
         Router {
             machines: vec![],
             statuses: HashMap::new(),
+            peers_halted: false,
         }
     }
 
@@ -87,6 +93,7 @@ impl Router {
             if self.statuses.get(&id) == Some(&Invalid) { continue; }
             machine.partial_reset();
 
+            self.peers_halted = false;
             self.statuses.insert(id, Ready);
         }
     }
@@ -97,7 +104,9 @@ impl Router {
 
         for machine in &mut self.machines {
             let Some(id) = machine.id else { continue; };
-            let Some(status) = self.statuses.get(&id) else { continue; };
+            let statuses = self.statuses.clone();
+
+            let Some(status) = statuses.get(&id) else { continue; };
             let status = status.clone();
 
             // Manage state transitions of the machine.
@@ -110,9 +119,20 @@ impl Router {
             // Before each instruction cycle, we collect and process the messages sequentially.
             machine.receive_messages().map_err(|error| ReceiveFailed { error: error.into() })?;
 
-            // Do not tick if the machine is still awaiting for messages.
             if status == Awaiting {
-                if machine.expected_receives > 0 { continue; }
+                if machine.expected_receives > 0 {
+                    // Raise an error if all peers are halted.
+                    if self.peers_halted {
+                        self.statuses.insert(id, Errored);
+                        return Err(MessageNeverReceived { id });
+                    }
+
+                    if peers_halted(statuses.clone(), id) {
+                        self.peers_halted = true;
+                    }
+
+                    continue;
+                }
 
                 // If it's the last instruction, we halt the machine as the message is received.
                 if machine.should_halt() {
@@ -132,13 +152,6 @@ impl Router {
             // Pause execution until subsequent cycles
             // if the machine is awaiting for messages.
             if machine.expected_receives > 0 {
-                // Ensure that there is at least one machine that might send a message.
-                let running = self.statuses.iter().filter(|(m_id, status)| id != **m_id && status == &&Running).count();
-                if running == 0 {
-                    self.statuses.insert(id, Errored);
-                    return Err(MessageNeverReceived { id });
-                }
-
                 self.statuses.insert(id, Awaiting);
                 continue;
             }
@@ -156,7 +169,7 @@ impl Router {
         self.statuses.values().all(|s| s == &Halted || s == &Invalid || s == &Errored)
     }
 
-    pub fn get_statuses(&self) -> HashMap<u16, MachineStatus> {
+    pub fn get_statuses(&self) -> Statuses {
         self.statuses.clone()
     }
 
@@ -185,4 +198,13 @@ impl Router {
 
         machine.events.drain(..).collect()
     }
+}
+
+/// Are there no more active peers?
+pub fn peers_halted(statuses: Statuses, id: u16) -> bool {
+    let active = statuses.iter()
+        .filter(|(m_id, status)| id != **m_id && (status == &&Running || status == &&Ready || status == &&Awaiting))
+        .count();
+
+    return active == 0;
 }

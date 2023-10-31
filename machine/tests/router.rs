@@ -49,7 +49,32 @@ mod router_tests {
         r.load(1, src_1)?;
         r.run()?;
 
-        let m1 = r.get_mut(0).expect("cannot get second machine");
+        let m1 = r.get_mut(0).expect("cannot get first machine");
+        assert_eq!(m1.stack().peek(), 30);
+        assert_eq!(r.statuses[&0], Halted, "machine must be halted after message is received");
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_bare_receive_inverted() -> Result<(), RouterError> {
+        let src_0 = r"
+            push 10
+            push 20
+            add
+            send 1 1
+        ";
+
+        let mut r = Router::new();
+        r.add();
+        r.add();
+
+        r.load(0, src_0)?;
+        r.load(1, "receive")?;
+
+        assert_ne!(r.run(), Err(MessageNeverReceived { id: 1 }), "machine 1 should receive the message");
+
+        let m1 = r.get_mut(1).expect("cannot get second machine");
         assert_eq!(m1.stack().peek(), 30);
         assert_eq!(r.statuses[&1], Halted, "machine must be halted after message is received");
 
