@@ -3,9 +3,8 @@ import CodeMirror from "@uiw/react-codemirror"
 import { Handle, Position, NodeProps } from "reactflow"
 
 import { useStore } from "@nanostores/react"
-import { Extension } from "@uiw/react-codemirror"
+import { Extension, keymap } from "@uiw/react-codemirror"
 import { vim } from "@replit/codemirror-vim"
-import { keymap } from "@codemirror/view"
 
 import { Machine } from "../../types/Machine"
 import { setSource, manager } from "../../machine/index.ts"
@@ -16,6 +15,10 @@ import { $editorConfig, EditorConfig } from "../../store/editor.ts"
 import { useMemo } from "react"
 import { $output } from "../../store/results.ts"
 import { MachineError } from "../../types/MachineState.ts"
+import {
+  addLineHighlight,
+  lineHighlighter,
+} from "../../editor/highlight-line.ts"
 
 function getExtensions(m: Machine, config: EditorConfig) {
   const keymaps = keymap.of([
@@ -30,7 +33,7 @@ function getExtensions(m: Machine, config: EditorConfig) {
     },
   ])
 
-  const extensions: Extension[] = [vasmLanguage, keymaps]
+  const extensions: Extension[] = [vasmLanguage, keymaps, lineHighlighter]
 
   if (config.vim) extensions.push(vim())
 
@@ -100,6 +103,14 @@ export function MachineBlock(props: NodeProps<Machine>) {
                 lang="vasm"
                 onChange={(s: string) => setSource(data.id, s)}
                 extensions={extensions}
+                onCreateEditor={(view) => {
+                  manager.highlighters.set(data.id, (lineNo) => {
+                    if (lineNo <= 0) return
+
+                    const pos = view.state.doc.line(lineNo).from
+                    view.dispatch({ effects: addLineHighlight.of(pos) })
+                  })
+                }}
               />
             </div>
           </div>

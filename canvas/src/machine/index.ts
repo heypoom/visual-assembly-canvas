@@ -10,10 +10,12 @@ import {
   setError,
   setMachineState,
   clearPreviousRun,
+  $output,
 } from "../store/results.ts"
 
 import { MachineError, MachineStatus } from "../types/MachineState.ts"
 import { InspectionState } from "../types/MachineEvent.ts"
+import { getSourceHighlightMap } from "../inspector/utils/getHighlightedSourceLine.ts"
 
 const rand = () => Math.floor(Math.random() * 500)
 
@@ -43,6 +45,8 @@ export const setSource = (id: number, source: string) => {
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+export type HighlighterFn = (lineNo: number) => void
+
 export class MachineManager {
   ctx: Controller | null = null
 
@@ -54,8 +58,10 @@ export class MachineManager {
 
   ready = false
 
-  sources: Record<number, string> = {}
-  hasSyntaxError: Record<number, boolean> = {}
+  sources: Map<number, string> = new Map()
+
+  highlighters: Map<number, HighlighterFn> = new Map()
+  highlightMaps: Map<number, Map<number, number>> = new Map()
 
   async setup() {
     await setup()
@@ -64,16 +70,17 @@ export class MachineManager {
 
   load(id: number, source: string) {
     // If the source is the same, we don't need to reload.
-    if (this.sources[id] === source) {
+    if (this.sources.get(id) === source) {
       this.ready = false
       return
     }
 
     try {
-      this.ctx?.load(Number(id), source)
+      this.ctx?.load(id, source)
       this.setSyntaxError(id, null)
+      this.highlightMaps.set(id, getSourceHighlightMap(source))
       this.ready = false
-      this.sources = { ...this.sources, [id]: source }
+      this.sources.set(id, source)
     } catch (error) {
       this.setSyntaxError(id, error)
     }
@@ -81,7 +88,6 @@ export class MachineManager {
 
   setSyntaxError(id: number, error: unknown | null) {
     if (error) setError(id, error as MachineError)
-    this.hasSyntaxError = { ...this.hasSyntaxError, [id]: !!error }
   }
 
   inspect(id: number): InspectionState {
@@ -148,13 +154,34 @@ export class MachineManager {
       }
     }
 
-    // If running in steps, we should reset the machine once it halts.
-    if (!config.batch && this.isHalted) {
-      console.log(">> step completed! resetting...")
-      this.ready = false
-    }
-
+    // Synchronize the machine state with the store.
     setMachineState(this)
+
+    // Highlight the current line.
+    if (!config.batch || this.delayMs > 0) this.highlightCurrent()
+
+    // If running in steps, we should reset the machine once it halts.
+    if (!config.batch && this.isHalted) this.ready = false
+  }
+
+  highlightCurrent() {
+    const output = $output.get()
+
+    this.highlighters.forEach((highlight, id) => {
+      const mapping = this.highlightMaps.get(id)
+      if (!mapping) {
+        console.log("[HL:${id}] no mapping found!!")
+        return
+      }
+
+      const state = output[id]
+      const pc = state?.registers?.pc ?? 0
+      const lineNo = mapping?.get(pc) ?? 0
+
+      console.log(`[HL:${id}] highlighting line ${lineNo}. PC = ${pc}`)
+
+      highlight(lineNo ?? 0)
+    })
   }
 }
 

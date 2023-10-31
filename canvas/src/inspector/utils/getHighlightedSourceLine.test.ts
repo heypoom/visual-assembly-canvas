@@ -33,4 +33,14 @@ test("should be able to get highlighted source line", () => {
 
   const M2 = getSourceHighlightMap(S2)
   expect(M2.get(8)).toBe(15)
+
+  const S3 = `
+    push 5
+    push 10
+    push 15
+    push 1024
+  `.trim()
+
+  const M3 = getSourceHighlightMap(S3)
+  console.log(M3)
 })
