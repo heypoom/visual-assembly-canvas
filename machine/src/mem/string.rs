@@ -34,10 +34,7 @@ impl<'a> StringManager<'a> {
         // TODO: Properly decode high UTF-8 bytes such as emojis.
         let v8: Vec<u8> = v16.iter().map(|&x| x as u8).collect();
 
-        match String::from_utf8(v8) {
-            Ok(s) => Ok(s),
-            Err(_) => Err(CannotReadStringFromBytes)
-        }
+        String::from_utf8(v8).map_err(|_| CannotReadStringFromBytes)
     }
 
     /// Get the string bytes until the null terminator.

@@ -90,16 +90,11 @@ impl TryFrom<&str> for Machine {
     type Error = ParseError;
 
     fn try_from(source: &str) -> Result<Self, Self::Error> {
-        let parser: Result<Parser, _> = source.try_into();
+        let parser: Parser = source.try_into()?;
 
-        match parser {
-            Ok(parser) => {
-                let mut m: Self = parser.ops.into();
-                m.mem.load_symbols(parser.symbols);
-                Ok(m)
-            }
-            Err(err) => Err(err),
-        }
+        let mut machine: Self = parser.ops.into();
+        machine.mem.load_symbols(parser.symbols);
+        Ok(machine)
     }
 }
 

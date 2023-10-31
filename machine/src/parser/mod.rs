@@ -133,29 +133,32 @@ impl Parser {
     }
 
     fn identifier_name(&self) -> Result<String, ParseError> {
-        match self.peek() {
-            Ok(Token { token_type: TokenType::Identifier, lexeme, .. }) => Ok(lexeme.into()),
+        let token = self.peek()?;
+
+        match token.token_type {
+            TokenType::Identifier => Ok(token.lexeme.clone()),
             _ => Err(InvalidIdentifier),
         }
     }
 
     fn peek(&self) -> Result<&Token, ParseError> {
-        match self.tokens.get(self.current) {
-            Some(token) => Ok(token),
-            None => Err(CannotPeekAtToken),
-        }
+        self.tokens.get(self.current).ok_or(CannotPeekAtToken)
     }
 
     fn string_value(&self) -> Result<String, ParseError> {
-        match self.peek() {
-            Ok(Token { token_type: TokenType::String(value), .. }) => Ok(value.into()),
+        let token = self.peek()?;
+
+        match &token.token_type {
+            TokenType::String(value) => Ok(value.into()),
             _ => Err(InvalidStringValue),
         }
     }
 
     fn byte_value(&self) -> Result<u16, ParseError> {
-        match self.peek() {
-            Ok(Token { token_type: TokenType::Value(value), .. }) => Ok(*value),
+        let token = self.peek()?;
+
+        match token.token_type {
+            TokenType::Value(value) => Ok(value),
             _ => Err(InvalidByteValue),
         }
     }
@@ -241,9 +244,11 @@ impl Parser {
     fn arg(&mut self) -> Result<u16, ParseError> {
         self.advance();
 
-        match self.peek() {
-            Ok(Token { token_type: TokenType::Value(v), .. }) => Ok(*v),
-            Ok(token) if token.token_type == TokenType::Identifier => Ok(self.op_arg(&token.clone())?),
+        let token = self.peek()?;
+
+        match token.token_type {
+            TokenType::Value(value) => Ok(value),
+            TokenType::Identifier => self.op_arg(&token.clone()),
             _ => Err(InvalidArgToken)
         }
     }
