@@ -9,9 +9,10 @@ pub use symbols::*;
 pub use parse_error::*;
 
 use std::str::FromStr;
+use snafu::ensure;
 use TokenType as T;
 use crate::{DATA_START, Op};
-use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, DuplicateStringDefinition, InvalidArgToken, InvalidArgument, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
+use crate::ParseError::{CannotPeekAtToken, DuplicateLabelDefinition, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
 
 type Errorable = Result<(), ParseError>;
 
@@ -183,14 +184,12 @@ impl Parser {
     }
 
     fn save_string(&mut self) -> Errorable {
-        let key = match self.symbol() {
-            Ok(Some(key)) => key,
-            Ok(None) => return Ok(()),
-            _ => return Err(InvalidIdentifier),
+        let Some(key) = self.symbol().map_err(|_| InvalidIdentifier)? else {
+            return Ok(());
         };
 
         // The same string is defined twice.
-        if self.symbols.strings.contains_key(&key) { return Err(DuplicateStringDefinition); }
+        ensure!(!self.symbols.strings.contains_key(&key), DuplicateStringDefinitionSnafu);
 
         let value = self.string_value()?;
         let len = value.len() as u16;
@@ -202,10 +201,8 @@ impl Parser {
     }
 
     fn save_value(&mut self) -> Errorable {
-        let key = match self.symbol() {
-            Ok(Some(key)) => key,
-            Ok(None) => return Ok(()),
-            _ => return Err(InvalidIdentifier),
+        let Some(key) = self.symbol().map_err(|_| InvalidIdentifier)? else {
+            return Ok(());
         };
 
         self.symbols.data.insert(key.clone(), vec![self.byte_value()?]);
@@ -233,23 +230,15 @@ impl Parser {
         let mut errors: Vec<ParseError> = vec![];
 
         let arg_fn = || {
-            match self.arg() {
-                Ok(value) => value,
-
-                // TODO: invalid arguments must throw an error!
-                Err(err) => {
-                    errors.push(err);
-                    0x00
-                }
-            }
+            self.arg().unwrap_or_else(|err| {
+                errors.push(err);
+                0x00
+            })
         };
 
-        let Ok(op) = Op::from_str(op_str) else {
-            return Err(UndefinedInstruction { name: op_str.into() });
-        };
-
+        let op = Op::from_str(op_str).map_err(|_| UndefinedInstruction { name: op_str.into() })?;
         let op = op.with_arg(arg_fn);
-        if !errors.is_empty() { return Err(InvalidArgument { errors }); }
+        ensure!(errors.is_empty(), InvalidArgumentSnafu {errors});
 
         Ok(op)
     }
