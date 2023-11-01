@@ -39,14 +39,17 @@ impl Router {
 
     /// Add a machine.
     pub fn add(&mut self) -> u16 {
-        let mut machine = Machine::new();
-
-        // Assign a machine identifier.
         let id = self.machines.len() as u16;
+        self.add_with_id(id);
+        id
+    }
+
+    /// Add a machine.
+    pub fn add_with_id(&mut self, id: u16) {
+        let mut machine = Machine::new();
         machine.id = Some(id);
 
         self.machines.push(machine);
-        id
     }
 
     /// Run every machine until all halts.

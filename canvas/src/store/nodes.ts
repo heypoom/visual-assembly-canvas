@@ -11,6 +11,7 @@ import {
 } from "reactflow"
 
 import { BlockNode } from "../types/Node"
+import { loadMachinesFromNodes } from "./persist"
 
 // Serializer
 const S = {
@@ -18,7 +19,16 @@ const S = {
   decode: JSON.parse,
 }
 
-export const $nodes = atom<BlockNode[]>("nodes", [], S)
+export const $nodes = atom<BlockNode[]>("nodes", [], {
+  ...S,
+  decode(s) {
+    const nodes = JSON.parse(s) as BlockNode[]
+    loadMachinesFromNodes(nodes)
+
+    return nodes
+  },
+})
+
 export const $edges = atom<Edge[]>("edges", [], S)
 
 export const onNodesChange = (changes: NodeChange[]) =>

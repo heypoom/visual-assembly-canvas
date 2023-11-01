@@ -15,7 +15,7 @@ import {
 
 import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 
-import { ErrorKeys, MachineError, MachineStatus } from "../types/MachineState"
+import { MachineError, MachineStatus } from "../types/MachineState"
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 

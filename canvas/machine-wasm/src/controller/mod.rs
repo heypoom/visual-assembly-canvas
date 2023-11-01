@@ -50,6 +50,10 @@ impl Controller {
         self.router.add()
     }
 
+    pub fn add_with_id(&mut self, id: u16) {
+        self.router.add_with_id(id)
+    }
+
     pub fn load(&mut self, id: u16, source: &str) -> Return {
         returns(self.router.load(id, source))
     }
