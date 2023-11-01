@@ -63,7 +63,7 @@ impl Router {
 
     /// Load the code and symbols into memory.
     pub fn load(&mut self, id: u16, source: &str) -> Errorable {
-        let machine = self.get_mut(id).ok_or(MissingMachineId { id })?;
+        let machine = self.get_mut(id).ok_or(MachineDoesNotExist { id })?;
         machine.full_reset();
 
         let parser: Result<Parser, _> = (*source).try_into();

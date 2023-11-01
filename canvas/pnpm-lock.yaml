@@ -26,6 +26,9 @@ dependencies:
   '@nanostores/logger':
     specifier: ^0.2.4
     version: 0.2.4(nanostores@0.9.4)
+  '@nanostores/persistent':
+    specifier: ^0.9.1
+    version: 0.9.1(nanostores@0.9.4)
   '@nanostores/react':
     specifier: ^0.7.1
     version: 0.7.1(nanostores@0.9.4)(react@18.2.0)
@@ -790,6 +793,15 @@ packages:
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       nanostores: '>=0.9.2'
+    dependencies:
+      nanostores: 0.9.4
+    dev: false
+
+  /@nanostores/persistent@0.9.1(nanostores@0.9.4):
+    resolution: {integrity: sha512-ow57Hxm5VMaI5GHET/cVk8hX/iKMmbhcGrB9owfN8p8OHiiJgUlYxe1giacwlAALJXAh2t8bxXh42hHb64BCEA==}
+    engines: {node: ^16.0.0 || ^18.0.0 || >=20.0.0}
+    peerDependencies:
+      nanostores: ^0.9.0
     dependencies:
       nanostores: 0.9.4
     dev: false

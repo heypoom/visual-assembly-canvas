@@ -1,4 +1,4 @@
-import { atom } from "nanostores"
+import { persistentAtom as atom } from "@nanostores/persistent"
 
 import {
   Edge,
@@ -12,8 +12,14 @@ import {
 
 import { BlockNode } from "../types/Node"
 
-export const $nodes = atom<BlockNode[]>([])
-export const $edges = atom<Edge[]>([])
+// Serializer
+const S = {
+  encode: JSON.stringify,
+  decode: JSON.parse,
+}
+
+export const $nodes = atom<BlockNode[]>("nodes", [], S)
+export const $edges = atom<Edge[]>("edges", [], S)
 
 export const onNodesChange = (changes: NodeChange[]) =>
   $nodes.set(applyNodeChanges(changes, $nodes.get()))

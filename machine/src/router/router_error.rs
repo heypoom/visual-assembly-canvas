@@ -12,7 +12,7 @@ pub enum RouterError {
     ExecutionFailed { id: u16, error: RuntimeError },
 
     #[snafu(display("the machine with id of {id} does not exist"))]
-    MissingMachineId { id: u16 },
+    MachineDoesNotExist { id: u16 },
 
     #[snafu(display("program failed to process the incoming message"))]
     ReceiveFailed { error: RuntimeError },
