@@ -1,5 +1,7 @@
 import { MachineError, errors } from "../../../types/MachineState"
 
+const EMPTY_PROGRAM = "EmptyProgram"
+
 export const ErrorIndicator = ({ error }: { error: MachineError }) => {
   if (errors.executionCycleExceeded(error)) {
     return <pre>Execution cycle exceeded.</pre>
@@ -21,6 +23,11 @@ export const ErrorIndicator = ({ error }: { error: MachineError }) => {
   }
 
   if (errors.cannotParse(error)) {
+    const reason = error.CannotParse.error
+
+    // The user has not written any program yet.
+    if (reason === EMPTY_PROGRAM) return null
+
     return (
       <pre>
         Syntax is incorrect:{" "}
