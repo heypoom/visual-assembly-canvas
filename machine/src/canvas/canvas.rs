@@ -1,6 +1,7 @@
 use snafu::ensure;
-use crate::canvas::block::BlockData::MachineBlock;
-use crate::Machine;
+use crate::canvas::block::BlockData::{MachineBlock, PixelBlock};
+use crate::canvas::error::CanvasError::BlockNotFound;
+use crate::{Action, Machine};
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, Wire};
@@ -71,5 +72,29 @@ impl Canvas {
         let id = self.wires.len() as u16;
         self.wires.push(Wire { id, source, target });
         Ok(id)
+    }
+
+    pub fn get_block(&mut self, id: u16) -> Option<&mut Block> {
+        self.blocks.iter_mut().find(|b| b.id == id)
+    }
+
+    pub fn tick_block(&mut self, id: u16) -> Result<(), CanvasError> {
+        let block = self.get_block(id).ok_or(BlockNotFound { id })?;
+        let messages = block.read_messages();
+
+        match &mut block.data {
+            MachineBlock { machine_id } => {}
+            PixelBlock { pixels } => {
+                for message in messages {
+                    match message.action {
+                        Action::Data { body } => {
+                            pixels.copy_from_slice(&body);
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(())
     }
 }
