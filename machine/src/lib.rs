@@ -7,6 +7,7 @@ pub mod binary;
 pub mod router;
 pub mod cli;
 pub mod test_helper;
+pub mod canvas;
 
 pub use op::*;
 pub use machine::*;
