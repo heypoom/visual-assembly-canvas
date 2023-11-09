@@ -6,6 +6,8 @@ use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, Wire};
 
+type Errorable = Result<(), CanvasError>;
+
 #[derive(Debug, Clone)]
 pub struct Canvas {
     pub blocks: Vec<Block>,
@@ -74,23 +76,45 @@ impl Canvas {
         Ok(id)
     }
 
-    pub fn get_block(&mut self, id: u16) -> Option<&mut Block> {
-        self.blocks.iter_mut().find(|b| b.id == id)
+    pub fn get_block(&mut self, id: u16) -> Result<&Block, CanvasError> {
+        self.blocks.iter().find(|b| b.id == id).ok_or(BlockNotFound { id })
     }
 
-    pub fn tick_block(&mut self, id: u16) -> Result<(), CanvasError> {
-        let block = self.get_block(id).ok_or(BlockNotFound { id })?;
+    pub fn mut_block(&mut self, id: u16) -> Result<&mut Block, CanvasError> {
+        self.blocks.iter_mut().find(|b| b.id == id).ok_or(BlockNotFound { id })
+    }
+
+    pub fn tick(&mut self) -> Errorable {
+        let ids: Vec<u16> = self.blocks.iter().map(|b| b.id).collect();
+
+        for id in ids {
+            self.tick_block(id)?
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_block(&mut self, id: u16) -> Errorable {
+        let block = self.get_block(id)?;
+
+        match &block.data {
+            MachineBlock { .. } => {}
+            PixelBlock { .. } => self.tick_pixel_block(id)?
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_pixel_block(&mut self, id: u16) -> Errorable {
+        let block = self.mut_block(id)?;
         let messages = block.read_messages();
 
-        match &mut block.data {
-            MachineBlock { machine_id } => {}
-            PixelBlock { pixels } => {
-                for message in messages {
-                    match message.action {
-                        Action::Data { body } => {
-                            pixels.copy_from_slice(&body);
-                        }
-                    }
+        let PixelBlock { pixels } = &mut block.data else { return Ok(()); };
+
+        for message in messages {
+            match message.action {
+                Action::Data { body } => {
+                    pixels.copy_from_slice(&body);
                 }
             }
         }
