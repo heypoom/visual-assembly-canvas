@@ -22,3 +22,9 @@ pub enum BlockData {
         pixels: Vec<u16>
     },
 }
+
+impl Block {
+    pub fn new(id: u16, data: BlockData) -> Block {
+        Block { id, data, inbox: vec![], outbox: vec![], events: vec![] }
+    }
+}

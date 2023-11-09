@@ -6,6 +6,16 @@ pub struct Port {
     pub port: u16,
 }
 
+impl Port {
+    pub fn new(block: u16, port: u16) -> Port {
+        Port { block, port }
+    }
+}
+
+pub fn port(block: u16, port: u16) -> Port {
+    Port { block, port }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Wire {
     pub id: u16,

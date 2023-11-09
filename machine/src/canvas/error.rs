@@ -7,4 +7,10 @@ use crate::canvas::wire::Port;
 pub enum CanvasError {
     #[snafu(display("Cannot connect port {:?} to itself", port))]
     CannotWireToItself { port: Port },
+
+    #[snafu(display("Cannot find block {id}"))]
+    BlockNotFound { id: u16 },
+    
+    #[snafu(display("Cannot find machine {id}"))]
+    MachineNotFound { id: u16 },
 }
