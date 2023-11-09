@@ -12,7 +12,7 @@ pub struct Block {
     pub events: Vec<Event>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum BlockData {
     MachineBlock {
         machine_id: u16,

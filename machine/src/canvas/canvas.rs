@@ -1,7 +1,7 @@
 use snafu::ensure;
 use crate::canvas::block::BlockData::{MachineBlock, PixelBlock};
 use crate::canvas::error::CanvasError::BlockNotFound;
-use crate::{Action, Machine};
+use crate::{Action, Machine, Message};
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, Wire};
@@ -113,11 +113,21 @@ impl Canvas {
 
         for message in messages {
             match message.action {
+                // The "data" action is used to directly set the pixel data.
                 Action::Data { body } => {
-                    pixels.copy_from_slice(&body);
+                    pixels.clear();
+                    pixels.extend(&body);
                 }
             }
         }
+
+        Ok(())
+    }
+
+    pub fn push_message(&mut self, message: Message) -> Errorable {
+        let target = message.to;
+        let block = self.mut_block(target)?;
+        block.inbox.push(message);
 
         Ok(())
     }
