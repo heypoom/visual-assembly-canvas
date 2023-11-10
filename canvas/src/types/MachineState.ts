@@ -28,8 +28,11 @@ export type MachineError =
   | ExecutionCycleExceeded
   | MessageNeverReceived
 
-type ExtractKeys<T> = T extends { [K in keyof T]: infer U } ? keyof T : never
-type ErrorKeys = ExtractKeys<MachineError>
+export type ExtractKeys<T> = T extends { [K in keyof T]: unknown }
+  ? keyof T
+  : never
+
+export type ErrorKeys = ExtractKeys<MachineError>
 
 const isErrorType = <E extends MachineError, K extends ErrorKeys>(
   error: E | null,

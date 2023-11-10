@@ -3,7 +3,7 @@ use machine::{Event, Message};
 use machine::canvas::{Canvas, CanvasError};
 use machine::canvas::block::BlockData;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
+use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
 const NULL: JsValue = JsValue::NULL;
@@ -32,9 +32,9 @@ pub struct InspectState {
 
 type Return = Result<JsValue, JsValue>;
 
-fn returns(value: Result<(), CanvasError>) -> Return {
+fn returns<T>(value: Result<T, CanvasError>) -> Return {
     match value {
-        Ok(()) => Ok(NULL),
+        Ok(..) => Ok(NULL),
         Err(error) => Err(to_value(&error)?),
     }
 }
@@ -48,13 +48,17 @@ impl Controller {
         }
     }
 
-    pub fn add_block(&mut self, id: u16, data: JsValue) -> Return {
-        let block: BlockData = serde_wasm_bindgen::from_value(data)?;
+    pub fn add_block_with_id(&mut self, id: u16, data: JsValue) -> Return {
+        let block: BlockData = from_value(data)?;
 
         returns(self.canvas.add_block_with_id(id, block))
     }
 
-    pub fn add_machine(&mut self, id: u16) -> Return {
+    pub fn add_machine(&mut self) -> Return {
+        returns(self.canvas.add_machine())
+    }
+
+    pub fn add_machine_with_id(&mut self, id: u16) -> Return {
         returns(self.canvas.add_machine_with_id(id))
     }
 

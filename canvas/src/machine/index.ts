@@ -15,7 +15,7 @@ import {
 
 import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 
-import { MachineError, MachineStatus } from "../types/MachineState"
+import { ErrorKeys, MachineError, MachineStatus } from "../types/MachineState"
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 
@@ -24,7 +24,7 @@ const rand = () => Math.floor(Math.random() * 500)
 const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
 
 export function addMachine() {
-  const id = manager.ctx?.add()
+  const id = manager.ctx?.add_machine()
   if (id === undefined) return
 
   const machine: Machine = { id, source: DEFAULT_SOURCE }

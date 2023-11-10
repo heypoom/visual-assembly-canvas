@@ -5,7 +5,7 @@ export function loadMachinesFromNodes(nodes: BlockNode[]) {
   for (const node of nodes) {
     const { id, source } = node.data
 
-    manager.ctx?.add_with_id(id)
+    manager.ctx?.add_machine_with_id(id)
     manager.load(id, source)
   }
 }
