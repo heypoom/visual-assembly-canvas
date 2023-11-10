@@ -1,4 +1,4 @@
-import { persistentAtom as atom } from "@nanostores/persistent"
+import { atom } from "nanostores"
 
 import {
   Edge,
@@ -11,34 +11,72 @@ import {
 } from "reactflow"
 
 import { BlockNode } from "../types/Node"
-import { loadMachinesFromNodes } from "./persist"
+import { manager } from "../core"
+import { Port } from "machine-wasm"
 
-// Serializer
-const S = {
-  encode: JSON.stringify,
-  decode: JSON.parse,
+export const $nodes = atom<BlockNode[]>([])
+
+export const $edges = atom<Edge[]>([])
+
+const port = (id: string, p: string): Port => new Port(Number(id), Number(p))
+
+export const onNodesChange = (changes: NodeChange[]) => {
+  const nodes = $nodes.get()
+
+  for (const change of changes) {
+    if (change.type === "remove") {
+      try {
+        // TODO: map handle to port ids -> edge.sourceHandle, edge.targetHandle
+        manager.ctx?.remove_block(Number(change.id))
+        console.log("block removed:", change.id)
+      } catch (error) {
+        console.warn("remove block failed:", error)
+      }
+    }
+  }
+
+  $nodes.set(applyNodeChanges(changes, nodes))
 }
 
-export const $nodes = atom<BlockNode[]>("nodes", [], {
-  ...S,
-  decode(s) {
-    const nodes = JSON.parse(s) as BlockNode[]
-    loadMachinesFromNodes(nodes)
+export const onEdgesChange = (changes: EdgeChange[]) => {
+  const edges = $edges.get()
 
-    return nodes
-  },
-})
+  for (const change of changes) {
+    if (change.type === "remove") {
+      const e = edges.find((e) => e.id === change.id)
 
-export const $edges = atom<Edge[]>("edges", [], S)
+      if (!e || !e.sourceHandle || !e.targetHandle) {
+        console.warn("cannot remove node", change)
+        continue
+      }
 
-export const onNodesChange = (changes: NodeChange[]) =>
-  $nodes.set(applyNodeChanges(changes, $nodes.get()))
+      try {
+        const source = port(e.source, e.sourceHandle)
+        const target = port(e.target, e.targetHandle)
 
-export const onEdgesChange = (changes: EdgeChange[]) =>
-  $edges.set(applyEdgeChanges(changes, $edges.get()))
+        manager.ctx?.disconnect(source, target)
+        console.log("port disconnected:", e)
+      } catch (err) {
+        console.warn("cannot disconnect edge!")
+      }
+    }
+  }
 
-export const onConnect = (connection: Connection) =>
-  $edges.set(addEdge(connection, $edges.get()))
+  $edges.set(applyEdgeChanges(changes, edges))
+}
+
+export const onConnect = (c: Connection) => {
+  console.log("on connect...", c)
+  if (!c.source || !c.target || !c.sourceHandle || !c.targetHandle) {
+    console.warn("cannot connect as source or target is null!")
+    return
+  }
+
+  const source = port(c.source, c.sourceHandle)
+  const target = port(c.target, c.targetHandle)
+  manager.ctx?.connect(source, target)
+  $edges.set(addEdge(c, $edges.get()))
+}
 
 export function addNode(node: BlockNode) {
   $nodes.set([...$nodes.get(), node])

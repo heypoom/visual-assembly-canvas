@@ -1,7 +1,11 @@
-import { MachineBlock } from "./machine/MachineBlock"
+import { PixelBlockView } from "./pixel/PixelBlock"
+import { MachineBlockView } from "./machine/MachineBlock"
 
-import { NodeComponentMap } from "../../types/Node"
+import { BlockComponentMap } from "../../types/Node"
 
-export const nodeTypes: NodeComponentMap = {
-  machine: MachineBlock,
+export const nodeTypes: BlockComponentMap = {
+  machine: MachineBlockView,
+  pixel: PixelBlockView,
 }
+
+export * from "./utils/is"

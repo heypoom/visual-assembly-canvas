@@ -15,7 +15,7 @@ pub use self::execute::Execute;
 pub use self::message::{Action, Message};
 pub use self::runtime_error::RuntimeError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Machine {
     /// Addressable identifier of the machine.
     pub id: Option<u16>,

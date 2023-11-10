@@ -1,7 +1,9 @@
 use machine::Register::{FP, PC, SP};
-use machine::{Event, Message, Router, RouterError};
+use machine::{Event, Message};
+use machine::canvas::{Canvas, CanvasError};
+use machine::canvas::wire::Port;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
+use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
 const NULL: JsValue = JsValue::NULL;
@@ -9,7 +11,7 @@ const NULL: JsValue = JsValue::NULL;
 #[wasm_bindgen]
 pub struct Controller {
     #[wasm_bindgen(skip)]
-    pub router: Router,
+    pub canvas: Canvas,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -30,9 +32,16 @@ pub struct InspectState {
 
 type Return = Result<JsValue, JsValue>;
 
-fn returns(value: Result<(), RouterError>) -> Return {
+fn returns<T: Serialize>(value: Result<T, CanvasError>) -> Return {
     match value {
-        Ok(()) => Ok(NULL),
+        Ok(v) => Ok(to_value(&v)?),
+        Err(error) => Err(to_value(&error)?),
+    }
+}
+
+fn return_raw<T: Serialize>(value: Result<T, CanvasError>) -> Result<T, JsValue> {
+    match value {
+        Ok(v) => Ok(v),
         Err(error) => Err(to_value(&error)?),
     }
 }
@@ -42,44 +51,72 @@ fn returns(value: Result<(), RouterError>) -> Return {
 impl Controller {
     pub fn create() -> Controller {
         Controller {
-            router: Router::new(),
+            canvas: Canvas::new(),
         }
     }
 
-    pub fn add(&mut self) -> u16 {
-        self.router.add()
+    pub fn get_blocks(&self) -> Return {
+        Ok(to_value(&self.canvas.blocks)?)
     }
 
-    pub fn add_with_id(&mut self, id: u16) {
-        self.router.add_with_id(id)
+    pub fn get_wires(&self) -> Return {
+        Ok(to_value(&self.canvas.wires)?)
+    }
+
+    pub fn add_block(&mut self, data: JsValue) -> Result<u16, JsValue> {
+        return_raw(self.canvas.add_block(from_value(data)?))
+    }
+
+    pub fn add_block_with_id(&mut self, id: u16, data: JsValue) -> Return {
+        returns(self.canvas.add_block_with_id(id, from_value(data)?))
+    }
+
+    pub fn add_machine(&mut self) -> Result<u16, JsValue> {
+        return_raw(self.canvas.add_machine())
+    }
+
+    pub fn add_machine_with_id(&mut self, id: u16) -> Return {
+        returns(self.canvas.add_machine_with_id(id))
+    }
+
+    pub fn remove_block(&mut self, id: u16) -> Return {
+        returns(self.canvas.remove_block(id))
+    }
+
+    pub fn connect(&mut self, from: Port, to: Port) -> Result<u16, JsValue> {
+        return_raw(self.canvas.connect(from, to))
+    }
+
+    pub fn disconnect(&mut self, from: Port, to: Port) -> Return {
+        returns(self.canvas.disconnect(from, to))
     }
 
     pub fn load(&mut self, id: u16, source: &str) -> Return {
-        returns(self.router.load(id, source))
+        returns(self.canvas.load_program(id, source))
     }
 
     pub fn ready(&mut self) {
-        self.router.ready()
+        self.canvas.seq.ready()
     }
 
     pub fn step(&mut self) -> Return {
-        returns(self.router.step())
+        returns(self.canvas.tick())
     }
 
     pub fn run(&mut self) -> Return {
-        returns(self.router.run())
+        returns(self.canvas.run())
     }
 
     pub fn statuses(&mut self) -> Return {
-        Ok(to_value(&self.router.get_statuses())?)
+        Ok(to_value(&self.canvas.seq.get_statuses())?)
     }
 
     pub fn is_halted(&self) -> bool {
-        self.router.is_halted()
+        self.canvas.seq.is_halted()
     }
 
     pub fn inspect(&mut self, id: u16) -> Return {
-        let Some(m) = self.router.get_mut(id) else {
+        let Some(m) = self.canvas.seq.get_mut(id) else {
             return Ok(NULL);
         };
 
@@ -98,7 +135,7 @@ impl Controller {
     }
 
     pub fn read_code(&mut self, id: u16, size: u16) -> Return {
-        let Some(m) = self.router.get_mut(id) else {
+        let Some(m) = self.canvas.seq.get_mut(id) else {
             return Ok(NULL);
         };
 
@@ -107,7 +144,7 @@ impl Controller {
 
     /// Allows the frontend to consume events from the machine.
     pub fn consume_side_effects(&mut self, id: u16) -> Return {
-        Ok(to_value(&self.router.consume_side_effects(id))?)
+        Ok(to_value(&self.canvas.seq.consume_side_effects(id))?)
     }
 }
 

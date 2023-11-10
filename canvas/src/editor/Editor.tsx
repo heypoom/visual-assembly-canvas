@@ -6,12 +6,12 @@ import { cmTheme } from "./theme"
 import { getExtensions } from "./extensions"
 import { addLineHighlight } from "./highlight"
 
-import { setSource, manager } from "../machine"
+import { setSource, manager } from "../core"
 import { $editorConfig } from "../store/editor"
 
-import { Machine } from "../types/Machine"
+import { MachineBlock } from "../types/blocks"
 
-type Props = Machine
+type Props = MachineBlock
 
 export function MachineEditor(props: Props) {
   const { id, source } = props

@@ -1,41 +1,60 @@
-import { MachineError, errors } from "../../../types/MachineState"
+import {
+  CanvasError,
+  canvasErrors,
+  runErrors,
+} from "../../../types/MachineState"
 
 const EMPTY_PROGRAM = "EmptyProgram"
 
-export const ErrorIndicator = ({ error }: { error: MachineError }) => {
-  if (errors.executionCycleExceeded(error)) {
-    return <pre>Execution cycle exceeded.</pre>
-  }
+export const ErrorIndicator = ({ error }: { error: CanvasError }) => {
+  if (canvasErrors.disconnectedPort(error)) {
+    const port = error.DisconnectedPort.port?.port
 
-  if (errors.messageNeverReceived(error)) {
-    return <pre>Machine is expecting a message which never arrives.</pre>
-  }
-
-  if (errors.executionFailed(error)) {
     return (
       <pre>
-        Your program produced an error:{" "}
-        <strong>
-          <code>{JSON.stringify(error.ExecutionFailed.error, null, 2)}</code>
-        </strong>
+        Port {port} is disconnected. Make sure port {port} is wired to another
+        block.
       </pre>
     )
   }
 
-  if (errors.cannotParse(error)) {
-    const reason = error.CannotParse.error
+  if (canvasErrors.machineError(error)) {
+    const cause = error.MachineError.cause
 
-    // The user has not written any program yet.
-    if (reason === EMPTY_PROGRAM) return null
+    if (runErrors.executionCycleExceeded(cause)) {
+      return <pre>Execution cycle exceeded.</pre>
+    }
 
-    return (
-      <pre>
-        Syntax is incorrect:{" "}
-        <strong>
-          <code>{JSON.stringify(error.CannotParse.error, null, 2)}</code>
-        </strong>
-      </pre>
-    )
+    if (runErrors.messageNeverReceived(cause)) {
+      return <pre>Machine is expecting a message which never arrives.</pre>
+    }
+
+    if (runErrors.executionFailed(cause)) {
+      return (
+        <pre>
+          Your program produced an error:{" "}
+          <strong>
+            <code>{JSON.stringify(cause.ExecutionFailed.error, null, 2)}</code>
+          </strong>
+        </pre>
+      )
+    }
+
+    if (runErrors.cannotParse(cause)) {
+      const reason = cause.CannotParse.error
+
+      // The user has not written any program yet.
+      if (reason === EMPTY_PROGRAM) return null
+
+      return (
+        <pre>
+          Syntax is incorrect:{" "}
+          <strong>
+            <code>{JSON.stringify(cause.CannotParse.error, null, 2)}</code>
+          </strong>
+        </pre>
+      )
+    }
   }
 
   return <pre>{JSON.stringify(error, null, 2)}</pre>

@@ -1,10 +1,7 @@
 import { produce } from "immer"
 import setup, { Controller } from "machine-wasm"
 
-import { $nodes, addNode } from "../store/nodes"
-
-import { Machine } from "../types/Machine"
-import { BlockNode } from "../types/Node"
+import { $nodes } from "../store/nodes"
 
 import {
   setError,
@@ -15,34 +12,27 @@ import {
 
 import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 
-import { MachineError, MachineStatus } from "../types/MachineState"
+import {
+  MachineStatus,
+  CanvasError,
+  canvasErrors,
+  MachineError,
+} from "../types/MachineState"
+
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
-
-const rand = () => Math.floor(Math.random() * 500)
-
-const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
-
-export function addMachine() {
-  const id = manager.ctx?.add()
-  if (id === undefined) return
-
-  const machine: Machine = { id, source: DEFAULT_SOURCE }
-  manager.load(id, machine.source)
-
-  const node: BlockNode = {
-    id: id.toString(),
-    type: "machine",
-    data: machine,
-    position: { x: rand(), y: rand() },
-  }
-
-  addNode(node)
-}
+import { isMachineNode, isPixelNode } from "../canvas/blocks/utils/is"
 
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
-    nodes[id].data.source = source
+    const node = nodes.find((n) => n.data.id === id)
+
+    if (!node) {
+      console.error(`node not found in node ${id} when setting source.`)
+      return
+    }
+
+    if (isMachineNode(node)) node.data.source = source
   })
 
   $nodes.set(nodes)
@@ -50,9 +40,13 @@ export const setSource = (id: number, source: string) => {
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+const machineError = (cause: MachineError): CanvasError => ({
+  MachineError: { cause },
+})
+
 export type HighlighterFn = (lineNo: number) => void
 
-export class MachineManager {
+export class CanvasManager {
   ctx: Controller | null = null
 
   /** How long do we delay, in milliseconds. */
@@ -85,12 +79,14 @@ export class MachineManager {
       this.highlightMaps.set(id, getSourceHighlightMap(source))
       this.invalidate()
     } catch (error) {
+      console.log("syntax error ->", error)
+
       this.setSyntaxError(id, error)
     }
   }
 
   setSyntaxError(id: number, error: unknown | null) {
-    if (error) setError(id, error as MachineError)
+    if (error) setError(id, error as CanvasError)
   }
 
   inspect(id: number): InspectionState {
@@ -125,6 +121,9 @@ export class MachineManager {
       cycle++
     }
 
+    // extra step to let the blocks tick
+    this.step({ batch: true })
+
     this.invalidate()
     $status.setKey("running", false)
 
@@ -132,7 +131,7 @@ export class MachineManager {
       if (cycle >= this.maxCycle && !this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getCycleError(id, status)
-          if (error) setError(id, error)
+          if (error) setError(id, machineError(error))
         })
       }
     }, 10)
@@ -157,9 +156,7 @@ export class MachineManager {
     try {
       this.ctx?.step()
     } catch (error) {
-      // Determine the runtime error type and report them.
-      this.detectError(error, "ExecutionFailed")
-      this.detectError(error, "MessageNeverReceived")
+      this.detectCanvasError(error)
     }
 
     // Synchronize the machine state with the store.
@@ -168,14 +165,55 @@ export class MachineManager {
     // Highlight the current line.
     if (!config.batch || this.delayMs > 0) this.highlightCurrent()
 
+    this.updateBlocks()
+
     // If running in steps, we should reset the machine once it halts.
     if (!config.batch && this.isHalted) this.reloadAll()
   }
 
-  /** If the error matches the defined type, report them. */
-  detectError<K extends ErrorKeys>(error: unknown, type: K) {
-    const e = error as Record<K, { id: number }>
-    if (type in e) setError(e[type].id, e as MachineError)
+  updateBlocks() {
+    // TODO: optimize data transfer. only get the "data" field, not the full block.
+    const blocks = this.ctx?.get_blocks()
+
+    for (const block of blocks) {
+      const next = produce($nodes.get(), (nodes) => {
+        const node = nodes.find((n) => n.data.id === block.id)
+
+        if (!node) {
+          console.error(`node not found for block "${block.id}" when updating.`)
+          return
+        }
+
+        // Update the pixels.
+        if (isPixelNode(node)) {
+          const { pixels } = block.data.PixelBlock
+          node.data.pixels = pixels
+        }
+      })
+
+      $nodes.set(next)
+    }
+  }
+
+  detectCanvasError(error: unknown) {
+    const e = error as CanvasError
+
+    if (canvasErrors.disconnectedPort(e)) {
+      const id = e.DisconnectedPort.port?.block
+      setError(id, e)
+      return
+    }
+
+    if (canvasErrors.machineError(e)) {
+      const { cause } = e.MachineError
+
+      const inner = Object.values(cause)[0]
+      if (inner?.id) setError(inner.id, e)
+
+      return
+    }
+
+    console.error("Unhandled canvas error:", error)
   }
 
   highlightCurrent() {
@@ -198,7 +236,7 @@ export class MachineManager {
   }
 }
 
-export const manager = new MachineManager()
+export const manager = new CanvasManager()
 await manager.setup()
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

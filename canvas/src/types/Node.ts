@@ -1,16 +1,17 @@
 import { Node, NodeProps } from "reactflow"
 
-import { Machine } from "./Machine"
+import { MachineBlock, PixelBlock } from "./blocks"
 
-export interface NodeTypeMap {
-  machine: Machine
+export interface BlockTypeMap {
+  machine: MachineBlock
+  pixel: PixelBlock
 }
 
-export type NodeTypes = keyof NodeTypeMap
-export type NodeTypeValues = NodeTypeMap[NodeTypes]
+export type BlockTypes = keyof BlockTypeMap
+export type BlockValues = BlockTypeMap[BlockTypes]
 
-export type BlockNode = Node<Machine>
+export type BlockNode = Node<BlockValues>
 
-export type NodeComponentMap = {
-  [N in NodeTypes]: (props: NodeProps<NodeTypeMap[N]>) => JSX.Element
+export type BlockComponentMap = {
+  [N in BlockTypes]: (props: NodeProps<BlockTypeMap[N]>) => React.ReactNode
 }

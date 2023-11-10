@@ -4,7 +4,7 @@ use crate::{ParseError, RuntimeError};
 
 #[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
-pub enum RouterError {
+pub enum SequencerError {
     #[snafu(display("cannot parse the code"))]
     CannotParse { id: u16, error: ParseError },
 
