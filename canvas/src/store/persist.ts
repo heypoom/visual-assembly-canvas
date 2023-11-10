@@ -1,4 +1,4 @@
-import { manager } from "../machine"
+import { manager } from "../core"
 import { BlockNode } from "../types/Node"
 
 import { isMachineNode } from "../canvas/blocks/is"

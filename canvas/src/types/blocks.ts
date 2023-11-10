@@ -3,7 +3,7 @@ export interface BaseBlock {
   id: number
 }
 
-export interface PixelArtBlock extends BaseBlock {
+export interface PixelBlock extends BaseBlock {
   pixels: number[]
 }
 

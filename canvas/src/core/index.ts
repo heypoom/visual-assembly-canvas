@@ -1,10 +1,7 @@
 import { produce } from "immer"
 import setup, { Controller } from "machine-wasm"
 
-import { $nodes, addNode } from "../store/nodes"
-
-import { MachineBlock } from "../types/blocks"
-import { BlockNode } from "../types/Node"
+import { $nodes } from "../store/nodes"
 
 import {
   setError,
@@ -20,27 +17,6 @@ import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 import { isMachineNode } from "../canvas/blocks/is"
 
-const rand = () => Math.floor(Math.random() * 500)
-
-const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
-
-export function addMachine() {
-  const id = manager.ctx?.add_machine()
-  if (typeof id !== "number") return
-
-  const machine: MachineBlock = { id, source: DEFAULT_SOURCE }
-  manager.load(id, machine.source)
-
-  const node: BlockNode = {
-    id: id.toString(),
-    type: "machine",
-    data: machine,
-    position: { x: rand(), y: rand() },
-  }
-
-  addNode(node)
-}
-
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
     const node = nodes[id]
@@ -55,7 +31,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export type HighlighterFn = (lineNo: number) => void
 
-export class MachineManager {
+export class CanvasManager {
   ctx: Controller | null = null
 
   /** How long do we delay, in milliseconds. */
@@ -201,7 +177,7 @@ export class MachineManager {
   }
 }
 
-export const manager = new MachineManager()
+export const manager = new CanvasManager()
 await manager.setup()
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

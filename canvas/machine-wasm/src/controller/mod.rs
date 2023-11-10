@@ -31,10 +31,16 @@ pub struct InspectState {
 
 type Return = Result<JsValue, JsValue>;
 
-/// returns u16
 fn returns<T: Serialize>(value: Result<T, CanvasError>) -> Return {
     match value {
         Ok(v) => Ok(to_value(&v)?),
+        Err(error) => Err(to_value(&error)?),
+    }
+}
+
+fn return_raw<T: Serialize>(value: Result<T, CanvasError>) -> Result<T, JsValue> {
+    match value {
+        Ok(v) => Ok(v),
         Err(error) => Err(to_value(&error)?),
     }
 }
@@ -56,16 +62,16 @@ impl Controller {
         Ok(to_value(&self.canvas.wires)?)
     }
 
-    pub fn add_block(&mut self, data: JsValue) -> Return {
-        returns(self.canvas.add_block(from_value(data)?))
+    pub fn add_block(&mut self, data: JsValue) -> Result<u16, JsValue> {
+        return_raw(self.canvas.add_block(from_value(data)?))
     }
 
     pub fn add_block_with_id(&mut self, id: u16, data: JsValue) -> Return {
         returns(self.canvas.add_block_with_id(id, from_value(data)?))
     }
 
-    pub fn add_machine(&mut self) -> Return {
-        returns(self.canvas.add_machine())
+    pub fn add_machine(&mut self) -> Result<u16, JsValue> {
+        return_raw(self.canvas.add_machine())
     }
 
     pub fn add_machine_with_id(&mut self, id: u16) -> Return {

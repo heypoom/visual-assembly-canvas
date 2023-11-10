@@ -6,7 +6,7 @@ import { cmTheme } from "./theme"
 import { getExtensions } from "./extensions"
 import { addLineHighlight } from "./highlight"
 
-import { setSource, manager } from "../machine"
+import { setSource, manager } from "../core"
 import { $editorConfig } from "../store/editor"
 
 import { MachineBlock } from "../types/blocks"

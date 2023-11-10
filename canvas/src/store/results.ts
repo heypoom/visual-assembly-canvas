@@ -6,7 +6,7 @@ import {
   MachineStates,
 } from "../types/MachineState"
 import { $nodes } from "./nodes"
-import { MachineManager } from "../machine"
+import { CanvasManager } from "../core"
 import { MachineEvent, InspectionState } from "../types/MachineEvent"
 
 export const $output = map<MachineStates>({})
@@ -34,7 +34,7 @@ export const setError = action(
 export const setMachineState = action(
   $output,
   "set machine state",
-  (store, manager: MachineManager) => {
+  (store, manager: CanvasManager) => {
     const output = store.get()
 
     $nodes.get().forEach((node) => {
@@ -62,7 +62,7 @@ export const setMachineState = action(
 export const clearPreviousRun = action(
   $output,
   "clear previous run",
-  (store, manager: MachineManager) => {
+  (store, manager: CanvasManager) => {
     const curr = store.get()
 
     manager.statuses.forEach((status, id) => {
