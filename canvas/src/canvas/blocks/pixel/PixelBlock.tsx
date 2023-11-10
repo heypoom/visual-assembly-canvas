@@ -40,17 +40,17 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const isDrawable = !!pixels && columns > 1
 
   return (
-    <>
+    <div className="group">
       <Handle
         type="target"
         position={Position.Left}
         id="0"
-        className="bg-crimson-9 hover:bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
+        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
       ></Handle>
 
-      <div className="border-2 border-crimson-9 rounded-2 group relative">
+      <div className="border-2 border-crimson-9 rounded-2 relative hover:border-cyan-9">
         <div
-          className="absolute hidden group-hover:flex right-2 top-1 bg-gray-1 p-1 rounded-6 text-crimson-11 hover:bg-crimson-9 hover:text-gray-1"
+          className="absolute hidden group-hover:flex right-2 top-1 bg-gray-1 p-1 rounded-6 text-cyan-11 hover:bg-cyan-9 hover:text-gray-1"
           onClick={toggle}
         >
           {isSettings ? <EyeClosedIcon /> : <MixerHorizontalIcon />}
@@ -125,6 +125,6 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }
