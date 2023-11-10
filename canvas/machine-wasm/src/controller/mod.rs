@@ -83,6 +83,10 @@ impl Controller {
         return_raw(self.canvas.connect(from, to))
     }
 
+    pub fn disconnect(&mut self, from: Port, to: Port) -> Return {
+        returns(self.canvas.disconnect(from, to))
+    }
+
     pub fn load(&mut self, id: u16, source: &str) -> Return {
         returns(self.canvas.load_program(id, source))
     }

@@ -19,6 +19,8 @@ pub enum CanvasError {
 
     DisconnectedPort { port: Port },
 
+    CannotFindWire { src: Port, dst: Port },
+
     #[snafu(display("block id {id} is already in use"))]
     BlockIdInUse { id: u16 },
 }

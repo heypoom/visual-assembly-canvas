@@ -13,11 +13,12 @@ import {
 import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 
 import {
-  ErrorKeys,
-  MachineError,
   MachineStatus,
-  OuterMachineError,
+  CanvasError,
+  canvasErrors,
+  MachineError,
 } from "../types/MachineState"
+
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 import { isMachineNode } from "../canvas/blocks/is"
@@ -33,6 +34,10 @@ export const setSource = (id: number, source: string) => {
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const machineError = (cause: MachineError): CanvasError => ({
+  MachineError: { cause },
+})
 
 export type HighlighterFn = (lineNo: number) => void
 
@@ -76,7 +81,7 @@ export class CanvasManager {
   }
 
   setSyntaxError(id: number, error: unknown | null) {
-    if (error) setError(id, error as MachineError)
+    if (error) setError(id, error as CanvasError)
   }
 
   inspect(id: number): InspectionState {
@@ -118,7 +123,7 @@ export class CanvasManager {
       if (cycle >= this.maxCycle && !this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getCycleError(id, status)
-          if (error) setError(id, error)
+          if (error) setError(id, machineError(error))
         })
       }
     }, 10)
@@ -142,17 +147,8 @@ export class CanvasManager {
 
     try {
       this.ctx?.step()
-    } catch (_err) {
-      const error = (_err as OuterMachineError)?.MachineError?.cause
-
-      // Determine the runtime error type and report them.
-      if (error) {
-        this.detectError(error, "ExecutionFailed")
-        this.detectError(error, "MessageNeverReceived")
-        return
-      }
-
-      console.warn(`Runtime error:`, error)
+    } catch (erorr) {
+      this.detectCanvasError(erorr)
     }
 
     // Synchronize the machine state with the store.
@@ -165,10 +161,23 @@ export class CanvasManager {
     if (!config.batch && this.isHalted) this.reloadAll()
   }
 
-  /** If the error matches the defined type, report them. */
-  detectError<K extends ErrorKeys>(error: unknown, type: K) {
-    const e = error as Record<K, { id: number }>
-    if (type in e) setError(e[type].id, e as MachineError)
+  detectCanvasError(error: unknown) {
+    const e = error as CanvasError
+
+    if (canvasErrors.disconnectedPort(e)) {
+      const id = e.DisconnectedPort.port?.block
+
+      setError(id, e)
+    }
+
+    if (canvasErrors.machineError(e)) {
+      const { cause } = e.MachineError
+
+      if ("id" in cause) {
+        const id = cause.id as number
+        if (id) setError(id, e)
+      }
+    }
   }
 
   highlightCurrent() {

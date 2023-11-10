@@ -1,10 +1,7 @@
 import { map, action } from "nanostores"
 
-import {
-  MachineError,
-  MachineState,
-  MachineStates,
-} from "../types/MachineState"
+import { CanvasError, MachineState, MachineStates } from "../types/MachineState"
+
 import { $nodes } from "./nodes"
 import { CanvasManager } from "../core"
 import { MachineEvent, InspectionState } from "../types/MachineEvent"
@@ -24,8 +21,9 @@ const toState = (result: InspectionState): MachineState => ({
 export const setError = action(
   $output,
   "set error",
-  (store, id: number, error: MachineError) => {
+  (store, id: number, error: CanvasError) => {
     const output = store.get()
+    console.log(`[${id}] error =`, error)
 
     store.setKey(id, { ...output[id], error })
   },
@@ -81,8 +79,11 @@ export const clearPreviousRun = action(
   },
 )
 
-const isCycleError = (error: MachineError | null) => {
+const isCycleError = (error: CanvasError | null) => {
   if (!error) return false
+  if (!("MachineError" in error)) return false
 
-  return "ExecutionCycleExceeded" in error || "HangingAwaits" in error
+  const { cause } = error.MachineError
+
+  return "ExecutionCycleExceeded" in cause || "HangingAwaits" in cause
 }

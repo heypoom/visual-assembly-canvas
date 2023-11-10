@@ -3,6 +3,7 @@ use crate::canvas::block::BlockData::{MachineBlock, PixelBlock};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Message, Sequencer};
 use crate::canvas::BlockIdInUseSnafu;
+use crate::canvas::CanvasError::CannotFindWire;
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, Wire};
@@ -15,7 +16,8 @@ pub struct Canvas {
     pub wires: Vec<Wire>,
     pub seq: Sequencer,
 
-    id_counter: u16,
+    block_id_counter: u16,
+    wire_id_counter: u16,
 }
 
 impl Canvas {
@@ -25,13 +27,14 @@ impl Canvas {
             wires: vec![],
             seq: Sequencer::new(),
 
-            id_counter: 0,
+            block_id_counter: 0,
+            wire_id_counter: 0,
         }
     }
 
     pub fn block_id(&mut self) -> u16 {
-        let id = self.id_counter;
-        self.id_counter += 1;
+        let id = self.block_id_counter;
+        self.block_id_counter += 1;
         id
     }
 
@@ -92,9 +95,21 @@ impl Canvas {
             BlockNotFoundSnafu { id: target.block },
         );
 
-        let id = self.wires.len() as u16;
+        // Increment the wire id
+        let id = self.wire_id_counter;
+        self.wire_id_counter += 1;
+
         self.wires.push(Wire { id, source, target });
         Ok(id)
+    }
+
+    pub fn disconnect(&mut self, src: Port, dst: Port) -> Errorable {
+        let Some(wire_index) = self.wires.iter().position(|w| w.source == src && w.target == dst) else {
+            return Err(CannotFindWire { src, dst });
+        };
+
+        self.wires.remove(wire_index);
+        Ok(())
     }
 
     pub fn get_block(&mut self, id: u16) -> Result<&Block, CanvasError> {
