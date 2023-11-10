@@ -44,4 +44,29 @@ mod canvas_tests {
 
         Ok(())
     }
+
+    #[test]
+    fn test_multiple_dispatch() -> Errorable {
+        let mut c = Canvas::new();
+        c.add_machine()?;
+        c.add_machine()?;
+        c.add_machine()?;
+
+        c.connect(port(0, 0), port(1, 0))?;
+        c.connect(port(0, 0), port(2, 0))?;
+
+        c.load_program(0, r"
+            push 0xCC
+            send 0 1
+        ")?;
+
+        c.load_program(1, "receive")?;
+        c.load_program(2, "receive")?;
+        c.run()?;
+
+        assert_eq!(c.seq.get(1).unwrap().mem.read_stack(1), [0xCC]);
+        assert_eq!(c.seq.get(2).unwrap().mem.read_stack(1), [0xCC]);
+
+        Ok(())
+    }
 }

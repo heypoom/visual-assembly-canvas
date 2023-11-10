@@ -23,15 +23,18 @@ pub struct Sequencer {
 
     /// Are all machines incapable of sending messages?
     /// Use this to prevent the `receive` instruction from blocking forever.
-    peers_halted: bool,
+    message_watchdog_counter: u16,
 }
+
+/// How many cycles should we wait for the message to be received?
+const MAX_WAIT_CYCLES: u16 = 3;
 
 impl Sequencer {
     pub fn new() -> Sequencer {
         Sequencer {
             machines: vec![],
             statuses: HashMap::new(),
-            peers_halted: false,
+            message_watchdog_counter: MAX_WAIT_CYCLES,
         }
     }
 
@@ -41,6 +44,12 @@ impl Sequencer {
         machine.id = Some(id);
 
         self.machines.push(machine);
+    }
+
+    /// Remove a machine.
+    pub fn remove(&mut self, id: u16) {
+        self.machines.retain(|m| m.id != Some(id));
+        self.statuses.remove(&id);
     }
 
     /// Load the code and symbols into memory.
@@ -75,7 +84,7 @@ impl Sequencer {
             if self.statuses.get(&id) == Some(&Invalid) { continue; }
             machine.partial_reset();
 
-            self.peers_halted = false;
+            self.message_watchdog_counter = MAX_WAIT_CYCLES;
             self.statuses.insert(id, Ready);
         }
     }
@@ -104,14 +113,14 @@ impl Sequencer {
                 // Do not tick the machine if the still did not receive the message.
                 if machine.expected_receives > 0 {
                     // Raise an error if all peers are halted.
-                    if self.peers_halted {
+                    if self.message_watchdog_counter == 0 {
                         self.statuses.insert(id, Errored);
                         return Err(MessageNeverReceived { id });
                     }
 
-                    // Mark the flag if all peers are halted.
+                    // Reduce the watchdog counter
                     if peers_halted(statuses.clone(), id) {
-                        self.peers_halted = true;
+                        self.message_watchdog_counter -= 1;
                     }
 
                     continue;

@@ -20,8 +20,23 @@ export const $edges = atom<Edge[]>([])
 
 const port = (id: string, p: string): Port => new Port(Number(id), Number(p))
 
-export const onNodesChange = (changes: NodeChange[]) =>
-  $nodes.set(applyNodeChanges(changes, $nodes.get()))
+export const onNodesChange = (changes: NodeChange[]) => {
+  const nodes = $nodes.get()
+
+  for (const change of changes) {
+    if (change.type === "remove") {
+      try {
+        // TODO: map handle to port ids -> edge.sourceHandle, edge.targetHandle
+        manager.ctx?.remove_block(Number(change.id))
+        console.log("block removed:", change.id)
+      } catch (error) {
+        console.warn("remove block failed:", error)
+      }
+    }
+  }
+
+  $nodes.set(applyNodeChanges(changes, nodes))
+}
 
 export const onEdgesChange = (changes: EdgeChange[]) => {
   const edges = $edges.get()

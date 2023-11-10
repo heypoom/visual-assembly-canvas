@@ -22,7 +22,6 @@ import {
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 import { isMachineNode } from "../canvas/blocks/is"
-import { c } from "vitest/dist/reporters-5f784f42.js"
 
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {

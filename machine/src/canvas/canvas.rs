@@ -38,6 +38,26 @@ impl Canvas {
         id
     }
 
+    pub fn remove_block(&mut self, id: u16) -> Errorable {
+        let block_idx = self.blocks.iter().position(|b| b.id == id).ok_or(BlockNotFound { id })?;
+
+        // Teardown logic
+        match self.blocks[block_idx].data {
+            // Remove the machine from the sequencer.
+            MachineBlock { machine_id } => self.seq.remove(machine_id),
+
+            _ => {}
+        }
+
+        // Remove blocks from the canvas.
+        self.blocks.remove(block_idx);
+
+        // Remove all wires connected to the block.
+        self.wires.retain(|w| w.source.block != id && w.target.block != id);
+
+        Ok(())
+    }
+
     pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
         let id = self.block_id();
         self.add_machine_with_id(id)?;
@@ -79,7 +99,7 @@ impl Canvas {
         ensure!(source != target, CannotWireToItselfSnafu { port: source });
 
         // Do not add duplicate wires.
-        if let Some(w) = self.wires.iter().find(|w| w.source == source || w.target == target) {
+        if let Some(w) = self.wires.iter().find(|w| w.source == source && w.target == target) {
             return Ok(w.id);
         }
 

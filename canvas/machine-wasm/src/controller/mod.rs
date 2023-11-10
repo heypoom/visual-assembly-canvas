@@ -79,6 +79,10 @@ impl Controller {
         returns(self.canvas.add_machine_with_id(id))
     }
 
+    pub fn remove_block(&mut self, id: u16) -> Return {
+        returns(self.canvas.remove_block(id))
+    }
+
     pub fn connect(&mut self, from: Port, to: Port) -> Result<u16, JsValue> {
         return_raw(self.canvas.connect(from, to))
     }
