@@ -2,6 +2,7 @@ use snafu::ensure;
 use crate::canvas::block::BlockData::{MachineBlock, PixelBlock};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Message, Sequencer};
+use crate::canvas::BlockIdInUseSnafu;
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, Wire};
@@ -56,6 +57,9 @@ impl Canvas {
     }
 
     pub fn add_block_with_id(&mut self, id: u16, data: BlockData) -> Errorable {
+        // Prevent duplicate block ids from being added.
+        ensure!(!self.blocks.iter().any(|b| b.id == id), BlockIdInUseSnafu {id});
+
         // Validate block data before adding them.
         match data {
             MachineBlock { machine_id } => {

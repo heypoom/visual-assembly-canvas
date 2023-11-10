@@ -19,6 +19,5 @@ pub enum SequencerError {
 
     #[snafu(display("program expects a message but they are never received"))]
     MessageNeverReceived { id: u16 },
-
 }
 

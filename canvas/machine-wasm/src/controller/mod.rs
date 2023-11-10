@@ -31,9 +31,10 @@ pub struct InspectState {
 
 type Return = Result<JsValue, JsValue>;
 
-fn returns<T>(value: Result<T, CanvasError>) -> Return {
+/// returns u16
+fn returns<T: Serialize>(value: Result<T, CanvasError>) -> Return {
     match value {
-        Ok(..) => Ok(NULL),
+        Ok(v) => Ok(to_value(&v)?),
         Err(error) => Err(to_value(&error)?),
     }
 }
@@ -45,6 +46,14 @@ impl Controller {
         Controller {
             canvas: Canvas::new(),
         }
+    }
+
+    pub fn get_blocks(&self) -> Return {
+        Ok(to_value(&self.canvas.blocks)?)
+    }
+
+    pub fn get_wires(&self) -> Return {
+        Ok(to_value(&self.canvas.wires)?)
     }
 
     pub fn add_block(&mut self, data: JsValue) -> Return {

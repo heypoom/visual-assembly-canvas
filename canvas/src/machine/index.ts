@@ -25,7 +25,7 @@ const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
 
 export function addMachine() {
   const id = manager.ctx?.add_machine()
-  if (id === undefined) return
+  if (typeof id !== "number") return
 
   const machine: Machine = { id, source: DEFAULT_SOURCE }
   manager.load(id, machine.source)

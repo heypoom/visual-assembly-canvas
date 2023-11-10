@@ -11,11 +11,14 @@ pub enum CanvasError {
 
     #[snafu(display("Cannot find block {id}"))]
     BlockNotFound { id: u16 },
-    
+
     #[snafu(display("Cannot find machine {id}"))]
     MachineNotFound { id: u16 },
 
     MachineError { cause: SequencerError },
 
     DisconnectedPort { port: Port },
+
+    #[snafu(display("block id {id} is already in use"))]
+    BlockIdInUse { id: u16 },
 }
