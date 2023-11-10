@@ -10,16 +10,16 @@ mod canvas_tests {
     #[test]
     fn test_add_wire_block() -> Errorable {
         let mut c = Canvas::new();
-        c.add_machine()?;
-        c.add_block(PixelBlock { pixels: vec![] })?;
+        let a = c.add_machine()?;
+        let b = c.add_block(PixelBlock { pixels: vec![] })?;
 
         // connect machine block to pixel block.
-        c.connect(port(0, 0), port(1, 0))?;
+        c.connect(port(a, 0), port(b, 0))?;
 
-        assert_eq!(c.blocks[0].id, 0);
+        assert_eq!(c.blocks[a as usize].id, 0);
         assert_eq!(c.wires[0].id, 0);
         assert_eq!(c.wires[0].target.port, 0);
-        assert_eq!(c.wires[0].target.block, 1);
+        assert_eq!(c.wires[0].target.block, b);
 
         Ok(())
     }
@@ -27,11 +27,11 @@ mod canvas_tests {
     #[test]
     fn test_machine_set_pixel_block() -> Errorable {
         let mut c = Canvas::new();
-        c.add_machine()?;
-        c.add_block(PixelBlock { pixels: vec![] })?;
-        c.connect(port(0, 0), port(1, 0))?;
+        let a = c.add_machine()?;
+        let b = c.add_block(PixelBlock { pixels: vec![] })?;
+        c.connect(port(a, 0), port(b, 0))?;
 
-        c.load_program(0, r"
+        c.load_program(a, r"
             push 0xAA
             push 0xBB
             push 0xCC

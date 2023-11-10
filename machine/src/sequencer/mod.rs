@@ -36,7 +36,7 @@ impl Sequencer {
     }
 
     /// Add a machine.
-    pub fn add_with_id(&mut self, id: u16) {
+    pub fn add(&mut self, id: u16) {
         let mut machine = Machine::new();
         machine.id = Some(id);
 

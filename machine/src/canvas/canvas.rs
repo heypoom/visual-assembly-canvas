@@ -13,6 +13,8 @@ pub struct Canvas {
     pub blocks: Vec<Block>,
     pub wires: Vec<Wire>,
     pub seq: Sequencer,
+
+    id_counter: u16,
 }
 
 impl Canvas {
@@ -21,16 +23,20 @@ impl Canvas {
             blocks: vec![],
             wires: vec![],
             seq: Sequencer::new(),
+
+            id_counter: 0,
         }
     }
 
-    pub fn block_id(&self) -> u16 {
-        self.blocks.len() as u16
+    pub fn block_id(&mut self) -> u16 {
+        let id = self.id_counter;
+        self.id_counter += 1;
+        id
     }
 
     pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
         let id = self.block_id();
-        self.seq.add_with_id(id);
+        self.seq.add(id);
         self.add_block_with_id(id, MachineBlock { machine_id: id })?;
 
         Ok(id)
