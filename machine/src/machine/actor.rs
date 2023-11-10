@@ -16,8 +16,6 @@ impl Actor for Machine {
         // If the machine has no address, it cannot send messages.
         let Some(sender) = self.id else { return; };
 
-        println!("Sending message!");
-
         // Add the message to the mailbox.
         self.outbox.push(Message { port: port(sender, src_port), action });
     }

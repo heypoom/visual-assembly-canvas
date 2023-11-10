@@ -180,4 +180,8 @@ impl Canvas {
     fn consume_messages(&mut self) -> Vec<Message> {
         self.blocks.iter_mut().flat_map(|block| block.outbox.drain(..)).collect()
     }
+
+    pub fn load_program(&mut self, id: u16, source: &str) -> Errorable {
+        self.router.load(id, source).map_err(|cause| MachineError { cause })
+    }
 }

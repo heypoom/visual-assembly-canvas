@@ -4,7 +4,6 @@ mod canvas_tests {
     use machine::canvas::Canvas;
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};
-    use machine::canvas::error::CanvasError::MachineError;
 
     type Errorable = Result<(), CanvasError>;
 
@@ -20,6 +19,7 @@ mod canvas_tests {
         assert_eq!(c.blocks[0].id, 0);
         assert_eq!(c.wires[0].id, 0);
         assert_eq!(c.wires[0].target.port, 0);
+        assert_eq!(c.wires[0].target.block, 1);
 
         Ok(())
     }
@@ -31,12 +31,12 @@ mod canvas_tests {
         c.add_block(PixelBlock { pixels: vec![] })?;
         c.connect(port(0, 0), port(1, 0))?;
 
-        c.router.load(0, r"
+        c.load_program(0, r"
             push 0xAA
             push 0xBB
             push 0xCC
             send 0 3
-        ").map_err(|cause| MachineError { cause })?;
+        ")?;
 
         c.run()?;
 
