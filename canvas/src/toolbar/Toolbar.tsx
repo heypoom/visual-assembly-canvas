@@ -1,17 +1,13 @@
 import { Button } from "@radix-ui/themes"
 
-import {
-  PlayIcon,
-  PlusCircledIcon,
-  LapTimerIcon,
-  TrackNextIcon,
-} from "@radix-ui/react-icons"
+import { PlayIcon, PlusCircledIcon, TrackNextIcon } from "@radix-ui/react-icons"
 
 import { useStore } from "@nanostores/react"
 
 import { $status } from "../store/status"
 import { manager } from "../core"
 import { addBlock } from "../canvas"
+import { SetDelayButton } from "./SetDelayButton"
 
 export function Toolbar() {
   const status = useStore($status)
@@ -54,10 +50,7 @@ export function Toolbar() {
         Step
       </Button>
 
-      <Button color="gray" variant="soft" className="font-semibold">
-        <LapTimerIcon />
-        Delay
-      </Button>
+      <SetDelayButton />
     </div>
   )
 }

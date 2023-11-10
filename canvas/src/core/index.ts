@@ -22,6 +22,7 @@ import {
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 import { isMachineNode, isPixelNode } from "../canvas/blocks/utils/is"
+import { $delay } from "../store/canvas"
 
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
@@ -48,9 +49,6 @@ export type HighlighterFn = (lineNo: number) => void
 
 export class CanvasManager {
   ctx: Controller | null = null
-
-  /** How long do we delay, in milliseconds. */
-  delayMs = 40
 
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
@@ -104,6 +102,10 @@ export class CanvasManager {
 
   get isHalted(): boolean {
     return this.ctx?.is_halted() ?? false
+  }
+
+  get delayMs(): number {
+    return $delay.get()
   }
 
   run = async () => {
