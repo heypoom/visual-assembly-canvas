@@ -28,7 +28,7 @@ impl Block {
         Block { id, data, inbox: vec![], outbox: vec![], events: vec![] }
     }
 
-    pub fn read_messages(&mut self) -> Vec<Message> {
+    pub fn consume_messages(&mut self) -> Vec<Message> {
         self.inbox.drain(..).collect()
     }
 }

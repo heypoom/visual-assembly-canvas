@@ -1,4 +1,5 @@
 use crate::{Action, Machine, Message, RuntimeError};
+use crate::canvas::wire::port;
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -11,12 +12,14 @@ pub trait Actor {
 }
 
 impl Actor for Machine {
-    fn send_message(&mut self, to: u16, action: Action) {
+    fn send_message(&mut self, src_port: u16, action: Action) {
         // If the machine has no address, it cannot send messages.
-        let Some(id) = self.id else { return; };
+        let Some(sender) = self.id else { return; };
+
+        println!("Sending message!");
 
         // Add the message to the mailbox.
-        self.outbox.push(Message { from: id, to, action });
+        self.outbox.push(Message { port: port(sender, src_port), action });
     }
 
     fn receive_messages(&mut self) -> Errorable {

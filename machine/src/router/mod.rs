@@ -2,7 +2,7 @@ pub mod status;
 pub mod router_error;
 
 use std::collections::HashMap;
-use crate::{Actor, Event, Execute, Machine, Parser};
+use crate::{Actor, Event, Execute, Machine, Message, Parser};
 
 use status::MachineStatus;
 use status::MachineStatus::{Awaiting, Halted, Running};
@@ -11,12 +11,10 @@ pub use router_error::RouterError::*;
 pub use router_error::RouterError;
 use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready};
 
-// Limit the max number of execution cycles to prevent an infinite loop.
-const MAX_ITER: u16 = 1000;
-
 type Errorable = Result<(), RouterError>;
 type Statuses = HashMap<u16, MachineStatus>;
 
+#[derive(Debug, Clone)]
 pub struct Router {
     pub machines: Vec<Machine>,
 
@@ -38,30 +36,11 @@ impl Router {
     }
 
     /// Add a machine.
-    pub fn add(&mut self) -> u16 {
-        let id = self.machines.len() as u16;
-        self.add_with_id(id);
-        id
-    }
-
-    /// Add a machine.
     pub fn add_with_id(&mut self, id: u16) {
         let mut machine = Machine::new();
         machine.id = Some(id);
 
         self.machines.push(machine);
-    }
-
-    /// Run every machine until all halts.
-    pub fn run(&mut self) -> Errorable {
-        self.ready();
-
-        for _ in 1..MAX_ITER {
-            if self.is_halted() { break; }
-            self.step()?;
-        }
-
-        Ok(())
     }
 
     /// Load the code and symbols into memory.
@@ -102,9 +81,8 @@ impl Router {
     }
 
     /// Step once for all machines.
+    /// Messages must be routed before this method is called.
     pub fn step(&mut self) -> Errorable {
-        self.route_messages();
-
         for machine in &mut self.machines {
             let Some(id) = machine.id else { continue; };
             let statuses = self.statuses.clone();
@@ -123,6 +101,7 @@ impl Router {
             machine.receive_messages().map_err(|error| ReceiveFailed { error: error.into() })?;
 
             if status == Awaiting {
+                // Do not tick the machine if the still did not receive the message.
                 if machine.expected_receives > 0 {
                     // Raise an error if all peers are halted.
                     if self.peers_halted {
@@ -130,6 +109,7 @@ impl Router {
                         return Err(MessageNeverReceived { id });
                     }
 
+                    // Mark the flag if all peers are halted.
                     if peers_halted(statuses.clone(), id) {
                         self.peers_halted = true;
                     }
@@ -184,15 +164,9 @@ impl Router {
         self.machines.iter_mut().find(|m| m.id == Some(id))
     }
 
-    /// Route the messages to the appropriate machines.
-    fn route_messages(&mut self) {
-        let messages: Vec<_> = self.machines.iter_mut().flat_map(|machine| machine.outbox.drain(..)).collect();
-
-        for message in messages {
-            if let Some(dst) = self.get_mut(message.to) {
-                dst.inbox.push(message);
-            }
-        }
+    /// Consume the messages.
+    pub fn consume_messages(&mut self) -> Vec<Message> {
+        self.machines.iter_mut().flat_map(|machine| machine.outbox.drain(..)).collect()
     }
 
     /// Consume the side effect events in the frontend.

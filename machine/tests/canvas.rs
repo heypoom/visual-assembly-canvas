@@ -4,7 +4,7 @@ mod canvas_tests {
     use machine::canvas::Canvas;
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};
-    use machine::{Action, Message};
+    use machine::canvas::error::CanvasError::MachineError;
 
     type Errorable = Result<(), CanvasError>;
 
@@ -25,23 +25,22 @@ mod canvas_tests {
     }
 
     #[test]
-    fn test_push_message_to_pixel_block() -> Errorable {
+    fn test_machine_set_pixel_block() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
         c.add_block(PixelBlock { pixels: vec![] })?;
+        c.connect(port(0, 0), port(1, 0))?;
 
-        // push message from machine block to pixel block.
-        c.push_message(Message {
-            from: 0,
-            to: 1,
-            action: Action::Data { body: vec![0xAA, 0xBB, 0xCC] },
-        })?;
+        c.router.load(0, r"
+            push 0xAA
+            push 0xBB
+            push 0xCC
+            send 0 3
+        ").map_err(|cause| MachineError { cause })?;
 
-        assert_eq!(c.blocks[1].data, PixelBlock { pixels: vec![] });
+        c.run()?;
 
-        c.tick()?;
-
-        assert_eq!(c.blocks[1].data, PixelBlock { pixels: vec![0xAA, 0xBB, 0xCC] });
+        assert_eq!(c.blocks[1].data, PixelBlock { pixels: vec![0xCC, 0xBB, 0xAA] });
 
         Ok(())
     }

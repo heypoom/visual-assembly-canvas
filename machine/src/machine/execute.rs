@@ -135,7 +135,7 @@ impl Execute for Machine {
                 jump = Some(address + 1)
             }
 
-            Op::Send(to, size) => {
+            Op::Send(port, size) => {
                 let mut body = vec![];
 
                 for _ in 0..size {
@@ -143,7 +143,7 @@ impl Execute for Machine {
                     body.push(v);
                 }
 
-                self.send_message(to, Action::Data { body });
+                self.send_message(port, Action::Data { body });
             }
 
             Op::Receive => {

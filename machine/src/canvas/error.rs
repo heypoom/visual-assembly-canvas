@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
 use crate::canvas::wire::Port;
+use crate::RouterError;
 
 #[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
@@ -13,4 +14,8 @@ pub enum CanvasError {
     
     #[snafu(display("Cannot find machine {id}"))]
     MachineNotFound { id: u16 },
+
+    MachineError { cause: RouterError },
+
+    DisconnectedPort { port: Port },
 }
