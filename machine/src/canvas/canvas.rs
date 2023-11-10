@@ -1,7 +1,7 @@
 use snafu::ensure;
 use crate::canvas::block::BlockData::{MachineBlock, PixelBlock};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
-use crate::{Action, Message, Router};
+use crate::{Action, Message, Sequencer};
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, Wire};
@@ -12,7 +12,7 @@ type Errorable = Result<(), CanvasError>;
 pub struct Canvas {
     pub blocks: Vec<Block>,
     pub wires: Vec<Wire>,
-    pub router: Router,
+    pub seq: Sequencer,
 }
 
 impl Canvas {
@@ -20,7 +20,7 @@ impl Canvas {
         Canvas {
             blocks: vec![],
             wires: vec![],
-            router: Router::new(),
+            seq: Sequencer::new(),
         }
     }
 
@@ -30,7 +30,7 @@ impl Canvas {
 
     pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
         let id = self.block_id();
-        self.router.add_with_id(id);
+        self.seq.add_with_id(id);
         self.add_block_with_id(id, MachineBlock { machine_id: id })?;
 
         Ok(id)
@@ -47,7 +47,7 @@ impl Canvas {
         // Validate block data before adding them.
         match data {
             MachineBlock { machine_id } => {
-                ensure!(self.router.get(machine_id).is_some(), MachineNotFoundSnafu { id: machine_id });
+                ensure!(self.seq.get(machine_id).is_some(), MachineNotFoundSnafu { id: machine_id });
             }
             _ => {}
         }
@@ -98,8 +98,8 @@ impl Canvas {
             self.tick_block(id)?
         }
 
-        if !self.router.is_halted() {
-            self.router.step().map_err(|cause| MachineError { cause })?;
+        if !self.seq.is_halted() {
+            self.seq.step().map_err(|cause| MachineError { cause })?;
         }
 
         Ok(())
@@ -141,10 +141,10 @@ impl Canvas {
 
     /// Run every machine until all halts.
     pub fn run(&mut self) -> Errorable {
-        self.router.ready();
+        self.seq.ready();
 
         for _ in 1..1000 {
-            if self.router.is_halted() { break; }
+            if self.seq.is_halted() { break; }
             self.tick()?;
         }
 
@@ -156,7 +156,7 @@ impl Canvas {
     fn route_messages(&mut self) -> Errorable {
         // Collect the messages from the blocks and the machines.
         let mut messages = self.consume_messages();
-        messages.extend(self.router.consume_messages());
+        messages.extend(self.seq.consume_messages());
 
         for message in messages {
             let recipient_id = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
@@ -165,7 +165,7 @@ impl Canvas {
                 match block.data {
                     // Send the message directly to the machine.
                     MachineBlock { machine_id } => {
-                        if let Some(m) = self.router.get_mut(machine_id) {
+                        if let Some(m) = self.seq.get_mut(machine_id) {
                             m.inbox.push(message);
                         }
                     }
@@ -183,6 +183,6 @@ impl Canvas {
     }
 
     pub fn load_program(&mut self, id: u16, source: &str) -> Errorable {
-        self.router.load(id, source).map_err(|cause| MachineError { cause })
+        self.seq.load(id, source).map_err(|cause| MachineError { cause })
     }
 }

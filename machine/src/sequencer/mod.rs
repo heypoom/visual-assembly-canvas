@@ -1,5 +1,5 @@
 pub mod status;
-pub mod router_error;
+pub mod seq_error;
 
 use std::collections::HashMap;
 use crate::{Actor, Event, Execute, Machine, Message, Parser};
@@ -7,15 +7,15 @@ use crate::{Actor, Event, Execute, Machine, Message, Parser};
 use status::MachineStatus;
 use status::MachineStatus::{Awaiting, Halted, Running};
 
-pub use router_error::RouterError::*;
-pub use router_error::RouterError;
+pub use seq_error::SequencerError::*;
+pub use seq_error::SequencerError;
 use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready};
 
-type Errorable = Result<(), RouterError>;
+type Errorable = Result<(), SequencerError>;
 type Statuses = HashMap<u16, MachineStatus>;
 
 #[derive(Debug, Clone)]
-pub struct Router {
+pub struct Sequencer {
     pub machines: Vec<Machine>,
 
     /// Stores the statuses of the machine.
@@ -26,9 +26,9 @@ pub struct Router {
     peers_halted: bool,
 }
 
-impl Router {
-    pub fn new() -> Router {
-        Router {
+impl Sequencer {
+    pub fn new() -> Sequencer {
+        Sequencer {
             machines: vec![],
             statuses: HashMap::new(),
             peers_halted: false,
