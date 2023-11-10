@@ -88,14 +88,14 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
 
                 <TextField.Input
                   placeholder="8"
-                  value={columns}
+                  value={columns === 0 ? "" : columns.toString()}
                   size="1"
                   min={2}
                   max={16}
                   className="!w-[70px]"
                   onChange={(e) => {
                     const value = parseInt(e.target.value)
-                    if (value > 16 || isNaN(value)) return
+                    if (isNaN(value)) return update({ columns: 0 })
 
                     update({ columns: value })
                   }}
