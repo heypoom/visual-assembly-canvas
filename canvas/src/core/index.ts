@@ -12,7 +12,12 @@ import {
 
 import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 
-import { ErrorKeys, MachineError, MachineStatus } from "../types/MachineState"
+import {
+  ErrorKeys,
+  MachineError,
+  MachineStatus,
+  OuterMachineError,
+} from "../types/MachineState"
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 import { isMachineNode } from "../canvas/blocks/is"
@@ -64,6 +69,8 @@ export class CanvasManager {
       this.highlightMaps.set(id, getSourceHighlightMap(source))
       this.invalidate()
     } catch (error) {
+      console.log("syntax error ->", error)
+
       this.setSyntaxError(id, error)
     }
   }
@@ -135,10 +142,17 @@ export class CanvasManager {
 
     try {
       this.ctx?.step()
-    } catch (error) {
+    } catch (_err) {
+      const error = (_err as OuterMachineError)?.MachineError?.cause
+
       // Determine the runtime error type and report them.
-      this.detectError(error, "ExecutionFailed")
-      this.detectError(error, "MessageNeverReceived")
+      if (error) {
+        this.detectError(error, "ExecutionFailed")
+        this.detectError(error, "MessageNeverReceived")
+        return
+      }
+
+      console.warn(`Runtime error:`, error)
     }
 
     // Synchronize the machine state with the store.

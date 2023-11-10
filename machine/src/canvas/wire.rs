@@ -1,12 +1,16 @@
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::wasm_bindgen;
 
+#[wasm_bindgen]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, Copy)]
 pub struct Port {
     pub block: u16,
     pub port: u16,
 }
 
+#[wasm_bindgen]
 impl Port {
+    #[wasm_bindgen(constructor)]
     pub fn new(block: u16, port: u16) -> Port {
         Port { block, port }
     }

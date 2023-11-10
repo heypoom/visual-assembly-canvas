@@ -21,6 +21,8 @@ type ExecutionFailed = { ExecutionFailed: { id: number; error: unknown } }
 type ExecutionCycleExceeded = { ExecutionCycleExceeded: { id: number } }
 type MessageNeverReceived = { MessageNeverReceived: { id: number } }
 
+export type OuterMachineError = { MachineError: { cause: MachineError } }
+
 // Type exported by wasm-bindgen. Wish it would've been a discriminated union instead!
 export type MachineError =
   | CannotParse

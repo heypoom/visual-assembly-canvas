@@ -10,7 +10,8 @@ export function MachineBlockView(props: NodeProps<MachineBlock>) {
 
   return (
     <div className="font-mono bg-slate-1">
-      <Handle type="source" position={Position.Left} id="ls" />
+      <Handle type="target" position={Position.Left} id="T1" />
+      <Handle type="target" position={Position.Left} id="T2 " />
 
       <div className="px-3 py-3 border rounded-2">
         <div className="flex flex-col space-y-2 text-gray-50">
@@ -24,7 +25,8 @@ export function MachineBlockView(props: NodeProps<MachineBlock>) {
         </div>
       </div>
 
-      <Handle type="target" position={Position.Right} id="rt" />
+      <Handle type="source" position={Position.Right} id="S1" />
+      <Handle type="source" position={Position.Right} id="S2" />
     </div>
   )
 }

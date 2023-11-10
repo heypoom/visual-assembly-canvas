@@ -1,6 +1,7 @@
 use machine::Register::{FP, PC, SP};
 use machine::{Event, Message};
 use machine::canvas::{Canvas, CanvasError};
+use machine::canvas::wire::Port;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
@@ -76,6 +77,10 @@ impl Controller {
 
     pub fn add_machine_with_id(&mut self, id: u16) -> Return {
         returns(self.canvas.add_machine_with_id(id))
+    }
+
+    pub fn connect(&mut self, from: Port, to: Port) -> Result<u16, JsValue> {
+        return_raw(self.canvas.connect(from, to))
     }
 
     pub fn load(&mut self, id: u16, source: &str) -> Return {
