@@ -25,13 +25,10 @@ mod canvas_tests {
     }
 
     #[test]
-    fn test_pixel_block_receive_message() -> Errorable {
+    fn test_push_message_to_pixel_block() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
         c.add_block(PixelBlock { pixels: vec![] })?;
-
-        // connect machine block to pixel block.
-        c.connect(port(0, 0), port(1, 0))?;
 
         // push message from machine block to pixel block.
         c.push_message(Message {
