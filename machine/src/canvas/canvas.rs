@@ -36,10 +36,16 @@ impl Canvas {
 
     pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
         let id = self.block_id();
+        self.add_machine_with_id(id)?;
+
+        Ok(id)
+    }
+
+    pub fn add_machine_with_id(&mut self, id: u16) -> Errorable {
         self.seq.add(id);
         self.add_block_with_id(id, MachineBlock { machine_id: id })?;
 
-        Ok(id)
+        Ok(())
     }
 
     pub fn add_block(&mut self, data: BlockData) -> Result<u16, CanvasError> {
