@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod machine_communcation_test {
+mod machine_communication_tests {
     use machine::MessageNeverReceived;
     use machine::canvas::{Canvas, CanvasError, CanvasError::MachineError};
     use machine::canvas::wire::port;
