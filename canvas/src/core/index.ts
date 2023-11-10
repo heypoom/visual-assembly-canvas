@@ -22,6 +22,7 @@ import {
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 import { isMachineNode } from "../canvas/blocks/is"
+import { c } from "vitest/dist/reporters-5f784f42.js"
 
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
@@ -147,8 +148,8 @@ export class CanvasManager {
 
     try {
       this.ctx?.step()
-    } catch (erorr) {
-      this.detectCanvasError(erorr)
+    } catch (error) {
+      this.detectCanvasError(error)
     }
 
     // Synchronize the machine state with the store.
@@ -166,18 +167,20 @@ export class CanvasManager {
 
     if (canvasErrors.disconnectedPort(e)) {
       const id = e.DisconnectedPort.port?.block
-
       setError(id, e)
+      return
     }
 
     if (canvasErrors.machineError(e)) {
       const { cause } = e.MachineError
 
-      if ("id" in cause) {
-        const id = cause.id as number
-        if (id) setError(id, e)
-      }
+      const inner = Object.values(cause)[0]
+      if (inner?.id) setError(inner.id, e)
+
+      return
     }
+
+    console.error("Unhandled canvas error:", error)
   }
 
   highlightCurrent() {
