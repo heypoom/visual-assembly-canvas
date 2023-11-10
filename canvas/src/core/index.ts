@@ -21,11 +21,16 @@ import {
 
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
-import { isMachineNode } from "../canvas/blocks/is"
+import { isMachineNode, isPixelNode } from "../canvas/blocks/is"
 
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
-    const node = nodes[id]
+    const node = nodes.find((n) => n.data.id === id)
+
+    if (!node) {
+      console.error(`node not found in node ${id} when setting source.`)
+      return
+    }
 
     if (isMachineNode(node)) node.data.source = source
   })
@@ -116,6 +121,9 @@ export class CanvasManager {
       cycle++
     }
 
+    // extra step to let the blocks tick
+    this.step({ batch: true })
+
     this.invalidate()
     $status.setKey("running", false)
 
@@ -157,8 +165,36 @@ export class CanvasManager {
     // Highlight the current line.
     if (!config.batch || this.delayMs > 0) this.highlightCurrent()
 
+    this.updateBlocks()
+
     // If running in steps, we should reset the machine once it halts.
     if (!config.batch && this.isHalted) this.reloadAll()
+  }
+
+  updateBlocks() {
+    // TODO: optimize data transfer. only get the "data" field, not the full block.
+    const blocks = this.ctx?.get_blocks()
+
+    for (const block of blocks) {
+      const next = produce($nodes.get(), (nodes) => {
+        const node = nodes.find((n) => n.data.id === block.id)
+
+        if (!node) {
+          console.error(`node not found for block "${block.id}" when updating.`)
+          return
+        }
+
+        // Update the pixels.
+        if (isPixelNode(node)) {
+          const { pixels } = block.data.PixelBlock
+          node.data.pixels = pixels
+
+          console.log("ok - node data updated!", pixels)
+        }
+      })
+
+      $nodes.set(next)
+    }
   }
 
   detectCanvasError(error: unknown) {

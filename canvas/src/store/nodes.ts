@@ -43,13 +43,19 @@ export const onEdgesChange = (changes: EdgeChange[]) => {
 
   for (const change of changes) {
     if (change.type === "remove") {
-      const edge = edges.find((e) => e.id === change.id)
-      if (!edge) continue
+      const e = edges.find((e) => e.id === change.id)
+
+      if (!e || !e.sourceHandle || !e.targetHandle) {
+        console.warn("cannot remove node", change)
+        continue
+      }
 
       try {
-        // TODO: map handle to port ids -> edge.sourceHandle, edge.targetHandle
-        manager.ctx?.disconnect(port(edge.source, "0"), port(edge.target, "0"))
-        console.log("port disconnected:", edge)
+        const source = port(e.source, e.sourceHandle)
+        const target = port(e.target, e.targetHandle)
+
+        manager.ctx?.disconnect(source, target)
+        console.log("port disconnected:", e)
       } catch (err) {
         console.warn("cannot disconnect edge!")
       }
@@ -59,13 +65,17 @@ export const onEdgesChange = (changes: EdgeChange[]) => {
   $edges.set(applyEdgeChanges(changes, edges))
 }
 
-export const onConnect = (conn: Connection) => {
-  console.log("on connect...", conn)
-  if (!conn.source || !conn.target) return
+export const onConnect = (c: Connection) => {
+  console.log("on connect...", c)
+  if (!c.source || !c.target || !c.sourceHandle || !c.targetHandle) {
+    console.warn("cannot connect as source or target is null!")
+    return
+  }
 
-  // TODO: map handle to port ids -> conn.sourceHandle, conn.targetHandle
-  manager.ctx?.connect(port(conn.source, "0"), port(conn.target, "0"))
-  $edges.set(addEdge(conn, $edges.get()))
+  const source = port(c.source, c.sourceHandle)
+  const target = port(c.target, c.targetHandle)
+  manager.ctx?.connect(source, target)
+  $edges.set(addEdge(c, $edges.get()))
 }
 
 export function addNode(node: BlockNode) {
