@@ -48,7 +48,7 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
 
       <div className="border-2 border-crimson-9 rounded-2 group relative">
         <div
-          className="absolute hidden group-hover:flex right-2 top-1 bg-gray-1 p-1 rounded-6 text-crimson-11"
+          className="absolute hidden group-hover:flex right-2 top-1 bg-gray-1 p-1 rounded-6 text-crimson-11 hover:bg-crimson-9 hover:text-gray-1"
           onClick={toggle}
         >
           {isSettings ? <EyeClosedIcon /> : <MixerHorizontalIcon />}
@@ -81,7 +81,6 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
                   placeholder="8"
                   value={columns}
                   size="1"
-                  type="number"
                   min={2}
                   max={16}
                   onChange={(e) => update({ columns: Number(e.target.value) })}
