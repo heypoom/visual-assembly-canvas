@@ -37,6 +37,8 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
     $nodes.set(next)
   }
 
+  const isDrawable = !!pixels && columns > 1
+
   return (
     <>
       <Handle
@@ -55,24 +57,31 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
         </div>
 
         <div>
+          {!isDrawable && (
+            <div className="px-4 py-3 font-mono text-1 text-crimson-10">
+              Columns must be more than 1!
+            </div>
+          )}
+
           <div
             className="grid"
             style={{
-              gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+              gridTemplateColumns: `repeat(${columns}, minmax(0, 20px))`,
             }}
           >
-            {pixels?.map((pixel, i) => (
-              <div
-                key={i}
-                className="p-2"
-                style={{ background: getPixelColor(pixel, palette) }}
-              />
-            ))}
+            {isDrawable &&
+              pixels?.map((pixel, i) => (
+                <div
+                  key={i}
+                  className="w-5 h-5"
+                  style={{ background: getPixelColor(pixel, palette) }}
+                />
+              ))}
           </div>
         </div>
 
         {isSettings && (
-          <div className="flex flex-col font-mono">
+          <div className="flex flex-col font-mono bg-gray-1">
             <div className="flex flex-col max-w-[160px] gap-y-3 px-3 py-3">
               <div className="flex items-center gap-4">
                 <p className="text-1">Columns</p>
@@ -83,8 +92,13 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
                   size="1"
                   min={2}
                   max={16}
-                  onChange={(e) => update({ columns: Number(e.target.value) })}
                   className="!w-[70px]"
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value)
+                    if (value > 16 || isNaN(value)) return
+
+                    update({ columns: value })
+                  }}
                 />
               </div>
 
