@@ -5,7 +5,11 @@ import { Handle, NodeProps, Position } from "reactflow"
 import { PaletteKey, getPixelColor, palettes } from "./palette"
 
 import { PixelBlock } from "../../../types/blocks"
-import { Cross2Icon, EyeClosedIcon } from "@radix-ui/react-icons"
+import {
+  Cross2Icon,
+  EyeClosedIcon,
+  MixerHorizontalIcon,
+} from "@radix-ui/react-icons"
 import { $nodes } from "../../../store/nodes"
 import { produce } from "immer"
 import { isPixelNode } from ".."
@@ -18,8 +22,6 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
 
   const pixels =
     data.pixels?.length > 0 ? data.pixels : [...Array(columns * 5)].fill(0)
-
-  const isDisplay = !isSettings
 
   function update(input: Partial<PixelBlock>) {
     const next = produce($nodes.get(), (nodes) => {
@@ -44,8 +46,15 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
         className="bg-crimson-9 hover:bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
       ></Handle>
 
-      <div className="border-2 border-crimson-9 rounded-2">
-        <div onClick={toggle}>
+      <div className="border-2 border-crimson-9 rounded-2 group relative">
+        <div
+          className="absolute hidden group-hover:flex right-2 top-1 bg-gray-1 p-1 rounded-6 text-crimson-11"
+          onClick={toggle}
+        >
+          {isSettings ? <EyeClosedIcon /> : <MixerHorizontalIcon />}
+        </div>
+
+        <div>
           <div
             className="grid"
             style={{
@@ -63,12 +72,8 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
         </div>
 
         {isSettings && (
-          <div className="flex flex-col font-mono relative">
-            <div className="absolute right-2 top-2 text-crimson-9 hover:text-crimson-11">
-              <Cross2Icon onClick={toggle} />
-            </div>
-
-            <div className="flex flex-col max-w-[160px] gap-y-3 px-3 py-3 pt-8">
+          <div className="flex flex-col font-mono">
+            <div className="flex flex-col max-w-[160px] gap-y-3 px-3 py-3">
               <div className="flex items-center gap-4">
                 <p className="text-1">Columns</p>
 
