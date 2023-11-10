@@ -1,7 +1,8 @@
+use machine::canvas::block::BlockData;
+use machine::canvas::wire::Port;
+use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};
 use machine::{Event, Message};
-use machine::canvas::{Canvas, CanvasError};
-use machine::canvas::wire::Port;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
@@ -57,6 +58,12 @@ impl Controller {
 
     pub fn get_blocks(&self) -> Return {
         Ok(to_value(&self.canvas.blocks)?)
+    }
+
+    pub fn get_blocks_data(&self) -> Return {
+        let blocks_data: Vec<BlockData> = self.canvas.blocks.iter().map(|b| b.data.clone()).collect();
+
+        Ok(to_value(&blocks_data)?)
     }
 
     pub fn get_wires(&self) -> Return {
