@@ -134,8 +134,9 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn port_target(&self, port: Port) -> Option<u16> {
-        Some(self.wires.iter().find(|w| w.source == port)?.target.block)
+    // TODO: improve bi-directional connection resolution.
+    pub fn resolve_port(&self, port: Port) -> Option<u16> {
+        Some(self.wires.iter().find(|w| w.source == port || w.target == port)?.target.block)
     }
 
     /// Run every machine until all halts.
@@ -158,7 +159,7 @@ impl Canvas {
         messages.extend(self.router.consume_messages());
 
         for message in messages {
-            let recipient_id = self.port_target(message.port).ok_or(DisconnectedPort { port: message.port })?;
+            let recipient_id = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
 
             if let Ok(block) = self.mut_block(recipient_id) {
                 match block.data {
