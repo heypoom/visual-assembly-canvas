@@ -166,8 +166,8 @@ impl Canvas {
     }
 
     // TODO: improve bi-directional connection resolution.
-    pub fn resolve_port(&self, port: Port) -> Option<u16> {
-        Some(self.wires.iter().find(|w| w.source == port || w.target == port)?.target.block)
+    pub fn resolve_port(&self, port: Port) -> Option<Vec<u16>> {
+        Some(self.wires.iter().filter(|w| w.source == port || w.target == port).map(|w| w.target.block).collect())
     }
 
     /// Run every machine until all halts.
@@ -190,18 +190,22 @@ impl Canvas {
         messages.extend(self.seq.consume_messages());
 
         for message in messages {
-            let recipient_id = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
+            // There might be more than one destination machine connected to a port.
+            let recipients = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
 
-            if let Ok(block) = self.mut_block(recipient_id) {
-                match block.data {
-                    // Send the message directly to the machine.
-                    MachineBlock { machine_id } => {
-                        if let Some(m) = self.seq.get_mut(machine_id) {
-                            m.inbox.push(message);
+            // We submit different messages to each machines.
+            for recipient_id in recipients {
+                if let Ok(block) = self.mut_block(recipient_id) {
+                    match block.data {
+                        // Send the message directly to the machine.
+                        MachineBlock { machine_id } => {
+                            if let Some(m) = self.seq.get_mut(machine_id) {
+                                m.inbox.push(message.clone());
+                            }
                         }
-                    }
 
-                    _ => block.inbox.push(message)
+                        _ => block.inbox.push(message.clone())
+                    }
                 }
             }
         }
