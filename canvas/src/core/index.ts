@@ -21,7 +21,7 @@ import {
 
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
-import { isMachineNode, isPixelNode } from "../canvas/blocks/is"
+import { isMachineNode, isPixelNode } from "../canvas/blocks/utils/is"
 
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
@@ -188,8 +188,6 @@ export class CanvasManager {
         if (isPixelNode(node)) {
           const { pixels } = block.data.PixelBlock
           node.data.pixels = pixels
-
-          console.log("ok - node data updated!", pixels)
         }
       })
 

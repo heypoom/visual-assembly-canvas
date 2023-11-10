@@ -1,7 +1,7 @@
 import { manager } from "../core"
 import { BlockNode } from "../types/Node"
 
-import { isMachineNode } from "../canvas/blocks/is"
+import { isMachineNode } from "../canvas/blocks/utils/is"
 
 export function loadFromNodes(nodes: BlockNode[]) {
   for (const node of nodes) {
