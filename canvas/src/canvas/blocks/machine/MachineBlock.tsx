@@ -2,10 +2,10 @@ import { Handle, Position, NodeProps } from "reactflow"
 
 import { MachineValueViewer } from "./MachineValueViewer"
 
-import { Machine } from "../../../types/Machine"
+import { MachineBlock } from "../../../types/blocks"
 import { MachineEditor } from "../../../editor/Editor"
 
-export function MachineBlock(props: NodeProps<Machine>) {
+export function MachineBlockView(props: NodeProps<MachineBlock>) {
   const { data } = props
 
   return (

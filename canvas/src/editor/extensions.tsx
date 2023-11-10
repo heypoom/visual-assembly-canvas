@@ -2,12 +2,12 @@ import { Extension, keymap } from "@uiw/react-codemirror"
 
 import { vasmLanguage } from "./syntax"
 
-import { Machine } from "../types/Machine"
+import { MachineBlock } from "../types/blocks"
 import { manager } from "../machine/index"
 import { EditorConfig } from "../store/editor"
 import { lineHighlighter } from "./highlight"
 
-export function getExtensions(m: Machine, config: EditorConfig) {
+export function getExtensions(m: MachineBlock, config: EditorConfig) {
   const keymaps = keymap.of([
     {
       key: "Enter",

@@ -3,7 +3,7 @@ import setup, { Controller } from "machine-wasm"
 
 import { $nodes, addNode } from "../store/nodes"
 
-import { Machine } from "../types/Machine"
+import { MachineBlock } from "../types/blocks"
 import { BlockNode } from "../types/Node"
 
 import {
@@ -18,6 +18,7 @@ import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
 import { ErrorKeys, MachineError, MachineStatus } from "../types/MachineState"
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
+import { isMachineNode } from "../canvas/blocks/is"
 
 const rand = () => Math.floor(Math.random() * 500)
 
@@ -27,7 +28,7 @@ export function addMachine() {
   const id = manager.ctx?.add_machine()
   if (typeof id !== "number") return
 
-  const machine: Machine = { id, source: DEFAULT_SOURCE }
+  const machine: MachineBlock = { id, source: DEFAULT_SOURCE }
   manager.load(id, machine.source)
 
   const node: BlockNode = {
@@ -42,7 +43,9 @@ export function addMachine() {
 
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
-    nodes[id].data.source = source
+    const node = nodes[id]
+
+    if (isMachineNode(node)) node.data.source = source
   })
 
   $nodes.set(nodes)

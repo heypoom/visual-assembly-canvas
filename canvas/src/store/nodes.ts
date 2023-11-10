@@ -1,4 +1,4 @@
-import { persistentAtom as atom } from "@nanostores/persistent"
+import { atom } from "nanostores"
 
 import {
   Edge,
@@ -11,25 +11,10 @@ import {
 } from "reactflow"
 
 import { BlockNode } from "../types/Node"
-import { loadMachinesFromNodes } from "./persist"
 
-// Serializer
-const S = {
-  encode: JSON.stringify,
-  decode: JSON.parse,
-}
+export const $nodes = atom<BlockNode[]>([])
 
-export const $nodes = atom<BlockNode[]>("nodes", [], {
-  ...S,
-  decode(s) {
-    const nodes = JSON.parse(s) as BlockNode[]
-    loadMachinesFromNodes(nodes)
-
-    return nodes
-  },
-})
-
-export const $edges = atom<Edge[]>("edges", [], S)
+export const $edges = atom<Edge[]>([])
 
 export const onNodesChange = (changes: NodeChange[]) =>
   $nodes.set(applyNodeChanges(changes, $nodes.get()))
