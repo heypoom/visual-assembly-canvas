@@ -8,6 +8,7 @@ pub mod sequencer;
 pub mod cli;
 pub mod test_helper;
 pub mod canvas;
+pub mod rewind;
 
 pub use op::*;
 pub use machine::*;
