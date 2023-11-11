@@ -12,7 +12,9 @@ export interface PixelBlock extends BaseBlock {
   append?: boolean
 }
 
-export interface TapBlock extends BaseBlock {}
+export interface TapBlock extends BaseBlock {
+  signal?: number[]
+}
 
 export interface MachineBlock extends BaseBlock {
   // Current source code of the machine.

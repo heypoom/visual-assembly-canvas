@@ -30,7 +30,7 @@ export function addBlock<T extends BlockTypes>(type: T) {
       const id = manager.ctx?.add_block({ TapBlock: {} })
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "tap", { id })
+      addCanvasNode(id, "tap", { id, signal: [1] })
       return
     }
   }
