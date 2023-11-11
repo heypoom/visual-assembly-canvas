@@ -1,6 +1,6 @@
 import { produce } from "immer"
 import { useReducer } from "react"
-import { Select, TextField } from "@radix-ui/themes"
+import { Checkbox, Select, TextField } from "@radix-ui/themes"
 import { Handle, NodeProps, Position } from "reactflow"
 import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
@@ -10,6 +10,7 @@ import { isPixelNode } from ".."
 
 import { PixelBlock } from "../../../types/blocks"
 import { $nodes } from "../../../store/nodes"
+import { manager } from "../../../core"
 
 export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const { data } = props
@@ -28,6 +29,12 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
       // Update the pixels.
       if (isPixelNode(node)) {
         node.data = { ...node.data, ...input }
+      }
+
+      if (typeof input.append === "boolean") {
+        manager.ctx?.update_block(data.id, {
+          PixelBlock: { pixels: data.pixels, append: input.append },
+        })
       }
     })
 
@@ -117,6 +124,15 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
                     ))}
                   </Select.Content>
                 </Select.Root>
+              </div>
+
+              <div className="flex items-center gap-4 w-full">
+                <p className="text-1">Append?</p>
+
+                <Checkbox
+                  checked={data.append ?? false}
+                  onCheckedChange={(s) => update({ append: s === true })}
+                />
               </div>
             </div>
           </div>

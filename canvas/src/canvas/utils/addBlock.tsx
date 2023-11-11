@@ -16,7 +16,10 @@ export function addBlock<T extends BlockTypes>(type: T) {
     }
 
     case "pixel": {
-      const id = manager.ctx?.add_block({ PixelBlock: { pixels: [] } })
+      const id = manager.ctx?.add_block({
+        PixelBlock: { pixels: [], append: false },
+      })
+
       if (typeof id !== "number") return
 
       addCanvasNode(id, "pixel", { id, pixels: [] })

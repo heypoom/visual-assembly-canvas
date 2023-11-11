@@ -170,14 +170,34 @@ impl Canvas {
 
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let PixelBlock { pixels } = &mut block.data else { return Ok(()); };
+        let PixelBlock { pixels, append } = &mut block.data else { return Ok(()); };
 
         for message in messages {
             match message.action {
                 // The "data" action is used to directly set the pixel data.
                 Action::Data { body } => {
-                    pixels.clear();
-                    pixels.extend(&body);
+                    let is_append = *append;
+
+                    // Clear the pixels if it is not append-only.
+                    if !is_append {
+                        pixels.clear();
+                        pixels.extend(&body);
+                        continue;
+                    }
+
+                    // Use the zero byte to remove pixels.
+                    if is_append {
+                        for byte in body {
+                            if byte == 0 {
+                                if !pixels.is_empty() {
+                                    pixels.pop();
+                                }
+                                continue;
+                            }
+
+                            pixels.push(byte);
+                        }
+                    }
                 }
             }
         }
@@ -244,6 +264,13 @@ impl Canvas {
                 }
             }
         }
+
+        Ok(())
+    }
+
+    pub fn update_block(&mut self, id: u16, data: BlockData) -> Errorable {
+        let block = self.mut_block(id)?;
+        block.data = data;
 
         Ok(())
     }

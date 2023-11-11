@@ -19,7 +19,8 @@ pub enum BlockData {
     },
 
     PixelBlock {
-        pixels: Vec<u16>
+        pixels: Vec<u16>,
+        append: bool,
     },
 
     TapBlock {},

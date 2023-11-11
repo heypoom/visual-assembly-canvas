@@ -9,6 +9,7 @@ export interface PixelBlock extends BaseBlock {
   pixels: number[]
   columns?: number
   palette?: PaletteKey
+  append?: boolean
 }
 
 export interface TapBlock extends BaseBlock {}

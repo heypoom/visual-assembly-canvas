@@ -158,6 +158,10 @@ impl Controller {
     pub fn send_message(&mut self, message: JsValue) -> Return {
         returns(self.canvas.send_message(from_value(message)?))
     }
+
+    pub fn update_block(&mut self, id: u16, data: JsValue) -> Return {
+        returns(self.canvas.update_block(id, from_value(data)?))
+    }
 }
 
 #[cfg(test)]
