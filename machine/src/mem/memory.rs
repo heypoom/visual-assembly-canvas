@@ -3,7 +3,7 @@ use crate::{compile_to_bytecode, Symbols, Op, CALL_STACK_START, CODE_START, MEMO
 /**
  * Memory defines a fixed-size memory area for the program.
  */
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Memory {
     pub buffer: [u16; MEMORY_SIZE as usize],
 }

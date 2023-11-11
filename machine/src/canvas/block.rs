@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use crate::{Event, Message};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {
     pub id: u16,
 

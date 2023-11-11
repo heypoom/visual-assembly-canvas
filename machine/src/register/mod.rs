@@ -6,7 +6,7 @@ use crate::{CALL_STACK_START, STACK_START};
 
 const REG_COUNT: usize = 0xF;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Registers {
     pub buffer: [u16; REG_COUNT],
 }
