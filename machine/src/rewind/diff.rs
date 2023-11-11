@@ -1,12 +1,12 @@
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub struct Patch {
+pub struct Patch<T> {
     index: usize,
-    from: Option<u16>,
-    to: Option<u16>,
+    from: Option<T>,
+    to: Option<T>,
 }
 
-pub fn diff_u16_vec(a: &[u16], b: &[u16]) -> Vec<Patch> {
-    let mut patches = vec![];
+pub fn diff_slice<T: PartialEq + Copy>(a: &[T], b: &[T]) -> Vec<Patch<T>> {
+    let mut patches: Vec<Patch<T>> = vec![];
 
     let max_len = a.len().max(b.len());
 
@@ -24,17 +24,17 @@ pub fn diff_u16_vec(a: &[u16], b: &[u16]) -> Vec<Patch> {
 
 #[cfg(test)]
 mod diff_tests {
-    use crate::rewind::diff::{diff_u16_vec, Patch};
+    use crate::rewind::diff::{diff_slice, Patch};
 
     #[test]
     fn diff_test() {
-        let patches = diff_u16_vec(&[0, 0, 1, 2, 0, 0, 0, 3, 4], &[0, 0, 1, 2, 0, 0, 0, 3, 8]);
+        let patches = diff_slice(&[0, 0, 1, 2, 0, 0, 0, 3, 4], &[0, 0, 1, 2, 0, 0, 0, 3, 8]);
         assert_eq!(patches[0], Patch { index: 8, from: Some(4), to: Some(8) });
 
-        let patches = diff_u16_vec(&[1], &[1, 2]);
+        let patches = diff_slice(&[1], &[1, 2]);
         assert_eq!(patches[0], Patch { index: 1, from: None, to: Some(2) });
 
-        let patches = diff_u16_vec(&[1, 2], &[1]);
+        let patches = diff_slice(&[1, 2], &[1]);
         assert_eq!(patches[0], Patch { index: 1, from: Some(2), to: None });
     }
 }
