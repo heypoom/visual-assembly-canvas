@@ -16,7 +16,8 @@ pub struct CanvasSnapshot {
 #[derive(Debug, Clone)]
 pub struct MemoryPatch {
     pub machine_id: u16,
-    pub patch: Vec<Patch<u16>>,
+    pub memory: Vec<Patch<u16>>,
+    pub register: Vec<Patch<u16>>,
 }
 
 #[derive(Debug, Clone)]
@@ -36,12 +37,14 @@ impl Rewind {
 
             for curr in &canvas.seq.machines {
                 if let Some(prev) = previous.seq.machines.iter().find(|m| m.id == curr.id) {
-                    let patch = diff_slice(&prev.mem.buffer, &curr.mem.buffer);
+                    let memory = diff_slice(&prev.mem.buffer, &curr.mem.buffer);
+                    let register = diff_slice(&prev.reg.buffer, &curr.reg.buffer);
 
-                    if !patch.is_empty() {
+                    if !memory.is_empty() || !register.is_empty() {
                         memories.push(MemoryPatch {
                             machine_id: curr.id.unwrap_or(0),
-                            patch,
+                            register,
+                            memory,
                         });
                     }
                 }
@@ -90,6 +93,8 @@ mod rewind_tests {
 
         c.add_machine()?;
         r.save(&c);
+
+        // println!("{:?}", r.snapshots);
 
         Ok(())
     }
