@@ -4,6 +4,7 @@ use diff::{Patch, diff_slice};
 use crate::canvas::block::Block;
 use crate::canvas::Canvas;
 use crate::canvas::wire::Wire;
+use crate::{Event, Message};
 
 /// Stores the diff patches for the canvas.
 #[derive(Debug, Clone)]
@@ -11,6 +12,7 @@ pub struct CanvasSnapshot {
     pub blocks: Vec<Patch<Block>>,
     pub wires: Vec<Patch<Wire>>,
     pub memories: Vec<MemoryPatch>,
+    pub mailboxes: Vec<MailboxPatch>,
 }
 
 #[derive(Debug, Clone)]
@@ -18,6 +20,15 @@ pub struct MemoryPatch {
     pub machine_id: u16,
     pub memory: Vec<Patch<u16>>,
     pub register: Vec<Patch<u16>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct MailboxPatch {
+    pub id: u16,
+    pub is_machine: bool,
+    pub inbox: Vec<Patch<Message>>,
+    pub outbox: Vec<Patch<Message>>,
+    pub events: Vec<Patch<Event>>,
 }
 
 #[derive(Debug, Clone)]
@@ -34,17 +45,34 @@ impl Rewind {
     pub fn save(&mut self, canvas: &Canvas) {
         if let Some(previous) = &self.previous {
             let mut memories: Vec<MemoryPatch> = vec![];
+            let mut mailboxes: Vec<MailboxPatch> = vec![];
 
             for curr in &canvas.seq.machines {
                 if let Some(prev) = previous.seq.machines.iter().find(|m| m.id == curr.id) {
+                    let id = curr.id.unwrap_or(0);
+
                     let memory = diff_slice(&prev.mem.buffer, &curr.mem.buffer);
                     let register = diff_slice(&prev.reg.buffer, &curr.reg.buffer);
 
+                    let inbox = diff_slice(&prev.inbox, &curr.inbox);
+                    let outbox = diff_slice(&prev.outbox, &curr.outbox);
+                    let events = diff_slice(&prev.events, &curr.events);
+
                     if !memory.is_empty() || !register.is_empty() {
                         memories.push(MemoryPatch {
-                            machine_id: curr.id.unwrap_or(0),
+                            machine_id: id,
                             register,
                             memory,
+                        });
+                    }
+
+                    if !inbox.is_empty() || !outbox.is_empty() || !events.is_empty() {
+                        mailboxes.push(MailboxPatch {
+                            id,
+                            inbox,
+                            outbox,
+                            events,
+                            is_machine: true,
                         });
                     }
                 }
@@ -54,6 +82,7 @@ impl Rewind {
                 blocks: diff_slice(&previous.blocks, &canvas.blocks),
                 wires: diff_slice(&previous.wires, &canvas.wires),
                 memories,
+                mailboxes,
             };
 
             self.snapshots.push(snapshot);
