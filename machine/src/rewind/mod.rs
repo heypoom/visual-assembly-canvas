@@ -90,6 +90,10 @@ impl Rewind {
 
         self.previous = Some(canvas.clone());
     }
+
+    pub fn apply(&self, _target: &Canvas, _snapshot: &CanvasSnapshot) {
+        todo!("apply snapshot to canvas")
+    }
 }
 
 #[cfg(test)]
