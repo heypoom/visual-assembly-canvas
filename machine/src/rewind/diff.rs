@@ -5,14 +5,14 @@ pub struct Patch<T> {
     to: Option<T>,
 }
 
-pub fn diff_slice<T: PartialEq + Copy>(a: &[T], b: &[T]) -> Vec<Patch<T>> {
+pub fn diff_slice<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<Patch<T>> {
     let mut patches: Vec<Patch<T>> = vec![];
 
     let max_len = a.len().max(b.len());
 
     for index in 0..max_len {
-        let from = a.get(index).map(|e| e.to_owned());
-        let to = b.get(index).map(|e| e.to_owned());
+        let from = a.get(index).map(|e| e.clone());
+        let to = b.get(index).map(|e| e.clone());
 
         if from == to { continue; }
 
