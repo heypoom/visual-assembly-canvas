@@ -161,8 +161,8 @@ impl Canvas {
         let messages = block.consume_messages();
 
         match &block.data {
-            MachineBlock { .. } => {}
-            PixelBlock { .. } => self.tick_pixel_block(id, messages)?
+            PixelBlock { .. } => self.tick_pixel_block(id, messages)?,
+            _ => {}
         }
 
         Ok(())
@@ -210,24 +210,7 @@ impl Canvas {
         messages.extend(self.seq.consume_messages());
 
         for message in messages {
-            // There might be more than one destination machine connected to a port.
-            let recipients = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
-
-            // We submit different messages to each machines.
-            for recipient_id in recipients {
-                if let Ok(block) = self.mut_block(recipient_id) {
-                    match block.data {
-                        // Send the message directly to the machine.
-                        MachineBlock { machine_id } => {
-                            if let Some(m) = self.seq.get_mut(machine_id) {
-                                m.inbox.push(message.clone());
-                            }
-                        }
-
-                        _ => block.inbox.push(message.clone())
-                    }
-                }
-            }
+            self.send_message(message)?;
         }
 
         Ok(())
@@ -239,5 +222,29 @@ impl Canvas {
 
     pub fn load_program(&mut self, id: u16, source: &str) -> Errorable {
         self.seq.load(id, source).map_err(|cause| MachineError { cause })
+    }
+
+    /// Sends the message to the destination port.
+    pub fn send_message(&mut self, message: Message) -> Errorable {
+        // There might be more than one destination machine connected to a port.
+        let recipients = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
+
+        // We submit different messages to each machines.
+        for recipient_id in recipients {
+            if let Ok(block) = self.mut_block(recipient_id) {
+                match block.data {
+                    // Send the message directly to the machine.
+                    MachineBlock { machine_id } => {
+                        if let Some(m) = self.seq.get_mut(machine_id) {
+                            m.inbox.push(message.clone());
+                        }
+                    }
+
+                    _ => block.inbox.push(message.clone())
+                }
+            }
+        }
+
+        Ok(())
     }
 }

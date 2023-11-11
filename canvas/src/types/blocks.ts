@@ -11,6 +11,8 @@ export interface PixelBlock extends BaseBlock {
   palette?: PaletteKey
 }
 
+export interface TapBlock extends BaseBlock {}
+
 export interface MachineBlock extends BaseBlock {
   // Current source code of the machine.
   source: string

@@ -22,5 +22,13 @@ export function addBlock<T extends BlockTypes>(type: T) {
       addCanvasNode(id, "pixel", { id, pixels: [] })
       return
     }
+
+    case "tap": {
+      const id = manager.ctx?.add_block({ TapBlock: {} })
+      if (typeof id !== "number") return
+
+      addCanvasNode(id, "tap", { id })
+      return
+    }
   }
 }

@@ -61,7 +61,8 @@ impl Controller {
     }
 
     pub fn get_blocks_data(&self) -> Return {
-        let blocks_data: Vec<BlockData> = self.canvas.blocks.iter().map(|b| b.data.clone()).collect();
+        let blocks_data: Vec<BlockData> =
+            self.canvas.blocks.iter().map(|b| b.data.clone()).collect();
 
         Ok(to_value(&blocks_data)?)
     }
@@ -152,6 +153,10 @@ impl Controller {
     /// Allows the frontend to consume events from the machine.
     pub fn consume_side_effects(&mut self, id: u16) -> Return {
         Ok(to_value(&self.canvas.seq.consume_side_effects(id))?)
+    }
+
+    pub fn send_message(&mut self, message: JsValue) -> Return {
+        returns(self.canvas.send_message(from_value(message)?))
     }
 }
 

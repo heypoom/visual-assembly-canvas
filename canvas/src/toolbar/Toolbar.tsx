@@ -23,9 +23,14 @@ export function Toolbar() {
         Machine
       </Button>
 
-      <Button onClick={() => addBlock("pixel")} variant="soft" color="crimson">
+      <Button onClick={() => addBlock("pixel")} variant="soft" color="orange">
         <PlusCircledIcon />
-        Block
+        Pixel
+      </Button>
+
+      <Button onClick={() => addBlock("tap")} variant="soft" color="orange">
+        <PlusCircledIcon />
+        Tap
       </Button>
 
       <Button

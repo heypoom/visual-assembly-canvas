@@ -21,6 +21,8 @@ pub enum BlockData {
     PixelBlock {
         pixels: Vec<u16>
     },
+
+    TapBlock {},
 }
 
 impl Block {
