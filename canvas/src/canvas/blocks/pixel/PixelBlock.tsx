@@ -1,18 +1,15 @@
+import { produce } from "immer"
 import { useReducer } from "react"
 import { Select, TextField } from "@radix-ui/themes"
 import { Handle, NodeProps, Position } from "reactflow"
+import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
 import { PaletteKey, getPixelColor, palettes } from "./palette"
 
-import { PixelBlock } from "../../../types/blocks"
-import {
-  Cross2Icon,
-  EyeClosedIcon,
-  MixerHorizontalIcon,
-} from "@radix-ui/react-icons"
-import { $nodes } from "../../../store/nodes"
-import { produce } from "immer"
 import { isPixelNode } from ".."
+
+import { PixelBlock } from "../../../types/blocks"
+import { $nodes } from "../../../store/nodes"
 
 export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const { data } = props
