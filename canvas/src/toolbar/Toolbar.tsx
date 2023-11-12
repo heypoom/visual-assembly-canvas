@@ -33,6 +33,16 @@ export function Toolbar() {
         Tap
       </Button>
 
+      <Button onClick={() => addBlock("osc")} variant="soft" color="orange">
+        <PlusCircledIcon />
+        Osc
+      </Button>
+
+      <Button onClick={() => addBlock("plotter")} variant="soft" color="orange">
+        <PlusCircledIcon />
+        Plot
+      </Button>
+
       <Button
         color="green"
         variant="soft"
@@ -56,6 +66,15 @@ export function Toolbar() {
       </Button>
 
       <SetDelayButton />
+
+      <Button
+        color="gray"
+        variant="soft"
+        className="font-semibold"
+        onClick={() => manager.resetBlocks()}
+      >
+        Reset
+      </Button>
     </div>
   )
 }

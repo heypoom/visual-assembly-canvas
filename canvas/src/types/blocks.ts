@@ -31,11 +31,11 @@ export interface PlotterBlock extends BaseBlock {
 }
 
 export type Waveform =
-  | { Sine: {} }
+  | { Sine: null }
   | { Square: { duty_cycle: number } }
-  | { Sawtooth: {} }
-  | { Triangle: {} }
-  | { Noise: {} }
+  | { Sawtooth: null }
+  | { Triangle: null }
+  | { Noise: null }
 
 export interface OscBlock extends BaseBlock {
   time: number

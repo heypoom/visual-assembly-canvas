@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use crate::{Event, Message};
 use crate::audio::waveform::Waveform;
 use crate::canvas::pixel::PixelMode;
+use strum_macros::{EnumIs};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {
@@ -14,7 +15,7 @@ pub struct Block {
     pub events: Vec<Event>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs)]
 pub enum BlockData {
     MachineBlock {
         machine_id: u16,

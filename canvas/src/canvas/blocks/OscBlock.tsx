@@ -10,7 +10,7 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
   return (
     <div>
       <div className="group">
-        osc received data: {time}, {values.join(' ')}, {JSON.stringify(waveform)}
+        osc generated: {time}, {values.join(' ')}, {JSON.stringify(waveform)}
       </div>
 
       <Handle

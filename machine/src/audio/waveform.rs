@@ -36,6 +36,6 @@ mod waveform_tests {
 
     #[test]
     fn sine_test() {
-        let v: Vec<_> = (0..255).map(|x| sine_wave(x)).collect();
+        let _v: Vec<_> = (0..255).map(|x| sine_wave(x)).collect();
     }
 }

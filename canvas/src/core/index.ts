@@ -21,7 +21,7 @@ import {
 
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
-import { isMachineNode, isPixelNode } from "../canvas/blocks/utils/is"
+import { isMachineNode, isOscNode, isPixelNode, isPlotterNode, isTapNode } from "../canvas/blocks/utils/is"
 import { $delay } from "../store/canvas"
 
 export const setSource = (id: number, source: string) => {
@@ -178,6 +178,7 @@ export class CanvasManager {
     const blocks = this.ctx?.get_blocks()
 
     for (const block of blocks) {
+      // TODO: refactor this
       const next = produce($nodes.get(), (nodes) => {
         const node = nodes.find((n) => n.data.id === block.id)
 
@@ -186,10 +187,20 @@ export class CanvasManager {
           return
         }
 
-        // Update the pixels.
         if (isPixelNode(node)) {
-          const { pixels } = block.data.PixelBlock
-          node.data.pixels = pixels
+          node.data = { ...node.data, ...block.data.PixelBlock }
+        }
+
+        if (isOscNode(node)) {
+          node.data = { ...node.data, ...block.data.OscBlock }
+        }
+
+        if (isPlotterNode(node)) {
+          node.data = { ...node.data, ...block.data.PlotterBlock }
+        }
+
+        if (isTapNode(node)) {
+          node.data = { ...node.data, ...block.data.TapBlock }
         }
       })
 
@@ -235,6 +246,11 @@ export class CanvasManager {
     this.sources.forEach((source, id) => {
       this.load(id, source, true)
     })
+  }
+
+  resetBlocks() {
+    this.ctx?.reset_blocks()
+    this.updateBlocks()
   }
 }
 

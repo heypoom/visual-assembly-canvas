@@ -35,18 +35,19 @@ export function addBlock<T extends BlockTypes>(type: T) {
     }
 
     case "osc": {
-      const id = manager.ctx?.add_block({ OscBlock: {} })
+      const props = { time: 0, values: [], waveform: { Sine: null } }
+      const id = manager.ctx?.add_block({ OscBlock: props })
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "osc", { id, time: 0, values: 0, waveform: { Sine: {} } })
+      addCanvasNode(id, "osc", { id, ...props })
       return
     }
 
     case "plotter": {
-      const id = manager.ctx?.add_block({ PlotterBlock: {} })
+      const id = manager.ctx?.add_block({ PlotterBlock: { data: [] } })
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "plotter", { id, signal: [1] })
+      addCanvasNode(id, "plotter", { id, data: [] })
       return
     }
   }

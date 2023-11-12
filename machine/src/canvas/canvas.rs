@@ -173,6 +173,8 @@ impl Canvas {
     }
 
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+        let wires = self.get_connected_sinks(id);
+
         let block = self.mut_block(id)?;
         let OscBlock { time, values, waveform } = &mut block.data else { return Ok(()); };
 
@@ -197,7 +199,23 @@ impl Canvas {
         values.push(waveform_value);
         *time += 1;
 
+        // Send the waveform values to the connected blocks.
+        if !wires.is_empty() {
+            let body: Vec<_> = values.drain(..).collect();
+
+            for wire in wires {
+                self.send_message(Message {
+                    port: wire.source,
+                    action: Action::Data { body: body.clone() },
+                })?;
+            }
+        }
+
         Ok(())
+    }
+
+    pub fn get_connected_sinks(&self, id: u16) -> Vec<Wire> {
+        self.wires.iter().filter(|w| w.source.block == id).cloned().collect()
     }
 
     pub fn tick_plotter_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
@@ -342,6 +360,19 @@ impl Canvas {
     pub fn update_block(&mut self, id: u16, data: BlockData) -> Errorable {
         let block = self.mut_block(id)?;
         block.data = data;
+
+        Ok(())
+    }
+
+    pub fn reset_blocks(&mut self) -> Errorable {
+        // Collect the ids of the blocks that we can reset.
+        // Machine block is handled separately, so we don't need to tick them.
+        let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine_block()).map(|b| b.id).collect();
+
+        for id in ids {
+            self.send_message_to_block(id, Action::Reset)?;
+            self.tick_block(id)?;
+        }
 
         Ok(())
     }

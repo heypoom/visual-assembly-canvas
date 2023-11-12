@@ -169,6 +169,10 @@ impl Controller {
     pub fn update_block(&mut self, id: u16, data: JsValue) -> Return {
         returns(self.canvas.update_block(id, from_value(data)?))
     }
+
+    pub fn reset_blocks(&mut self) -> Return {
+        returns(self.canvas.reset_blocks())
+    }
 }
 
 #[cfg(test)]
