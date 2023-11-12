@@ -1,6 +1,6 @@
 import { useStore } from "@nanostores/react"
 import { LapTimerIcon } from "@radix-ui/react-icons"
-import { Text, Dialog, Button, Flex, TextField } from "@radix-ui/themes"
+import { Dialog, Button, Flex, TextField } from "@radix-ui/themes"
 import { $delay } from "../store/canvas"
 import { useState } from "react"
 

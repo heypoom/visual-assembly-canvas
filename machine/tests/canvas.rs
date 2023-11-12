@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod canvas_tests {
     use machine::canvas::block::BlockData::{PixelBlock};
-    use machine::canvas::Canvas;
+    use machine::canvas::{Canvas, PixelMode};
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};
 
@@ -11,7 +11,7 @@ mod canvas_tests {
     fn test_add_wire_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(PixelBlock { pixels: vec![], append: false })?;
+        let b = c.add_block(PixelBlock { pixels: vec![], mode: PixelMode::Replace })?;
 
         // connect machine block to pixel block.
         c.connect(port(a, 0), port(b, 0))?;
@@ -28,7 +28,7 @@ mod canvas_tests {
     fn test_machine_set_pixel_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(PixelBlock { pixels: vec![], append: false })?;
+        let b = c.add_block(PixelBlock { pixels: vec![], mode: PixelMode::Replace })?;
         c.connect(port(a, 0), port(b, 0))?;
 
         c.load_program(a, r"
@@ -42,7 +42,7 @@ mod canvas_tests {
 
         assert_eq!(c.blocks[1].data, PixelBlock {
             pixels: vec![0xCC, 0xBB, 0xAA],
-            append: false,
+            mode: PixelMode::Replace,
         });
 
         Ok(())

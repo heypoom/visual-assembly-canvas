@@ -1,6 +1,7 @@
 import { produce } from "immer"
 import { useReducer } from "react"
-import { Checkbox, Select, TextField } from "@radix-ui/themes"
+import { PixelMode as _PixelMode } from "machine-wasm"
+import { Select, TextField } from "@radix-ui/themes"
 import { Handle, NodeProps, Position } from "reactflow"
 import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
@@ -8,13 +9,13 @@ import { PaletteKey, getPixelColor, palettes } from "./palette"
 
 import { isPixelNode } from ".."
 
-import { PixelBlock } from "../../../types/blocks"
+import type { PixelBlock, PixelMode } from "../../../types/blocks"
 import { $nodes } from "../../../store/nodes"
 import { manager } from "../../../core"
 
 export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const { data } = props
-  const { columns = 9, palette = "base" } = data
+  const { columns = 9, palette = "base", mode = 'Replace' } = data
 
   const [isSettings, toggle] = useReducer((n) => !n, false)
 
@@ -31,9 +32,9 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
         node.data = { ...node.data, ...input }
       }
 
-      if (typeof input.append === "boolean") {
+      if (typeof input.mode === "number") {
         manager.ctx?.update_block(data.id, {
-          PixelBlock: { pixels: data.pixels, append: input.append },
+          PixelBlock: { pixels: data.pixels, mode: input.mode },
         })
       }
     })
@@ -127,12 +128,23 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
               </div>
 
               <div className="flex items-center gap-4 w-full">
-                <p className="text-1">Append?</p>
+                <p className="text-1">Behavior</p>
 
-                <Checkbox
-                  checked={data.append ?? false}
-                  onCheckedChange={(s) => update({ append: s === true })}
-                />
+                <Select.Root
+                  size="1"
+                  value={mode.toString()}
+                  onValueChange={(p) => update({ mode: p as PixelMode })}
+                >
+                  <Select.Trigger className="w-[70px]" />
+
+                  <Select.Content>
+                    {Object.keys(_PixelMode).map(key => (
+                      <Select.Item value={key} key={key}>
+                        {key}
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Root>
               </div>
             </div>
           </div>

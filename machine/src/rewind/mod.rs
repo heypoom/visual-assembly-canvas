@@ -91,7 +91,49 @@ impl Rewind {
         self.previous = Some(canvas.clone());
     }
 
-    pub fn apply(&self, _target: &Canvas, _snapshot: &CanvasSnapshot) {
+    pub fn rollback(&self, dst: &mut Canvas, snap: &CanvasSnapshot) {
+        if !snap.memories.is_empty() {
+            for mem in &snap.memories {
+                let id = mem.machine_id;
+                let Some(m) = dst.seq.get_mut(id) else { continue; };
+
+                for patch in &mem.memory {
+                    if let Some(from) = patch.from {
+                        m.mem.buffer[patch.index] = from;
+                    }
+                }
+
+                for patch in &mem.register {
+                    if let Some(from) = patch.from {
+                        m.mem.buffer[patch.index] = from;
+                    }
+                }
+            }
+        }
+
+        todo!("apply snapshot to canvas")
+    }
+
+    pub fn apply(&self, dst: &mut Canvas, snap: &CanvasSnapshot) {
+        if !snap.memories.is_empty() {
+            for mem in &snap.memories {
+                let id = mem.machine_id;
+                let Some(m) = dst.seq.get_mut(id) else { continue; };
+
+                for patch in &mem.memory {
+                    if let Some(to) = patch.to {
+                        m.mem.buffer[patch.index] = to;
+                    }
+                }
+
+                for patch in &mem.register {
+                    if let Some(to) = patch.to {
+                        m.mem.buffer[patch.index] = to;
+                    }
+                }
+            }
+        }
+
         todo!("apply snapshot to canvas")
     }
 }

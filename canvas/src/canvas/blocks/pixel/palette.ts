@@ -1,5 +1,4 @@
 import {
-  gray,
   red,
   green,
   yellow,

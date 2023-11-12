@@ -17,12 +17,12 @@ export function addBlock<T extends BlockTypes>(type: T) {
 
     case "pixel": {
       const id = manager.ctx?.add_block({
-        PixelBlock: { pixels: [], append: false },
+        PixelBlock: { pixels: [], mode: 'Replace' },
       })
 
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "pixel", { id, pixels: [] })
+      addCanvasNode(id, "pixel", { id, pixels: [], mode: 'Replace' })
       return
     }
 

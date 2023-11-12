@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::{Event, Message};
+use crate::canvas::pixel::PixelMode;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {
@@ -20,7 +21,7 @@ pub enum BlockData {
 
     PixelBlock {
         pixels: Vec<u16>,
-        append: bool,
+        mode: PixelMode,
     },
 
     TapBlock {},

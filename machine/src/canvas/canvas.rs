@@ -2,8 +2,9 @@ use snafu::ensure;
 use crate::canvas::block::BlockData::{MachineBlock, PixelBlock};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Message, Sequencer};
-use crate::canvas::BlockIdInUseSnafu;
+use crate::canvas::{BlockIdInUseSnafu, PixelMode};
 use crate::canvas::CanvasError::CannotFindWire;
+use crate::canvas::PixelMode::{Append, Command, Replace};
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, Wire};
@@ -170,32 +171,33 @@ impl Canvas {
 
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let PixelBlock { pixels, append } = &mut block.data else { return Ok(()); };
+        let PixelBlock { pixels, mode } = &mut block.data else { return Ok(()); };
 
         for message in messages {
             match message.action {
                 // The "data" action is used to directly set the pixel data.
                 Action::Data { body } => {
-                    let is_append = *append;
+                    match mode {
+                        Replace => {
+                            pixels.clear();
+                            pixels.extend(&body);
+                        }
+                        Append => {
+                            for byte in body {
+                                // Remove one pixel.
+                                if byte == 0 {
+                                    if !pixels.is_empty() {
+                                        pixels.pop();
+                                    }
 
-                    // Clear the pixels if it is not append-only.
-                    if !is_append {
-                        pixels.clear();
-                        pixels.extend(&body);
-                        continue;
-                    }
-
-                    // Use the zero byte to remove pixels.
-                    if is_append {
-                        for byte in body {
-                            if byte == 0 {
-                                if !pixels.is_empty() {
-                                    pixels.pop();
+                                    continue;
                                 }
-                                continue;
-                            }
 
-                            pixels.push(byte);
+                                pixels.push(byte);
+                            }
+                        }
+                        Command => {
+                            // TODO: implement command consumer
                         }
                     }
                 }

@@ -1,8 +1,8 @@
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Patch<T> {
-    index: usize,
-    from: Option<T>,
-    to: Option<T>,
+    pub index: usize,
+    pub from: Option<T>,
+    pub to: Option<T>,
 }
 
 pub fn diff_slice<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<Patch<T>> {

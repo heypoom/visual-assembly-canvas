@@ -1,3 +1,5 @@
+import { PixelMode as _PixelMode } from "machine-wasm"
+
 import { PaletteKey } from "../canvas/blocks/pixel/palette"
 
 export interface BaseBlock {
@@ -5,11 +7,13 @@ export interface BaseBlock {
   id: number
 }
 
+export type PixelMode = keyof typeof _PixelMode
+
 export interface PixelBlock extends BaseBlock {
   pixels: number[]
   columns?: number
   palette?: PaletteKey
-  append?: boolean
+  mode?: PixelMode
 }
 
 export interface TapBlock extends BaseBlock {
