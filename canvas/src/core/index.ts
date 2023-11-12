@@ -170,7 +170,7 @@ export class CanvasManager {
     this.updateBlocks()
 
     // If running in steps, we should reset the machine once it halts.
-    if (!config.batch && this.isHalted) this.reloadAll()
+    if (!config.batch && this.isHalted) this.reloadMachines()
   }
 
   updateBlocks() {
@@ -242,15 +242,20 @@ export class CanvasManager {
     })
   }
 
-  reloadAll() {
+  reloadMachines() {
     this.sources.forEach((source, id) => {
       this.load(id, source, true)
     })
   }
 
   resetBlocks() {
+    // Reset blocks and update UI
     this.ctx?.reset_blocks()
     this.updateBlocks()
+
+    // Reset machines and update UI
+    this.reloadMachines()
+    setMachineState(this)
   }
 }
 
