@@ -35,7 +35,7 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
       // Update the behaviour of pixel block.
       if (typeof input.mode === "string") {
         manager.ctx?.send_message_to_block(data.id, {
-          SetPixelMode: { mode: data.mode }
+          SetPixelMode: { mode: input.mode }
         })
       }
     })
