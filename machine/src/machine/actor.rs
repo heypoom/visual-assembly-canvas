@@ -38,6 +38,7 @@ impl Actor for Machine {
                         self.stack().push(*v)?;
                     }
                 }
+                _ => {}
             }
         }
 

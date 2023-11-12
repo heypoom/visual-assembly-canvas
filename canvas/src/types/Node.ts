@@ -1,11 +1,13 @@
 import { Node, NodeProps } from "reactflow"
 
-import { MachineBlock, PixelBlock, TapBlock } from "./blocks"
+import { MachineBlock, OscBlock, PixelBlock, PlotterBlock, TapBlock } from "./blocks"
 
 export interface BlockTypeMap {
   machine: MachineBlock
   pixel: PixelBlock
   tap: TapBlock
+  plotter: PlotterBlock
+  osc: OscBlock
 }
 
 export type BlockTypes = keyof BlockTypeMap

@@ -32,9 +32,10 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
         node.data = { ...node.data, ...input }
       }
 
-      if (typeof input.mode === "number") {
-        manager.ctx?.update_block(data.id, {
-          PixelBlock: { pixels: data.pixels, mode: input.mode },
+      // Update the behaviour of pixel block.
+      if (typeof input.mode === "string") {
+        manager.ctx?.send_message_to_block(data.id, {
+          SetPixelMode: { mode: data.mode }
         })
       }
     })
@@ -43,6 +44,8 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   }
 
   const isDrawable = !!pixels && columns > 1
+
+  const modes = Object.keys(_PixelMode).filter(key => !isNaN(Number(_PixelMode[key])))
 
   return (
     <div className="group">
@@ -138,7 +141,7 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
                   <Select.Trigger className="w-[70px]" />
 
                   <Select.Content>
-                    {Object.keys(_PixelMode).map(key => (
+                    {modes.map(key => (
                       <Select.Item value={key} key={key}>
                         {key}
                       </Select.Item>

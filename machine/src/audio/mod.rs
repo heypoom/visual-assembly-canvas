@@ -1,1 +1,1 @@
-mod waveform;
+pub mod waveform;

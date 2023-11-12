@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::{Event, Message};
+use crate::audio::waveform::Waveform;
 use crate::canvas::pixel::PixelMode;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -25,6 +26,23 @@ pub enum BlockData {
     },
 
     TapBlock {},
+
+    /// Plots a graph out of the data it receives.
+    PlotterBlock {
+        data: Vec<u16>,
+    },
+
+    /// Oscillator. Produces the value of a waveform at a given time.
+    OscBlock {
+        /// Current time of the oscillator.
+        time: u16,
+
+        /// Values produced by the oscillator.
+        values: Vec<u16>,
+
+        /// Current frequency of the oscillator.
+        waveform: Waveform,
+    },
 }
 
 impl Block {

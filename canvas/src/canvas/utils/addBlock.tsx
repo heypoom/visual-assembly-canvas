@@ -33,5 +33,21 @@ export function addBlock<T extends BlockTypes>(type: T) {
       addCanvasNode(id, "tap", { id, signal: [1] })
       return
     }
+
+    case "osc": {
+      const id = manager.ctx?.add_block({ OscBlock: {} })
+      if (typeof id !== "number") return
+
+      addCanvasNode(id, "osc", { id, time: 0, values: 0, waveform: { Sine: {} } })
+      return
+    }
+
+    case "plotter": {
+      const id = manager.ctx?.add_block({ PlotterBlock: {} })
+      if (typeof id !== "number") return
+
+      addCanvasNode(id, "plotter", { id, signal: [1] })
+      return
+    }
   }
 }

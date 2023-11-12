@@ -1,13 +1,14 @@
 use snafu::ensure;
-use crate::canvas::block::BlockData::{MachineBlock, PixelBlock};
+use crate::canvas::block::BlockData::{MachineBlock, OscBlock, PixelBlock, PlotterBlock};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Message, Sequencer};
-use crate::canvas::{BlockIdInUseSnafu, PixelMode};
+use crate::audio::waveform::generate_waveform;
+use crate::canvas::{BlockIdInUseSnafu};
 use crate::canvas::CanvasError::CannotFindWire;
 use crate::canvas::PixelMode::{Append, Command, Replace};
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
-use super::wire::{Port, Wire};
+use super::wire::{Port, port, Wire};
 
 type Errorable = Result<(), CanvasError>;
 
@@ -163,7 +164,58 @@ impl Canvas {
 
         match &block.data {
             PixelBlock { .. } => self.tick_pixel_block(id, messages)?,
+            PlotterBlock { .. } => self.tick_plotter_block(id, messages)?,
+            OscBlock { .. } => self.tick_osc_block(id, messages)?,
             _ => {}
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+        let block = self.mut_block(id)?;
+        let OscBlock { time, values, waveform } = &mut block.data else { return Ok(()); };
+
+        for message in &messages {
+            match &message.action {
+                Action::Reset => {
+                    *time = 0;
+                    values.clear();
+                }
+
+                Action::SetWaveform { waveform: wf } => {
+                    *waveform = *wf
+                }
+
+                _ => {}
+            }
+        }
+
+        // TODO: implement waveform generation.
+        let waveform_value = generate_waveform(*waveform, *time);
+
+        values.push(waveform_value);
+        *time += 1;
+
+        Ok(())
+    }
+
+    pub fn tick_plotter_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+        let block = self.mut_block(id)?;
+        let PlotterBlock { data } = &mut block.data else { return Ok(()); };
+
+        for message in messages {
+            match message.action {
+                Action::Data { body } => {
+                    data.extend(&body);
+                }
+
+                Action::Reset => {
+                    data.clear()
+                }
+
+                _ => {}
+            }
         }
 
         Ok(())
@@ -201,6 +253,16 @@ impl Canvas {
                         }
                     }
                 }
+
+                Action::SetPixelMode { mode: m } => {
+                    *mode = m;
+                }
+
+                Action::Reset => {
+                    pixels.clear()
+                }
+
+                _ => {}
             }
         }
 
@@ -267,6 +329,13 @@ impl Canvas {
             }
         }
 
+        Ok(())
+    }
+
+    /// Sends the message to the specified block.
+    pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
+        let block = self.mut_block(block_id)?;
+        block.inbox.push(Message { port: port(block_id, 60000), action });
         Ok(())
     }
 

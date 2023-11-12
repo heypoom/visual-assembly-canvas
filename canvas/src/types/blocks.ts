@@ -24,3 +24,22 @@ export interface MachineBlock extends BaseBlock {
   // Current source code of the machine.
   source: string
 }
+
+export interface PlotterBlock extends BaseBlock {
+  // Data to plot.
+  data: number[]
+}
+
+export type Waveform =
+  | { Sine: {} }
+  | { Square: { duty_cycle: number } }
+  | { Sawtooth: {} }
+  | { Triangle: {} }
+  | { Noise: {} }
+
+export interface OscBlock extends BaseBlock {
+  time: number
+  values: number[]
+  waveform: Waveform
+}
+
