@@ -77,7 +77,9 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
       }`
     }
 
-    return `${wave?.toLowerCase()}(t = ${time}${argsText})`
+    return `${wave?.toLowerCase()}(t = ${time
+      ?.toString()
+      ?.padStart(3, "0")}${argsText})`
   }
 
   return (
