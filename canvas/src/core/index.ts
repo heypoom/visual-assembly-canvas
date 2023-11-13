@@ -134,15 +134,13 @@ export class CanvasManager {
 
   /** Continue the execution. */
   run = async () => {
+    const startMs = performance.now()
     this.setRunning(true)
 
     // Cycle checker ensures that the machine doesn't run forever.
     let cycle = 0
 
-    while (
-      (this.detectHanging ? cycle < this.maxCycle : true) &&
-      !this.isHalted
-    ) {
+    while (!this.detectHanging || cycle < this.maxCycle) {
       // Execution is forced to pause by the user.
       if (this.pause) {
         this.pause = false
@@ -154,7 +152,7 @@ export class CanvasManager {
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
 
-      cycle++
+      if (this.detectHanging) cycle++
     }
 
     // extra step to let the blocks tick
@@ -162,6 +160,11 @@ export class CanvasManager {
 
     this.setRunning(false)
     this.detectProgramHang(cycle)
+
+    const duration = performance.now() - startMs
+    if (this.delayMs === 0 && duration > 300) {
+      console.info(`a slow run took ${duration}ms to execute!`)
+    }
   }
 
   /** Check if our program hangs. */

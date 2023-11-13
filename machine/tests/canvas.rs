@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod canvas_tests {
-    use machine::canvas::block::BlockData::{PixelBlock};
+    use machine::canvas::block::BlockData::{PixelBlock, PlotterBlock};
     use machine::canvas::{Canvas, PixelMode};
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};
@@ -69,6 +69,31 @@ mod canvas_tests {
 
         assert_eq!(c.seq.get(1).unwrap().mem.read_stack(1), [0xCC]);
         assert_eq!(c.seq.get(2).unwrap().mem.read_stack(1), [0xCC]);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_plotter_drain() -> Errorable {
+        let mut c = Canvas::new();
+        c.add_machine()?;
+        c.add_block(PlotterBlock { values: vec![], size: 5 })?;
+
+        c.load_program(0, r"
+            looper:
+            push 2
+            send 0 1
+            jump looper
+        ")?;
+
+        c.connect(port(0, 0), port(1, 0))?;
+        c.seq.ready();
+
+        for _ in 0..32 {
+            c.tick()?;
+        }
+
+        assert_eq!(c.blocks[1].data, PlotterBlock { values: vec![2, 2, 2, 2, 2], size: 5 });
 
         Ok(())
     }

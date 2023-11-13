@@ -5,6 +5,7 @@ pub mod wire;
 pub mod error;
 pub mod blocks;
 pub mod pixel;
+pub mod vec_helper;
 
 pub use canvas::Canvas;
 pub use error::*;

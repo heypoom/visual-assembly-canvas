@@ -12,6 +12,8 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
 
   const scaleY = 4
 
+  const frame = data.slice(Math.max(data.length - size, 0), data.length - 1)
+
   return (
     <div>
       <Handle
@@ -32,15 +34,13 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
               minHeight: `${255 / scaleY}px`,
             }}
           >
-            {data
-              .slice(Math.max(data.length - size, 0), data.length - 1)
-              .map((bar, i) => (
-                <div
-                  key={i}
-                  style={{ height: `${Math.round(bar / scaleY)}px` }}
-                  className="w-[1px] bg-cyan-9"
-                />
-              ))}
+            {frame.map((bar, i) => (
+              <div
+                key={i}
+                style={{ height: `${Math.round(bar / scaleY)}px` }}
+                className="w-[1px] bg-cyan-9"
+              />
+            ))}
           </div>
         </div>
       </RightClickMenu>

@@ -6,6 +6,7 @@ use crate::audio::waveform::generate_waveform;
 use crate::canvas::{BlockIdInUseSnafu};
 use crate::canvas::CanvasError::CannotFindWire;
 use crate::canvas::PixelMode::{Append, Command, Replace};
+use crate::canvas::vec_helper::extend_and_remove_oldest;
 use super::block::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, port, Wire};
@@ -220,23 +221,16 @@ impl Canvas {
 
     pub fn tick_plotter_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let PlotterBlock { data, size } = &mut block.data else { return Ok(()); };
+        let PlotterBlock { values, size } = &mut block.data else { return Ok(()); };
 
         for message in messages {
             match message.action {
                 Action::Data { body } => {
-                    data.extend(&body);
-
-                    let size = (*size as usize);
-
-                    // TODO: make this more efficient.
-                    if data.len() > size {
-                        data.drain(0..(data.len() - size));
-                    }
+                    extend_and_remove_oldest(values, body, *size as usize);
                 }
 
                 Action::Reset => {
-                    data.clear()
+                    values.clear()
                 }
 
                 _ => {}

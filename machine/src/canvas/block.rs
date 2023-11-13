@@ -30,7 +30,7 @@ pub enum BlockData {
 
     /// Plots a graph out of the data it receives.
     PlotterBlock {
-        data: Vec<u16>,
+        values: Vec<u16>,
 
         /// Window size.
         size: u16,
