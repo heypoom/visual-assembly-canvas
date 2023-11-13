@@ -17,19 +17,19 @@ pub struct Block {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs)]
 pub enum BlockData {
-    MachineBlock {
+    Machine {
         machine_id: u16,
     },
 
-    PixelBlock {
+    Pixel {
         pixels: Vec<u16>,
         mode: PixelMode,
     },
 
-    TapBlock {},
+    Tap {},
 
     /// Plots a graph out of the data it receives.
-    PlotterBlock {
+    Plot {
         values: Vec<u16>,
 
         /// Window size.
@@ -37,7 +37,7 @@ pub enum BlockData {
     },
 
     /// Oscillator. Produces the value of a waveform at a given time.
-    OscBlock {
+    Osc {
         /// Current time of the oscillator.
         time: u16,
 

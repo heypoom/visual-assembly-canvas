@@ -1,10 +1,9 @@
 import { Button } from "@radix-ui/themes"
 import { useStore } from "@nanostores/react"
 import {
+  ReloadIcon,
   TrackNextIcon,
   PlusCircledIcon,
-  ResetIcon,
-  ReloadIcon,
 } from "@radix-ui/react-icons"
 
 import { RunButton } from "./RunButton"
@@ -30,38 +29,22 @@ export function Toolbar() {
           Machine
         </Button>
 
-        <Button
-          onClick={() => addBlock("PixelBlock")}
-          variant="soft"
-          color="orange"
-        >
+        <Button onClick={() => addBlock("Pixel")} variant="soft" color="orange">
           <PlusCircledIcon />
           Pixel
         </Button>
 
-        <Button
-          onClick={() => addBlock("TapBlock")}
-          variant="soft"
-          color="orange"
-        >
+        <Button onClick={() => addBlock("Tap")} variant="soft" color="orange">
           <PlusCircledIcon />
           Tap
         </Button>
 
-        <Button
-          onClick={() => addBlock("OscBlock")}
-          variant="soft"
-          color="orange"
-        >
+        <Button onClick={() => addBlock("Osc")} variant="soft" color="orange">
           <PlusCircledIcon />
           Osc
         </Button>
 
-        <Button
-          onClick={() => addBlock("PlotterBlock")}
-          variant="soft"
-          color="orange"
-        >
+        <Button onClick={() => addBlock("Plot")} variant="soft" color="orange">
           <PlusCircledIcon />
           Plot
         </Button>

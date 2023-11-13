@@ -37,6 +37,7 @@
     "react-hotkeys-hook": "^4.4.1",
     "reactflow": "^11.9.4",
     "rollup": "link:@lezer/generator/rollup",
+    "tone": "^14.7.77",
     "vite-node": "^0.34.6",
     "vite-plugin-glsl": "^1.1.2"
   },

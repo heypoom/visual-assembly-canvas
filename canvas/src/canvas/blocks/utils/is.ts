@@ -6,9 +6,9 @@ export const isBlockType =
     node.type === key
 
 export const isBlock = {
-  machine: isBlockType("MachineBlock"),
-  pixel: isBlockType("PixelBlock"),
-  tap: isBlockType("TapBlock"),
-  osc: isBlockType("OscBlock"),
-  plotter: isBlockType("PlotterBlock"),
+  machine: isBlockType("Machine"),
+  pixel: isBlockType("Pixel"),
+  tap: isBlockType("Tap"),
+  osc: isBlockType("Osc"),
+  plot: isBlockType("Plot"),
 }

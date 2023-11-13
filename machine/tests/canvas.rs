@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod canvas_tests {
     use machine::audio::waveform::Waveform;
-    use machine::canvas::block::BlockData::{OscBlock, PixelBlock, PlotterBlock};
+    use machine::canvas::block::BlockData::{Osc, Pixel, Plot};
     use machine::canvas::{Canvas, PixelMode};
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};
@@ -12,7 +12,7 @@ mod canvas_tests {
     fn test_add_wire_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(PixelBlock { pixels: vec![], mode: PixelMode::Replace })?;
+        let b = c.add_block(Pixel { pixels: vec![], mode: PixelMode::Replace })?;
 
         // connect machine block to pixel block.
         c.connect(port(a, 0), port(b, 0))?;
@@ -29,7 +29,7 @@ mod canvas_tests {
     fn test_machine_set_pixel_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(PixelBlock { pixels: vec![], mode: PixelMode::Replace })?;
+        let b = c.add_block(Pixel { pixels: vec![], mode: PixelMode::Replace })?;
         c.connect(port(a, 0), port(b, 0))?;
 
         c.load_program(a, r"
@@ -41,7 +41,7 @@ mod canvas_tests {
 
         c.run()?;
 
-        assert_eq!(c.blocks[1].data, PixelBlock {
+        assert_eq!(c.blocks[1].data, Pixel {
             pixels: vec![0xCC, 0xBB, 0xAA],
             mode: PixelMode::Replace,
         });
@@ -78,7 +78,7 @@ mod canvas_tests {
     fn test_plotter_drain() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(PlotterBlock { values: vec![], size: 5 })?;
+        c.add_block(Plot { values: vec![], size: 5 })?;
 
         c.load_program(0, r"
             looper:
@@ -94,7 +94,7 @@ mod canvas_tests {
             c.tick()?;
         }
 
-        assert_eq!(c.blocks[1].data, PlotterBlock { values: vec![2, 2, 2, 2, 2], size: 5 });
+        assert_eq!(c.blocks[1].data, Plot { values: vec![2, 2, 2, 2, 2], size: 5 });
 
         Ok(())
     }
@@ -102,19 +102,19 @@ mod canvas_tests {
     #[test]
     fn test_osc_clock_wraparound() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(OscBlock { time: 250, waveform: Waveform::Sine })?;
-        c.add_block(PlotterBlock { values: vec![], size: 5 })?;
+        c.add_block(Osc { time: 250, waveform: Waveform::Sine })?;
+        c.add_block(Plot { values: vec![], size: 5 })?;
         c.connect(port(0, 0), port(1, 0))?;
 
         c.tick()?;
 
-        if let OscBlock { time, .. } = c.blocks[0].data {
+        if let Osc { time, .. } = c.blocks[0].data {
             assert_eq!(time, 251);
         }
 
         for _ in 0..10 { c.tick()?; }
 
-        if let OscBlock { time, .. } = c.blocks[0].data {
+        if let Osc { time, .. } = c.blocks[0].data {
             assert_eq!(time, 6);
         }
 

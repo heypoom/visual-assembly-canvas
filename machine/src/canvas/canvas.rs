@@ -1,5 +1,5 @@
 use snafu::ensure;
-use crate::canvas::block::BlockData::{MachineBlock, OscBlock, PixelBlock, PlotterBlock};
+use crate::canvas::block::BlockData::{Machine, Osc, Pixel, Plot};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Message, Sequencer};
 use crate::audio::waveform::generate_waveform;
@@ -47,7 +47,7 @@ impl Canvas {
         // Teardown logic
         match self.blocks[block_idx].data {
             // Remove the machine from the sequencer.
-            MachineBlock { machine_id } => self.seq.remove(machine_id),
+            Machine { machine_id } => self.seq.remove(machine_id),
 
             _ => {}
         }
@@ -70,7 +70,7 @@ impl Canvas {
 
     pub fn add_machine_with_id(&mut self, id: u16) -> Errorable {
         self.seq.add(id);
-        self.add_block_with_id(id, MachineBlock { machine_id: id })?;
+        self.add_block_with_id(id, Machine { machine_id: id })?;
 
         Ok(())
     }
@@ -88,7 +88,7 @@ impl Canvas {
 
         // Validate block data before adding them.
         match data {
-            MachineBlock { machine_id } => {
+            Machine { machine_id } => {
                 ensure!(self.seq.get(machine_id).is_some(), MachineNotFoundSnafu { id: machine_id });
             }
             _ => {}
@@ -164,9 +164,9 @@ impl Canvas {
         let messages = block.consume_messages();
 
         match &block.data {
-            PixelBlock { .. } => self.tick_pixel_block(id, messages)?,
-            PlotterBlock { .. } => self.tick_plotter_block(id, messages)?,
-            OscBlock { .. } => self.tick_osc_block(id, messages)?,
+            Pixel { .. } => self.tick_pixel_block(id, messages)?,
+            Plot { .. } => self.tick_plotter_block(id, messages)?,
+            Osc { .. } => self.tick_osc_block(id, messages)?,
             _ => {}
         }
 
@@ -177,7 +177,7 @@ impl Canvas {
         let wires = self.get_connected_sinks(id);
 
         let block = self.mut_block(id)?;
-        let OscBlock { time, waveform } = &mut block.data else { return Ok(()); };
+        let Osc { time, waveform } = &mut block.data else { return Ok(()); };
 
         for message in &messages {
             match &message.action {
@@ -222,7 +222,7 @@ impl Canvas {
 
     pub fn tick_plotter_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let PlotterBlock { values, size } = &mut block.data else { return Ok(()); };
+        let Plot { values, size } = &mut block.data else { return Ok(()); };
 
         for message in messages {
             match message.action {
@@ -243,7 +243,7 @@ impl Canvas {
 
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let PixelBlock { pixels, mode } = &mut block.data else { return Ok(()); };
+        let Pixel { pixels, mode } = &mut block.data else { return Ok(()); };
 
         for message in messages {
             match message.action {
@@ -338,7 +338,7 @@ impl Canvas {
             if let Ok(block) = self.mut_block(recipient_id) {
                 match block.data {
                     // Send the message directly to the machine.
-                    MachineBlock { machine_id } => {
+                    Machine { machine_id } => {
                         if let Some(m) = self.seq.get_mut(machine_id) {
                             m.inbox.push(message.clone());
                         }
@@ -369,7 +369,7 @@ impl Canvas {
     pub fn reset_blocks(&mut self) -> Errorable {
         // Collect the ids of the blocks that we can reset.
         // Machine block is handled separately, so we don't need to tick them.
-        let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine_block()).map(|b| b.id).collect();
+        let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine()).map(|b| b.id).collect();
 
         for id in ids {
             self.send_message_to_block(id, Action::Reset)?;

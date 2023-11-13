@@ -7,6 +7,7 @@ import { manager } from "../core/index"
 import { EditorConfig } from "../store/editor"
 import { lineHighlighter } from "./highlight"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getExtensions(m: MachineBlock, _config: EditorConfig) {
   const keymaps = keymap.of([
     {

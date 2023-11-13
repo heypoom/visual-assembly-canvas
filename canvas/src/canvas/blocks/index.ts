@@ -7,11 +7,11 @@ import { MachineBlockView } from "./machine/MachineBlock"
 import { BlockComponentMap } from "../../types/Node"
 
 export const nodeTypes: BlockComponentMap = {
-  TapBlock: TapBlockView,
-  OscBlock: OscBlockView,
-  PlotterBlock: PlotterBlockView,
-  PixelBlock: PixelBlockView,
-  MachineBlock: MachineBlockView,
+  Tap: TapBlockView,
+  Osc: OscBlockView,
+  Plot: PlotterBlockView,
+  Pixel: PixelBlockView,
+  Machine: MachineBlockView,
 }
 
 export * from "./utils/is"

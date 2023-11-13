@@ -9,11 +9,11 @@ import {
 } from "./blocks"
 
 export interface BlockTypeMap {
-  MachineBlock: MachineBlock
-  PixelBlock: PixelBlock
-  TapBlock: TapBlock
-  PlotterBlock: PlotterBlock
-  OscBlock: OscBlock
+  Machine: MachineBlock
+  Pixel: PixelBlock
+  Tap: TapBlock
+  Plot: PlotterBlock
+  Osc: OscBlock
 }
 
 export type BlockTypes = keyof BlockTypeMap

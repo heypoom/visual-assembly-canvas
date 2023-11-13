@@ -4,7 +4,7 @@ import { defaultProps, DEFAULT_SOURCE } from "../blocks"
 import { addCanvasNode } from "./addCanvasNode"
 
 export function addBlock<T extends BlockTypes>(type: T) {
-  if (type === "MachineBlock") return addMachine()
+  if (type === "Machine") return addMachine()
 
   const props = defaultProps[type]
   const id = manager.ctx?.add_block({ [type]: props })
@@ -18,5 +18,5 @@ export function addMachine() {
   if (typeof id !== "number") return
 
   manager.load(id, DEFAULT_SOURCE)
-  addCanvasNode(id, "MachineBlock", { id, source: DEFAULT_SOURCE })
+  addCanvasNode(id, "Machine", { id, source: DEFAULT_SOURCE })
 }
