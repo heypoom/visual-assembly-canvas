@@ -17,7 +17,8 @@ pub enum Waveform {
     Noise,
 }
 
-static MAX: f32 = 255.0;
+static MAX_F: f32 = 255.0;
+static MAX_U: u16 = 255;
 static HALF: f32 = 255.0 / 2.0;
 
 pub fn to_u16(v: f32) -> u16 {
@@ -29,7 +30,7 @@ pub fn to_wave(v: f32) -> u16 {
 }
 
 pub fn angular(n: u16) -> f32 {
-    2.0 * PI * (n as f32) / MAX
+    2.0 * PI * (n as f32) / MAX_F
 }
 
 pub fn sine_wave(n: u16) -> u16 {
@@ -45,7 +46,7 @@ pub fn tangent_wave(n: u16) -> u16 {
 }
 
 pub fn sawtooth_wave(n: u16) -> u16 {
-    to_u16((n as f32 / 65535.0) * 255.0)
+    n % 256
 }
 
 pub fn square_wave(time: u16, duty_cycle: u16) -> u16 {
@@ -60,10 +61,10 @@ pub fn square_wave(time: u16, duty_cycle: u16) -> u16 {
 }
 
 pub fn triangle_wave(time: u16) -> u16 {
-    let value = if time < 32768 {
-        (time as f32 / 32767.0) - 1.0
+    let value = if time < MAX_U {
+        (time as f32 / 254.0) - 1.0
     } else {
-        1.0 - ((time as f32 - 32768.0) / 32767.0)
+        1.0 - ((time as f32 - MAX_F) / 254.0)
     };
 
     to_wave(value)

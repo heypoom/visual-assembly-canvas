@@ -200,6 +200,11 @@ impl Canvas {
         // increment the time, or wrap around to 0.
         *time = (*time).checked_add(1).unwrap_or(0);
 
+        // wrap around at 255.
+        if *time >= 255 {
+            *time = 0;
+        }
+
         // Send the waveform values to the connected blocks.
         if !wires.is_empty() {
             let body: Vec<_> = values.drain(..).collect();

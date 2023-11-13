@@ -11,8 +11,8 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
   const { values, size } = props.data
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
-  const max = 255
   const scaleY = 4
+  const max = 255
 
   const plotted = rescale(values, max)
 
