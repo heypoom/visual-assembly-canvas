@@ -30,9 +30,6 @@ import {
 } from "../canvas/blocks/utils/is"
 import { $delay } from "../store/canvas"
 
-/** We disable the cycle / hanging detector over this threshold */
-const DETECT_HANG_DELAY_THRESHOLD = 3
-
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
     const node = nodes.find((n) => n.data.id === id)
@@ -125,7 +122,7 @@ export class CanvasManager {
    * for the user to pause or reset the program by themself.
    */
   get detectHanging(): boolean {
-    return this.delayMs <= DETECT_HANG_DELAY_THRESHOLD
+    return this.delayMs == 0
   }
 
   setRunning(state: boolean) {
