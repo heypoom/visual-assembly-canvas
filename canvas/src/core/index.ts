@@ -53,17 +53,25 @@ const machineError = (cause: MachineError): CanvasError => ({
 
 export type HighlighterFn = (lineNo: number) => void
 
+type HaltReason = "paused" | "cycle" | "duration" | "halted"
+
 export class CanvasManager {
   ctx: Controller | null = null
 
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
 
+  /** What is the limit on execution time, excluding the delay? This prevents crashes. */
+  maxRuntime = 2000
+
   /** Is every machine ready to run? */
   ready = false
 
   /** Should machine prepare to pause execution? */
   pause = false
+
+  /** Why did the machine last halt? */
+  haltReason: HaltReason | null = null
 
   sources: Map<number, string> = new Map()
 
@@ -110,6 +118,8 @@ export class CanvasManager {
   }
 
   get isHalted(): boolean {
+    if (this.runUntilPause) return false
+
     return this.ctx?.is_halted() ?? false
   }
 
@@ -143,13 +153,14 @@ export class CanvasManager {
 
     // Should we enable halting detection?
     const runUntilPause = this.runUntilPause
-    const detectHalt = !runUntilPause
+    const detectHang = !runUntilPause
     let cycle = 0
 
     while (runUntilPause || cycle < this.maxCycle) {
       // Execution is forced to pause by the user.
       if (this.pause) {
         this.pause = false
+        this.haltReason = "paused"
         break
       }
 
@@ -158,28 +169,44 @@ export class CanvasManager {
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
 
-      if (detectHalt) cycle++
+      // Halt detection - machine gracefully completes a run.
+      if (this.isHalted) {
+        this.haltReason = "halted"
+        break
+      }
+
+      // Hang detection. Detect infinite loops and deadlocks.
+      if (detectHang) {
+        cycle++
+
+        // We take the artificial delay into account.
+        const duration = performance.now() - startMs
+        const limit = this.maxRuntime * (this.delayMs || 1)
+
+        // Did we exceed the execution time limit?
+        if (duration > limit) {
+          this.haltReason = "duration"
+          break
+        }
+      }
     }
 
     // extra step to let the blocks tick
     this.step({ batch: true })
 
+    if (cycle >= this.maxCycle) this.haltReason = "cycle"
+
     this.setRunning(false)
-    if (detectHalt) this.detectHalt(cycle)
 
-    const duration = performance.now() - startMs
-
-    if (this.delayMs === 0 && duration > 300) {
-      console.warn(`a slow run took ${duration}ms to execute!`)
-    }
+    if (detectHang) this.reportHang()
   }
 
   /** Check if our program ever halts. Helps prevent hangs, infinite loops, and awaiting for messages. */
-  detectHalt(cycle: number) {
+  reportHang() {
     setTimeout(() => {
-      if (cycle >= this.maxCycle && !this.isHalted) {
+      if (!this.isHalted) {
         this.statuses.forEach((status, id) => {
-          const error = this.getCycleError(id, status)
+          const error = this.getHaltError(id, status)
           if (error) setError(id, machineError(error))
         })
       }
@@ -190,9 +217,18 @@ export class CanvasManager {
     this.ready = false
   }
 
-  getCycleError(id: number, status: MachineStatus): MachineError | undefined {
-    if (status === "Running") return { ExecutionCycleExceeded: { id } }
+  /** Returns an error that explains why the machine halted. */
+  getHaltError(id: number, status: MachineStatus): MachineError | undefined {
     if (status === "Awaiting") return { MessageNeverReceived: { id } }
+
+    if (status === "Running") {
+      switch (this.haltReason) {
+        case "cycle":
+          return { ExecutionCycleExceeded: { id } }
+        case "duration":
+          return { ExecutionTimeExceeded: { id } }
+      }
+    }
   }
 
   get statuses(): Map<number, MachineStatus> {

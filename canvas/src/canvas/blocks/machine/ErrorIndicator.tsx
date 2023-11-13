@@ -22,7 +22,11 @@ export const ErrorIndicator = ({ error }: { error: CanvasError }) => {
     const cause = error.MachineError.cause
 
     if (runErrors.executionCycleExceeded(cause)) {
-      return <pre>Execution cycle exceeded.</pre>
+      return <pre>Your program exceeds the execution cycle quota.</pre>
+    }
+
+    if (runErrors.executionTimeExceeded(cause)) {
+      return <pre>Your program exceeds the runtime quota.</pre>
     }
 
     if (runErrors.messageNeverReceived(cause)) {

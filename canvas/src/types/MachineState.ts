@@ -21,6 +21,7 @@ export type MachineStatus =
 type CannotParse = { CannotParse: { id: number; error: unknown } }
 type ExecutionFailed = { ExecutionFailed: { id: number; error: unknown } }
 type ExecutionCycleExceeded = { ExecutionCycleExceeded: { id: number } }
+type ExecutionTimeExceeded = { ExecutionTimeExceeded: { id: number } }
 type MessageNeverReceived = { MessageNeverReceived: { id: number } }
 type DisconnectedPort = { DisconnectedPort: { port: Port } }
 
@@ -34,6 +35,7 @@ export type MachineError =
   | ExecutionFailed
   | ExecutionCycleExceeded
   | MessageNeverReceived
+  | ExecutionTimeExceeded
 
 export type ExtractKeys<T> = T extends { [K in keyof T]: unknown }
   ? keyof T
@@ -83,4 +85,7 @@ export const runErrors = {
 
   messageNeverReceived: (e): e is MessageNeverReceived =>
     isMachineErrorType(e, "MessageNeverReceived"),
+
+  executionTimeExceeded: (e): e is ExecutionTimeExceeded =>
+    isMachineErrorType(e, "ExecutionTimeExceeded"),
 } satisfies Record<string, (error: MachineError) => boolean>
