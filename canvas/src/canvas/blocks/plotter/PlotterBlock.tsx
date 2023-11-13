@@ -1,9 +1,11 @@
+import { useEffect, useReducer, useRef } from "react"
 import { Handle, NodeProps, Position } from "reactflow"
+import { cyanP3 } from "@radix-ui/colors"
+
+import { rescale } from "./rescale"
 
 import { PlotterBlock } from "../../../types/blocks"
-import { useReducer } from "react"
 import { RightClickMenu } from "../../components/RightClickMenu"
-import { rescale } from "./rescale"
 
 const S0 = 0
 
@@ -11,10 +13,36 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
   const { values, size } = props.data
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
-  const scaleY = 4
+  const scaleY = 2
   const max = 255
 
+  const ref = useRef<HTMLCanvasElement>(null)
   const plotted = rescale(values, max)
+
+  useEffect(() => {
+    const canvas = ref.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const width = canvas.width
+    const height = canvas.height
+
+    ctx.strokeStyle = cyanP3.cyan9
+    ctx.fillStyle = cyanP3.cyan9
+    ctx.lineWidth = 4
+    ctx.clearRect(0, 0, width, height)
+
+    ctx.beginPath()
+    ctx.moveTo(0, height - plotted[0] / scaleY)
+
+    plotted.forEach((value, i) => {
+      ctx.lineTo((i / plotted.length) * width, height - value / scaleY)
+    })
+
+    ctx.stroke()
+  }, [plotted])
 
   return (
     <div>
@@ -30,19 +58,10 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
           {typeof size !== "number" && <div>error: missing size!</div>}
 
           <div
-            className="flex items-end justify-start border-2 border-cyan-9"
-            style={{
-              minWidth: `${size + 2}px`,
-              minHeight: `${max / scaleY}px`,
-            }}
+            className="flex border-2 border-cyan-9 h-[80px]"
+            style={{ minWidth: `${size + 2}px` }}
           >
-            {plotted.map((bar, i) => (
-              <div
-                key={i}
-                style={{ height: `${Math.round(bar / scaleY)}px` }}
-                className="w-[1px] bg-cyan-9"
-              />
-            ))}
+            <canvas ref={ref} className="w-full" />
           </div>
         </div>
       </RightClickMenu>
