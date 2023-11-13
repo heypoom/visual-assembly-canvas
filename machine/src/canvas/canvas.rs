@@ -177,13 +177,12 @@ impl Canvas {
         let wires = self.get_connected_sinks(id);
 
         let block = self.mut_block(id)?;
-        let OscBlock { time, values, waveform } = &mut block.data else { return Ok(()); };
+        let OscBlock { time, waveform } = &mut block.data else { return Ok(()); };
 
         for message in &messages {
             match &message.action {
                 Action::Reset => {
                     *time = 0;
-                    values.clear();
                 }
 
                 Action::SetWaveform { waveform: wf } => {
@@ -193,9 +192,6 @@ impl Canvas {
                 _ => {}
             }
         }
-
-        let waveform_value = generate_waveform(*waveform, *time);
-        values.push(waveform_value);
 
         // increment the time, or wrap around to 0.
         *time = (*time).checked_add(1).unwrap_or(0);
@@ -207,12 +203,12 @@ impl Canvas {
 
         // Send the waveform values to the connected blocks.
         if !wires.is_empty() {
-            let body: Vec<_> = values.drain(..).collect();
+            let value = generate_waveform(*waveform, *time);
 
             for wire in wires {
                 self.send_message(Message {
                     port: wire.source,
-                    action: Action::Data { body: body.clone() },
+                    action: Action::Data { body: vec![value] },
                 })?;
             }
         }

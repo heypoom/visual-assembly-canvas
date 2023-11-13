@@ -41,9 +41,6 @@ pub enum BlockData {
         /// Current time of the oscillator.
         time: u16,
 
-        /// Values produced by the oscillator.
-        values: Vec<u16>,
-
         /// Current frequency of the oscillator.
         waveform: Waveform,
     },

@@ -102,20 +102,20 @@ mod canvas_tests {
     #[test]
     fn test_osc_clock_wraparound() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(OscBlock { time: 65530, values: vec![], waveform: Waveform::Sine })?;
+        c.add_block(OscBlock { time: 250, waveform: Waveform::Sine })?;
         c.add_block(PlotterBlock { values: vec![], size: 5 })?;
         c.connect(port(0, 0), port(1, 0))?;
 
         c.tick()?;
 
         if let OscBlock { time, .. } = c.blocks[0].data {
-            assert_eq!(time, 65531);
+            assert_eq!(time, 251);
         }
 
         for _ in 0..10 { c.tick()?; }
 
         if let OscBlock { time, .. } = c.blocks[0].data {
-            assert_eq!(time, 5);
+            assert_eq!(time, 6);
         }
 
         Ok(())

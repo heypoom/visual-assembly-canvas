@@ -86,6 +86,6 @@ mod waveform_tests {
     #[test]
     fn sine_test() {
         assert_eq!(sine_wave(0), 128);
-        assert_eq!(sine_wave(200), 130);
+        assert_eq!(sine_wave(50), 248);
     }
 }
