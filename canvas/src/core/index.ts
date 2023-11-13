@@ -142,14 +142,10 @@ export class CanvasManager {
     return this.nodes.some(isBlock.tap)
   }
 
-  setRunning(state: boolean) {
-    $status.setKey("running", state)
-  }
-
   /** Continue the execution. */
   run = async () => {
     const startMs = performance.now()
-    this.setRunning(true)
+    $status.setKey("running", true)
 
     // Check the canvas for presence of blocks that alter run behaviour.
     const hasMachines = this.hasMachines
@@ -204,7 +200,7 @@ export class CanvasManager {
 
     if (cycle >= this.maxCycle) this.haltReason = "cycle"
 
-    this.setRunning(false)
+    $status.setKey("running", false)
     this.ctx?.set_await_watchdog(true)
 
     if (detectHang) this.reportHang()
@@ -247,6 +243,8 @@ export class CanvasManager {
   }
 
   step = (config: { batch?: boolean } = {}) => {
+    $status.setKey("halted", false)
+
     // If the program is not initialized yet, we need to initialize it.
     this.prepare()
 
@@ -268,7 +266,9 @@ export class CanvasManager {
     // TODO: add an indicator to the block for a halted machine.
     // TODO: we should remove this behaviour to prevent confusion!
     // If running in steps, we should reset the machine once it halts.
-    if (!config.batch && this.isHalted) this.reloadMachines()
+    const halted = this.isHalted
+    if (!config.batch && halted) this.reloadMachines()
+    if (halted) $status.setKey("halted", true)
   }
 
   updateBlocks() {

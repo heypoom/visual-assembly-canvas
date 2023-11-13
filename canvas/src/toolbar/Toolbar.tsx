@@ -1,6 +1,11 @@
 import { Button } from "@radix-ui/themes"
 import { useStore } from "@nanostores/react"
-import { TrackNextIcon, PlusCircledIcon } from "@radix-ui/react-icons"
+import {
+  TrackNextIcon,
+  PlusCircledIcon,
+  ResetIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons"
 
 import { RunButton } from "./RunButton"
 import { SetDelayButton } from "./SetDelayButton"
@@ -14,6 +19,8 @@ import { addMachine } from "../canvas/utils/addBlock"
 export function Toolbar() {
   const status = useStore($status)
   const hasBlocks = useStore($hasBlocks)
+
+  const { halted } = status
 
   return (
     <div className="absolute left-3 top-3 z-10 space-x-3">
@@ -61,14 +68,14 @@ export function Toolbar() {
       <RunButton />
 
       <Button
-        color="blue"
+        color={halted ? "blue" : "cyan"}
         variant="soft"
         className="font-semibold"
         onClick={() => manager.step()}
         disabled={status.running || !hasBlocks}
       >
         <TrackNextIcon />
-        Step
+        {halted ? "Start Over" : "Step"}
       </Button>
 
       <Button
@@ -78,6 +85,7 @@ export function Toolbar() {
         onClick={() => manager.reset()}
         disabled={!hasBlocks}
       >
+        <ReloadIcon />
         Reset
       </Button>
 
