@@ -66,6 +66,12 @@ impl Scanner {
         v
     }
 
+    fn newline(&mut self) {
+        self.line += 1;
+        self.in_instruction = false;
+        self.in_definition = false;
+    }
+
     fn scan_token(&mut self) -> Result<(), ParseError> {
         let char = self.advance()?;
 
@@ -82,11 +88,7 @@ impl Scanner {
             '"' => self.string()?,
 
             // Newlines
-            '\n' => {
-                self.line += 1;
-                self.in_instruction = false;
-                self.in_definition = false;
-            }
+            '\n' => self.newline(),
 
             // Data definition
             '.' => {
@@ -126,9 +128,12 @@ impl Scanner {
                         self.binary_digit()?
                     }
 
-                    _ => {
+                    '\n' => {
                         self.decimal()?;
+                        self.newline();
                     }
+
+                    _ => self.decimal()?,
                 }
             }
 

@@ -8,8 +8,8 @@ use crate::machine::runtime_error::{StackOverflowSnafu, StackUnderflowSnafu};
 
 #[derive(Debug)]
 pub struct StackManager<'a> {
-    mem: &'a mut Memory,
-    reg: &'a mut Registers,
+    pub mem: &'a mut Memory,
+    pub reg: &'a mut Registers,
 
     /// Minimum address of the stack.
     pub min: u16,
@@ -145,5 +145,20 @@ mod tests {
 
         s.reg.set(SP, STACK_END);
         s.push(1).expect_err("should fail to push to a full stack");
+    }
+
+    #[test]
+    fn test_push_zero() -> Result<(), RuntimeError> {
+        let mut m = Machine::new();
+        let mut s = StackManager::new(&mut m.mem, &mut m.reg);
+
+        s.push(1)?;
+        s.push(0)?;
+        s.push(2)?;
+        assert_eq!(s.pop()?, 2);
+        assert_eq!(s.pop()?, 0);
+        assert_eq!(s.pop()?, 1);
+
+        Ok(())
     }
 }

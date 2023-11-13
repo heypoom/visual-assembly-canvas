@@ -79,4 +79,13 @@ mod parser_tests {
         let mut p = Parser::new("");
         assert_eq!(p.parse(), Err(EmptyProgram));
     }
+
+    #[test]
+    fn test_push_after_zero() -> Errorable {
+        let mut p = Parser::new("push 0\npush 1\npush 2");
+        p.parse()?;
+        assert_eq!(p.ops, vec![Op::Push(0), Op::Push(1), Op::Push(2)]);
+
+        Ok(())
+    }
 }
