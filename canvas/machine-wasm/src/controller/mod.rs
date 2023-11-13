@@ -173,6 +173,10 @@ impl Controller {
     pub fn reset_blocks(&mut self) -> Return {
         returns(self.canvas.reset_blocks())
     }
+
+    pub fn set_await_watchdog(&mut self, state: bool) {
+        self.canvas.set_await_watchdog(state)
+    }
 }
 
 #[cfg(test)]

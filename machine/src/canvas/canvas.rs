@@ -378,4 +378,9 @@ impl Canvas {
 
         Ok(())
     }
+
+    /// Disable the await watchdog if we know the message will eventually arrive.
+    pub fn set_await_watchdog(&mut self, enabled: bool) {
+        self.seq.await_watchdog = enabled;
+    }
 }

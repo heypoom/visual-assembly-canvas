@@ -1,21 +1,18 @@
 import { Button } from "@radix-ui/themes"
-
-import {
-  PauseIcon,
-  PlayIcon,
-  TrackNextIcon,
-  PlusCircledIcon,
-} from "@radix-ui/react-icons"
-
 import { useStore } from "@nanostores/react"
+import { TrackNextIcon, PlusCircledIcon } from "@radix-ui/react-icons"
+
+import { RunButton } from "./RunButton"
+import { SetDelayButton } from "./SetDelayButton"
 
 import { $status } from "../store/status"
 import { manager } from "../core"
 import { addBlock } from "../canvas"
-import { SetDelayButton } from "./SetDelayButton"
+import { $hasBlocks } from "../store/nodes"
 
 export function Toolbar() {
   const status = useStore($status)
+  const hasBlocks = useStore($hasBlocks)
 
   return (
     <div className="absolute left-3 top-3 z-10 space-x-3">
@@ -48,34 +45,14 @@ export function Toolbar() {
         Plot
       </Button>
 
-      {status.running ? (
-        <Button
-          color="tomato"
-          variant="soft"
-          onClick={() => (manager.pause = true)}
-          className="font-semibold"
-        >
-          <PauseIcon />
-          Pause
-        </Button>
-      ) : (
-        <Button
-          color="green"
-          variant="soft"
-          onClick={manager.run}
-          className="font-semibold"
-        >
-          <PlayIcon />
-          Run
-        </Button>
-      )}
+      <RunButton />
 
       <Button
         color="blue"
         variant="soft"
         className="font-semibold"
         onClick={() => manager.step()}
-        disabled={status.running}
+        disabled={status.running || !hasBlocks}
       >
         <TrackNextIcon />
         Step
@@ -86,6 +63,7 @@ export function Toolbar() {
         variant="soft"
         className="font-semibold"
         onClick={() => manager.reset()}
+        disabled={!hasBlocks}
       >
         Reset
       </Button>

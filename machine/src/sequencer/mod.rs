@@ -21,9 +21,12 @@ pub struct Sequencer {
     /// Stores the statuses of the machine.
     pub statuses: Statuses,
 
+    /// We should disable the message watchdog if we know the message will eventually arrive.
+    pub await_watchdog: bool,
+
     /// Are all machines incapable of sending messages?
     /// Use this to prevent the `receive` instruction from blocking forever.
-    message_watchdog_counter: u16,
+    await_watchdog_counter: u16,
 }
 
 /// How many cycles should we wait for the message to be received?
@@ -34,7 +37,8 @@ impl Sequencer {
         Sequencer {
             machines: vec![],
             statuses: HashMap::new(),
-            message_watchdog_counter: MAX_WAIT_CYCLES,
+            await_watchdog: true,
+            await_watchdog_counter: MAX_WAIT_CYCLES,
         }
     }
 
@@ -84,7 +88,8 @@ impl Sequencer {
             if self.statuses.get(&id) == Some(&Invalid) { continue; }
             machine.partial_reset();
 
-            self.message_watchdog_counter = MAX_WAIT_CYCLES;
+            self.await_watchdog = true;
+            self.await_watchdog_counter = MAX_WAIT_CYCLES;
             self.statuses.insert(id, Ready);
         }
     }
@@ -112,15 +117,17 @@ impl Sequencer {
             if status == Awaiting {
                 // Do not tick the machine if the still did not receive the message.
                 if machine.expected_receives > 0 {
-                    // Raise an error if all peers are halted.
-                    if self.message_watchdog_counter == 0 {
-                        self.statuses.insert(id, Errored);
-                        return Err(MessageNeverReceived { id });
-                    }
+                    if self.await_watchdog {
+                        // Raise an error if all peers are halted.
+                        if self.await_watchdog_counter == 0 {
+                            self.statuses.insert(id, Errored);
+                            return Err(MessageNeverReceived { id });
+                        }
 
-                    // Reduce the watchdog counter
-                    if peers_halted(statuses.clone(), id) {
-                        self.message_watchdog_counter -= 1;
+                        // Reduce the watchdog counter
+                        if peers_halted(statuses.clone(), id) {
+                            self.await_watchdog_counter -= 1;
+                        }
                     }
 
                     continue;

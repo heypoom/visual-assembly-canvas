@@ -131,22 +131,25 @@ export class CanvasManager {
    * Indicate that we should run until pause, without any cycle limit or halting checks.
    */
   get runUntilPause(): boolean {
-    return this.delayMs > 0 && this.hasProducers
+    return this.delayMs > 0 && (this.hasProducers || this.hasInteractors)
   }
 
   /**
-   * Does the canvas has any signal producers?
+   * Does the canvas has any signal producers, e.g. oscillators?
    * This is used to determine if we should run until pause.
    */
   get hasProducers() {
     return $nodes.get().some(isOscNode)
   }
 
-  /**
-   * Does the canvas has any machines?
-   */
+  /** Does the canvas has any machines? */
   get hasMachines() {
     return $nodes.get().some(isMachineNode)
+  }
+
+  /** Does the canvas has any real-time interactors, e.g. tap blocks? */
+  get hasInteractors() {
+    return $nodes.get().some(isTapNode)
   }
 
   setRunning(state: boolean) {
@@ -158,9 +161,16 @@ export class CanvasManager {
     const startMs = performance.now()
     this.setRunning(true)
 
+    // Check the canvas for presence of blocks that alter run behaviour.
+    const hasMachines = this.hasMachines
+    const watchdog = !this.hasInteractors || this.delayMs === 0
+
+    // Disable the watchdog if we have interactors, e.g. tap blocks.
+    // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
+    this.ctx?.set_await_watchdog(watchdog)
+
     // Should we enable halting detection?
     const runUntilPause = this.runUntilPause
-    const hasMachines = this.hasMachines
     const detectHang = !runUntilPause
     let cycle = 0
 
@@ -205,6 +215,7 @@ export class CanvasManager {
     if (cycle >= this.maxCycle) this.haltReason = "cycle"
 
     this.setRunning(false)
+    this.ctx?.set_await_watchdog(true)
 
     if (detectHang) this.reportHang()
   }
@@ -227,7 +238,9 @@ export class CanvasManager {
 
   /** Returns an error that explains why the machine halted. */
   getHaltError(id: number, status: MachineStatus): MachineError | undefined {
-    if (status === "Awaiting") return { MessageNeverReceived: { id } }
+    if (status === "Awaiting") {
+      return { MessageNeverReceived: { id } }
+    }
 
     if (status === "Running") {
       switch (this.haltReason) {
