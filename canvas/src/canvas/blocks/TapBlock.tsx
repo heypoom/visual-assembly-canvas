@@ -2,11 +2,12 @@ import { Handle, NodeProps, Position } from "reactflow"
 import { manager } from "../../core"
 import { Port } from "machine-wasm"
 import { TapBlock } from "../../types/blocks"
-import { ContextMenu, Flex, TextField } from "@radix-ui/themes"
+import { Flex, TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
 import { produce } from "immer"
 import { isTapNode } from "."
 import { $nodes } from "../../store/nodes"
+import { RightClickMenu } from "../components/RightClickMenu"
 
 const S1 = 1
 
@@ -45,47 +46,39 @@ export const TapBlockView = (props: NodeProps<TapBlock>) => {
   return (
     <div className="group">
       <div>
-        <ContextMenu.Root>
-          <ContextMenu.Trigger>
-            <div className="rounded-1 px-3 py-2 bg-gray-5 border-2 border-gray-8 hover:border-cyan-9 flex flex-col items-center justify-center gap-y-3">
-              <button
-                className="w-5 h-5 rounded-[100%] bg-cyan-11 hover:bg-cyan-9 border-2 border-gray-12"
-                onClick={tap}
-              />
+        <RightClickMenu show={showSettings} toggle={toggle}>
+          <div className="rounded-1 px-3 py-2 bg-gray-5 border-2 border-gray-8 hover:border-cyan-9 flex flex-col items-center justify-center gap-y-3">
+            <button
+              className="w-5 h-5 rounded-[100%] bg-cyan-11 hover:bg-cyan-9 border-2 border-gray-12"
+              onClick={tap}
+            />
 
-              {showSettings && (
-                <div className="font-mono text-1">
-                  <Flex className="gap-x-2" justify="center" align="center">
-                    <div className="text-[10px]">signal</div>
+            {showSettings && (
+              <div className="font-mono text-1">
+                <Flex className="gap-x-2" justify="center" align="center">
+                  <div className="text-[10px]">signal</div>
 
-                    <TextField.Input
-                      size="1"
-                      className="max-w-[100px]"
-                      value={signalText}
-                      onChange={(e) => setSignalText(e.target.value)}
-                      onBlur={() => {
-                        const signal = signalText
-                          .split(" ")
-                          .map((s) => parseInt(s))
+                  <TextField.Input
+                    size="1"
+                    className="max-w-[100px]"
+                    value={signalText}
+                    onChange={(e) => setSignalText(e.target.value)}
+                    onBlur={() => {
+                      const signal = signalText
+                        .split(" ")
+                        .map((s) => parseInt(s))
 
-                        if (signal.length === 0) return
-                        if (signal.some((s) => isNaN(s))) return
+                      if (signal.length === 0) return
+                      if (signal.some((s) => isNaN(s))) return
 
-                        update({ signal })
-                      }}
-                    />
-                  </Flex>
-                </div>
-              )}
-            </div>
-          </ContextMenu.Trigger>
-
-          <ContextMenu.Content>
-            <ContextMenu.Item onClick={toggle}>
-              {showSettings ? "Hide" : "Show"} Settings
-            </ContextMenu.Item>
-          </ContextMenu.Content>
-        </ContextMenu.Root>
+                      update({ signal })
+                    }}
+                  />
+                </Flex>
+              </div>
+            )}
+          </div>
+        </RightClickMenu>
       </div>
 
       <Handle

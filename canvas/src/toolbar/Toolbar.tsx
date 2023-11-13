@@ -1,6 +1,11 @@
 import { Button } from "@radix-ui/themes"
 
-import { PlayIcon, PlusCircledIcon, TrackNextIcon } from "@radix-ui/react-icons"
+import {
+  PlayIcon,
+  PlusCircledIcon,
+  StopIcon,
+  TrackNextIcon,
+} from "@radix-ui/react-icons"
 
 import { useStore } from "@nanostores/react"
 
@@ -43,16 +48,27 @@ export function Toolbar() {
         Plot
       </Button>
 
-      <Button
-        color="green"
-        variant="soft"
-        onClick={manager.run}
-        className="font-semibold"
-        disabled={status.running}
-      >
-        <PlayIcon />
-        Run
-      </Button>
+      {status.running ? (
+        <Button
+          color="tomato"
+          variant="soft"
+          onClick={() => (manager.stop = true)}
+          className="font-semibold"
+        >
+          <StopIcon />
+          Stop
+        </Button>
+      ) : (
+        <Button
+          color="green"
+          variant="soft"
+          onClick={manager.run}
+          className="font-semibold"
+        >
+          <PlayIcon />
+          Run
+        </Button>
+      )}
 
       <Button
         color="blue"

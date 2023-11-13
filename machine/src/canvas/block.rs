@@ -31,6 +31,9 @@ pub enum BlockData {
     /// Plots a graph out of the data it receives.
     PlotterBlock {
         data: Vec<u16>,
+
+        /// Window size.
+        size: u16,
     },
 
     /// Oscillator. Produces the value of a waveform at a given time.

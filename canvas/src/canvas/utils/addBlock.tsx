@@ -17,12 +17,12 @@ export function addBlock<T extends BlockTypes>(type: T) {
 
     case "pixel": {
       const id = manager.ctx?.add_block({
-        PixelBlock: { pixels: [], mode: 'Replace' },
+        PixelBlock: { pixels: [], mode: "Replace" },
       })
 
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "pixel", { id, pixels: [], mode: 'Replace' })
+      addCanvasNode(id, "pixel", { id, pixels: [], mode: "Replace" })
       return
     }
 
@@ -47,7 +47,7 @@ export function addBlock<T extends BlockTypes>(type: T) {
       const id = manager.ctx?.add_block({ PlotterBlock: { data: [] } })
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "plotter", { id, data: [] })
+      addCanvasNode(id, "plotter", { id, data: [], size: 250 })
       return
     }
   }

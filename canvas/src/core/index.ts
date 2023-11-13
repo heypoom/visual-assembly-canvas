@@ -21,7 +21,13 @@ import {
 
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
-import { isMachineNode, isOscNode, isPixelNode, isPlotterNode, isTapNode } from "../canvas/blocks/utils/is"
+import {
+  isMachineNode,
+  isOscNode,
+  isPixelNode,
+  isPlotterNode,
+  isTapNode,
+} from "../canvas/blocks/utils/is"
 import { $delay } from "../store/canvas"
 
 export const setSource = (id: number, source: string) => {
@@ -55,6 +61,9 @@ export class CanvasManager {
 
   /** Is every machine ready to run? */
   ready = false
+
+  /** Should machine prepare to stop execution? */
+  stop = false
 
   sources: Map<number, string> = new Map()
 
@@ -115,6 +124,12 @@ export class CanvasManager {
     let cycle = 0
 
     while (cycle < this.maxCycle && !this.isHalted) {
+      // Execution is forced to stop by the user.
+      if (this.stop) {
+        this.stop = false
+        break
+      }
+
       this.step({ batch: true })
 
       // Add an artificial delay to allow the user to see the changes
