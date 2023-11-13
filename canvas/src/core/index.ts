@@ -118,11 +118,18 @@ export class CanvasManager {
   }
 
   /**
-   * We do not need to detect for hangs if the delay is high enough
-   * for the user to pause or reset the program by themself.
+   * Indicate that we should run until pause, without any cycle limit or halting checks.
    */
-  get detectHanging(): boolean {
-    return this.delayMs == 0
+  get runUntilPause(): boolean {
+    return this.delayMs > 0 && this.hasProducers
+  }
+
+  /**
+   * Does the canvas has any signal producers?
+   * This is used to determine if we should run until pause.
+   */
+  get hasProducers() {
+    return $nodes.get().some((node) => isOscNode(node))
   }
 
   setRunning(state: boolean) {
@@ -134,10 +141,12 @@ export class CanvasManager {
     const startMs = performance.now()
     this.setRunning(true)
 
-    // Cycle checker ensures that the machine doesn't run forever.
+    // Should we enable halting detection?
+    const runUntilPause = this.runUntilPause
+    const detectHalt = !runUntilPause
     let cycle = 0
 
-    while (!this.detectHanging || cycle < this.maxCycle) {
+    while (runUntilPause || cycle < this.maxCycle) {
       // Execution is forced to pause by the user.
       if (this.pause) {
         this.pause = false
@@ -149,25 +158,24 @@ export class CanvasManager {
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
 
-      if (this.detectHanging) cycle++
+      if (detectHalt) cycle++
     }
 
     // extra step to let the blocks tick
     this.step({ batch: true })
 
     this.setRunning(false)
-    this.detectProgramHang(cycle)
+    if (detectHalt) this.detectHalt(cycle)
 
     const duration = performance.now() - startMs
+
     if (this.delayMs === 0 && duration > 300) {
-      console.info(`a slow run took ${duration}ms to execute!`)
+      console.warn(`a slow run took ${duration}ms to execute!`)
     }
   }
 
-  /** Check if our program hangs. */
-  detectProgramHang(cycle: number) {
-    if (!this.detectHanging) return
-
+  /** Check if our program ever halts. Helps prevent hangs, infinite loops, and awaiting for messages. */
+  detectHalt(cycle: number) {
     setTimeout(() => {
       if (cycle >= this.maxCycle && !this.isHalted) {
         this.statuses.forEach((status, id) => {
