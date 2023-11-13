@@ -1,4 +1,5 @@
-import { addNode } from "../../store/nodes"
+import { addNode } from "../../store/actions/nodes"
+
 import { BlockNode, BlockTypeMap, BlockTypes } from "../../types/Node"
 
 export function addCanvasNode<T extends BlockTypes>(
@@ -10,6 +11,8 @@ export function addCanvasNode<T extends BlockTypes>(
     id: id.toString(),
     type,
     data,
+
+    // TODO: improve initial layout
     position: { x: rand(), y: rand() },
   }
 

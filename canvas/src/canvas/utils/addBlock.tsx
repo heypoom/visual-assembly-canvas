@@ -1,6 +1,6 @@
 import { manager } from "../../core"
 import { BlockTypeMap, BlockTypes } from "../../types/Node"
-import { defaultProps, DEFAULT_SOURCE } from "../blocks/utils/defaults"
+import { defaultProps, DEFAULT_SOURCE } from "../blocks"
 import { addCanvasNode } from "./addCanvasNode"
 
 export function addBlock<T extends BlockTypes>(type: T) {

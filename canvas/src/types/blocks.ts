@@ -1,10 +1,10 @@
 import { PixelMode as _PixelMode } from "machine-wasm"
 
-import { PaletteKey } from "../canvas/blocks/pixel/palette"
 import { UnionToIntersection } from "./helper"
 
+import { PaletteKey } from "../canvas/blocks"
+
 export interface BaseBlock {
-  // Machine identifier.
   id: number
 }
 
@@ -22,15 +22,13 @@ export interface TapBlock extends BaseBlock {
 }
 
 export interface MachineBlock extends BaseBlock {
-  // Current source code of the machine.
   source: string
 }
 
 export interface PlotterBlock extends BaseBlock {
-  // Data to plot.
   values: number[]
 
-  // Capacity of the plotter
+  /** How much data can the plotter hold? */
   size: number
 }
 
