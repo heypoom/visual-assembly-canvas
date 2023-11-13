@@ -51,7 +51,7 @@ impl Scanner {
     fn peek_next(&self) -> Result<char, ParseError> {
         if self.is_end() { return Ok('\0'); }
 
-        self.source.chars().nth(self.current).ok_or(PeekExceedsSourceLength)
+        self.source.chars().nth(self.current + 1).ok_or(PeekExceedsSourceLength)
     }
 
     fn is_end(&self) -> bool {
@@ -112,7 +112,7 @@ impl Scanner {
             }
 
             // Parse hexadecimals.
-            c if c == '0' && !self.is_end() && self.peek_next()? != ' ' => {
+            c if c == '0' && !self.is_end() && self.peek()? != ' ' && self.peek_next()? != ' ' => {
                 let char = self.advance()?;
 
                 match char {
@@ -126,7 +126,9 @@ impl Scanner {
                         self.binary_digit()?
                     }
 
-                    _ => self.decimal()?
+                    _ => {
+                        self.decimal()?;
+                    }
                 }
             }
 

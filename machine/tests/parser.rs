@@ -62,6 +62,19 @@ mod parser_tests {
     }
 
     #[test]
+    fn test_push_zero() -> Errorable {
+        // Regression: the parser was not parsing instructions after the `push 0` instruction.
+        let mut p = Parser::new(r"
+            push 0
+            receive
+        ");
+
+        p.parse()?;
+        assert_eq!(p.ops, [Op::Push(0), Op::Receive]);
+        Ok(())
+    }
+
+    #[test]
     fn test_empty_program() {
         let mut p = Parser::new("");
         assert_eq!(p.parse(), Err(EmptyProgram));
