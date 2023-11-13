@@ -44,12 +44,16 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
   }
 
   function handleWaveChange(key: string) {
-    const w = waveforms[key as WaveformKey]
+    let w = waveforms[key as WaveformKey]
 
     // Update duty cycle
     if ("Square" in w) {
       if (cycleText) {
-        w.Square.duty_cycle = parseInt(cycleText)
+        const cycle = parseInt(cycleText)
+
+        if (!isNaN(cycle)) {
+          w = { ...w, Square: { duty_cycle: cycle } }
+        }
       } else {
         setCycleText(w.Square.duty_cycle.toString())
       }
