@@ -9,6 +9,7 @@ import { $status } from "../store/status"
 import { manager } from "../core"
 import { addBlock } from "../canvas"
 import { $hasBlocks } from "../store/nodes"
+import { addMachine } from "../canvas/utils/addBlock"
 
 export function Toolbar() {
   const status = useStore($status)
@@ -16,31 +17,43 @@ export function Toolbar() {
 
   return (
     <div className="absolute left-3 top-3 z-10 space-x-3">
-      <Button
-        onClick={() => addBlock("machine")}
-        variant="soft"
-        color="crimson"
-      >
+      <Button onClick={addMachine} variant="soft" color="crimson">
         <PlusCircledIcon />
         Machine
       </Button>
 
-      <Button onClick={() => addBlock("pixel")} variant="soft" color="orange">
+      <Button
+        onClick={() => addBlock("PixelBlock")}
+        variant="soft"
+        color="orange"
+      >
         <PlusCircledIcon />
         Pixel
       </Button>
 
-      <Button onClick={() => addBlock("tap")} variant="soft" color="orange">
+      <Button
+        onClick={() => addBlock("TapBlock")}
+        variant="soft"
+        color="orange"
+      >
         <PlusCircledIcon />
         Tap
       </Button>
 
-      <Button onClick={() => addBlock("osc")} variant="soft" color="orange">
+      <Button
+        onClick={() => addBlock("OscBlock")}
+        variant="soft"
+        color="orange"
+      >
         <PlusCircledIcon />
         Osc
       </Button>
 
-      <Button onClick={() => addBlock("plotter")} variant="soft" color="orange">
+      <Button
+        onClick={() => addBlock("PlotterBlock")}
+        variant="soft"
+        color="orange"
+      >
         <PlusCircledIcon />
         Plot
       </Button>

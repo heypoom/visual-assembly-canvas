@@ -1,4 +1,3 @@
-import { produce } from "immer"
 import { useReducer } from "react"
 import { PixelMode as _PixelMode } from "machine-wasm"
 import { Select, TextField } from "@radix-ui/themes"
@@ -7,11 +6,10 @@ import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
 import { PaletteKey, getPixelColor, palettes } from "./palette"
 
-import { isPixelNode } from ".."
-
 import type { PixelBlock, PixelMode } from "../../../types/blocks"
-import { $nodes } from "../../../store/nodes"
+
 import { manager } from "../../../core"
+import { updateNodeData } from "../../../store/blocks"
 
 export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const { data } = props
@@ -23,24 +21,14 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
     data.pixels?.length > 0 ? data.pixels : [...Array(columns * 5)].fill(0)
 
   function update(input: Partial<PixelBlock>) {
-    const next = produce($nodes.get(), (nodes) => {
-      const node = nodes.find((n) => n.data.id === data.id)
-      if (!node) return
+    updateNodeData(data.id, input)
 
-      // Update the pixels.
-      if (isPixelNode(node)) {
-        node.data = { ...node.data, ...input }
-      }
-
-      // Update the behaviour of pixel block.
-      if (typeof input.mode === "string") {
-        manager.ctx?.send_message_to_block(data.id, {
-          SetPixelMode: { mode: input.mode },
-        })
-      }
-    })
-
-    $nodes.set(next)
+    // Update the behaviour of pixel block.
+    if (typeof input.mode === "string") {
+      manager.ctx?.send_message_to_block(data.id, {
+        SetPixelMode: { mode: input.mode },
+      })
+    }
   }
 
   const isDrawable = !!pixels && columns > 1

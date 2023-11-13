@@ -1,4 +1,3 @@
-import { produce } from "immer"
 import setup, { Controller } from "machine-wasm"
 
 import { $nodes } from "../store/nodes"
@@ -21,28 +20,15 @@ import {
 
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
-import {
-  isMachineNode,
-  isOscNode,
-  isPixelNode,
-  isPlotterNode,
-  isTapNode,
-} from "../canvas/blocks/utils/is"
+
 import { $delay } from "../store/canvas"
+import { isBlock } from "../canvas/blocks"
+import { updateNode } from "../store/blocks"
 
 export const setSource = (id: number, source: string) => {
-  const nodes = produce($nodes.get(), (nodes) => {
-    const node = nodes.find((n) => n.data.id === id)
-
-    if (!node) {
-      console.error(`node not found in node ${id} when setting source.`)
-      return
-    }
-
-    if (isMachineNode(node)) node.data.source = source
+  updateNode(id, (node) => {
+    if (isBlock.machine(node)) node.data.source = source
   })
-
-  $nodes.set(nodes)
 }
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -134,22 +120,26 @@ export class CanvasManager {
     return this.delayMs > 0 && (this.hasProducers || this.hasInteractors)
   }
 
+  get nodes() {
+    return $nodes.get()
+  }
+
   /**
    * Does the canvas has any signal producers, e.g. oscillators?
    * This is used to determine if we should run until pause.
    */
   get hasProducers() {
-    return $nodes.get().some(isOscNode)
+    return this.nodes.some(isBlock.osc)
   }
 
   /** Does the canvas has any machines? */
   get hasMachines() {
-    return $nodes.get().some(isMachineNode)
+    return this.nodes.some(isBlock.machine)
   }
 
   /** Does the canvas has any real-time interactors, e.g. tap blocks? */
   get hasInteractors() {
-    return $nodes.get().some(isTapNode)
+    return this.nodes.some(isBlock.tap)
   }
 
   setRunning(state: boolean) {
@@ -286,33 +276,10 @@ export class CanvasManager {
     const blocks = this.ctx?.get_blocks()
 
     for (const block of blocks) {
-      // TODO: refactor this
-      const next = produce($nodes.get(), (nodes) => {
-        const node = nodes.find((n) => n.data.id === block.id)
-
-        if (!node) {
-          console.error(`node not found for block "${block.id}" when updating.`)
-          return
-        }
-
-        if (isPixelNode(node)) {
-          node.data = { ...node.data, ...block.data.PixelBlock }
-        }
-
-        if (isOscNode(node)) {
-          node.data = { ...node.data, ...block.data.OscBlock }
-        }
-
-        if (isPlotterNode(node)) {
-          node.data = { ...node.data, ...block.data.PlotterBlock }
-        }
-
-        if (isTapNode(node)) {
-          node.data = { ...node.data, ...block.data.TapBlock }
-        }
+      updateNode(block.id, (node) => {
+        const type = node.type
+        if (type) node.data = { ...node.data, ...block.data[type] }
       })
-
-      $nodes.set(next)
     }
   }
 

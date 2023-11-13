@@ -4,10 +4,9 @@ import { Port } from "machine-wasm"
 import { TapBlock } from "../../types/blocks"
 import { Flex, TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
-import { produce } from "immer"
-import { isTapNode } from "."
-import { $nodes } from "../../store/nodes"
+
 import { RightClickMenu } from "../components/RightClickMenu"
+import { updateNodeData } from "../../store/blocks"
 
 const S1 = 1
 
@@ -32,15 +31,13 @@ export const TapBlockView = (props: NodeProps<TapBlock>) => {
     manager.step()
   }
 
-  function update(input: Partial<TapBlock>) {
-    const next = produce($nodes.get(), (nodes) => {
-      const node = nodes.find((n) => n.data.id === props.data.id)
-      if (!node) return
+  function setSignal() {
+    const signal = signalText.split(" ").map((s) => parseInt(s))
 
-      if (isTapNode(node)) node.data = { ...node.data, ...input }
-    })
+    if (signal.length === 0) return
+    if (signal.some((s) => isNaN(s))) return
 
-    $nodes.set(next)
+    updateNodeData(id, { signal })
   }
 
   return (
@@ -63,16 +60,7 @@ export const TapBlockView = (props: NodeProps<TapBlock>) => {
                     className="max-w-[100px]"
                     value={signalText}
                     onChange={(e) => setSignalText(e.target.value)}
-                    onBlur={() => {
-                      const signal = signalText
-                        .split(" ")
-                        .map((s) => parseInt(s))
-
-                      if (signal.length === 0) return
-                      if (signal.some((s) => isNaN(s))) return
-
-                      update({ signal })
-                    }}
+                    onBlur={setSignal}
                   />
                 </Flex>
               </div>

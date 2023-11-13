@@ -38,7 +38,7 @@ export const onNodesChange = (changes: NodeChange[]) => {
     }
   }
 
-  $nodes.set(applyNodeChanges(changes, nodes))
+  $nodes.set(applyNodeChanges(changes, nodes) as BlockNode[])
 }
 
 export const onEdgesChange = (changes: EdgeChange[]) => {

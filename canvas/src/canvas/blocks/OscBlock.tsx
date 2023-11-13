@@ -3,11 +3,10 @@ import { Handle, NodeProps, Position } from "reactflow"
 import { OscBlock, Waveform, WaveformKey } from "../../types/blocks"
 import { manager } from "../../core"
 import { Select, TextField } from "@radix-ui/themes"
-import { isOscNode } from "."
-import { produce } from "immer"
-import { $nodes } from "../../store/nodes"
+
 import { RightClickMenu } from "../components/RightClickMenu"
 import { useReducer, useState } from "react"
+import { updateNodeData } from "../../store/blocks"
 
 const S1 = 1
 
@@ -37,20 +36,11 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
   ) as WaveformKey
 
   function setWaveform(waveform: Waveform) {
-    const next = produce($nodes.get(), (nodes) => {
-      const node = nodes.find((n) => n.data.id === id)
-      if (!node) return
+    updateNodeData(id, { waveform })
 
-      if (isOscNode(node)) {
-        node.data = { ...node.data, waveform }
-      }
-
-      manager.ctx?.send_message_to_block(id, {
-        SetWaveform: { waveform },
-      })
+    manager.ctx?.send_message_to_block(id, {
+      SetWaveform: { waveform },
     })
-
-    $nodes.set(next)
   }
 
   function handleWaveChange(key: string) {
