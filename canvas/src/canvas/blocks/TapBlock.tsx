@@ -14,9 +14,9 @@ const S1 = 1
 // TODO: send message to connected port on tap
 // TODO: add ways for blocks to send events from the frontend
 export const TapBlockView = (props: NodeProps<TapBlock>) => {
-  const { id, signal = [1] } = props.data
+  const { id, signal } = props.data
 
-  const [signalText, setSignalText] = useState(signal?.join(" "))
+  const [signalText, setSignalText] = useState(signal?.join(" ") ?? "")
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
   function tap() {
