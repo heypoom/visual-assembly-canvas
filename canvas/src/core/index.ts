@@ -314,6 +314,15 @@ export class CanvasManager {
     this.reloadMachines()
     setMachineState(this)
   }
+
+  removeBlock(id: number) {
+    // Remove the block.
+    this.ctx?.remove_block(id)
+
+    // Teardown the code editor state.
+    this.sources.delete(id)
+    this.highlightMaps.delete(id)
+  }
 }
 
 export const manager = new CanvasManager()

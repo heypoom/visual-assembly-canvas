@@ -26,9 +26,10 @@ export const onNodesChange = (changes: NodeChange[]) => {
   for (const change of changes) {
     if (change.type === "remove") {
       try {
-        // TODO: map handle to port ids -> edge.sourceHandle, edge.targetHandle
-        manager.ctx?.remove_block(Number(change.id))
-        console.log("block removed:", change.id)
+        const id = parseInt(change.id)
+        if (isNaN(id)) continue
+
+        manager.removeBlock(id)
       } catch (error) {
         console.warn("remove block failed:", error)
       }
