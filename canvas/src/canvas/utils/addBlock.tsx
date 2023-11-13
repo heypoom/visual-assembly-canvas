@@ -1,5 +1,6 @@
 import { manager } from "../../core"
 import { BlockTypes } from "../../types/Node"
+import { PixelBlock, PixelMode } from "../../types/blocks"
 import { addCanvasNode } from "./addCanvasNode"
 
 const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
@@ -16,13 +17,14 @@ export function addBlock<T extends BlockTypes>(type: T) {
     }
 
     case "pixel": {
+      const props = { pixels: [], mode: "Replace" as PixelMode }
       const id = manager.ctx?.add_block({
-        PixelBlock: { pixels: [], mode: "Replace" },
+        PixelBlock: props,
       })
 
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "pixel", { id, pixels: [], mode: "Replace" })
+      addCanvasNode(id, "pixel", { ...props, id })
       return
     }
 
@@ -44,10 +46,11 @@ export function addBlock<T extends BlockTypes>(type: T) {
     }
 
     case "plotter": {
-      const id = manager.ctx?.add_block({ PlotterBlock: { data: [] } })
+      const props = { values: [], size: 250 }
+      const id = manager.ctx?.add_block({ PlotterBlock: props })
       if (typeof id !== "number") return
 
-      addCanvasNode(id, "plotter", { id, data: [], size: 250 })
+      addCanvasNode(id, "plotter", { id, ...props })
       return
     }
   }

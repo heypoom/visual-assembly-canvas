@@ -27,7 +27,7 @@ export interface MachineBlock extends BaseBlock {
 
 export interface PlotterBlock extends BaseBlock {
   // Data to plot.
-  data: number[]
+  values: number[]
 
   // Capacity of the plotter
   size: number
@@ -45,4 +45,3 @@ export interface OscBlock extends BaseBlock {
   values: number[]
   waveform: Waveform
 }
-

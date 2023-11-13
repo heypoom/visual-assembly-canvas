@@ -37,7 +37,7 @@ mod tests {
 
     #[test]
     fn test_add_overflow() -> Errorable {
-        let mut m: M = vec![Op::Push(65535), Op::Push(65535), Op::Add].into();
+        let mut m: M = vec![Op::Push(u16::MAX), Op::Push(u16::MAX), Op::Add].into();
         assert_eq!(m.run(), Err(IntegerOverflow));
 
         Ok(())

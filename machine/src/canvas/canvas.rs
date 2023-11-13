@@ -4,7 +4,7 @@ use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, Machine
 use crate::{Action, Message, Sequencer};
 use crate::audio::waveform::generate_waveform;
 use crate::canvas::{BlockIdInUseSnafu};
-use crate::canvas::CanvasError::CannotFindWire;
+use crate::canvas::CanvasError::{CannotFindWire};
 use crate::canvas::PixelMode::{Append, Command, Replace};
 use crate::canvas::vec_helper::extend_and_remove_oldest;
 use super::block::{Block, BlockData};
@@ -194,11 +194,11 @@ impl Canvas {
             }
         }
 
-        // TODO: implement waveform generation.
         let waveform_value = generate_waveform(*waveform, *time);
-
         values.push(waveform_value);
-        *time += 1;
+
+        // increment the time, or wrap around to 0.
+        *time = (*time).checked_add(1).unwrap_or(0);
 
         // Send the waveform values to the connected blocks.
         if !wires.is_empty() {

@@ -7,12 +7,10 @@ import { RightClickMenu } from "../components/RightClickMenu"
 const S0 = 0
 
 export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
-  const { data, size } = props.data
+  const { values, size } = props.data
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
   const scaleY = 4
-
-  const frame = data.slice(Math.max(data.length - size, 0), data.length - 1)
 
   return (
     <div>
@@ -34,7 +32,7 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
               minHeight: `${255 / scaleY}px`,
             }}
           >
-            {frame.map((bar, i) => (
+            {values.map((bar, i) => (
               <div
                 key={i}
                 style={{ height: `${Math.round(bar / scaleY)}px` }}
