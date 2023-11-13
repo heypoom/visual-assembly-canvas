@@ -12,7 +12,16 @@ mod machine_tests {
 
 
     #[test]
-    fn test_push_zero_then_one() {
+    fn test_instruction_after_zero() {
+        let mut m: M = r"
+            push 1
+            push 0
+            push 2
+        ".try_into().expect("cannot parse the test program");
+
+        m.run().expect("cannot run the test program");
+        assert_eq!(m.mem.read_stack(2), [1, 0, 2]);
+
         let mut m: M = r"
             push 0
             push 1
