@@ -68,13 +68,23 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
     setWaveform(w)
   }
 
+  function getOscLog() {
+    let argsText = ""
+
+    if (wave === "Square") {
+      argsText = `, c = ${
+        cycleText || ("Square" in waveform && waveform?.Square?.duty_cycle)
+      }`
+    }
+
+    return `${wave?.toLowerCase()}(t = ${time}${argsText})`
+  }
+
   return (
     <div>
       <RightClickMenu show={showSettings} toggle={toggle}>
         <div className="group border-2 border-crimson-9 font-mono px-3 py-2 space-y-2">
-          <div className="text-crimson-11">
-            {wave?.toLowerCase()}(t = {time})
-          </div>
+          <div className="text-crimson-11">{getOscLog()}</div>
 
           {showSettings && (
             <section className="flex flex-col space-y-2 w-full">
@@ -106,6 +116,8 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
                     className="max-w-[70px]"
                     size="1"
                     type="number"
+                    min={0}
+                    max={255}
                     value={cycleText}
                     onChange={(k) => {
                       const str = k.target.value
