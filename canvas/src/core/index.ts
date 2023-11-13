@@ -30,6 +30,9 @@ import {
 } from "../canvas/blocks/utils/is"
 import { $delay } from "../store/canvas"
 
+/** We disable the cycle / hanging detector over this threshold */
+const DETECT_HANG_DELAY_THRESHOLD = 3
+
 export const setSource = (id: number, source: string) => {
   const nodes = produce($nodes.get(), (nodes) => {
     const node = nodes.find((n) => n.data.id === id)
@@ -62,8 +65,8 @@ export class CanvasManager {
   /** Is every machine ready to run? */
   ready = false
 
-  /** Should machine prepare to stop execution? */
-  stop = false
+  /** Should machine prepare to pause execution? */
+  pause = false
 
   sources: Map<number, string> = new Map()
 
@@ -117,16 +120,32 @@ export class CanvasManager {
     return $delay.get()
   }
 
-  run = async () => {
-    this.prepare()
-    $status.setKey("running", true)
+  /**
+   * We do not need to detect for hangs if the delay is high enough
+   * for the user to pause or reset the program by themself.
+   */
+  get detectHanging(): boolean {
+    return this.delayMs <= DETECT_HANG_DELAY_THRESHOLD
+  }
 
+  setRunning(state: boolean) {
+    $status.setKey("running", state)
+  }
+
+  /** Continue the execution. */
+  run = async () => {
+    this.setRunning(true)
+
+    // Cycle checker ensures that the machine doesn't run forever.
     let cycle = 0
 
-    while (cycle < this.maxCycle && !this.isHalted) {
-      // Execution is forced to stop by the user.
-      if (this.stop) {
-        this.stop = false
+    while (
+      (this.detectHanging ? cycle < this.maxCycle : true) &&
+      !this.isHalted
+    ) {
+      // Execution is forced to pause by the user.
+      if (this.pause) {
+        this.pause = false
         break
       }
 
@@ -141,8 +160,13 @@ export class CanvasManager {
     // extra step to let the blocks tick
     this.step({ batch: true })
 
-    this.invalidate()
-    $status.setKey("running", false)
+    this.setRunning(false)
+    this.detectProgramHang(cycle)
+  }
+
+  /** Check if our program hangs. */
+  detectProgramHang(cycle: number) {
+    if (!this.detectHanging) return
 
     setTimeout(() => {
       if (cycle >= this.maxCycle && !this.isHalted) {
@@ -168,6 +192,7 @@ export class CanvasManager {
   }
 
   step = (config: { batch?: boolean } = {}) => {
+    // If the program is not initialized yet, we need to initialize it.
     this.prepare()
 
     try {
@@ -180,10 +205,13 @@ export class CanvasManager {
     setMachineState(this)
 
     // Highlight the current line.
-    if (!config.batch || this.delayMs > 0) this.highlightCurrent()
+    if (this.delayMs > 0) this.highlightCurrent()
 
+    // Tick the blocks.
     this.updateBlocks()
 
+    // TODO: add an indicator to the block for a halted machine.
+    // TODO: we should remove this behaviour to prevent confusion!
     // If running in steps, we should reset the machine once it halts.
     if (!config.batch && this.isHalted) this.reloadMachines()
   }
@@ -263,7 +291,13 @@ export class CanvasManager {
     })
   }
 
-  resetBlocks() {
+  reset() {
+    const { running } = $status.get()
+    if (running) this.pause = true
+
+    // Invalidate the ready flag.
+    this.invalidate()
+
     // Reset blocks and update UI
     this.ctx?.reset_blocks()
     this.updateBlocks()

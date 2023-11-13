@@ -1,6 +1,7 @@
 import { Button } from "@radix-ui/themes"
 
 import {
+  PauseIcon,
   PlayIcon,
   PlusCircledIcon,
   StopIcon,
@@ -52,11 +53,11 @@ export function Toolbar() {
         <Button
           color="tomato"
           variant="soft"
-          onClick={() => (manager.stop = true)}
+          onClick={() => (manager.pause = true)}
           className="font-semibold"
         >
-          <StopIcon />
-          Stop
+          <PauseIcon />
+          Pause
         </Button>
       ) : (
         <Button
@@ -81,16 +82,16 @@ export function Toolbar() {
         Step
       </Button>
 
-      <SetDelayButton />
-
       <Button
-        color="gray"
+        color="tomato"
         variant="soft"
         className="font-semibold"
-        onClick={() => manager.resetBlocks()}
+        onClick={() => manager.reset()}
       >
         Reset
       </Button>
+
+      <SetDelayButton />
     </div>
   )
 }
