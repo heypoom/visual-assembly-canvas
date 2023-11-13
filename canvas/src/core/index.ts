@@ -139,7 +139,14 @@ export class CanvasManager {
    * This is used to determine if we should run until pause.
    */
   get hasProducers() {
-    return $nodes.get().some((node) => isOscNode(node))
+    return $nodes.get().some(isOscNode)
+  }
+
+  /**
+   * Does the canvas has any machines?
+   */
+  get hasMachines() {
+    return $nodes.get().some(isMachineNode)
   }
 
   setRunning(state: boolean) {
@@ -153,6 +160,7 @@ export class CanvasManager {
 
     // Should we enable halting detection?
     const runUntilPause = this.runUntilPause
+    const hasMachines = this.hasMachines
     const detectHang = !runUntilPause
     let cycle = 0
 
@@ -170,7 +178,7 @@ export class CanvasManager {
       if (this.delayMs > 0) await delay(this.delayMs)
 
       // Halt detection - machine gracefully completes a run.
-      if (this.isHalted) {
+      if (hasMachines && this.isHalted) {
         this.haltReason = "halted"
         break
       }
