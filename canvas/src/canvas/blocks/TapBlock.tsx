@@ -47,9 +47,9 @@ export const TapBlockView = (props: NodeProps<TapBlock>) => {
     <div className="group">
       <div>
         <RightClickMenu show={showSettings} toggle={toggle}>
-          <div className="rounded-1 px-3 py-2 bg-gray-5 border-2 border-gray-8 hover:border-cyan-9 flex flex-col items-center justify-center gap-y-3">
+          <div className="rounded-1 px-5 py-2 bg-gray-5 border-2 border-gray-8 hover:border-cyan-9 flex flex-col items-center justify-center gap-y-3">
             <button
-              className="w-5 h-5 rounded-[100%] bg-cyan-11 hover:bg-cyan-9 border-2 border-gray-12"
+              className="w-5 h-5 rounded-[100%] bg-crimson-9 hover:bg-cyan-11 border-2 border-gray-12 active:bg-cyan-9 focus:bg-cyan-11 outline-gray-12 focus:outline-cyan-12"
               onClick={tap}
             />
 
@@ -85,7 +85,7 @@ export const TapBlockView = (props: NodeProps<TapBlock>) => {
         type="source"
         position={Position.Right}
         id={S1.toString()}
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
+        className="bg-gray-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:!border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10 border-gray-11 group-hover:border-gray-12"
       />
     </div>
   )
