@@ -1,3 +1,3 @@
 import { atom } from "nanostores"
 
-export const $delay = atom(40)
+export const $delay = atom(1)

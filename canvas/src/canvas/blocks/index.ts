@@ -1,6 +1,6 @@
 import { TapBlockView } from "./TapBlock"
 import { OscBlockView } from "./OscBlock"
-import { PlotterBlockView } from "./PlotterBlock"
+import { PlotterBlockView } from "./plotter/PlotterBlock"
 import { PixelBlockView } from "./pixel/PixelBlock"
 import { MachineBlockView } from "./machine/MachineBlock"
 

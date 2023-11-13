@@ -15,7 +15,9 @@ type WaveformKey = keyof Waveform
 
 const waveforms: Record<WaveformKey, Waveform> = {
   Sine: { Sine: null },
-  Square: { Square: { duty_cycle: 0 } },
+  Cosine: { Cosine: null },
+  Tangent: { Tangent: null },
+  Square: { Square: { duty_cycle: 200 } },
   Sawtooth: { Sawtooth: null },
   Triangle: { Triangle: null },
   Noise: { Noise: null },

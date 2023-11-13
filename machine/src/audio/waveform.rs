@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Waveform {
     Sine,
+    Cosine,
+    Tangent,
 
     Square {
         duty_cycle: u16,
@@ -15,17 +17,66 @@ pub enum Waveform {
     Noise,
 }
 
-/// 127.5 * (1 + sin(2 * π * x / 255))
+static MAX: f32 = 255.0;
+static HALF: f32 = 255.0 / 2.0;
+
+pub fn to_u16(v: f32) -> u16 {
+    v.round() as u16
+}
+
+pub fn to_wave(v: f32) -> u16 {
+    to_u16((v + 1.0) * HALF)
+}
+
+pub fn angular(n: u16) -> f32 {
+    2.0 * PI * (n as f32) / MAX
+}
+
 pub fn sine_wave(n: u16) -> u16 {
-    ((255.0 / 2.0) * (1.0 + f32::sin(2.0 * PI * (n as f32) / 255.0))).round() as u16
+    to_wave(angular(n).sin())
+}
+
+pub fn cosine_wave(n: u16) -> u16 {
+    to_wave(angular(n).cos())
+}
+
+pub fn tangent_wave(n: u16) -> u16 {
+    to_wave(angular(n).tan())
+}
+
+pub fn sawtooth_wave(n: u16) -> u16 {
+    to_u16((n as f32 / 65535.0) * 255.0)
+}
+
+pub fn square_wave(time: u16, duty_cycle: u16) -> u16 {
+    let period = 255;
+    let threshold = period * duty_cycle / period;
+
+    if time < threshold {
+        0
+    } else {
+        period
+    }
+}
+
+pub fn triangle_wave(time: u16) -> u16 {
+    let value = if time < 32768 {
+        (time as f32 / 32767.0) - 1.0
+    } else {
+        1.0 - ((time as f32 - 32768.0) / 32767.0)
+    };
+
+    to_wave(value)
 }
 
 pub fn generate_waveform(waveform: Waveform, time: u16) -> u16 {
     match waveform {
         Waveform::Sine => sine_wave(time),
-        Waveform::Square { .. } => 0,
-        Waveform::Sawtooth => 0,
-        Waveform::Triangle => 0,
+        Waveform::Square { duty_cycle } => square_wave(time, duty_cycle),
+        Waveform::Cosine => cosine_wave(time),
+        Waveform::Tangent => tangent_wave(time),
+        Waveform::Sawtooth => sawtooth_wave(time),
+        Waveform::Triangle => triangle_wave(time),
         Waveform::Noise => 0,
     }
 }
@@ -36,6 +87,7 @@ mod waveform_tests {
 
     #[test]
     fn sine_test() {
-        let _v: Vec<_> = (0..255).map(|x| sine_wave(x)).collect();
+        assert_eq!(sine_wave(0), 128);
+        assert_eq!(sine_wave(200), 130);
     }
 }

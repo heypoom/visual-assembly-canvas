@@ -1,6 +1,6 @@
 import { manager } from "../../core"
 import { BlockTypes } from "../../types/Node"
-import { PixelBlock, PixelMode } from "../../types/blocks"
+import { PixelMode } from "../../types/blocks"
 import { addCanvasNode } from "./addCanvasNode"
 
 const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"

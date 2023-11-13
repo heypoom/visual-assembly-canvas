@@ -1,8 +1,9 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
-import { PlotterBlock } from "../../types/blocks"
+import { PlotterBlock } from "../../../types/blocks"
 import { useReducer } from "react"
-import { RightClickMenu } from "../components/RightClickMenu"
+import { RightClickMenu } from "../../components/RightClickMenu"
+import { rescale } from "./rescale"
 
 const S0 = 0
 
@@ -10,7 +11,10 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
   const { values, size } = props.data
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
+  const max = 255
   const scaleY = 4
+
+  const plotted = rescale(values, max)
 
   return (
     <div>
@@ -29,10 +33,10 @@ export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
             className="flex items-end justify-start border-2 border-cyan-9"
             style={{
               minWidth: `${size + 2}px`,
-              minHeight: `${255 / scaleY}px`,
+              minHeight: `${max / scaleY}px`,
             }}
           >
-            {values.map((bar, i) => (
+            {plotted.map((bar, i) => (
               <div
                 key={i}
                 style={{ height: `${Math.round(bar / scaleY)}px` }}
