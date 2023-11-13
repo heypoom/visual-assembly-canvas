@@ -15,7 +15,7 @@ import { manager } from "../../../core"
 
 export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const { data } = props
-  const { columns = 9, palette = "base", mode = 'Replace' } = data
+  const { columns = 9, palette = "base", mode = "Replace" } = data
 
   const [isSettings, toggle] = useReducer((n) => !n, false)
 
@@ -35,7 +35,7 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
       // Update the behaviour of pixel block.
       if (typeof input.mode === "string") {
         manager.ctx?.send_message_to_block(data.id, {
-          SetPixelMode: { mode: input.mode }
+          SetPixelMode: { mode: input.mode },
         })
       }
     })
@@ -45,7 +45,9 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
 
   const isDrawable = !!pixels && columns > 1
 
-  const modes = Object.keys(_PixelMode).filter(key => !isNaN(Number(_PixelMode[key])))
+  const modes = Object.keys(_PixelMode).filter(
+    (key) => !isNaN(Number(_PixelMode[key as PixelMode])),
+  )
 
   return (
     <div className="group">
@@ -141,7 +143,7 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
                   <Select.Trigger className="w-[70px]" />
 
                   <Select.Content>
-                    {modes.map(key => (
+                    {modes.map((key) => (
                       <Select.Item value={key} key={key}>
                         {key}
                       </Select.Item>

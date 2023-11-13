@@ -3,9 +3,8 @@ import { Button } from "@radix-ui/themes"
 import {
   PauseIcon,
   PlayIcon,
-  PlusCircledIcon,
-  StopIcon,
   TrackNextIcon,
+  PlusCircledIcon,
 } from "@radix-ui/react-icons"
 
 import { useStore } from "@nanostores/react"

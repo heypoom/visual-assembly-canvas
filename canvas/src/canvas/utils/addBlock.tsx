@@ -37,7 +37,7 @@ export function addBlock<T extends BlockTypes>(type: T) {
     }
 
     case "osc": {
-      const props = { time: 0, values: [], waveform: { Sine: null } }
+      const props = { time: 0, waveform: { Sine: null } }
       const id = manager.ctx?.add_block({ OscBlock: props })
       if (typeof id !== "number") return
 

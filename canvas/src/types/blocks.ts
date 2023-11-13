@@ -47,6 +47,5 @@ export type WaveformKey = keyof UnionToIntersection<Waveform>
 
 export interface OscBlock extends BaseBlock {
   time: number
-  values: number[]
   waveform: Waveform
 }
