@@ -23,73 +23,77 @@ export function Toolbar() {
   const { halted } = status
 
   return (
-    <div className="absolute left-3 top-3 z-10 space-x-3">
-      <Button onClick={addMachine} variant="soft" color="crimson">
-        <PlusCircledIcon />
-        Machine
-      </Button>
+    <div className="absolute top-3 z-10 space-x-3 flex justify-between w-full px-4">
+      <div className="flex gap-x-2">
+        <Button onClick={addMachine} variant="soft" color="crimson">
+          <PlusCircledIcon />
+          Machine
+        </Button>
 
-      <Button
-        onClick={() => addBlock("PixelBlock")}
-        variant="soft"
-        color="orange"
-      >
-        <PlusCircledIcon />
-        Pixel
-      </Button>
+        <Button
+          onClick={() => addBlock("PixelBlock")}
+          variant="soft"
+          color="orange"
+        >
+          <PlusCircledIcon />
+          Pixel
+        </Button>
 
-      <Button
-        onClick={() => addBlock("TapBlock")}
-        variant="soft"
-        color="orange"
-      >
-        <PlusCircledIcon />
-        Tap
-      </Button>
+        <Button
+          onClick={() => addBlock("TapBlock")}
+          variant="soft"
+          color="orange"
+        >
+          <PlusCircledIcon />
+          Tap
+        </Button>
 
-      <Button
-        onClick={() => addBlock("OscBlock")}
-        variant="soft"
-        color="orange"
-      >
-        <PlusCircledIcon />
-        Osc
-      </Button>
+        <Button
+          onClick={() => addBlock("OscBlock")}
+          variant="soft"
+          color="orange"
+        >
+          <PlusCircledIcon />
+          Osc
+        </Button>
 
-      <Button
-        onClick={() => addBlock("PlotterBlock")}
-        variant="soft"
-        color="orange"
-      >
-        <PlusCircledIcon />
-        Plot
-      </Button>
+        <Button
+          onClick={() => addBlock("PlotterBlock")}
+          variant="soft"
+          color="orange"
+        >
+          <PlusCircledIcon />
+          Plot
+        </Button>
+      </div>
 
-      <RunButton />
+      <div className="flex gap-x-2">
+        <RunButton />
 
-      <Button
-        color={halted ? "blue" : "cyan"}
-        variant="soft"
-        className="font-semibold"
-        onClick={() => manager.step()}
-        disabled={status.running || !hasBlocks}
-      >
-        <TrackNextIcon />
-        {halted ? "Start Over" : "Step"}
-      </Button>
+        <Button
+          color={halted ? "blue" : "cyan"}
+          variant="soft"
+          className="font-semibold"
+          onClick={() => manager.step()}
+          disabled={status.running || !hasBlocks}
+        >
+          <TrackNextIcon />
+          {halted ? "Start Over" : "Step"}
+        </Button>
 
-      <Button
-        color="tomato"
-        variant="soft"
-        className="font-semibold"
-        onClick={() => manager.reset()}
-        disabled={!hasBlocks}
-      >
-        <ReloadIcon />
-        Reset
-      </Button>
+        <Button
+          color="tomato"
+          variant="soft"
+          className="font-semibold"
+          onClick={() => manager.reset()}
+          disabled={!hasBlocks}
+        >
+          <ReloadIcon />
+          Reset
+        </Button>
 
-      <SetDelayButton />
+        <SetDelayButton />
+      </div>
     </div>
   )
 }
