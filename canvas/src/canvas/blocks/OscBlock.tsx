@@ -1,17 +1,15 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
-import { OscBlock, Waveform } from "../../types/blocks"
+import { OscBlock, Waveform, WaveformKey } from "../../types/blocks"
 import { manager } from "../../core"
-import { Select } from "@radix-ui/themes"
+import { Select, TextField } from "@radix-ui/themes"
 import { isOscNode } from "."
 import { produce } from "immer"
 import { $nodes } from "../../store/nodes"
 import { RightClickMenu } from "../components/RightClickMenu"
-import { useReducer } from "react"
+import { useReducer, useState } from "react"
 
 const S1 = 1
-
-type WaveformKey = keyof Waveform
 
 const waveforms: Record<WaveformKey, Waveform> = {
   Sine: { Sine: null },
@@ -26,36 +24,48 @@ const waveforms: Record<WaveformKey, Waveform> = {
 export const OscBlockView = (props: NodeProps<OscBlock>) => {
   const { id, time = 0, waveform } = props.data
 
+  const [cycleText, setCycleText] = useState("")
+  const [cycleError, setCycleError] = useState(false)
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
-  const wave =
+  const wave = (
     typeof waveform === "object"
       ? Object.keys(waveform)?.[0]
       : typeof waveform === "string"
       ? waveform
-      : "osc"
+      : "Sine"
+  ) as WaveformKey
 
-  function setWaveform(waveform: WaveformKey) {
+  function setWaveform(waveform: Waveform) {
     const next = produce($nodes.get(), (nodes) => {
       const node = nodes.find((n) => n.data.id === id)
       if (!node) return
 
-      const s = waveforms[waveform]
-
-      // Update the pixels.
       if (isOscNode(node)) {
-        node.data = { ...node.data, waveform: s }
+        node.data = { ...node.data, waveform }
       }
 
-      // Update the behaviour of pixel block.
-      if (s) {
-        manager.ctx?.send_message_to_block(id, {
-          SetWaveform: { waveform: s },
-        })
-      }
+      manager.ctx?.send_message_to_block(id, {
+        SetWaveform: { waveform },
+      })
     })
 
     $nodes.set(next)
+  }
+
+  function handleWaveChange(key: string) {
+    const w = waveforms[key as WaveformKey]
+
+    // Update duty cycle
+    if ("Square" in w) {
+      if (cycleText) {
+        w.Square.duty_cycle = parseInt(cycleText)
+      } else {
+        setCycleText(w.Square.duty_cycle.toString())
+      }
+    }
+
+    setWaveform(w)
   }
 
   return (
@@ -67,16 +77,16 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
           </div>
 
           {showSettings && (
-            <section>
+            <section className="flex flex-col space-y-2 w-full">
               <div className="flex items-center gap-4 w-full">
                 <p className="text-1">Fn</p>
 
                 <Select.Root
                   size="1"
                   value={wave.toString()}
-                  onValueChange={(k) => setWaveform(k as WaveformKey)}
+                  onValueChange={handleWaveChange}
                 >
-                  <Select.Trigger className="w-[70px]" />
+                  <Select.Trigger className="w-[90px]" />
 
                   <Select.Content>
                     {Object.keys(waveforms).map((key) => (
@@ -87,6 +97,32 @@ export const OscBlockView = (props: NodeProps<OscBlock>) => {
                   </Select.Content>
                 </Select.Root>
               </div>
+
+              {wave === "Square" && (
+                <div className="flex items-center gap-4 w-full">
+                  <p className="text-1">Cycle</p>
+
+                  <TextField.Input
+                    className="max-w-[70px]"
+                    size="1"
+                    type="number"
+                    value={cycleText}
+                    onChange={(k) => {
+                      const str = k.target.value
+                      setCycleText(str)
+
+                      const cycle = parseInt(str)
+                      const valid = !isNaN(cycle) && cycle >= 0 && cycle <= 255
+                      setCycleError(!valid)
+
+                      if (valid) {
+                        setWaveform({ Square: { duty_cycle: cycle } })
+                      }
+                    }}
+                    {...(cycleError && { color: "tomato" })}
+                  />
+                </div>
+              )}
             </section>
           )}
         </div>

@@ -46,28 +46,25 @@ pub fn tangent_wave(n: u16) -> u16 {
 }
 
 pub fn sawtooth_wave(n: u16) -> u16 {
-    n % 256
+    n % MAX_U
 }
 
 pub fn square_wave(time: u16, duty_cycle: u16) -> u16 {
-    let period = 255;
-    let threshold = period * duty_cycle / period;
+    let threshold = MAX_U * duty_cycle / MAX_U;
 
     if time < threshold {
         0
     } else {
-        period
+        MAX_U
     }
 }
 
 pub fn triangle_wave(time: u16) -> u16 {
-    let value = if time < MAX_U {
-        (time as f32 / 254.0) - 1.0
+    if time <= 127 {
+        time * 2
     } else {
-        1.0 - ((time as f32 - MAX_F) / 254.0)
-    };
-
-    to_wave(value)
+        (MAX_U - time) * 2
+    }
 }
 
 pub fn generate_waveform(waveform: Waveform, time: u16) -> u16 {

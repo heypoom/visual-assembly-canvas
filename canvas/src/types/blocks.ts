@@ -1,6 +1,7 @@
 import { PixelMode as _PixelMode } from "machine-wasm"
 
 import { PaletteKey } from "../canvas/blocks/pixel/palette"
+import { UnionToIntersection } from "./helper"
 
 export interface BaseBlock {
   // Machine identifier.
@@ -35,10 +36,14 @@ export interface PlotterBlock extends BaseBlock {
 
 export type Waveform =
   | { Sine: null }
+  | { Cosine: null }
+  | { Tangent: null }
   | { Square: { duty_cycle: number } }
   | { Sawtooth: null }
   | { Triangle: null }
   | { Noise: null }
+
+export type WaveformKey = keyof UnionToIntersection<Waveform>
 
 export interface OscBlock extends BaseBlock {
   time: number
