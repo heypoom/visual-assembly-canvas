@@ -1,8 +1,8 @@
 // Events that we could listen for the launchpad.
 export type DeviceEvents =
   | "controlChange"
-  | "padTouch"
-  | "padRelease"
+  | "noteOn"
+  | "noteOff"
   | "noteActive"
   | "noteRelease"
   | "update"

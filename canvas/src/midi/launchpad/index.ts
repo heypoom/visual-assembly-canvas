@@ -59,8 +59,8 @@ export class Launchpad {
    */
   listeners: DeviceListeners = {
     controlChange: [],
-    padTouch: [],
-    padRelease: [],
+    noteOn: [],
+    noteOff: [],
     noteActive: [],
     noteRelease: [],
     update: [],
@@ -147,11 +147,11 @@ export class Launchpad {
     if (!this.dawIn) return
 
     this.midiIn.addListener("noteon", (event) => {
-      this.dispatch("padTouch", event.note.number, event.rawValue)
+      this.dispatch("noteOn", event.note.number, event.rawValue)
     })
 
     this.midiIn.addListener("noteoff", (event) => {
-      this.dispatch("padRelease", event.note.number, event.rawValue)
+      this.dispatch("noteOff", event.note.number, event.rawValue)
     })
 
     this.dawIn.addListener("noteon", (event) => {
