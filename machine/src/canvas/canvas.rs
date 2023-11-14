@@ -190,21 +190,23 @@ impl Canvas {
     }
 
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let block = self.mut_block(id)?;
-        let Osc { waveform } = &mut block.data else { return Ok(()); };
-
         for message in &messages {
             match &message.action {
+                Action::SetWaveform { waveform: wf } => {
+                    let block = self.mut_block(id)?;
+                    let Osc { waveform } = &mut block.data else { return Ok(()); };
+
+                    *waveform = *wf;
+                }
                 Action::Data { body } => {
+                    let block = self.get_block(id)?;
+                    let Osc { waveform } = &block.data else { return Ok(()); };
+
                     // Generate the waveform values out of the given input values, between (0 - 255).
                     let values: Vec<u16> = body.iter().map(|v| generate_waveform(*waveform, *v)).collect();
 
                     // Send the waveform values to the connected blocks.
                     self.send_data_to_sinks(id, values)?;
-                    return Ok(());
-                }
-                Action::SetWaveform { waveform: wf } => {
-                    *waveform = *wf
                 }
 
                 _ => {}
@@ -227,7 +229,6 @@ impl Canvas {
             match &message.action {
                 Action::Reset => {
                     *time = 0;
-                    return Ok(());
                 }
 
                 _ => {}

@@ -68,7 +68,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
     let argsText = ""
 
     if (wave === "Square") {
-      argsText = `, c = ${
+      argsText = `c = ${
         cycleText || ("Square" in waveform && waveform?.Square?.duty_cycle)
       }`
     }
