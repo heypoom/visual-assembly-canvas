@@ -60,6 +60,10 @@ impl Controller {
         Ok(to_value(&self.canvas.blocks)?)
     }
 
+    pub fn get_block(&self, id: u16) -> Return {
+        returns(self.canvas.get_block(id))
+    }
+
     pub fn get_blocks_data(&self) -> Return {
         let blocks_data: Vec<BlockData> =
             self.canvas.blocks.iter().map(|b| b.data.clone()).collect();
@@ -172,6 +176,10 @@ impl Controller {
 
     pub fn reset_blocks(&mut self) -> Return {
         returns(self.canvas.reset_blocks())
+    }
+
+    pub fn reset_block(&mut self, id: u16) -> Return {
+        returns(self.canvas.reset_block(id))
     }
 
     pub fn set_await_watchdog(&mut self, state: bool) {

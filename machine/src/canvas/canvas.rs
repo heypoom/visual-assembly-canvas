@@ -135,7 +135,7 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn get_block(&mut self, id: u16) -> Result<&Block, CanvasError> {
+    pub fn get_block(&self, id: u16) -> Result<&Block, CanvasError> {
         self.blocks.iter().find(|b| b.id == id).ok_or(BlockNotFound { id })
     }
 
@@ -196,6 +196,7 @@ impl Canvas {
             match &message.action {
                 Action::Reset => {
                     *time = 0;
+                    return Ok(());
                 }
 
                 Action::SetWaveform { waveform: wf } => {
@@ -389,9 +390,15 @@ impl Canvas {
         let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine()).map(|b| b.id).collect();
 
         for id in ids {
-            self.send_message_to_block(id, Action::Reset)?;
-            self.tick_block(id)?;
+            self.reset_block(id)?;
         }
+
+        Ok(())
+    }
+
+    pub fn reset_block(&mut self, id: u16) -> Errorable {
+        self.send_message_to_block(id, Action::Reset)?;
+        self.tick_block(id)?;
 
         Ok(())
     }

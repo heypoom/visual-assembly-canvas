@@ -23,14 +23,8 @@ import { $status } from "../store/status"
 
 import { $delay } from "../store/canvas"
 import { isBlock } from "../canvas/blocks"
-import { updateNode } from "../store/blocks"
+import { syncBlockData } from "../store/blocks"
 import { midiManager } from "../canvas/blocks/midi/manager"
-
-export const setSource = (id: number, source: string) => {
-  updateNode(id, (node) => {
-    if (isBlock.machine(node)) node.data.source = source
-  })
-}
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -277,15 +271,11 @@ export class CanvasManager {
   }
 
   updateBlocks() {
-    // TODO: optimize data transfer. only get the "data" field, not the full block.
-    const blocks = this.ctx?.get_blocks()
+    this.ctx?.get_blocks().map(syncBlockData)
+  }
 
-    for (const block of blocks) {
-      updateNode(block.id, (node) => {
-        const type = node.type
-        if (type) node.data = { ...node.data, ...block.data[type] }
-      })
-    }
+  updateBlock(id: number) {
+    syncBlockData(this.ctx?.get_block(id))
   }
 
   detectCanvasError(error: unknown) {
@@ -360,6 +350,11 @@ export class CanvasManager {
     // Teardown the code editor state.
     this.sources.delete(id)
     this.highlightMaps.delete(id)
+  }
+
+  resetBlock(id: number) {
+    this.ctx?.reset_block(id)
+    this.updateBlock(id)
   }
 }
 

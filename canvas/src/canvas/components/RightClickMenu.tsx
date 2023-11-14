@@ -1,19 +1,31 @@
 import { ContextMenu } from "@radix-ui/themes"
+import { manager } from "../../core"
 
 interface Props {
+  id: number
   show: boolean
   toggle: () => void
   children: React.ReactNode
 }
 
-export const RightClickMenu = (props: Props) => (
-  <ContextMenu.Root>
-    <ContextMenu.Trigger>{props.children}</ContextMenu.Trigger>
+export const RightClickMenu = (props: Props) => {
+  const { id } = props
 
-    <ContextMenu.Content>
-      <ContextMenu.Item onClick={props.toggle}>
-        {props.show ? "Hide" : "Show"} Settings
-      </ContextMenu.Item>
-    </ContextMenu.Content>
-  </ContextMenu.Root>
-)
+  function reset() {
+    if (id) manager.resetBlock(id)
+  }
+
+  return (
+    <ContextMenu.Root>
+      <ContextMenu.Trigger>{props.children}</ContextMenu.Trigger>
+
+      <ContextMenu.Content>
+        <ContextMenu.Item onClick={props.toggle}>
+          {props.show ? "Hide" : "Show"} Settings
+        </ContextMenu.Item>
+
+        <ContextMenu.Item onClick={reset}>Reset Block</ContextMenu.Item>
+      </ContextMenu.Content>
+    </ContextMenu.Root>
+  )
+}

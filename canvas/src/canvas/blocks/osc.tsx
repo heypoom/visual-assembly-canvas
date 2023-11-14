@@ -1,12 +1,13 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
-import { OscProps, Waveform, WaveformKey } from "../../types/blocks"
+import { OscProps } from "../../types/blocks"
 import { manager } from "../../core"
 import { Select, TextField } from "@radix-ui/themes"
 
 import { RightClickMenu } from "../components/RightClickMenu"
 import { useReducer, useState } from "react"
 import { updateNodeData } from "../../store/blocks"
+import { WaveformKey, Waveform } from "../../types/waveform"
 
 const S1 = 1
 
@@ -78,7 +79,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
 
   return (
     <div>
-      <RightClickMenu show={showSettings} toggle={toggle}>
+      <RightClickMenu id={id} show={showSettings} toggle={toggle}>
         <div className="group border-2 border-crimson-9 font-mono px-3 py-2 space-y-2">
           <div className="text-crimson-11">{getOscLog()}</div>
 

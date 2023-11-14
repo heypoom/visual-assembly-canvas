@@ -2,7 +2,8 @@ import { action } from "nanostores"
 import { produce, Draft } from "immer"
 
 import { $nodes } from "./nodes"
-import { BlockNode, BlockValues } from "../types/Node"
+import { BlockNode, BlockTypeMap, BlockValues } from "../types/Node"
+import { isBlock } from "../canvas/blocks"
 
 type Updater = (node: Draft<BlockNode>) => void
 
@@ -32,3 +33,17 @@ export const updateNodeData = <K extends BlockValues>(
   updateNode(id, (v) => {
     v.data = { ...v.data, ...data }
   })
+
+/** Sync the block data from the engine. */
+export const syncBlockData = (block: { id: number; data: BlockTypeMap }) => {
+  updateNode(block.id, (node) => {
+    const type = node.type
+    if (type) node.data = { ...node.data, ...block.data[type] }
+  })
+}
+
+export const setSource = (id: number, source: string) => {
+  updateNode(id, (node) => {
+    if (isBlock.machine(node)) node.data.source = source
+  })
+}

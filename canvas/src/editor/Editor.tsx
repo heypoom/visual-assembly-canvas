@@ -6,10 +6,11 @@ import { cmTheme } from "./theme"
 import { getExtensions } from "./extensions"
 import { addLineHighlight } from "./highlight"
 
-import { setSource, manager } from "../core"
+import { manager } from "../core"
 import { $editorConfig } from "../store/editor"
 
 import { MachineProps } from "../types/blocks"
+import { setSource } from "../store/blocks"
 
 type Props = MachineProps
 

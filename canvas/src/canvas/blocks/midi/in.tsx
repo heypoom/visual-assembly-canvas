@@ -50,7 +50,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
   return (
     <div className="group">
       <div>
-        <RightClickMenu show={showSettings} toggle={toggle}>
+        <RightClickMenu id={id} show={showSettings} toggle={toggle}>
           <div
             className={cx(
               "px-4 py-2 border-2 border-crimson-9 font-mono text-crimson-11",

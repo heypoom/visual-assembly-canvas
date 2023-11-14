@@ -50,7 +50,7 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
   return (
     <div className="group">
       <div>
-        <RightClickMenu show={showSettings} toggle={toggle}>
+        <RightClickMenu id={id} show={showSettings} toggle={toggle}>
           <div className="rounded-1 px-5 py-2 bg-gray-5 border-2 border-gray-8 hover:border-cyan-9 flex flex-col items-center justify-center gap-y-3">
             <button
               className="w-5 h-5 rounded-[100%] bg-crimson-9 hover:bg-cyan-11 border-2 border-gray-12 active:bg-cyan-9 focus:bg-cyan-11 outline-gray-12 focus:outline-cyan-12"

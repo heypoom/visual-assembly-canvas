@@ -10,7 +10,7 @@ import { PlotterProps } from "../../../types/blocks"
 const S0 = 0
 
 export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
-  const { values, size } = props.data
+  const { id, values, size } = props.data
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
   const scaleY = 2
@@ -53,7 +53,7 @@ export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
         className="bg-cyan-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-cyan-9 px-1 py-1 ml-[-1px] border-2 z-10"
       />
 
-      <RightClickMenu toggle={toggle} show={showSettings}>
+      <RightClickMenu id={id} toggle={toggle} show={showSettings}>
         <div className="group">
           {typeof size !== "number" && <div>error: missing size!</div>}
 

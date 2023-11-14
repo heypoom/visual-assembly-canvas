@@ -21,7 +21,7 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
       />
 
       <div>
-        <RightClickMenu show={showSettings} toggle={toggle}>
+        <RightClickMenu id={id} show={showSettings} toggle={toggle}>
           <div>MIDI OUT - {id}</div>
         </RightClickMenu>
       </div>
