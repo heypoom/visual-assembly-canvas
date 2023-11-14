@@ -25,6 +25,7 @@ export function Toolbar() {
   const types: BlockTypes[] = [
     "Pixel",
     "Tap",
+    "Clock",
     "Osc",
     "Plot",
     "MidiIn",

@@ -122,11 +122,11 @@ export class CanvasManager {
   }
 
   /**
-   * Does the canvas has any signal producers, e.g. oscillators?
+   * Does the canvas has any signal producers, e.g. clock, midi input?
    * This is used to determine if we should run until pause.
    */
   get hasProducers() {
-    return this.nodes.some((n) => isBlock.osc(n) || isBlock.midiIn(n))
+    return this.nodes.some((n) => isBlock.clock(n) || isBlock.midiIn(n))
   }
 
   /** Does the canvas has any machines? */
@@ -134,7 +134,7 @@ export class CanvasManager {
     return this.nodes.some(isBlock.machine)
   }
 
-  /** Does the canvas has any real-time interactors, e.g. tap blocks? */
+  /** Does the canvas has any real-time interactors, e.g. tap, midi input? */
   get hasInteractors() {
     return this.nodes.some((n) => isBlock.tap(n) || isBlock.midiIn(n))
   }

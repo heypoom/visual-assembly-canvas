@@ -9,6 +9,7 @@ import { useReducer, useState } from "react"
 import { updateNodeData } from "../../store/blocks"
 import { WaveformKey, Waveform } from "../../types/waveform"
 
+const S0 = 0
 const S1 = 1
 
 const waveforms: Record<WaveformKey, Waveform> = {
@@ -22,7 +23,7 @@ const waveforms: Record<WaveformKey, Waveform> = {
 }
 
 export const OscBlock = (props: NodeProps<OscProps>) => {
-  const { id, time = 0, waveform } = props.data
+  const { id, waveform } = props.data
 
   const [cycleText, setCycleText] = useState("")
   const [cycleError, setCycleError] = useState(false)
@@ -72,13 +73,18 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
       }`
     }
 
-    return `${wave?.toLowerCase()}(t = ${time
-      ?.toString()
-      ?.padStart(3, "0")}${argsText})`
+    return `${wave?.toLowerCase()}(${argsText})`
   }
 
   return (
     <div>
+      <Handle
+        type="target"
+        position={Position.Left}
+        id={S0.toString()}
+        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
+      />
+
       <RightClickMenu id={id} show={showSettings} toggle={toggle}>
         <div className="group border-2 border-crimson-9 font-mono px-3 py-2 space-y-2">
           <div className="text-crimson-11">{getOscLog()}</div>

@@ -41,8 +41,11 @@ export interface PixelProps extends BaseProps {
 }
 
 export interface OscProps extends BaseProps {
-  time: number
   waveform: Waveform
+}
+
+export interface ClockProps extends BaseProps {
+  time: number
 }
 
 export interface MidiInProps extends BaseProps {

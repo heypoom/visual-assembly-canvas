@@ -1,6 +1,7 @@
 import { Node, NodeProps } from "reactflow"
 
 import {
+  ClockProps,
   MachineProps,
   MidiInProps,
   MidiOutProps,
@@ -15,6 +16,7 @@ export interface BlockTypeMap {
   Pixel: PixelProps
   Tap: TapProps
   Plot: PlotterProps
+  Clock: ClockProps
   Osc: OscProps
   MidiIn: MidiInProps
   MidiOut: MidiOutProps
