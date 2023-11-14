@@ -155,11 +155,11 @@ export class Launchpad {
     })
 
     this.dawIn.addListener("noteon", (event) => {
-      this.dispatch("noteActive", event.note.number, event.rawValue)
+      this.dispatch("dawNoteOn", event.note.number, event.rawValue)
     })
 
     this.dawIn.addListener("noteoff", (event) => {
-      this.dispatch("noteRelease", event.note.number, event.rawValue)
+      this.dispatch("dawNoteOff", event.note.number, event.rawValue)
     })
 
     this.midiIn.addListener("controlchange", (event) => {
