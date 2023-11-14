@@ -37,12 +37,13 @@ pub enum BlockData {
         size: u16,
     },
 
-    /// Oscillator. Produces the value of a waveform at a given time.
-    Osc {
-        /// Current time of the oscillator.
-        /// TODO: we will use an external clock for this in the future.
+    Clock {
+        /// Current time of the clock generator.
         time: u16,
+    },
 
+    /// Oscillator. Produces the value of a waveform, given a clock.
+    Osc {
         /// Current frequency of the oscillator.
         waveform: Waveform,
     },

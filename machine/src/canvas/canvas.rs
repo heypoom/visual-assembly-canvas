@@ -1,5 +1,5 @@
 use snafu::ensure;
-use crate::canvas::block::BlockData::{Machine, MidiIn, Osc, Pixel, Plot};
+use crate::canvas::block::BlockData::{Clock, Machine, MidiIn, Osc, Pixel, Plot};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Message, Sequencer};
 use crate::audio::waveform::generate_waveform;
@@ -167,6 +167,7 @@ impl Canvas {
             Pixel { .. } => self.tick_pixel_block(id, messages)?,
             Plot { .. } => self.tick_plotter_block(id, messages)?,
             Osc { .. } => self.tick_osc_block(id, messages)?,
+            Clock { .. } => self.tick_clock_block(id, messages)?,
             MidiIn { .. } => self.tick_midi_in_block(id, messages)?,
             _ => {}
         }
@@ -190,17 +191,43 @@ impl Canvas {
 
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let Osc { time, waveform } = &mut block.data else { return Ok(()); };
+        let Osc { waveform } = &mut block.data else { return Ok(()); };
+
+        for message in &messages {
+            match &message.action {
+                Action::Data { body } => {
+                    // Generate the waveform values out of the given input values, between (0 - 255).
+                    let values: Vec<u16> = body.iter().map(|v| generate_waveform(*waveform, *v)).collect();
+
+                    // Send the waveform values to the connected blocks.
+                    self.send_data_to_sinks(id, values)?;
+                    return Ok(());
+                }
+                Action::SetWaveform { waveform: wf } => {
+                    *waveform = *wf
+                }
+
+                _ => {}
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_clock_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+        let block = self.get_block(id)?;
+        let Clock { time } = block.data else { return Ok(()); };
+
+        self.send_data_to_sinks(id, vec![time])?;
+
+        let block = self.mut_block(id)?;
+        let Clock { time } = &mut block.data else { return Ok(()); };
 
         for message in &messages {
             match &message.action {
                 Action::Reset => {
                     *time = 0;
                     return Ok(());
-                }
-
-                Action::SetWaveform { waveform: wf } => {
-                    *waveform = *wf
                 }
 
                 _ => {}
@@ -214,10 +241,6 @@ impl Canvas {
         if *time >= 255 {
             *time = 0;
         }
-
-        // Send the waveform values to the connected blocks.
-        let value = generate_waveform(*waveform, *time);
-        self.send_data_to_sinks(id, vec![value])?;
 
         Ok(())
     }

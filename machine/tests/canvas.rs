@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod canvas_tests {
-    use machine::audio::waveform::Waveform;
-    use machine::canvas::block::BlockData::{Osc, Pixel, Plot};
+    use machine::canvas::block::BlockData::{Clock, Pixel, Plot};
     use machine::canvas::{Canvas, PixelMode};
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};
@@ -100,21 +99,21 @@ mod canvas_tests {
     }
 
     #[test]
-    fn test_osc_clock_wraparound() -> Errorable {
+    fn test_clock_wraparound() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Osc { time: 250, waveform: Waveform::Sine })?;
+        c.add_block(Clock { time: 250 })?;
         c.add_block(Plot { values: vec![], size: 5 })?;
         c.connect(port(0, 0), port(1, 0))?;
 
         c.tick()?;
 
-        if let Osc { time, .. } = c.blocks[0].data {
+        if let Clock { time } = c.blocks[0].data {
             assert_eq!(time, 251);
         }
 
         for _ in 0..10 { c.tick()?; }
 
-        if let Osc { time, .. } = c.blocks[0].data {
+        if let Clock { time } = c.blocks[0].data {
             assert_eq!(time, 6);
         }
 
