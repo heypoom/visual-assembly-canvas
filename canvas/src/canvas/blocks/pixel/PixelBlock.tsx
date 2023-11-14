@@ -13,7 +13,7 @@ import { updateNodeData } from "../../../store/blocks"
 
 export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const { data } = props
-  const { columns = 9, palette = "base", mode = "Replace" } = data
+  const { columns = 9, palette = "base", mode = "Append" } = data
 
   const [isSettings, toggle] = useReducer((n) => !n, false)
 

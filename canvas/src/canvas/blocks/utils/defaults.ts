@@ -8,7 +8,7 @@ export type DefaultPropsMap = {
 
 export const defaultProps: DefaultPropsMap = {
   Machine: { source: DEFAULT_SOURCE },
-  Pixel: { pixels: [], mode: "Replace" },
+  Pixel: { pixels: [], mode: "Append" },
   Tap: { signal: [1] },
   Osc: { time: 0, waveform: { Sine: null } },
   Plot: { values: [], size: 250 },
