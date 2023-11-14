@@ -1,5 +1,4 @@
-import { Input, Output } from "webmidi"
-import { WebMidi } from "webmidi"
+import { Input, Output, WebMidi, NoteMessageEvent } from "webmidi"
 
 import { ControlCodes } from "./controls"
 import { toNote, toSlot } from "./conversion"
@@ -61,8 +60,8 @@ export class Launchpad {
     controlChange: [],
     noteOn: [],
     noteOff: [],
-    noteActive: [],
-    noteRelease: [],
+    dawNoteOn: [],
+    dawNoteOff: [],
     update: [],
     clear: [],
     ready: [],
@@ -146,29 +145,31 @@ export class Launchpad {
     if (!this.midiIn) return
     if (!this.dawIn) return
 
-    this.midiIn.addListener("noteon", (event) => {
-      this.dispatch("noteOn", event.note.number, event.rawValue)
-    })
+    this.midiIn.addListener("noteon", (event) =>
+      this.sendNoteEvent("noteOn", event),
+    )
 
-    this.midiIn.addListener("noteoff", (event) => {
-      this.dispatch("noteOff", event.note.number, event.rawValue)
-    })
-
-    this.dawIn.addListener("noteon", (event) => {
-      this.dispatch("dawNoteOn", event.note.number, event.rawValue)
-    })
-
-    this.dawIn.addListener("noteoff", (event) => {
-      this.dispatch("dawNoteOff", event.note.number, event.rawValue)
-    })
+    this.midiIn.addListener("noteoff", (event) =>
+      this.sendNoteEvent("noteOff", event),
+    )
 
     this.midiIn.addListener("controlchange", (event) => {
-      const { value, controller } = event
+      if (typeof event.value !== "number") return
 
-      if (typeof value === "number") {
-        this.dispatch("controlChange", controller.number, value)
-      }
+      this.dispatch("controlChange", event.controller.number, event.value)
     })
+
+    this.dawIn.addListener("noteon", (event) =>
+      this.sendNoteEvent("dawNoteOn", event),
+    )
+
+    this.dawIn.addListener("noteoff", (event) =>
+      this.sendNoteEvent("dawNoteOff", event),
+    )
+  }
+
+  sendNoteEvent(key: DeviceEvents, data: NoteMessageEvent) {
+    this.dispatch(key, data.note.number, data.rawValue)
   }
 
   /**
