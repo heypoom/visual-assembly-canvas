@@ -147,7 +147,6 @@ export class CanvasManager {
     // Check the canvas for presence of blocks that alter run behaviour.
     const hasMachines = this.hasMachines
     const watchdog = !this.hasInteractors || this.delayMs === 0
-    console.log({ watchdog })
 
     // Disable the watchdog if we have interactors, e.g. tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.

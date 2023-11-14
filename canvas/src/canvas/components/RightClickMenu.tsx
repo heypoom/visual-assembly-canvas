@@ -5,6 +5,7 @@ interface Props {
   id: number
   show: boolean
   toggle: () => void
+  onReset?: () => void
   children: React.ReactNode
 }
 
@@ -13,6 +14,8 @@ export const RightClickMenu = (props: Props) => {
 
   function reset() {
     if (id) manager.resetBlock(id)
+
+    props.onReset?.()
   }
 
   return (
