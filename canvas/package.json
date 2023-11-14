@@ -30,6 +30,7 @@
     "@uiw/react-codemirror": "^4.21.20",
     "classnames": "^2.3.2",
     "immer": "^10.0.3",
+    "lodash": "^4.17.21",
     "machine-wasm": "link:/Users/poom/Projects/visual-assembly-canvas/canvas/machine-wasm/pkg",
     "nanoid": "^5.0.2",
     "nanostores": "^0.9.4",
@@ -39,11 +40,13 @@
     "reactflow": "^11.9.4",
     "rollup": "link:@lezer/generator/rollup",
     "tone": "^14.7.77",
+    "use-debounce": "^10.0.0",
     "vite-node": "^0.34.6",
     "vite-plugin-glsl": "^1.1.2",
     "webmidi": "^3.1.6"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.201",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
     "@types/webmidi": "^2.0.10",

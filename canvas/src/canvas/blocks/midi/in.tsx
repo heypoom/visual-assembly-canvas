@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useState } from "react"
 import cx from "classnames"
 import { Handle, NodeProps, Position } from "reactflow"
+import { useDebouncedCallback } from "use-debounce"
 
 import { MidiInProps } from "../../../types/blocks"
 import { RightClickMenu } from "../../components/RightClickMenu"
@@ -24,9 +25,11 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
   const [last, setLast] = useState<[number, number] | null>(null)
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
-  const handle = useCallback(
+  const _handle = useCallback(
     (note: number, value: number) => {
       setLast([note, value])
+
+      console.log(`send> id=${id} on=${on} note=${note} val=${value}`)
 
       manager.ctx?.send_message_to_block(id, {
         Midi: { event: on, note, value },
@@ -36,6 +39,8 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
     },
     [id, on, status.running],
   )
+
+  const handle = useDebouncedCallback(_handle, 1)
 
   useEffect(() => {
     if (!ready) {
