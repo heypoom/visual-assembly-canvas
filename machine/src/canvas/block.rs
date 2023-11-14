@@ -50,7 +50,7 @@ pub enum BlockData {
     /// MIDI In. Receives a MIDI message.
     MidiIn {
         /// Which MIDI message do we want to receive for this block?
-        event: MidiInputEvent,
+        on: MidiInputEvent,
     },
 
     /// MIDI Out. Sends a MIDI message to the MIDI Out device.

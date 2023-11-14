@@ -28,6 +28,7 @@
     "@replit/codemirror-vim": "^6.0.14",
     "@uiw/codemirror-themes": "^4.21.20",
     "@uiw/react-codemirror": "^4.21.20",
+    "classnames": "^2.3.2",
     "immer": "^10.0.3",
     "machine-wasm": "link:/Users/poom/Projects/visual-assembly-canvas/canvas/machine-wasm/pkg",
     "nanoid": "^5.0.2",

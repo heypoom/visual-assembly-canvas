@@ -15,7 +15,7 @@ import {
 
 import { Spec, InputGrid } from "../types/specs"
 import { LaunchpadHandler, DeviceListeners, DeviceEvents } from "../types/midi"
-import { $launchpad } from "../../store/launchpad"
+import { $midi } from "../../store/midi"
 
 /**
  * High-level helper class to interface with the launchpad hardware.
@@ -81,7 +81,7 @@ export class Launchpad {
     this.dispatch("ready")
 
     this.initialized = true
-    $launchpad.setKey("ready", true)
+    $midi.setKey("ready", true)
 
     console.info("Launchpad setup completed.")
   }

@@ -24,6 +24,7 @@ import { $status } from "../store/status"
 import { $delay } from "../store/canvas"
 import { isBlock } from "../canvas/blocks"
 import { updateNode } from "../store/blocks"
+import { midiManager } from "../canvas/blocks/midi/manager"
 
 export const setSource = (id: number, source: string) => {
   updateNode(id, (node) => {
@@ -62,6 +63,8 @@ export class CanvasManager {
   sources: Map<number, string> = new Map()
 
   highlighters: Map<number, HighlighterFn> = new Map()
+
+  /** Map<blockId, Map<programCounter, sourceLine>>  */
   highlightMaps: Map<number, Map<number, number>> = new Map()
 
   async setup() {
@@ -340,6 +343,15 @@ export class CanvasManager {
   }
 
   removeBlock(id: number) {
+    // Get the block before it is removed.
+    const block = this.nodes.find((n) => n.data.id === id)
+
+    // Teardown the blocks.
+    if (block) {
+      // Remove the midi listeners.
+      if (isBlock.midiIn(block) || isBlock.midiOut(block)) midiManager.off(id)
+    }
+
     // Remove the block.
     this.ctx?.remove_block(id)
 

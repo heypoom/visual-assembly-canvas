@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::audio::midi::MidiInputEvent;
 use crate::audio::waveform::Waveform;
 use crate::canvas::PixelMode;
 use crate::canvas::wire::Port;
@@ -20,6 +21,9 @@ pub enum Action {
 
     /// Reset the node to its initial state.
     Reset,
+
+    /// Notify the block that a MIDI message has been received.
+    Midi { event: MidiInputEvent, note: u8, value: u8 },
 
     /// Set the waveform of the oscillator.
     SetWaveform { waveform: Waveform },

@@ -50,6 +50,9 @@ dependencies:
   '@uiw/react-codemirror':
     specifier: ^4.21.20
     version: 4.21.20(@babel/runtime@7.23.2)(@codemirror/autocomplete@6.10.2)(@codemirror/language@6.9.2)(@codemirror/lint@6.4.2)(@codemirror/search@6.5.4)(@codemirror/state@6.3.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.21.4)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0)
+  classnames:
+    specifier: ^2.3.2
+    version: 2.3.2
   immer:
     specifier: ^10.0.3
     version: 10.0.3

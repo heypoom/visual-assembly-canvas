@@ -6,10 +6,11 @@ import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
 import { PaletteKey, getPixelColor, palettes } from "./palette"
 
-import type { PixelProps, PixelMode } from "../../../types/blocks"
+import type { PixelProps } from "../../../types/blocks"
 
 import { manager } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
+import { PixelMode } from "../../../types/enums"
 
 export const PixelBlock = (props: NodeProps<PixelProps>) => {
   const { data } = props

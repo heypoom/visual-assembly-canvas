@@ -12,6 +12,6 @@ export const defaultProps: DefaultPropsMap = {
   Tap: { signal: [1] },
   Osc: { time: 0, waveform: { Sine: null } },
   Plot: { values: [], size: 250 },
-  MidiIn: { event: "NoteOn" },
+  MidiIn: { on: "NoteOn" },
   MidiOut: { format: "Note" },
 }

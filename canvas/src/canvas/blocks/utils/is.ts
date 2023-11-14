@@ -11,4 +11,6 @@ export const isBlock = {
   tap: isBlockType("Tap"),
   osc: isBlockType("Osc"),
   plot: isBlockType("Plot"),
+  midiIn: isBlockType("MidiIn"),
+  midiOut: isBlockType("MidiOut"),
 }

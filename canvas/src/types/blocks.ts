@@ -1,4 +1,5 @@
 import { Waveform } from "./waveform"
+
 import {
   PaletteKey,
   PixelMode,
@@ -45,7 +46,7 @@ export interface OscProps extends BaseProps {
 }
 
 export interface MidiInProps extends BaseProps {
-  event: MidiInputEvent
+  on: MidiInputEvent
 }
 
 export interface MidiOutProps extends BaseProps {

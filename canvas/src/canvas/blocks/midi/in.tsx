@@ -1,21 +1,66 @@
-import { useReducer } from "react"
+import { useCallback, useEffect, useReducer, useState } from "react"
+import cx from "classnames"
 import { Handle, NodeProps, Position } from "reactflow"
 
 import { MidiInProps } from "../../../types/blocks"
 import { RightClickMenu } from "../../components/RightClickMenu"
 
+import { useStore } from "@nanostores/react"
+import { $midi } from "../../../store/midi"
+import { manager } from "../../../core"
+
+import { midiManager } from "./manager"
+
 const S1 = 1
 
 export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
-  const { id } = props.data
+  const { id, on } = props.data
 
+  const midi = useStore($midi)
+
+  const [ready, setReady] = useState(false)
+  const [last, setLast] = useState<[number, number] | null>(null)
   const [showSettings, toggle] = useReducer((n) => !n, false)
+
+  const handle = useCallback(
+    (note: number, value: number) => {
+      setLast([note, value])
+
+      manager.ctx?.send_message_to_block(id, {
+        Midi: { event: on, note, value },
+      })
+    },
+    [id, on],
+  )
+
+  const setup = useCallback(() => {
+    if (!ready) {
+      midiManager.on(id, on, handle)
+      setReady(true)
+    }
+  }, [handle, id, on, ready])
+
+  useEffect(() => {
+    setup()
+
+    // TODO: useEffect destructors.
+    return () => {}
+  }, [setup])
 
   return (
     <div className="group">
       <div>
         <RightClickMenu show={showSettings} toggle={toggle}>
-          <div>MIDI IN - {id}</div>
+          <div
+            className={cx(
+              "px-4 py-2 border-2 border-crimson-9",
+              (!midi.ready || !ready) && "border-gray-10",
+            )}
+          >
+            <div>{on}</div>
+
+            {last !== null && <div>[{last?.join(", ")}]</div>}
+          </div>
         </RightClickMenu>
       </div>
 
