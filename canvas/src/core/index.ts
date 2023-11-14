@@ -132,7 +132,7 @@ export class CanvasManager {
    * This is used to determine if we should run until pause.
    */
   get hasProducers() {
-    return this.nodes.some(isBlock.osc)
+    return this.nodes.some((n) => isBlock.osc(n) || isBlock.midiIn(n))
   }
 
   /** Does the canvas has any machines? */
@@ -142,7 +142,7 @@ export class CanvasManager {
 
   /** Does the canvas has any real-time interactors, e.g. tap blocks? */
   get hasInteractors() {
-    return this.nodes.some(isBlock.tap)
+    return this.nodes.some((n) => isBlock.tap(n) || isBlock.midiIn(n))
   }
 
   /** Continue the execution. */
@@ -153,6 +153,7 @@ export class CanvasManager {
     // Check the canvas for presence of blocks that alter run behaviour.
     const hasMachines = this.hasMachines
     const watchdog = !this.hasInteractors || this.delayMs === 0
+    console.log({ watchdog })
 
     // Disable the watchdog if we have interactors, e.g. tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
@@ -228,6 +229,7 @@ export class CanvasManager {
   /** Returns an error that explains why the machine halted. */
   getHaltError(id: number, status: MachineStatus): MachineError | undefined {
     if (status === "Awaiting") {
+      console.log(">>> halt error?")
       return { MessageNeverReceived: { id } }
     }
 

@@ -130,8 +130,6 @@ export class Launchpad {
   dispatch(event: keyof DeviceListeners, note: number = 0, value: number = 0) {
     if (!this.listeners[event]) return
 
-    console.debug(`${event}>`, note, value)
-
     // When the event is dispatched, invoke the event listeners.
     for (const listener of this.listeners[event]) {
       listener(note, value)

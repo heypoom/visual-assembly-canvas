@@ -1,5 +1,5 @@
 use snafu::ensure;
-use crate::canvas::block::BlockData::{Machine, Osc, Pixel, Plot};
+use crate::canvas::block::BlockData::{Machine, MidiIn, Osc, Pixel, Plot};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Message, Sequencer};
 use crate::audio::waveform::generate_waveform;
@@ -167,15 +167,28 @@ impl Canvas {
             Pixel { .. } => self.tick_pixel_block(id, messages)?,
             Plot { .. } => self.tick_plotter_block(id, messages)?,
             Osc { .. } => self.tick_osc_block(id, messages)?,
+            MidiIn { .. } => self.tick_midi_in_block(id, messages)?,
             _ => {}
         }
 
         Ok(())
     }
 
-    pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+    pub fn get_connected_sinks(&self, id: u16) -> Vec<Wire> {
+        self.wires.iter().filter(|w| w.source.block == id).cloned().collect()
+    }
+
+    pub fn send_data_to_sinks(&mut self, id: u16, body: Vec<u16>) -> Errorable {
         let wires = self.get_connected_sinks(id);
 
+        for wire in wires {
+            self.send_message(Message { port: wire.source, action: Action::Data { body: body.clone() } })?;
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
         let Osc { time, waveform } = &mut block.data else { return Ok(()); };
 
@@ -202,22 +215,10 @@ impl Canvas {
         }
 
         // Send the waveform values to the connected blocks.
-        if !wires.is_empty() {
-            let value = generate_waveform(*waveform, *time);
-
-            for wire in wires {
-                self.send_message(Message {
-                    port: wire.source,
-                    action: Action::Data { body: vec![value] },
-                })?;
-            }
-        }
+        let value = generate_waveform(*waveform, *time);
+        self.send_data_to_sinks(id, vec![value])?;
 
         Ok(())
-    }
-
-    pub fn get_connected_sinks(&self, id: u16) -> Vec<Wire> {
-        self.wires.iter().filter(|w| w.source.block == id).cloned().collect()
     }
 
     pub fn tick_plotter_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
@@ -234,6 +235,22 @@ impl Canvas {
                     values.clear()
                 }
 
+                _ => {}
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_midi_in_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+        let block = self.mut_block(id)?;
+        let MidiIn { .. } = &mut block.data else { return Ok(()); };
+
+        for message in messages {
+            match message.action {
+                Action::Midi { value, note, .. } => {
+                    self.send_data_to_sinks(id, vec![note as u16, value as u16])?;
+                }
                 _ => {}
             }
         }

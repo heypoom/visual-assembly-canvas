@@ -10,6 +10,7 @@ import { $midi } from "../../../store/midi"
 import { manager } from "../../../core"
 
 import { midiManager } from "./manager"
+import { $status } from "../../../store/status"
 
 const S1 = 1
 
@@ -17,6 +18,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
   const { id, on } = props.data
 
   const midi = useStore($midi)
+  const status = useStore($status)
 
   const [ready, setReady] = useState(false)
   const [last, setLast] = useState<[number, number] | null>(null)
@@ -29,23 +31,21 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
       manager.ctx?.send_message_to_block(id, {
         Midi: { event: on, note, value },
       })
+
+      if (!status.running) manager.step()
     },
-    [id, on],
+    [id, on, status.running],
   )
 
-  const setup = useCallback(() => {
+  useEffect(() => {
     if (!ready) {
       midiManager.on(id, on, handle)
       setReady(true)
     }
-  }, [handle, id, on, ready])
-
-  useEffect(() => {
-    setup()
 
     // TODO: useEffect destructors.
     return () => {}
-  }, [setup])
+  }, [handle, id, on, ready, status.running])
 
   return (
     <div className="group">
@@ -53,7 +53,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
         <RightClickMenu show={showSettings} toggle={toggle}>
           <div
             className={cx(
-              "px-4 py-2 border-2 border-crimson-9",
+              "px-4 py-2 border-2 border-crimson-9 font-mono text-crimson-11",
               (!midi.ready || !ready) && "border-gray-10",
             )}
           >

@@ -88,7 +88,6 @@ impl Sequencer {
             if self.statuses.get(&id) == Some(&Invalid) { continue; }
             machine.partial_reset();
 
-            self.await_watchdog = true;
             self.await_watchdog_counter = MAX_WAIT_CYCLES;
             self.statuses.insert(id, Ready);
         }
