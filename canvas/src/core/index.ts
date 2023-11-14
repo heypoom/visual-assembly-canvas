@@ -114,7 +114,7 @@ export class CanvasManager {
    * Indicate that we should run until pause, without any cycle limit or halting checks.
    */
   get runUntilPause(): boolean {
-    return this.delayMs > 0 && (this.hasProducers || this.hasInteractors)
+    return this.delayMs > 0 && this.hasProducers
   }
 
   get nodes() {
@@ -122,21 +122,17 @@ export class CanvasManager {
   }
 
   /**
-   * Does the canvas has any signal producers, e.g. clock, midi input?
-   * This is used to determine if we should run until pause.
+   * Does the canvas has any signal producers, e.g. clocks or real-time interactors?
    */
   get hasProducers() {
-    return this.nodes.some((n) => isBlock.clock(n) || isBlock.midiIn(n))
+    return this.nodes.some(
+      (n) => isBlock.clock(n) || isBlock.midiIn(n) || isBlock.tap(n),
+    )
   }
 
   /** Does the canvas has any machines? */
   get hasMachines() {
     return this.nodes.some(isBlock.machine)
-  }
-
-  /** Does the canvas has any real-time interactors, e.g. tap, midi input? */
-  get hasInteractors() {
-    return this.nodes.some((n) => isBlock.tap(n) || isBlock.midiIn(n))
   }
 
   /** Continue the execution. */
@@ -146,11 +142,10 @@ export class CanvasManager {
 
     // Check the canvas for presence of blocks that alter run behaviour.
     const hasMachines = this.hasMachines
-    const watchdog = !this.hasInteractors || this.delayMs === 0
 
     // Disable the watchdog if we have interactors, e.g. tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
-    this.ctx?.set_await_watchdog(watchdog)
+    this.ctx?.set_await_watchdog(!this.runUntilPause)
 
     // Should we enable halting detection?
     const runUntilPause = this.runUntilPause

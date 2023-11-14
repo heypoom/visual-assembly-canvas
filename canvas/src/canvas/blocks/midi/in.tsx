@@ -67,9 +67,13 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
               (!midi.ready || !ready) && "border-gray-10",
             )}
           >
-            <div>{on}</div>
-
-            {last !== null && <div>[{last?.join(", ")}]</div>}
+            {last ? (
+              <div className="text-1">
+                {on}(n = {last[0]}, v = {last[1]})
+              </div>
+            ) : (
+              <div className="text-1">{on}</div>
+            )}
           </div>
         </RightClickMenu>
       </div>
