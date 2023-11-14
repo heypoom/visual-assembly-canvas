@@ -44,6 +44,12 @@ pub enum BlockData {
         /// Current frequency of the oscillator.
         waveform: Waveform,
     },
+
+    /// MIDI In. Receives a MIDl message.
+    MidiIn {},
+
+    /// MIDI Out. Sends a MIDI message to the MIDI Out device.
+    MidiOut {},
 }
 
 impl Block {

@@ -1,8 +1,8 @@
-import { Input, Output, Message } from "webmidi"
+import { Input, Output } from "webmidi"
+import { WebMidi } from "webmidi"
 
 import { ControlCodes } from "./controls"
 import { toNote, toSlot } from "./conversion"
-import { enableMidiWithSysEx, inputOf, outputOf } from "./midi"
 
 import {
   Color,
@@ -15,7 +15,8 @@ import {
 } from "./specs"
 
 import { Spec, InputGrid } from "../types/specs"
-import { LaunchpadHandler, DeviceListeners } from "../types/midi"
+import { LaunchpadHandler, DeviceListeners, DeviceEvents } from "../types/midi"
+import { $launchpad } from "../../store/launchpad"
 
 /**
  * High-level helper class to interface with the launchpad hardware.
@@ -67,17 +68,13 @@ export class Launchpad {
     ready: [],
   }
 
-  constructor() {
-    this.setup()
-  }
-
   /**
    * Setup the launchpad device.
    */
   async setup() {
     if (this.initialized) return
 
-    await enableMidiWithSysEx()
+    await WebMidi.enable({ sysex: true })
     this.initPorts()
     this.setupListeners()
     this.useProgrammerLayout()
@@ -85,16 +82,19 @@ export class Launchpad {
     this.dispatch("ready")
 
     this.initialized = true
+    $launchpad.setKey("ready", true)
+
+    console.info("Launchpad setup completed.")
   }
 
   /**
    * Initializes the MIDI ports for the launchpad.
    */
   initPorts() {
-    this.midiIn = inputOf(this.midiInName)
-    this.midiOut = outputOf(this.midiOutName)
-    this.dawIn = inputOf(this.dawInName)
-    this.dawOut = outputOf(this.dawOutName)
+    this.midiIn = WebMidi.getInputByName(this.midiInName)
+    this.midiOut = WebMidi.getOutputByName(this.midiOutName)
+    this.dawIn = WebMidi.getInputByName(this.dawInName)
+    this.dawOut = WebMidi.getOutputByName(this.dawOutName)
   }
 
   /**
@@ -103,10 +103,22 @@ export class Launchpad {
    * @param event name of the event
    * @param handler callback to invoke when the event occurs.
    */
-  on(event: keyof DeviceListeners, handler: LaunchpadHandler) {
+  on(event: DeviceEvents, handler: LaunchpadHandler) {
     if (!this.listeners[event]) return
 
     this.listeners[event].push(handler)
+  }
+
+  /**
+   * Remove an event listener from the launchpad.
+   *
+   * @param event name of the event
+   * @param handler callback to remove.
+   */
+  off(event: DeviceEvents, handler: LaunchpadHandler) {
+    if (!this.listeners[event]) return
+
+    this.listeners[event] = this.listeners[event].filter((h) => h != handler)
   }
 
   /**
@@ -114,20 +126,16 @@ export class Launchpad {
    *
    * @param event
    * @param note
-   * @param velocity
+   * @param value
    */
-  dispatch(
-    event: keyof DeviceListeners,
-    note: number = 0,
-    velocity: number = 0,
-  ) {
+  dispatch(event: keyof DeviceListeners, note: number = 0, value: number = 0) {
     if (!this.listeners[event]) return
 
-    console.debug(`${event}>`, note, velocity)
+    console.debug(`${event}>`, note, value)
 
     // When the event is dispatched, invoke the event listeners.
     for (const listener of this.listeners[event]) {
-      listener(note, velocity)
+      listener(note, value)
     }
   }
 
@@ -179,7 +187,11 @@ export class Launchpad {
   cmd(...data: number[]) {
     if (!this.dawOut) return
 
-    this.dawOut.send([240, 0, 32, 41, 2, 12, ...data, 247])
+    try {
+      this.dawOut.send([240, 0, 32, 41, 2, 12, ...data, 247])
+    } catch (error) {
+      console.warn("launchpad error:", error)
+    }
   }
 
   /**
@@ -221,10 +233,7 @@ export class Launchpad {
    * @param specs
    */
   batch(specs: Spec[]) {
-    let payload: number[] = []
-    for (const spec of specs) payload = [...payload, ...spec]
-
-    this.cmd(3, ...payload)
+    this.cmd(3, ...specs.flat())
   }
 
   /**
