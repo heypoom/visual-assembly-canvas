@@ -6,12 +6,12 @@ import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
 import { PaletteKey, getPixelColor, palettes } from "./palette"
 
-import type { PixelBlock, PixelMode } from "../../../types/blocks"
+import type { PixelProps, PixelMode } from "../../../types/blocks"
 
 import { manager } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
 
-export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
+export const PixelBlock = (props: NodeProps<PixelProps>) => {
   const { data } = props
   const { columns = 9, palette = "base", mode = "Append" } = data
 
@@ -20,7 +20,7 @@ export const PixelBlockView = (props: NodeProps<PixelBlock>) => {
   const pixels =
     data.pixels?.length > 0 ? data.pixels : [...Array(columns * 5)].fill(0)
 
-  function update(input: Partial<PixelBlock>) {
+  function update(input: Partial<PixelProps>) {
     updateNodeData(data.id, input)
 
     // Update the behaviour of pixel block.

@@ -9,9 +9,9 @@ import { addLineHighlight } from "./highlight"
 import { setSource, manager } from "../core"
 import { $editorConfig } from "../store/editor"
 
-import { MachineBlock } from "../types/blocks"
+import { MachineProps } from "../types/blocks"
 
-type Props = MachineBlock
+type Props = MachineProps
 
 export function MachineEditor(props: Props) {
   const { id, source } = props

@@ -1,6 +1,6 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
-import { OscBlock, Waveform, WaveformKey } from "../../types/blocks"
+import { OscProps, Waveform, WaveformKey } from "../../types/blocks"
 import { manager } from "../../core"
 import { Select, TextField } from "@radix-ui/themes"
 
@@ -20,7 +20,7 @@ const waveforms: Record<WaveformKey, Waveform> = {
   Noise: { Noise: null },
 }
 
-export const OscBlockView = (props: NodeProps<OscBlock>) => {
+export const OscBlock = (props: NodeProps<OscProps>) => {
   const { id, time = 0, waveform } = props.data
 
   const [cycleText, setCycleText] = useState("")

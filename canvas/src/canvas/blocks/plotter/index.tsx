@@ -4,12 +4,12 @@ import { cyanP3 } from "@radix-ui/colors"
 
 import { rescale } from "./rescale"
 
-import { PlotterBlock } from "../../../types/blocks"
 import { RightClickMenu } from "../../components/RightClickMenu"
+import { PlotterProps } from "../../../types/blocks"
 
 const S0 = 0
 
-export const PlotterBlockView = (props: NodeProps<PlotterBlock>) => {
+export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
   const { values, size } = props.data
   const [showSettings, toggle] = useReducer((n) => !n, false)
 

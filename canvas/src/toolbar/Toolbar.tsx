@@ -14,12 +14,22 @@ import { manager } from "../core"
 import { addBlock } from "../canvas"
 import { $hasBlocks } from "../store/nodes"
 import { addMachine } from "../canvas/utils/addBlock"
+import { BlockTypes } from "../types/Node"
 
 export function Toolbar() {
   const status = useStore($status)
   const hasBlocks = useStore($hasBlocks)
 
   const { halted } = status
+
+  const types: BlockTypes[] = [
+    "Pixel",
+    "Tap",
+    "Osc",
+    "Plot",
+    "MidiIn",
+    "MidiOut",
+  ]
 
   return (
     <div className="absolute top-3 z-10 space-x-3 flex justify-between w-full px-4">
@@ -29,25 +39,17 @@ export function Toolbar() {
           Machine
         </Button>
 
-        <Button onClick={() => addBlock("Pixel")} variant="soft" color="orange">
-          <PlusCircledIcon />
-          Pixel
-        </Button>
-
-        <Button onClick={() => addBlock("Tap")} variant="soft" color="orange">
-          <PlusCircledIcon />
-          Tap
-        </Button>
-
-        <Button onClick={() => addBlock("Osc")} variant="soft" color="orange">
-          <PlusCircledIcon />
-          Osc
-        </Button>
-
-        <Button onClick={() => addBlock("Plot")} variant="soft" color="orange">
-          <PlusCircledIcon />
-          Plot
-        </Button>
+        {types.map((type) => (
+          <Button
+            key={type}
+            color="orange"
+            variant="soft"
+            onClick={() => addBlock(type)}
+          >
+            <PlusCircledIcon />
+            {type}
+          </Button>
+        ))}
       </div>
 
       <div className="flex gap-x-2">

@@ -1,49 +1,53 @@
-import { PixelMode as _PixelMode } from "machine-wasm"
+import { Waveform } from "./waveform"
+import {
+  PaletteKey,
+  PixelMode,
+  MidiInputEvent,
+  MidiOutputFormat,
+} from "./enums"
 
-import { UnionToIntersection } from "./helper"
-
-import { PaletteKey } from "../canvas/blocks"
-
-export interface BaseBlock {
+export interface BaseProps {
   id: number
 }
 
-export type PixelMode = keyof typeof _PixelMode
-
-export interface PixelBlock extends BaseBlock {
+export interface PixelProps extends BaseProps {
   pixels: number[]
   columns?: number
   palette?: PaletteKey
   mode?: PixelMode
 }
 
-export interface TapBlock extends BaseBlock {
+export interface TapProps extends BaseProps {
   signal?: number[]
 }
 
-export interface MachineBlock extends BaseBlock {
+export interface MachineProps extends BaseProps {
   source: string
 }
 
-export interface PlotterBlock extends BaseBlock {
+export interface PlotterProps extends BaseProps {
   values: number[]
 
   /** How much data can the plotter hold? */
   size: number
 }
 
-export type Waveform =
-  | { Sine: null }
-  | { Cosine: null }
-  | { Tangent: null }
-  | { Square: { duty_cycle: number } }
-  | { Sawtooth: null }
-  | { Triangle: null }
-  | { Noise: null }
+export interface PixelProps extends BaseProps {
+  pixels: number[]
+  columns?: number
+  palette?: PaletteKey
+  mode?: PixelMode
+}
 
-export type WaveformKey = keyof UnionToIntersection<Waveform>
-
-export interface OscBlock extends BaseBlock {
+export interface OscProps extends BaseProps {
   time: number
   waveform: Waveform
+}
+
+export interface MidiInProps extends BaseProps {
+  event: MidiInputEvent
+}
+
+export interface MidiOutProps extends BaseProps {
+  format: MidiOutputFormat
 }

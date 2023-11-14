@@ -2,13 +2,13 @@ import { Extension, keymap } from "@uiw/react-codemirror"
 
 import { vasmLanguage } from "./syntax"
 
-import { MachineBlock } from "../types/blocks"
+import { MachineProps } from "../types/blocks"
 import { manager } from "../core/index"
 import { EditorConfig } from "../store/editor"
 import { lineHighlighter } from "./highlight"
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getExtensions(m: MachineBlock, _config: EditorConfig) {
+export function getExtensions(m: MachineProps, _config: EditorConfig) {
   const keymaps = keymap.of([
     {
       key: "Enter",

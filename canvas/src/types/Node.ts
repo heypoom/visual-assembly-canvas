@@ -1,19 +1,23 @@
 import { Node, NodeProps } from "reactflow"
 
 import {
-  MachineBlock,
-  OscBlock,
-  PixelBlock,
-  PlotterBlock,
-  TapBlock,
+  MachineProps,
+  MidiInProps,
+  MidiOutProps,
+  OscProps,
+  PixelProps,
+  PlotterProps,
+  TapProps,
 } from "./blocks"
 
 export interface BlockTypeMap {
-  Machine: MachineBlock
-  Pixel: PixelBlock
-  Tap: TapBlock
-  Plot: PlotterBlock
-  Osc: OscBlock
+  Machine: MachineProps
+  Pixel: PixelProps
+  Tap: TapProps
+  Plot: PlotterProps
+  Osc: OscProps
+  MidiIn: MidiInProps
+  MidiOut: MidiOutProps
 }
 
 export type BlockTypes = keyof BlockTypeMap

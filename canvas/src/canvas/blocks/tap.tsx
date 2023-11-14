@@ -1,7 +1,7 @@
 import { Handle, NodeProps, Position } from "reactflow"
 import { manager } from "../../core"
 import { Port } from "machine-wasm"
-import { TapBlock } from "../../types/blocks"
+import { TapProps } from "../../types/blocks"
 import { Flex, TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
 
@@ -14,7 +14,7 @@ const S1 = 1
 
 // TODO: send message to connected port on tap
 // TODO: add ways for blocks to send events from the frontend
-export const TapBlockView = (props: NodeProps<TapBlock>) => {
+export const TapBlock = (props: NodeProps<TapProps>) => {
   const { id, signal } = props.data
 
   const [signalText, setSignalText] = useState(signal?.join(" ") ?? "")
