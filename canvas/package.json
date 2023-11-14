@@ -39,11 +39,13 @@
     "rollup": "link:@lezer/generator/rollup",
     "tone": "^14.7.77",
     "vite-node": "^0.34.6",
-    "vite-plugin-glsl": "^1.1.2"
+    "vite-plugin-glsl": "^1.1.2",
+    "webmidi": "^3.1.6"
   },
   "devDependencies": {
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
+    "@types/webmidi": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
     "@vitejs/plugin-react": "^4.0.3",
