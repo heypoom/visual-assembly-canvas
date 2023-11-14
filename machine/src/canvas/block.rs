@@ -47,7 +47,7 @@ pub enum BlockData {
         waveform: Waveform,
     },
 
-    /// MIDI In. Receives a MIDl message.
+    /// MIDI In. Receives a MIDI message.
     MidiIn {
         /// Which MIDI message do we want to receive for this block?
         event: MidiInputEvent,
