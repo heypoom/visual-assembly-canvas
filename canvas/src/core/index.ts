@@ -25,6 +25,8 @@ import { $delay } from "../store/canvas"
 import { isBlock } from "../canvas/blocks"
 import { syncBlockData } from "../store/blocks"
 import { midiManager } from "../canvas/blocks/midi/manager"
+import { processMidiEvent } from "../midi/event"
+import { Effect } from "../types/effects"
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -256,12 +258,27 @@ export class CanvasManager {
     // Tick the blocks.
     this.updateBlocks()
 
+    // Perform side effects.
+    this.performSideEffects()
+
     // TODO: add an indicator to the block for a halted machine.
     // TODO: we should remove this behaviour to prevent confusion!
     // If running in steps, we should reset the machine once it halts.
     const halted = this.isHalted
     if (!config.batch && halted) this.reloadMachines()
     if (halted) $status.setKey("halted", true)
+  }
+
+  consumeSideEffects(): Map<number, Effect[]> {
+    return this.ctx?.consume_block_side_effects()
+  }
+
+  performSideEffects() {
+    this.consumeSideEffects().forEach((effects, id) => {
+      for (const effect of effects) {
+        if ("Midi" in effect) processMidiEvent(id, effect)
+      }
+    })
   }
 
   updateBlocks() {

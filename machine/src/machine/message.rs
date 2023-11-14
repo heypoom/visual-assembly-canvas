@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::audio::midi::MidiInputEvent;
+use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
 use crate::audio::waveform::Waveform;
 use crate::canvas::PixelMode;
 use crate::canvas::wire::Port;
@@ -30,5 +30,8 @@ pub enum Action {
 
     /// Set the pixel mode of the pixel block.
     SetPixelMode { mode: PixelMode },
+
+    /// Set the MIDI output format.
+    SetMidiOutputFormat { format: MidiOutputFormat },
 }
 

@@ -1,7 +1,9 @@
+use std::collections::HashMap;
 use snafu::ensure;
-use crate::canvas::block::BlockData::{Clock, Machine, MidiIn, Osc, Pixel, Plot};
+use crate::canvas::block::BlockData::{Clock, Machine, MidiIn, MidiOut, Osc, Pixel, Plot};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
-use crate::{Action, Message, Sequencer};
+use crate::{Action, Event, Message, Sequencer};
+use crate::audio::midi::{MidiOutputFormat};
 use crate::audio::waveform::generate_waveform;
 use crate::canvas::{BlockIdInUseSnafu};
 use crate::canvas::CanvasError::{CannotFindWire};
@@ -169,6 +171,7 @@ impl Canvas {
             Osc { .. } => self.tick_osc_block(id, messages)?,
             Clock { .. } => self.tick_clock_block(id, messages)?,
             MidiIn { .. } => self.tick_midi_in_block(id, messages)?,
+            MidiOut { .. } => self.tick_midi_out_block(id, messages)?,
             _ => {}
         }
 
@@ -274,6 +277,35 @@ impl Canvas {
             match message.action {
                 Action::Midi { value, note, .. } => {
                     self.send_data_to_sinks(id, vec![note as u16, value as u16])?;
+                }
+                _ => {}
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_midi_out_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+        let block = self.mut_block(id)?;
+        let MidiOut { format } = &mut block.data else { return Ok(()); };
+
+        for message in messages {
+            match message.action {
+                Action::Data { body } => {
+                    let mut data: Vec<u8> = body.iter().map(|v| *v as u8).collect();
+
+                    // Reverse the bytes to make it easier to process.
+                    if format == &MidiOutputFormat::Raw || format == &MidiOutputFormat::Launchpad {
+                        data.reverse();
+                    }
+
+                    block.events.push(Event::Midi {
+                        format: *format,
+                        data,
+                    })
+                }
+                Action::SetMidiOutputFormat { format: fmt } => {
+                    *format = fmt;
                 }
                 _ => {}
             }
@@ -429,5 +461,16 @@ impl Canvas {
     /// Disable the await watchdog if we know the message will eventually arrive.
     pub fn set_await_watchdog(&mut self, enabled: bool) {
         self.seq.await_watchdog = enabled;
+    }
+
+    /// Consume the side effect events in the frontend.
+    pub fn consume_block_side_effects(&mut self) -> HashMap<u16, Vec<Event>> {
+        let mut effects = HashMap::new();
+
+        for block in &mut self.blocks {
+            effects.insert(block.id, block.events.drain(..).collect());
+        }
+
+        effects
     }
 }

@@ -38,10 +38,10 @@ export function buildMidiGrid(): number[][] {
 export const midiGrid = buildMidiGrid()
 
 export function getTrait(note: number, trait: number[]): Spec {
-  const type = trait.slice(0, 1)
+  const type = trait[0]
   const options = trait.slice(1)
 
-  return [...type, note, ...options] as Spec
+  return [type, note, ...options] as Spec
 }
 
 export function buildSpecFromGrid(grid: InputGrid): Spec[] {

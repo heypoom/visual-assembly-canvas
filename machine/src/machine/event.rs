@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::audio::midi::{MidiOutputEvent};
+use crate::audio::midi::{MidiOutputFormat};
 
 /// Events that can be sent by blocks and machines.
 /// This event can be considered a side effect that will be executed by the host.
@@ -12,7 +12,8 @@ pub enum Event {
 
     /// Sends a MIDI message to the MIDI out device.
     Midi {
-        event: MidiOutputEvent,
+        format: MidiOutputFormat,
+        data: Vec<u8>,
     },
 }
 

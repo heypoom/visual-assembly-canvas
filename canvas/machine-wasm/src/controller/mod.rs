@@ -155,8 +155,13 @@ impl Controller {
     }
 
     /// Allows the frontend to consume events from the machine.
-    pub fn consume_side_effects(&mut self, id: u16) -> Return {
+    pub fn consume_machine_side_effects(&mut self, id: u16) -> Return {
         Ok(to_value(&self.canvas.seq.consume_side_effects(id))?)
+    }
+
+    /// Allows the frontend to consume events from the blocks.
+    pub fn consume_block_side_effects(&mut self) -> Return {
+        Ok(to_value(&self.canvas.consume_block_side_effects())?)
     }
 
     pub fn send_message(&mut self, message: JsValue) -> Return {

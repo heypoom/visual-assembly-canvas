@@ -12,6 +12,10 @@ import { manager } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
 import { PixelMode } from "../../../types/enums"
 
+const modes = Object.keys(_PixelMode).filter(
+  (key) => !isNaN(Number(_PixelMode[key as PixelMode])),
+)
+
 export const PixelBlock = (props: NodeProps<PixelProps>) => {
   const { data } = props
   const { columns = 9, palette = "base", mode = "Append" } = data
@@ -33,10 +37,6 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
   }
 
   const isDrawable = !!pixels && columns > 1
-
-  const modes = Object.keys(_PixelMode).filter(
-    (key) => !isNaN(Number(_PixelMode[key as PixelMode])),
-  )
 
   return (
     <div className="group">
