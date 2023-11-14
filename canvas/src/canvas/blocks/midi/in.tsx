@@ -29,8 +29,6 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
     (note: number, value: number) => {
       setLast([note, value])
 
-      console.log(`send> id=${id} on=${on} note=${note} val=${value}`)
-
       manager.ctx?.send_message_to_block(id, {
         Midi: { event: on, note, value },
       })
