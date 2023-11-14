@@ -7,6 +7,8 @@ import { useReducer, useState } from "react"
 
 import { RightClickMenu } from "../components/RightClickMenu"
 import { updateNodeData } from "../../store/blocks"
+import { useStore } from "@nanostores/react"
+import { $status } from "../../store/status"
 
 const S1 = 1
 
@@ -18,6 +20,8 @@ export const TapBlockView = (props: NodeProps<TapBlock>) => {
   const [signalText, setSignalText] = useState(signal?.join(" ") ?? "")
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
+  const status = useStore($status)
+
   function tap() {
     try {
       manager.ctx?.send_message({
@@ -28,7 +32,10 @@ export const TapBlockView = (props: NodeProps<TapBlock>) => {
       console.warn("cannot send tap:", err)
     }
 
-    manager.step()
+    // Only step the execution if the program is not running.
+    // TODO: can we improve this?
+    // TODO: traverse the graph node to only tick connected nodes.
+    if (!status.running) manager.step()
   }
 
   function setSignal() {
