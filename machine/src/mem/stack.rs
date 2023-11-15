@@ -102,6 +102,11 @@ impl<'a> StackManager<'a> {
 
         Ok(())
     }
+
+    pub fn len(&self) -> u16 {
+        let v = (self.top().checked_add(1)).unwrap_or(u16::MAX);
+        v.checked_sub(self.min).unwrap_or(v)
+    }
 }
 
 #[cfg(test)]
@@ -117,11 +122,16 @@ mod tests {
         s.push(10)?;
         s.push(20)?;
         s.push(30)?;
+
+        assert_eq!(s.len(), 3);
         assert_eq!(s.pop()?, 30);
         assert_eq!(s.pop()?, 20);
+        assert_eq!(s.len(), 1);
+
         s.push(40)?;
         assert_eq!(s.pop()?, 40);
         assert_eq!(s.pop()?, 10);
+        assert_eq!(s.len(), 0);
 
         Ok(())
     }

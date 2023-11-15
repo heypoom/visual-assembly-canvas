@@ -42,4 +42,7 @@ pub enum RuntimeError {
 
     #[snafu(display("missing value to store"))]
     MissingValueToStore,
+
+    #[snafu(display("not enough values in stack"))]
+    NotEnoughValues { min: u16, len: u16 },
 }

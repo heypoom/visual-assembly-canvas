@@ -1,10 +1,12 @@
 use std::ops::Not;
+use snafu::ensure;
 use crate::{Event, RuntimeError};
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
+use crate::runtime_error::{NotEnoughValuesSnafu};
 use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow, MissingMessageBody, MissingReturnAddress, MissingValueToStore};
 
 type Errorable = Result<(), RuntimeError>;
@@ -98,7 +100,10 @@ impl Execute for Machine {
             }
 
             Op::Over => {
-                s.push(s.get(1))?;
+                let len = s.len();
+                ensure!(len >= 2, NotEnoughValuesSnafu { len, min: 2u16 });
+
+                s.push(s.get(len - 2).clone())?;
             }
 
             Op::Rotate => {
