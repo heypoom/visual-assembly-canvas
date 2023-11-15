@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from "react"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import cx from "classnames"
 import { Handle, NodeProps, Position } from "reactflow"
 
@@ -14,9 +14,11 @@ import {
   isControlChangeEvent,
   isNoteEvent,
   midiManager,
-} from "../../../midi/manager"
+} from "../../../midi"
 
 import { $status } from "../../../store/status"
+import { updateNodeData } from "../../../store/blocks"
+import { MidiTransportForm } from "./transport"
 
 const S1 = 1
 
@@ -25,10 +27,22 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
 
   const midi = useStore($midi)
   const status = useStore($status)
+  const key = useRef("")
 
-  const [ready, setReady] = useState(false)
   const [last, setLast] = useState<[number, number, number] | null>(null)
   const [showSettings, toggle] = useReducer((n) => !n, false)
+
+  function update(input: Partial<MidiInProps>) {
+    updateNodeData(id, input)
+
+    if (typeof input.port === "number") {
+      manager.send(id, { SetMidiPort: { port: input.port } })
+    }
+
+    if ("channels" in input) {
+      manager.send(id, { SetMidiChannels: { channels: input.channels ?? [] } })
+    }
+  }
 
   const handle = useCallback(
     (e: MidiEvent) => {
@@ -54,17 +68,16 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
     [id, on, port, status.running],
   )
 
-  // NOTE: do not remove midi handler on unmount, as reactflow occasionally unmounts nodes.
   useEffect(() => {
-    if (!ready) {
-      midiManager.on(id, { type: on, handle, channels, port })
-      setReady(true)
-    }
-  }, [channels, handle, id, on, port, ready, status.running])
+    const currKey = `${id}-${on}-${port}-${channels}`
+    if (key.current === currKey) return
+
+    midiManager.on(id, { type: on, handle, channels, port }).then()
+
+    key.current = currKey
+  }, [id, on, port, channels])
 
   const reset = () => setLast(null)
-
-  const input = midi.inputs[port]
 
   return (
     <div className="group">
@@ -78,7 +91,6 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
           <div
             className={cx(
               "px-4 py-2 border-2 border-crimson-9 font-mono text-crimson-11 space-y-1",
-              (!midi.ready || !ready) && "border-gray-10",
             )}
           >
             {last ? (
@@ -90,17 +102,14 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
             )}
 
             {showSettings && (
-              <div className="text-[9px] text-gray-9">
-                {input && (
-                  <div>
-                    input: {input} ({port})
-                  </div>
-                )}
-
-                <div>
-                  channels:{" "}
-                  {channels.length === 0 ? "all" : channels.join(", ")}
-                </div>
+              <div className="max-w-[160px]">
+                <MidiTransportForm
+                  port={port}
+                  channels={channels}
+                  ports={midi.inputs}
+                  mode="in"
+                  onChange={update}
+                />
               </div>
             )}
           </div>

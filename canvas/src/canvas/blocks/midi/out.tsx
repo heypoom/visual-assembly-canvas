@@ -11,6 +11,7 @@ import { updateNodeData } from "../../../store/blocks"
 import { useStore } from "@nanostores/react"
 import { $lastMidiEvent, $midi } from "../../../store/midi"
 import { midiManager } from "../../../midi"
+import { MidiTransportForm } from "./transport"
 
 const S0 = 0
 
@@ -32,6 +33,14 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
 
     if (typeof input.format === "string") {
       manager.send(id, { SetMidiOutputFormat: { format: input.format } })
+    }
+
+    if (input.port !== undefined) {
+      manager.send(id, { SetMidiPort: { port: input.port } })
+    }
+
+    if (input.channel !== undefined) {
+      manager.send(id, { SetMidiChannels: { channels: [input.channel] } })
     }
   }
 
@@ -67,8 +76,11 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
           <div className="text-cyan-11">{getLog()}</div>
 
           {showSettings && (
-            <section className="flex flex-col space-y-2 w-full">
-              <div className="flex items-center gap-4 w-full">
+            <section className="flex flex-col space-y-4 w-full max-w-[200px]">
+              <div
+                className="grid items-center gap-4 w-full text-gray-11"
+                style={{ gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)" }}
+              >
                 <p className="text-[10px]">Format</p>
 
                 <Select.Root
@@ -78,7 +90,7 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
                     update({ format: v as MidiOutputFormat })
                   }
                 >
-                  <Select.Trigger className="w-[90px]" />
+                  <Select.Trigger />
 
                   <Select.Content>
                     {formats.map((key) => (
@@ -90,12 +102,19 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
                 </Select.Root>
               </div>
 
-              <div className="text-[9px] text-gray-9">
-                <div>
-                  port: {outputName ?? "None"} ({port})
-                </div>
-                <div>channel: {channel}</div>
-              </div>
+              <MidiTransportForm
+                port={port}
+                channels={[channel]}
+                ports={midi.outputs}
+                mode="out"
+                onChange={(data) => {
+                  if ("channels" in data) {
+                    return update({ channel: data.channels?.[0] ?? 0 })
+                  }
+
+                  update(data)
+                }}
+              />
             </section>
           )}
         </div>

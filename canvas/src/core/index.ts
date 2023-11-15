@@ -96,8 +96,6 @@ export class CanvasManager {
       this.highlightMaps.set(id, getSourceHighlightMap(source))
       this.invalidate()
     } catch (error) {
-      console.log("syntax error ->", error)
-
       this.setSyntaxError(id, error)
     }
   }
@@ -236,7 +234,6 @@ export class CanvasManager {
   /** Returns an error that explains why the machine halted. */
   getHaltError(id: number, status: MachineStatus): MachineError | undefined {
     if (status === "Awaiting") {
-      console.log(">>> halt error?")
       return { MessageNeverReceived: { id } }
     }
 
@@ -291,9 +288,9 @@ export class CanvasManager {
   }
 
   performSideEffects() {
-    this.consumeSideEffects().forEach(async (effects, id) => {
+    this.consumeSideEffects().forEach((effects, id) => {
       for (const effect of effects) {
-        if ("Midi" in effect) await processMidiEvent(id, effect)
+        if ("Midi" in effect) processMidiEvent(id, effect).then()
       }
     })
   }
@@ -303,7 +300,11 @@ export class CanvasManager {
     timed("syncBlockData", () => blocks.forEach(syncBlockData))
   }
 
-  updateBlocks = throttle(this._updateBlocks.bind(this), throttles.updateBlocks, {trailing: true})
+  updateBlocks = throttle(
+    this._updateBlocks.bind(this),
+    throttles.updateBlocks,
+    { trailing: true },
+  )
 
   updateBlock(id: number) {
     syncBlockData(this.ctx?.get_block(id))

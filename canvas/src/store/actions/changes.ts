@@ -53,7 +53,6 @@ export const onEdgesChange = (changes: EdgeChange[]) => {
         const target = port(e.target, e.targetHandle)
 
         manager.ctx?.disconnect(source, target)
-        console.log("port disconnected:", e)
       } catch (err) {
         console.warn("cannot disconnect edge!")
       }
@@ -64,7 +63,6 @@ export const onEdgesChange = (changes: EdgeChange[]) => {
 }
 
 export const onConnect = (c: Connection) => {
-  console.log("on connect...", c)
   if (!c.source || !c.target || !c.sourceHandle || !c.targetHandle) {
     console.warn("cannot connect as source or target is null!")
     return

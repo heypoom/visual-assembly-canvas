@@ -13,6 +13,7 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
     $lastMidiEvent.setKey(id, effect)
 
     const { format, data, port, channel } = midi
+
     const output = midiManager.outputs[port]
     if (!output) return
 
