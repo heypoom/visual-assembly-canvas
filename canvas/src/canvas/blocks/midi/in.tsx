@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useReducer, useState } from "react"
 import cx from "classnames"
 import { Handle, NodeProps, Position } from "reactflow"
-import { useDebouncedCallback } from "use-debounce"
 
 import { MidiInProps } from "../../../types/blocks"
 import { RightClickMenu } from "../../components/RightClickMenu"
@@ -31,7 +30,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
   const [last, setLast] = useState<[number, number, number] | null>(null)
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
-  const _handle = useCallback(
+  const handle = useCallback(
     (e: MidiEvent) => {
       let note = 0
       let value = 0
@@ -54,8 +53,6 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
     },
     [id, on, port, status.running],
   )
-
-  const handle = useDebouncedCallback(_handle, 1)
 
   // NOTE: do not remove midi handler on unmount, as reactflow occasionally unmounts nodes.
   useEffect(() => {
