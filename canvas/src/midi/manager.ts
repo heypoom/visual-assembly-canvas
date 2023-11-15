@@ -68,7 +68,6 @@ export class MidiManager {
 
     const { port, channels } = listener
     const input = this.inputs[port]
-    console.log("using port:", port, input?.name)
 
     if (!input) return
 

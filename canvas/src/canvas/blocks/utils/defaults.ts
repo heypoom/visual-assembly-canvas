@@ -14,5 +14,5 @@ export const defaultProps: DefaultPropsMap = {
   Clock: { time: 0 },
   Plot: { values: [], size: 250 },
   MidiIn: { on: "NoteOn", port: 2, channels: [] },
-  MidiOut: { format: "Note", channel: 1, port: 0 },
+  MidiOut: { format: "Note", channel: 1, port: 2 },
 }
