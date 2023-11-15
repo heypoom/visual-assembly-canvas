@@ -11,6 +11,9 @@ import {
 import { MidiInputEvent } from "../types/enums"
 import { FirstArg, UnionToIntersection } from "../types/helper"
 import { $midi } from "../store/midi"
+import { debounce } from "lodash"
+
+const MIDI_INPUT_DEBOUNCE = 0.1
 
 // Maps the event names from WebAssembly to the event names in the MIDI spec.
 const nameMap = {
@@ -72,8 +75,9 @@ export class MidiManager {
     if (!input) return
 
     const type = nameMap[listener.type]
+    const handle = debounce(listener.handle, MIDI_INPUT_DEBOUNCE)
 
-    input.addListener(type, listener.handle, {
+    input.addListener(type, handle, {
       // If channels filter are empty, we accept all channels.
       ...(channels?.length > 0 && { channels }),
     })
