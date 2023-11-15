@@ -19,11 +19,13 @@ mod tests {
 
     #[test]
     fn test_le_ge() -> Errorable {
-        let mut m: M = vec![Op::Push(5), Op::Push(2), Op::LessThan].into();
+        // 5 < 2
+        let mut m: M = vec![Op::Push(2), Op::Push(5), Op::LessThan].into();
         m.run()?;
         assert_eq!(m.stack().peek(), 1);
 
-        let mut m: M = vec![Op::Push(2), Op::Push(5), Op::GreaterThan].into();
+        // 2 < 5
+        let mut m: M = vec![Op::Push(5), Op::Push(2), Op::GreaterThan].into();
         m.run()?;
         assert_eq!(m.stack().peek(), 1);
 
