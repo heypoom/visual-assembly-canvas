@@ -35,8 +35,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
     (e: MidiEvent) => {
       let note = 0
       let value = 0
-
-      console.log("channel:", e.channel, e)
+      const channel = e.message.channel ?? 0
 
       if (isControlChangeEvent(e)) {
         note = e.controller.number
@@ -48,15 +47,15 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
         value = e.note.rawAttack
       }
 
-      setLast([note, value])
+      setLast([note, value, channel])
 
       manager.ctx?.send_message_to_block(id, {
-        Midi: { event: on, value, note, channel: e.channel, port },
+        Midi: { event: on, value, note, channel, port },
       })
 
       if (!status.running) manager.step()
     },
-    [channels, id, on, port, status.running],
+    [id, on, port, status.running],
   )
 
   const handle = useDebouncedCallback(_handle, 1)
@@ -84,21 +83,25 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
         >
           <div
             className={cx(
-              "px-4 py-2 border-2 border-crimson-9 font-mono text-crimson-11",
+              "px-4 py-2 border-2 border-crimson-9 font-mono text-crimson-11 space-y-1",
               (!midi.ready || !ready) && "border-gray-10",
             )}
           >
             {last ? (
               <div className="text-1">
-                {on}(n = {last[0]}, v = {last[1]})
+                {on}(n = {last[0]}, v = {last[1]}, ch = {last[2]})
               </div>
             ) : (
               <div className="text-1">{on}</div>
             )}
 
-            {input && (
-              <div className="text-1 text-gray-9">
-                {input} ({port})
+            {showSettings && (
+              <div>
+                {input && (
+                  <div className="text-[9px] text-gray-9">
+                    input: {input} ({port})
+                  </div>
+                )}
               </div>
             )}
           </div>
