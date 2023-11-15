@@ -2,7 +2,6 @@ import { launchpad, midiManager } from "."
 import { $lastMidiEvent } from "../store/midi"
 import { MidiEffect } from "../types/effects"
 
-// TODO: add support for MIDI ports and channels
 export async function processMidiEvent(id: number, effect: MidiEffect) {
   if (!effect) return
 

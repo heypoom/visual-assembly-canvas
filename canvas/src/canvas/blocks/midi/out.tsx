@@ -1,4 +1,4 @@
-import { useReducer } from "react"
+import { useEffect, useReducer } from "react"
 import { Handle, NodeProps, Position } from "reactflow"
 import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 
@@ -10,6 +10,7 @@ import { manager } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
 import { useStore } from "@nanostores/react"
 import { $lastMidiEvent, $midi } from "../../../store/midi"
+import { midiManager } from "../../../midi"
 
 const S0 = 0
 
@@ -47,6 +48,11 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
 
     return `${last.format}(${last.data.join(", ")})`
   }
+
+  useEffect(() => {
+    // Setup midi manager if it is not yet initialized.
+    midiManager.setup().then()
+  }, [])
 
   const outputName = midi.outputs[port]
 

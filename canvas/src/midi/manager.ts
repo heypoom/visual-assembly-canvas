@@ -63,9 +63,8 @@ export class MidiManager {
   }
 
   async on<L extends MidiListener>(id: number, listener: L) {
+    if (!this.initialized) await this.setup()
     if (this.midiListeners.has(id)) this.off(id)
-
-    await this.setup()
 
     const { port, channels } = listener
     const input = this.inputs[port]
