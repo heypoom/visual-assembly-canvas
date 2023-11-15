@@ -39,7 +39,11 @@ const throttles = {
   syncMachineState: 4,
 }
 
-const syncMachineState = throttle(_syncMachineState, throttles.syncMachineState)
+const syncMachineState = throttle(
+  _syncMachineState,
+  throttles.syncMachineState,
+  { trailing: true },
+)
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -299,7 +303,7 @@ export class CanvasManager {
     timed("syncBlockData", () => blocks.forEach(syncBlockData))
   }
 
-  updateBlocks = throttle(this._updateBlocks.bind(this), throttles.updateBlocks)
+  updateBlocks = throttle(this._updateBlocks.bind(this), throttles.updateBlocks, {trailing: true})
 
   updateBlock(id: number) {
     syncBlockData(this.ctx?.get_block(id))
@@ -339,7 +343,9 @@ export class CanvasManager {
     })
   }
 
-  highlight = throttle(this._highlight.bind(this), throttles.highlight)
+  highlight = throttle(this._highlight.bind(this), throttles.highlight, {
+    trailing: true,
+  })
 
   reloadMachines() {
     this.sources.forEach((source, id) => {
