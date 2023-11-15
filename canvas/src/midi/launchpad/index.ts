@@ -42,6 +42,7 @@ export class Launchpad {
     this.useProgrammerLayout()
     this.resetControlLights()
 
+    this.fill(0)
     this.initialized = true
 
     console.info("Launchpad setup completed.")
