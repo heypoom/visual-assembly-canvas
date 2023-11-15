@@ -39,10 +39,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
 
   function setWaveform(waveform: Waveform) {
     updateNodeData(id, { waveform })
-
-    manager.ctx?.send_message_to_block(id, {
-      SetWaveform: { waveform },
-    })
+    manager.send(id, { SetWaveform: { waveform } })
   }
 
   function handleWaveChange(key: string) {

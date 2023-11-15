@@ -30,11 +30,8 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
   function update(input: Partial<MidiOutProps>) {
     updateNodeData(id, input)
 
-    // Update the behaviour of pixel block.
     if (typeof input.format === "string") {
-      manager.ctx?.send_message_to_block(id, {
-        SetMidiOutputFormat: { format: input.format },
-      })
+      manager.send(id, { SetMidiOutputFormat: { format: input.format } })
     }
   }
 

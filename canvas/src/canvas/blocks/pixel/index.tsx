@@ -17,6 +17,7 @@ const modes = Object.keys(_PixelMode).filter(
 )
 
 export const PixelBlock = (props: NodeProps<PixelProps>) => {
+  const { id } = props.data
   const { data } = props
   const { columns = 9, palette = "base", mode = "Append" } = data
 
@@ -26,13 +27,11 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
     data.pixels?.length > 0 ? data.pixels : [...Array(columns * 5)].fill(0)
 
   function update(input: Partial<PixelProps>) {
-    updateNodeData(data.id, input)
+    updateNodeData(id, input)
 
     // Update the behaviour of pixel block.
     if (typeof input.mode === "string") {
-      manager.ctx?.send_message_to_block(data.id, {
-        SetPixelMode: { mode: input.mode },
-      })
+      manager.send(id, { SetPixelMode: { mode: input.mode } })
     }
   }
 

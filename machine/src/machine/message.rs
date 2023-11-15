@@ -31,12 +31,12 @@ pub enum Action {
     /// Set the MIDI channels.
     SetMidiChannels { channels: Vec<u16> },
 
+    /// Set the MIDI output format.
+    SetMidiOutputFormat { format: MidiOutputFormat },
+
     /// Set the waveform of the oscillator.
     SetWaveform { waveform: Waveform },
 
     /// Set the pixel mode of the pixel block.
     SetPixelMode { mode: PixelMode },
-
-    /// Set the MIDI output format.
-    SetMidiOutputFormat { format: MidiOutputFormat },
 }

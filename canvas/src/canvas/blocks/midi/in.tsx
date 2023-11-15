@@ -48,10 +48,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
       }
 
       setLast([note, value, channel])
-
-      manager.ctx?.send_message_to_block(id, {
-        Midi: { event: on, value, note, channel, port },
-      })
+      manager.send(id, { Midi: { event: on, value, note, channel, port } })
 
       if (!status.running) manager.step()
     },

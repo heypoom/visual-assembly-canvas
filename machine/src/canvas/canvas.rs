@@ -279,16 +279,19 @@ impl Canvas {
 
                     self.send_data_to_sinks(id, vec![note as u16, value as u16])?;
                 }
+
                 Action::SetMidiPort { port: p } => {
                     if let MidiIn { port, .. } = &mut self.mut_block(id)?.data {
                         *port = p;
                     }
                 }
+
                 Action::SetMidiChannels { channels: chan } => {
                     if let MidiIn { channels, .. } = &mut self.mut_block(id)?.data {
                         *channels = chan;
                     }
                 }
+
                 _ => {}
             }
         }
@@ -322,9 +325,21 @@ impl Canvas {
                         port: (*port) as u8,
                     })
                 }
+
                 Action::SetMidiOutputFormat { format: fmt } => {
                     *format = fmt;
                 }
+
+                Action::SetMidiPort { port: p } => {
+                    *port = p;
+                }
+
+                Action::SetMidiChannels { channels } => {
+                    if let Some(chan) = channels.first() {
+                        *channel = *chan;
+                    }
+                }
+
                 _ => {}
             }
         }

@@ -30,6 +30,7 @@ import { midiManager } from "../midi/manager"
 import { processMidiEvent } from "../midi/event"
 import { Effect } from "../types/effects"
 import { timed } from "../utils/timed"
+import { Action } from "../types/actions"
 
 /** When running in real-time mode with 1ms delay, we need to throttle to avoid side effect lag. */
 const throttles = {
@@ -393,6 +394,10 @@ export class CanvasManager {
   resetBlock(id: number) {
     this.ctx?.reset_block(id)
     this.updateBlock(id)
+  }
+
+  send(id: number, action: Action) {
+    this.ctx?.send_message_to_block(id, action)
   }
 }
 
