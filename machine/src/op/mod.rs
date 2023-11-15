@@ -33,6 +33,9 @@ pub enum Op {
     /// Duplicates the second value from the top of the stack and pushes it onto the stack.
     Over,
 
+    /// Rotate the top three values on the stack.
+    Rotate,
+
     Inc,
     Dec,
 
@@ -40,6 +43,7 @@ pub enum Op {
     Sub,
     Mul,
     Div,
+    Mod,
 
     /// Jump to the address.
     Jump(u16),
@@ -76,7 +80,7 @@ pub enum Op {
     /// Map a memory address to a port
     /// Send(Port, Start, Size)
     MemoryMap(u16, u16, u16),
-   
+
     /// Bitwise AND (&)
     And,
 

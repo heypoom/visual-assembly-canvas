@@ -48,11 +48,12 @@ impl Execute for Machine {
                 self.mem.set(addr, value);
             }
 
-            // Addition, subtraction, multiplication and division.
-            Op::Add => s.apply_two(|a, b| a.checked_add(b).ok_or(IntegerOverflow))?,
+            // Addition, subtraction, multiplication, division and modulo.
+            Op::Add => s.apply_two(|a, b| b.checked_add(a).ok_or(IntegerOverflow))?,
             Op::Sub => s.apply_two(|a, b| b.checked_sub(a).ok_or(IntegerUnderflow))?,
-            Op::Mul => s.apply_two(|a, b| a.checked_mul(b).ok_or(IntegerOverflow))?,
+            Op::Mul => s.apply_two(|a, b| b.checked_mul(a).ok_or(IntegerOverflow))?,
             Op::Div => s.apply_two(|a, b| b.checked_div(a).ok_or(CannotDivideByZero))?,
+            Op::Mod => s.apply_two(|a, b| Ok(b % a))?,
 
             // Increment and decrement.
             Op::Inc => s.apply(|v| v.checked_add(1).ok_or(IntegerOverflow))?,
@@ -98,6 +99,16 @@ impl Execute for Machine {
 
             Op::Over => {
                 s.push(s.get(1))?;
+            }
+
+            Op::Rotate => {
+                let a = s.pop()?;
+                let b = s.pop()?;
+                let c = s.pop()?;
+
+                s.push(b)?;
+                s.push(c)?;
+                s.push(a)?;
             }
 
             Op::Print => {
