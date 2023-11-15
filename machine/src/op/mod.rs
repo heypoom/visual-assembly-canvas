@@ -76,6 +76,24 @@ pub enum Op {
     /// Map a memory address to a port
     /// Send(Port, Start, Size)
     MemoryMap(u16, u16, u16),
+   
+    /// Bitwise AND (&)
+    And,
+
+    /// Bitwise OR (|)
+    Or,
+
+    /// Bitwise XOR (^)
+    Xor,
+
+    /// Bitwise NOT (~)
+    Not,
+
+    /// Bitwise Left Shift (<<)
+    LeftShift,
+
+    /// Bitwise Right Shift (>>)
+    RightShift,
 
     /// Halt the program.
     Halt,

@@ -1,3 +1,4 @@
+use std::ops::Not;
 use crate::{Event, RuntimeError};
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
@@ -152,6 +153,14 @@ impl Execute for Machine {
 
             // TODO: implement the memory map operation.
             Op::MemoryMap(..) => {}
+
+            // Bitwise operations.
+            Op::And => s.apply_two(|a, b| Ok(a & b))?,
+            Op::Or => s.apply_two(|a, b| Ok(a | b))?,
+            Op::Xor => s.apply_two(|a, b| Ok(a ^ b))?,
+            Op::Not => s.apply(|a| Ok(a.not()))?,
+            Op::LeftShift => s.apply_two(|a, b| Ok(a << b))?,
+            Op::RightShift => s.apply_two(|a, b| Ok(a >> b))?
         };
 
         // Advance or jump the program counter.
