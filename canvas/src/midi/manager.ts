@@ -10,7 +10,6 @@ import {
 
 import { MidiInputEvent } from "../types/enums"
 import { FirstArg, UnionToIntersection } from "../types/helper"
-import { launchpad } from "."
 import { $midi } from "../store/midi"
 
 // Maps the event names from WebAssembly to the event names in the MIDI spec.
@@ -59,9 +58,6 @@ export class MidiManager {
       inputs: this.inputs.map((input) => input.name),
       outputs: this.outputs.map((output) => output.name),
     })
-
-    // Setup novation launchpad
-    await launchpad.setup()
 
     this.initialized = true
   }

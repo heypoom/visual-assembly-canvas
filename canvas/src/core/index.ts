@@ -290,9 +290,9 @@ export class CanvasManager {
   }
 
   performSideEffects() {
-    this.consumeSideEffects().forEach((effects, id) => {
+    this.consumeSideEffects().forEach(async (effects, id) => {
       for (const effect of effects) {
-        if ("Midi" in effect) processMidiEvent(id, effect)
+        if ("Midi" in effect) await processMidiEvent(id, effect)
       }
     })
   }

@@ -1,20 +1,20 @@
-import { launchpad } from "."
+import { launchpad, midiManager } from "."
 import { $lastMidiEvent } from "../store/midi"
 import { MidiEffect } from "../types/effects"
 
 // TODO: add support for MIDI ports and channels
-export function processMidiEvent(id: number, effect: MidiEffect) {
+export async function processMidiEvent(id: number, effect: MidiEffect) {
   if (!effect) return
 
   const midi = effect.Midi
   if (!midi) return
+  if (!midiManager.initialized) await midiManager.setup()
 
   $lastMidiEvent.setKey(id, effect)
 
   const { format, data, port, channel } = midi
-
-  const outputs = [launchpad.midiOut, launchpad.dawOut]
-  const output = outputs[port]
+  const output = midiManager.outputs[port]
+  if (!output) return
 
   switch (format) {
     case "Raw": {
@@ -41,6 +41,8 @@ export function processMidiEvent(id: number, effect: MidiEffect) {
     }
 
     case "Launchpad": {
+      if (!launchpad.initialized) launchpad.setup(midiManager)
+
       launchpad.cmd(...data)
       return
     }

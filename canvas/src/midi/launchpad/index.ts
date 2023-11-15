@@ -1,4 +1,4 @@
-import { Input, Output, WebMidi } from "webmidi"
+import { Output } from "webmidi"
 
 import { ControlCodes } from "./controls"
 
@@ -12,24 +12,19 @@ import {
 } from "./specs"
 
 import { Spec, InputGrid } from "./types/specs"
+import { MidiManager } from ".."
+
+export const launchpadNames = {
+  midiIn: "Launchpad X LPX MIDI Out",
+  dawIn: "Launchpad X LPX DAW Out",
+  midiOut: "Launchpad X LPX MIDI In",
+  dawOut: "Launchpad X LPX DAW In",
+}
 
 /** Utility for interacting with Launchpad X */
 export class Launchpad {
-  // Interface for the 64-button pressure-sensitive areas
-  midiIn?: Input
   midiOut?: Output
-
-  // Interface for the 16 control buttons.
-  dawIn?: Input
   dawOut?: Output
-
-  // MIDI interface name for the MIDI device
-  midiInName = "Launchpad X LPX MIDI Out"
-  midiOutName = "Launchpad X LPX MIDI In"
-
-  // MIDI interface name for the DAW device
-  dawInName = "Launchpad X LPX DAW Out"
-  dawOutName = "Launchpad X LPX DAW In"
 
   // Has the launchpad module been initialized?
   initialized = false
@@ -40,10 +35,10 @@ export class Launchpad {
   }
 
   /** Setup the launchpad device. */
-  async setup() {
+  setup(m: MidiManager) {
     if (this.initialized) return
 
-    this.initPorts()
+    this.initPorts(m)
     this.useProgrammerLayout()
     this.resetControlLights()
 
@@ -52,12 +47,14 @@ export class Launchpad {
     console.info("Launchpad setup completed.")
   }
 
-  /** Initializes the MIDI ports for the launchpad. */
-  initPorts() {
-    this.midiIn = WebMidi.getInputByName(this.midiInName)
-    this.midiOut = WebMidi.getOutputByName(this.midiOutName)
-    this.dawIn = WebMidi.getInputByName(this.dawInName)
-    this.dawOut = WebMidi.getOutputByName(this.dawOutName)
+  initPorts(m: MidiManager) {
+    const { outputs } = m
+
+    const daw = outputs.find((o) => o.name === launchpadNames.dawOut)
+    if (daw) this.dawOut = daw
+
+    const midi = outputs.find((o) => o.name === launchpadNames.midiOut)
+    if (midi) this.midiOut = daw
   }
 
   useProgrammerLayout() {

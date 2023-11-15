@@ -96,12 +96,17 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
             )}
 
             {showSettings && (
-              <div>
+              <div className="text-[9px] text-gray-9">
                 {input && (
-                  <div className="text-[9px] text-gray-9">
+                  <div>
                     input: {input} ({port})
                   </div>
                 )}
+
+                <div>
+                  channels:{" "}
+                  {channels.length === 0 ? "all" : channels.join(", ")}
+                </div>
               </div>
             )}
           </div>

@@ -9,7 +9,7 @@ import { MidiOutputFormat } from "../../../types/enums"
 import { manager } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
 import { useStore } from "@nanostores/react"
-import { $lastMidiEvent } from "../../../store/midi"
+import { $lastMidiEvent, $midi } from "../../../store/midi"
 
 const S0 = 0
 
@@ -18,9 +18,10 @@ const formats = Object.keys(_MidiOutputFormat).filter(
 )
 
 export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
-  const { id, format } = props.data
+  const { id, format, port, channel } = props.data
 
   const lastEvents = useStore($lastMidiEvent)
+  const midi = useStore($midi)
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
   const last = lastEvents[id]?.Midi
@@ -46,6 +47,8 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
 
     return `${last.format}(${last.data.join(", ")})`
   }
+
+  const outputName = midi.outputs[port]
 
   return (
     <div className="group">
@@ -82,6 +85,13 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
                     ))}
                   </Select.Content>
                 </Select.Root>
+              </div>
+
+              <div className="text-[9px] text-gray-9">
+                <div>
+                  port: {outputName ?? "None"} ({port})
+                </div>
+                <div>channel: {channel}</div>
               </div>
             </section>
           )}
