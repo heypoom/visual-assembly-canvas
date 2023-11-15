@@ -41,7 +41,7 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
 
     if (last.format === "Note") {
       const [note, velocity] = last.data as [number, number]
-      return `${last.format}(note = ${note}, velocity = ${velocity})`
+      return `${last.format}(n = ${note}, v = ${velocity})`
     }
 
     return `${last.format}(${last.data.join(", ")})`

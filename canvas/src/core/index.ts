@@ -178,7 +178,7 @@ export class CanvasManager {
         break
       }
 
-      timed("batch step", () => this.step({ batch: true }))
+      timed("run::step", () => this.step({ batch: true }), 1.1)
 
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
@@ -260,7 +260,7 @@ export class CanvasManager {
     this.prepare()
 
     try {
-      timed("engine step", () => this.ctx?.step())
+      timed("wasm::step", () => this.ctx?.step())
     } catch (error) {
       this.detectCanvasError(error)
     }
@@ -298,8 +298,8 @@ export class CanvasManager {
   }
 
   _updateBlocks() {
-    const blocks = timed("get blocks", () => this.ctx?.get_blocks())
-    timed("update blocks", () => blocks.forEach(syncBlockData))
+    const blocks = timed("wasm::get_blocks", () => this.ctx?.get_blocks())
+    timed("syncBlockData", () => blocks.forEach(syncBlockData))
   }
 
   updateBlocks = throttle(
