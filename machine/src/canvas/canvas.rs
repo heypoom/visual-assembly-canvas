@@ -196,20 +196,18 @@ impl Canvas {
         for message in &messages {
             match &message.action {
                 Action::SetWaveform { waveform: wf } => {
-                    let block = self.mut_block(id)?;
-                    let Osc { waveform } = &mut block.data else { return Ok(()); };
-
-                    *waveform = *wf;
+                    if let Osc { waveform } = &mut self.mut_block(id)?.data {
+                        *waveform = *wf;
+                    };
                 }
                 Action::Data { body } => {
-                    let block = self.get_block(id)?;
-                    let Osc { waveform } = &block.data else { return Ok(()); };
+                    if let Osc { waveform } = &self.get_block(id)?.data {
+                        // Generate the waveform values out of the given input values, between (0 - 255).
+                        let values: Vec<u16> = body.iter().map(|v| generate_waveform(*waveform, *v)).collect();
 
-                    // Generate the waveform values out of the given input values, between (0 - 255).
-                    let values: Vec<u16> = body.iter().map(|v| generate_waveform(*waveform, *v)).collect();
-
-                    // Send the waveform values to the connected blocks.
-                    self.send_data_to_sinks(id, values)?;
+                        // Send the waveform values to the connected blocks.
+                        self.send_data_to_sinks(id, values)?;
+                    }
                 }
 
                 _ => {}
@@ -220,8 +218,7 @@ impl Canvas {
     }
 
     pub fn tick_clock_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let block = self.mut_block(id)?;
-        let Clock { time } = &mut block.data else { return Ok(()); };
+        let Clock { time } = &mut self.mut_block(id)?.data else { return Ok(()); };
 
         // increment the time, or wrap around to 0.
         *time = (*time).checked_add(1).unwrap_or(0);
@@ -241,16 +238,16 @@ impl Canvas {
         }
 
         // Send data to sinks
-        let block = self.get_block(id)?;
-        let Clock { time } = block.data else { return Ok(()); };
-        self.send_data_to_sinks(id, vec![time])?;
+        if let Clock { time } = self.get_block(id)?.data {
+            self.send_data_to_sinks(id, vec![time])?;
+        }
+
 
         Ok(())
     }
 
     pub fn tick_plotter_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let block = self.mut_block(id)?;
-        let Plot { values, size } = &mut block.data else { return Ok(()); };
+        let Plot { values, size } = &mut self.mut_block(id)?.data else { return Ok(()); };
 
         for message in messages {
             match message.action {
@@ -273,15 +270,24 @@ impl Canvas {
         for message in messages {
             match message.action {
                 Action::Midi { event, value, note, channel: ch, port: p } => {
-                    let block = self.get_block(id)?;
-                    let MidiIn { on, channels, port } = &block.data else { return Ok(()); };
+                    if let MidiIn { on, channels, port, .. } = &self.get_block(id)?.data {
+                        if *on != event || *port != (p as u16) { continue; }
 
-                    if *on != event || *port != (p as u16) { continue; }
-
-                    // Enable channel filtering if channels are defined.
-                    if channels.len() > 0 && !channels.contains(&(ch as u16)) { continue; }
+                        // Enable channel filtering if channels are defined.
+                        if channels.len() > 0 && !channels.contains(&(ch as u16)) { continue; }
+                    }
 
                     self.send_data_to_sinks(id, vec![note as u16, value as u16])?;
+                }
+                Action::SetMidiPort { port: p } => {
+                    if let MidiIn { port, .. } = &mut self.mut_block(id)?.data {
+                        *port = p;
+                    }
+                }
+                Action::SetMidiChannels { channels: chan } => {
+                    if let MidiIn { channels, .. } = &mut self.mut_block(id)?.data {
+                        *channels = chan;
+                    }
                 }
                 _ => {}
             }
@@ -292,7 +298,9 @@ impl Canvas {
 
     pub fn tick_midi_out_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let MidiOut { format, channel, port } = &mut block.data else { return Ok(()); };
+        let MidiOut { format, channel, port } = &mut block.data else {
+            return Ok(());
+        };
 
         for message in messages {
             match message.action {
@@ -325,8 +333,9 @@ impl Canvas {
     }
 
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let block = self.mut_block(id)?;
-        let Pixel { pixels, mode } = &mut block.data else { return Ok(()); };
+        let Pixel { pixels, mode } = &mut self.mut_block(id)?.data else {
+            return Ok(());
+        };
 
         for message in messages {
             match message.action {
@@ -437,15 +446,12 @@ impl Canvas {
 
     /// Sends the message to the specified block.
     pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
-        let block = self.mut_block(block_id)?;
-        block.inbox.push(Message { port: port(block_id, 60000), action });
+        self.mut_block(block_id)?.inbox.push(Message { port: port(block_id, 60000), action });
         Ok(())
     }
 
     pub fn update_block(&mut self, id: u16, data: BlockData) -> Errorable {
-        let block = self.mut_block(id)?;
-        block.data = data;
-
+        self.mut_block(id)?.data = data;
         Ok(())
     }
 

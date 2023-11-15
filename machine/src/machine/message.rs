@@ -25,6 +25,12 @@ pub enum Action {
     /// Notify the block that a MIDI message has been received.
     Midi { event: MidiInputEvent, note: u8, value: u8, channel: u8, port: u8 },
 
+    /// Set the MIDI port
+    SetMidiPort { port: u16 },
+
+    /// Set the MIDI channels.
+    SetMidiChannels { channels: Vec<u16> },
+
     /// Set the waveform of the oscillator.
     SetWaveform { waveform: Waveform },
 
@@ -34,4 +40,3 @@ pub enum Action {
     /// Set the MIDI output format.
     SetMidiOutputFormat { format: MidiOutputFormat },
 }
-
