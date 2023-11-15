@@ -26,7 +26,11 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
         if (data.length < 2) return
 
         const [note, rawAttack] = data
-        output?.playNote(note, { rawAttack, channels: channel })
+
+        output?.playNote(note % 128, {
+          rawAttack: rawAttack % 128,
+          channels: channel,
+        })
 
         return
       }
@@ -35,7 +39,9 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
         if (data.length < 2) return
 
         const [controller, value] = data
-        output?.sendControlChange(controller, value, { channels: channel })
+        output?.sendControlChange(controller % 128, value % 128, {
+          channels: channel,
+        })
 
         return
       }
