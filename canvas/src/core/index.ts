@@ -26,14 +26,14 @@ import { $status } from "../store/status"
 import { $delay } from "../store/canvas"
 import { isBlock } from "../canvas/blocks"
 import { syncBlockData } from "../store/blocks"
-import { midiManager } from "../canvas/blocks/midi/manager"
+import { midiManager } from "../midi/manager"
 import { processMidiEvent } from "../midi/event"
 import { Effect } from "../types/effects"
 import { timed } from "../utils/timed"
 
 /** When running in real-time mode with 1ms delay, we need to throttle to avoid side effect lag. */
 const throttles = {
-  highlight: 4,
+  highlight: 10,
   updateBlocks: 1,
   syncMachineState: 4,
 }

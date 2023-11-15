@@ -11,22 +11,37 @@ export function processMidiEvent(id: number, effect: MidiEffect) {
 
   $lastMidiEvent.setKey(id, effect)
 
-  switch (midi.format) {
+  const { format, data, port, channel } = midi
+
+  const outputs = [launchpad.midiOut, launchpad.dawOut]
+  const output = outputs[port]
+
+  switch (format) {
     case "Raw": {
-      launchpad.dawOut?.send(midi.data)
+      output?.send(data)
       return
     }
 
     case "Note": {
-      if (midi.data.length < 2) return
+      if (data.length < 2) return
 
-      const [note, rawAttack] = midi.data
-      launchpad.midiOut?.playNote(note, { rawAttack })
+      const [note, rawAttack] = data
+      output?.playNote(note, { rawAttack, channels: channel })
+
+      return
+    }
+
+    case "ControlChange": {
+      if (data.length < 2) return
+
+      const [controller, value] = data
+      output?.sendControlChange(controller, value, { channels: channel })
+
       return
     }
 
     case "Launchpad": {
-      launchpad.cmd(...midi.data)
+      launchpad.cmd(...data)
       return
     }
   }

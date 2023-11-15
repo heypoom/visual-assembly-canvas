@@ -5,3 +5,7 @@ export type UnionToIntersection<U> = (
 ) extends (k: infer I) => void
   ? I
   : never
+
+export type FirstArg<T> = T extends (...args: [infer U, ...any[]]) => any
+  ? U
+  : never

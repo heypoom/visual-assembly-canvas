@@ -52,12 +52,21 @@ pub enum BlockData {
     MidiIn {
         /// Which MIDI message do we want to receive for this block?
         on: MidiInputEvent,
+
+        port: u16,
+
+        /// Do we want to filter only some channels?
+        /// If empty, all channels will be accepted.
+        channels: Vec<u16>,
     },
 
     /// MIDI Out. Sends a MIDI message to the MIDI Out device.
     MidiOut {
-        /// Which format do we want to send the MIDI message in?
+        /// Which format do we want to send the message in?
         format: MidiOutputFormat,
+
+        channel: u16,
+        port: u16,
     },
 }
 

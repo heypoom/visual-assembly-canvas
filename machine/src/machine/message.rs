@@ -23,7 +23,7 @@ pub enum Action {
     Reset,
 
     /// Notify the block that a MIDI message has been received.
-    Midi { event: MidiInputEvent, note: u8, value: u8 },
+    Midi { event: MidiInputEvent, note: u8, value: u8, channel: u8, port: u8 },
 
     /// Set the waveform of the oscillator.
     SetWaveform { waveform: Waveform },

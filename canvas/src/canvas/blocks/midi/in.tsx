@@ -10,47 +10,68 @@ import { useStore } from "@nanostores/react"
 import { $midi } from "../../../store/midi"
 import { manager } from "../../../core"
 
-import { midiManager } from "./manager"
+import {
+  MidiEvent,
+  isControlChangeEvent,
+  isNoteEvent,
+  midiManager,
+} from "../../../midi/manager"
+
 import { $status } from "../../../store/status"
 
 const S1 = 1
 
 export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
-  const { id, on } = props.data
+  const { id, on, port, channels } = props.data
 
   const midi = useStore($midi)
   const status = useStore($status)
 
   const [ready, setReady] = useState(false)
-  const [last, setLast] = useState<[number, number] | null>(null)
+  const [last, setLast] = useState<[number, number, number] | null>(null)
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
   const _handle = useCallback(
-    (note: number, value: number) => {
+    (e: MidiEvent) => {
+      let note = 0
+      let value = 0
+
+      console.log("channel:", e.channel, e)
+
+      if (isControlChangeEvent(e)) {
+        note = e.controller.number
+        if (e.rawValue) value = e.rawValue
+      }
+
+      if (isNoteEvent(e)) {
+        note = e.note.number
+        value = e.note.rawAttack
+      }
+
       setLast([note, value])
 
       manager.ctx?.send_message_to_block(id, {
-        Midi: { event: on, note, value },
+        Midi: { event: on, value, note, channel: e.channel, port },
       })
 
       if (!status.running) manager.step()
     },
-    [id, on, status.running],
+    [channels, id, on, port, status.running],
   )
 
   const handle = useDebouncedCallback(_handle, 1)
 
+  // NOTE: do not remove midi handler on unmount, as reactflow occasionally unmounts nodes.
   useEffect(() => {
     if (!ready) {
-      midiManager.on(id, on, handle)
+      midiManager.on(id, { type: on, handle, channels, port })
       setReady(true)
     }
-
-    // TODO: useEffect destructors.
-    return () => {}
-  }, [handle, id, on, ready, status.running])
+  }, [channels, handle, id, on, port, ready, status.running])
 
   const reset = () => setLast(null)
+
+  const input = midi.inputs[port]
 
   return (
     <div className="group">
@@ -73,6 +94,12 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
               </div>
             ) : (
               <div className="text-1">{on}</div>
+            )}
+
+            {input && (
+              <div className="text-1 text-gray-9">
+                {input} ({port})
+              </div>
             )}
           </div>
         </RightClickMenu>

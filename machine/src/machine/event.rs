@@ -14,6 +14,8 @@ pub enum Event {
     Midi {
         format: MidiOutputFormat,
         data: Vec<u8>,
+        channel: u8,
+        port: u8,
     },
 }
 

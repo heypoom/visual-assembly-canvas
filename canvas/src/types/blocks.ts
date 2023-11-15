@@ -50,8 +50,16 @@ export interface ClockProps extends BaseProps {
 
 export interface MidiInProps extends BaseProps {
   on: MidiInputEvent
+
+  port: number
+
+  /** Accept all channels if empty. Otherwise only accept filtered channels. */
+  channels: number[]
 }
 
 export interface MidiOutProps extends BaseProps {
   format: MidiOutputFormat
+
+  port: number
+  channel: number
 }

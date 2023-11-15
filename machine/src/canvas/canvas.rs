@@ -270,12 +270,17 @@ impl Canvas {
     }
 
     pub fn tick_midi_in_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let block = self.mut_block(id)?;
-        let MidiIn { .. } = &mut block.data else { return Ok(()); };
-
         for message in messages {
             match message.action {
-                Action::Midi { value, note, .. } => {
+                Action::Midi { event, value, note, channel: ch, port: p } => {
+                    let block = self.get_block(id)?;
+                    let MidiIn { on, channels, port } = &block.data else { return Ok(()); };
+
+                    if *on != event || *port != (p as u16) { continue; }
+
+                    // Enable channel filtering if channels are defined.
+                    if channels.len() > 0 && !channels.contains(&(ch as u16)) { continue; }
+
                     self.send_data_to_sinks(id, vec![note as u16, value as u16])?;
                 }
                 _ => {}
@@ -287,11 +292,14 @@ impl Canvas {
 
     pub fn tick_midi_out_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
-        let MidiOut { format } = &mut block.data else { return Ok(()); };
+        let MidiOut { format, channel, port } = &mut block.data else { return Ok(()); };
 
         for message in messages {
             match message.action {
                 Action::Data { body } => {
+                    // MIDI channels and ports cannot be over 255.
+                    if *channel > 255 || *port > 255 { continue; }
+
                     let mut data: Vec<u8> = body.iter().map(|v| *v as u8).collect();
 
                     // Reverse the bytes to make it easier to process.
@@ -302,6 +310,8 @@ impl Canvas {
                     block.events.push(Event::Midi {
                         format: *format,
                         data,
+                        channel: (*channel) as u8,
+                        port: (*port) as u8,
                     })
                 }
                 Action::SetMidiOutputFormat { format: fmt } => {

@@ -1,4 +1,4 @@
-import { MapperGrid } from "../types/midi"
+import { MapperGrid } from "./types/midi"
 
 /**
  * Builds the grid to map between pad ID and note value.
