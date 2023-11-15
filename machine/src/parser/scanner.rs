@@ -80,7 +80,7 @@ impl Scanner {
 
             // Comments
             ';' => {
-                while self.peek()? != '\n' {
+                while !self.is_end() && self.peek()? != '\n' {
                     self.advance()?;
                 }
             }

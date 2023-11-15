@@ -249,6 +249,9 @@ export class CanvasManager {
       this.detectCanvasError(error)
     }
 
+    // Perform side effects first so it feels fast.
+    this.performSideEffects()
+
     // Synchronize the machine state with the store.
     setMachineState(this)
 
@@ -257,9 +260,6 @@ export class CanvasManager {
 
     // Tick the blocks.
     this.updateBlocks()
-
-    // Perform side effects.
-    this.performSideEffects()
 
     // TODO: add an indicator to the block for a halted machine.
     // TODO: we should remove this behaviour to prevent confusion!
