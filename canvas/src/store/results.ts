@@ -29,9 +29,9 @@ export const setError = action(
   },
 )
 
-export const setMachineState = action(
+export const syncMachineState = action(
   $output,
-  "set machine state",
+  "sync machine state",
   (store, manager: CanvasManager) => {
     const output = store.get()
 

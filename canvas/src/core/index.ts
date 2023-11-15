@@ -4,12 +4,14 @@ import { $nodes } from "../store/nodes"
 
 import {
   setError,
-  setMachineState,
+  syncMachineState as _syncMachineState,
   clearPreviousRun,
   $output,
 } from "../store/results"
 
 import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
+
+import { throttle } from "lodash"
 
 import {
   MachineStatus,
@@ -27,6 +29,20 @@ import { syncBlockData } from "../store/blocks"
 import { midiManager } from "../canvas/blocks/midi/manager"
 import { processMidiEvent } from "../midi/event"
 import { Effect } from "../types/effects"
+import { timed } from "../utils/timed"
+
+/** When running in real-time mode with 1ms delay, we need to throttle to avoid side effect lag. */
+const throttles = {
+  highlight: 4,
+  updateBlocks: 1,
+  syncMachineState: 4,
+}
+
+const syncMachineState = throttle(
+  _syncMachineState,
+  throttles.syncMachineState,
+  { trailing: true },
+)
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -162,7 +178,7 @@ export class CanvasManager {
         break
       }
 
-      this.step({ batch: true })
+      timed("batch step", () => this.step({ batch: true }))
 
       // Add an artificial delay to allow the user to see the changes
       if (this.delayMs > 0) await delay(this.delayMs)
@@ -244,19 +260,19 @@ export class CanvasManager {
     this.prepare()
 
     try {
-      this.ctx?.step()
+      timed("engine step", () => this.ctx?.step())
     } catch (error) {
       this.detectCanvasError(error)
     }
 
     // Perform side effects first so it feels fast.
-    this.performSideEffects()
+    timed("side effects", this.performSideEffects.bind(this))
 
     // Synchronize the machine state with the store.
-    setMachineState(this)
+    timed("sync machine state", () => syncMachineState(this))
 
     // Highlight the current line.
-    if (this.delayMs > 0) this.highlightCurrent()
+    if (this.delayMs > 0) timed("highlight", this.highlight.bind(this))
 
     // Tick the blocks.
     this.updateBlocks()
@@ -281,9 +297,16 @@ export class CanvasManager {
     })
   }
 
-  updateBlocks() {
-    this.ctx?.get_blocks().map(syncBlockData)
+  _updateBlocks() {
+    const blocks = timed("get blocks", () => this.ctx?.get_blocks())
+    timed("update blocks", () => blocks.forEach(syncBlockData))
   }
+
+  updateBlocks = throttle(
+    this._updateBlocks.bind(this),
+    throttles.updateBlocks,
+    { trailing: true },
+  )
 
   updateBlock(id: number) {
     syncBlockData(this.ctx?.get_block(id))
@@ -310,7 +333,7 @@ export class CanvasManager {
     console.error("Unhandled canvas error:", error)
   }
 
-  highlightCurrent() {
+  _highlight() {
     const output = $output.get()
 
     this.highlighters.forEach((highlight, id) => {
@@ -322,6 +345,10 @@ export class CanvasManager {
       highlight(lineNo)
     })
   }
+
+  highlight = throttle(this._highlight.bind(this), throttles.highlight, {
+    trailing: true,
+  })
 
   reloadMachines() {
     this.sources.forEach((source, id) => {
@@ -342,7 +369,7 @@ export class CanvasManager {
 
     // Reset machines and update UI
     this.reloadMachines()
-    setMachineState(this)
+    syncMachineState(this)
   }
 
   removeBlock(id: number) {

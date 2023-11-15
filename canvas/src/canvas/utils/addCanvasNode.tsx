@@ -1,5 +1,6 @@
-import { addNode } from "../../store/actions/nodes"
+import { getCenterWithOffset } from "./center"
 
+import { addNode } from "../../store/actions/nodes"
 import { BlockNode, BlockTypeMap, BlockTypes } from "../../types/Node"
 
 export function addCanvasNode<T extends BlockTypes>(
@@ -7,16 +8,14 @@ export function addCanvasNode<T extends BlockTypes>(
   type: T,
   data: BlockTypeMap[T],
 ) {
+  const center = getCenterWithOffset()
+
   const node: BlockNode = {
     id: id.toString(),
     type,
     data,
-
-    // TODO: improve initial layout
-    position: { x: rand(), y: rand() },
+    position: center,
   }
 
   addNode(node)
 }
-
-const rand = () => Math.floor(Math.random() * 500)
