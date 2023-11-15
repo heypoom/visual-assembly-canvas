@@ -94,8 +94,8 @@ impl<'a> StackManager<'a> {
 
     pub fn apply_two<F>(&mut self, f: F) -> Result<(), RuntimeError>
         where F: FnOnce(u16, u16) -> Result<u16, RuntimeError> {
-        let a = self.pop()?;
         let b = self.pop()?;
+        let a = self.pop()?;
 
         let value = f(a, b)?;
         self.push(value)?;

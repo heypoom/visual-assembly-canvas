@@ -51,11 +51,11 @@ impl Execute for Machine {
             }
 
             // Addition, subtraction, multiplication, division and modulo.
-            Op::Add => s.apply_two(|a, b| b.checked_add(a).ok_or(IntegerOverflow))?,
-            Op::Sub => s.apply_two(|a, b| b.checked_sub(a).ok_or(IntegerUnderflow))?,
-            Op::Mul => s.apply_two(|a, b| b.checked_mul(a).ok_or(IntegerOverflow))?,
-            Op::Div => s.apply_two(|a, b| b.checked_div(a).ok_or(CannotDivideByZero))?,
-            Op::Mod => s.apply_two(|a, b| Ok(b % a))?,
+            Op::Add => s.apply_two(|a, b| a.checked_add(b).ok_or(IntegerOverflow))?,
+            Op::Sub => s.apply_two(|a, b| a.checked_sub(b).ok_or(IntegerUnderflow))?,
+            Op::Mul => s.apply_two(|a, b| a.checked_mul(b).ok_or(IntegerOverflow))?,
+            Op::Div => s.apply_two(|a, b| a.checked_div(b).ok_or(CannotDivideByZero))?,
+            Op::Mod => s.apply_two(|a, b| Ok(a % b))?,
 
             // Increment and decrement.
             Op::Inc => s.apply(|v| v.checked_add(1).ok_or(IntegerOverflow))?,
