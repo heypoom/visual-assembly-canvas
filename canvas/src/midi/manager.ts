@@ -11,6 +11,8 @@ import {
 import { MidiInputEvent } from "../types/enums"
 import { FirstArg, UnionToIntersection } from "../types/helper"
 import { $midi } from "../store/midi"
+import { debounce } from "lodash"
+import { launchpad, launchpadNames } from "./launchpad"
 
 // Maps the event names from WebAssembly to the event names in the MIDI spec.
 const nameMap = {
@@ -46,22 +48,44 @@ export class MidiManager {
   inputs: Input[] = []
   outputs: Output[] = []
 
-  played = new Set<string>()
+  /** Debounce time settings. Set to zero to disable debouncing. */
+  debounceSettings: Record<MidiInputEvent, number> = {
+    NoteOn: 0,
+    NoteOff: 0,
+    ControlChange: 5,
+  }
 
   async setup() {
     if (this.initialized) return
 
     await WebMidi.enable({ sysex: true })
+    this.scanPorts()
+
+    WebMidi.addListener("portschanged", (e) => {
+      // Re-scan the ports if they change.
+      this.scanPorts()
+    })
+
+    WebMidi.addListener("disconnected", (e) => {
+      // Teardown the launchpad if it's disconnected.
+      if (e.port.name === launchpadNames.midiOut) launchpad.teardown()
+    })
+
+    this.initialized = true
+  }
+
+  scanPorts() {
     this.inputs = WebMidi.inputs
     this.outputs = WebMidi.outputs
+
+    // If launchpad is connected, we configure it.
+    launchpad.setup(this.outputs)
 
     $midi.set({
       ready: true,
       inputs: this.inputs.map((input) => input.name),
       outputs: this.outputs.map((output) => output.name),
     })
-
-    this.initialized = true
   }
 
   async on<L extends MidiListener>(id: number, listener: L) {
@@ -75,13 +99,23 @@ export class MidiManager {
 
     const type = nameMap[listener.type]
 
+    const debounceMs = this.debounceSettings[listener.type]
+    const shouldDebounce = debounceMs > 0
 
-    input.addListener(type, listener.handle, {
+    // Debounce handle to prevent spamming, if the debounce time is greater than 0.
+    const handle = shouldDebounce
+      ? debounce(listener.handle, debounceMs, {
+          leading: true,
+          trailing: true,
+        })
+      : listener.handle
+
+    input.addListener(type, handle, {
       // If channels filter are empty, we accept all channels.
       ...(channels?.length > 0 && { channels }),
     })
 
-    this.midiListeners.set(id, listener)
+    this.midiListeners.set(id, { ...listener, handle })
   }
 
   off(id: number) {

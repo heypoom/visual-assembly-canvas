@@ -59,7 +59,7 @@ export function MidiTransportForm(props: Props) {
   }
 
   const portOptions = props.ports.map((port, id) => ({
-    label: `${port} (${id})`,
+    label: port,
     value: id.toString(),
   }))
 

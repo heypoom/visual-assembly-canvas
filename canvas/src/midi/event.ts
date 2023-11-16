@@ -48,8 +48,7 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
       }
 
       case "Launchpad": {
-        if (!launchpad.initialized) launchpad.setup(midiManager)
-
+        midiManager.configureLaunchpad()
         launchpad.cmd(...data)
         return
       }

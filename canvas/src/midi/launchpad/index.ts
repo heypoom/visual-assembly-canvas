@@ -12,7 +12,6 @@ import {
 } from "./specs"
 
 import { Spec, InputGrid } from "./types/specs"
-import { MidiManager } from ".."
 
 export const launchpadNames = {
   midiIn: "Launchpad X LPX MIDI Out",
@@ -35,10 +34,12 @@ export class Launchpad {
   }
 
   /** Setup the launchpad device. */
-  setup(m: MidiManager) {
+  setup(outputs: Output[]) {
     if (this.initialized) return
 
-    this.initPorts(m)
+    const found = this.initPorts(outputs)
+    if (!found) return
+
     this.useProgrammerLayout()
     this.resetControlLights()
 
@@ -48,14 +49,26 @@ export class Launchpad {
     console.info("Launchpad setup completed.")
   }
 
-  initPorts(m: MidiManager) {
-    const { outputs } = m
+  teardown() {
+    if (!this.initialized) return
 
-    const daw = outputs.find((o) => o.name === launchpadNames.dawOut)
-    if (daw) this.dawOut = daw
+    this.initialized = false
+    this.midiOut = undefined
+    this.dawOut = undefined
+  }
 
-    const midi = outputs.find((o) => o.name === launchpadNames.midiOut)
-    if (midi) this.midiOut = daw
+  initPorts(outputs: Output[]) {
+    const { dawOut, midiOut } = launchpadNames
+    if (outputs.length === 0) return false
+
+    const daw = outputs.find((o) => o.name === dawOut)
+    const midi = outputs.find((o) => o.name === midiOut)
+    if (!daw || !midi) return false
+
+    this.dawOut = daw
+    this.midiOut = daw
+
+    return true
   }
 
   useProgrammerLayout() {
