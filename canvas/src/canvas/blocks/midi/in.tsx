@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import cx from "classnames"
 import { Handle, NodeProps, Position } from "reactflow"
+import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
 
 import { MidiInProps } from "../../../types/blocks"
 import { RightClickMenu } from "../../components/RightClickMenu"
@@ -19,6 +20,13 @@ import {
 import { $status } from "../../../store/status"
 import { updateNodeData } from "../../../store/blocks"
 import { MidiTransportForm } from "./transport"
+import { Select } from "@radix-ui/themes"
+
+import { MidiInputEvent } from "../../../types/enums"
+
+const events = Object.keys(_MidiInputEvent).filter(
+  (key) => !isNaN(Number(_MidiInputEvent[key as MidiInputEvent])),
+) as MidiInputEvent[]
 
 const S1 = 1
 
@@ -34,6 +42,10 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
 
   function update(input: Partial<MidiInProps>) {
     updateNodeData(id, input)
+
+    if (typeof input.on === "string") {
+      manager.send(id, { SetMidiInputEvent: { event: input.on } })
+    }
 
     if (typeof input.port === "number") {
       manager.send(id, { SetMidiPort: { port: input.port } })
@@ -102,7 +114,32 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
             )}
 
             {showSettings && (
-              <div className="max-w-[160px]">
+              <div className="max-w-[160px] space-y-3">
+                <div
+                  className="grid items-center gap-4 w-full text-gray-11"
+                  style={{
+                    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)",
+                  }}
+                >
+                  <p className="text-[10px]">Event</p>
+
+                  <Select.Root
+                    size="1"
+                    value={on}
+                    onValueChange={(v) => update({ on: v as MidiInputEvent })}
+                  >
+                    <Select.Trigger />
+
+                    <Select.Content>
+                      {events.map((key) => (
+                        <Select.Item value={key} key={key}>
+                          {key}
+                        </Select.Item>
+                      ))}
+                    </Select.Content>
+                  </Select.Root>
+                </div>
+
                 <MidiTransportForm
                   port={port}
                   channels={channels}

@@ -17,6 +17,7 @@ export type Action =
   | MidiAction
   | { SetMidiPort: { port: number } }
   | { SetMidiChannels: { channels: number[] } }
+  | { SetMidiInputEvent: { event: MidiInputEvent } }
   | { SetMidiOutputFormat: { format: MidiOutputFormat } }
   | { SetWaveform: { waveform: Waveform } }
   | { SetPixelMode: { mode: PixelMode } }

@@ -286,6 +286,12 @@ impl Canvas {
                     }
                 }
 
+                Action::SetMidiInputEvent { event } => {
+                    if let MidiIn { on, .. } = &mut self.mut_block(id)?.data {
+                        *on = event;
+                    }
+                }
+
                 Action::SetMidiChannels { channels: chan } => {
                     if let MidiIn { channels, .. } = &mut self.mut_block(id)?.data {
                         *channels = chan;

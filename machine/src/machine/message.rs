@@ -31,6 +31,9 @@ pub enum Action {
     /// Set the MIDI channels.
     SetMidiChannels { channels: Vec<u16> },
 
+    /// Select the MIDI input event for the block to subscribe to.
+    SetMidiInputEvent { event: MidiInputEvent },
+
     /// Set the MIDI output format.
     SetMidiOutputFormat { format: MidiOutputFormat },
 
