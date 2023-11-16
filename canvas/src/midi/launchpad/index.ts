@@ -66,7 +66,7 @@ export class Launchpad {
     if (!daw || !midi) return false
 
     this.dawOut = daw
-    this.midiOut = daw
+    this.midiOut = midi
 
     return true
   }

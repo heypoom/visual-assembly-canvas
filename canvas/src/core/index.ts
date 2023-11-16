@@ -270,7 +270,7 @@ export class CanvasManager {
     timed("sync machine state", () => syncMachineState(this))
 
     // Highlight the current line.
-    if (this.delayMs > 0) timed("highlight", this.highlight.bind(this))
+    if (this.delayMs > 0) this.highlight()
 
     // Tick the blocks.
     this.updateBlocks()
@@ -340,7 +340,7 @@ export class CanvasManager {
       const pc = state?.registers?.pc ?? 0
       const lineNo = (mapping?.get(pc) ?? 0) + 1
 
-      highlight(lineNo)
+      timed(`highlight(${id}, ${lineNo})`, () => highlight(lineNo), 0.25)
     })
   }
 
