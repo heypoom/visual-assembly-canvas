@@ -13,6 +13,6 @@ export const defaultProps: DefaultPropsMap = {
   Osc: { waveform: { Sine: null } },
   Clock: { time: 0 },
   Plot: { values: [], size: 250 },
-  MidiIn: { on: "NoteOn", port: 2, channels: [] },
-  MidiOut: { format: "Note", channel: 1, port: 2 },
+  MidiIn: { on: "NoteOn", port: 0, channels: [] },
+  MidiOut: { format: "Note", channel: 1, port: 0 },
 }
