@@ -319,9 +319,14 @@ impl Canvas {
 
                     let mut data: Vec<u8> = body.iter().map(|v| *v as u8).collect();
 
-                    // Reverse the bytes to make it easier to process.
-                    if format == &MidiOutputFormat::Raw || format == &MidiOutputFormat::Launchpad {
-                        data.reverse();
+                    match *format {
+                        // Limit the note and control change bytes to 0 - 127.
+                        MidiOutputFormat::Note | MidiOutputFormat::ControlChange => {
+                            data = data.iter().map(|d| d % 128).collect();
+                        }
+
+                        // Reverse the data bytes to make it easier to process.
+                        MidiOutputFormat::Raw | MidiOutputFormat::Launchpad => data.reverse(),
                     }
 
                     block.events.push(Event::Midi {
