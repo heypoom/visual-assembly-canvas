@@ -51,7 +51,7 @@ export function MidiTransportForm(props: Props) {
         const channels = e.target.value
           .split(" ")
           .map(Number)
-          .filter((x) => !isNaN(x) && x > 0 && x < 128)
+          .filter((x: number) => !isNaN(x) && x > 0 && x < 128)
 
         return onChange({ channels })
       }

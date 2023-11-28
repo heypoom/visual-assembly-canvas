@@ -9,7 +9,7 @@ import {
   $output,
 } from "../store/results"
 
-import { getSourceHighlightMap } from "./utils/getHighlightedSourceLine"
+import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
 
 import { throttle } from "lodash"
 
@@ -26,13 +26,13 @@ import { $status } from "../store/status"
 import { $delay } from "../store/canvas"
 import { isBlock } from "../canvas/blocks"
 import { syncBlockData } from "../store/blocks"
-import { midiManager } from "../midi/manager"
-import { processMidiEvent } from "../midi/event"
+import { midiManager } from "../services/midi/manager"
+import { processMidiEvent } from "../services/midi/event"
 import { Effect } from "../types/effects"
 import { timed } from "../utils/timed"
 import { Action } from "../types/actions"
-import { processSynthEffect } from "../audio/process-synth"
-import { audioManager } from "../audio/manager"
+import { processSynthEffect } from "../services/audio/process-synth"
+import { audioManager } from "../services/audio/manager"
 
 /** When running in real-time mode with 1ms delay, we need to throttle to avoid side effect lag. */
 const throttles = {

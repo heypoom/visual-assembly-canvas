@@ -6,6 +6,8 @@ const S0 = 0
 const S1 = 1
 
 export const SynthBlock = (props: NodeProps<SynthProps>) => {
+  const name = Object.keys(props.data.config)?.[0]
+
   return (
     <div>
       <Handle
@@ -16,7 +18,7 @@ export const SynthBlock = (props: NodeProps<SynthProps>) => {
       />
 
       <div className="px-4 py-2 border-2 rounded-2">
-        <div>Synth</div>
+        <div>{name} Synth</div>
       </div>
 
       <Handle

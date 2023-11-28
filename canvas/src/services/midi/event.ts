@@ -1,6 +1,6 @@
-import { launchpad, midiManager } from "."
-import { $lastMidiEvent } from "../store/midi"
-import { MidiEffect } from "../types/effects"
+import { launchpad, midiManager } from "./index"
+import { $lastMidiEvent } from "../../store/midi"
+import { MidiEffect } from "../../types/effects"
 
 export async function processMidiEvent(id: number, effect: MidiEffect) {
   try {
@@ -48,7 +48,7 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
       }
 
       case "Launchpad": {
-        midiManager.configureLaunchpad()
+        await midiManager.setup()
         launchpad.cmd(...data)
         return
       }

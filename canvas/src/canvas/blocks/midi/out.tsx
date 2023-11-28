@@ -10,7 +10,7 @@ import { manager } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
 import { useStore } from "@nanostores/react"
 import { $lastMidiEvent, $midi } from "../../../store/midi"
-import { midiManager } from "../../../midi"
+import { midiManager } from "../../../services/midi"
 import { MidiTransportForm } from "./transport"
 
 const S0 = 0
@@ -59,8 +59,6 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
     // Setup midi manager if it is not yet initialized.
     midiManager.setup().then()
   }, [])
-
-  const outputName = midi.outputs[port]
 
   return (
     <div className="group">

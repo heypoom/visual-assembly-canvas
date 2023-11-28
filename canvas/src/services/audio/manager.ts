@@ -1,7 +1,7 @@
 import { PolySynth, AMSynth, FMSynth, NoiseSynth, Synth } from "tone"
 import * as Tone from "tone"
 
-import { AttackReleaseConfig, SynthConfig, SynthType } from "../types/synth"
+import { AttackReleaseConfig, SynthConfig, SynthType } from "../../types/synth"
 import { Instrument } from "tone/build/esm/instrument/Instrument"
 
 const synthMap: Record<SynthType, () => Instrument<any>> = {

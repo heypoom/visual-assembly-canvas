@@ -2,7 +2,7 @@ import { manager } from "../../core"
 import { BlockTypeMap, BlockTypes } from "../../types/Node"
 import { defaultProps, DEFAULT_SOURCE } from "../blocks"
 import { addCanvasNode } from "./addCanvasNode"
-import { audioManager } from "../../audio/manager"
+import { audioManager } from "../../services/audio/manager"
 
 export function addBlock<T extends BlockTypes>(type: T) {
   if (type === "Machine") return addMachine()

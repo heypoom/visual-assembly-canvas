@@ -15,7 +15,7 @@ import {
   isControlChangeEvent,
   isNoteEvent,
   midiManager,
-} from "../../../midi"
+} from "../../../services/midi"
 
 import { $status } from "../../../store/status"
 import { updateNodeData } from "../../../store/blocks"

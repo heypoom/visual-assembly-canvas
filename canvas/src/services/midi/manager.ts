@@ -8,9 +8,9 @@ import {
   WebMidi,
 } from "webmidi"
 
-import { MidiInputEvent } from "../types/enums"
-import { FirstArg, UnionToIntersection } from "../types/helper"
-import { $midi } from "../store/midi"
+import { MidiInputEvent } from "../../types/enums"
+import { FirstArg, UnionToIntersection } from "../../types/helper"
+import { $midi } from "../../store/midi"
 import { debounce } from "lodash"
 import { launchpad, launchpadNames } from "./launchpad"
 
@@ -61,7 +61,7 @@ export class MidiManager {
     await WebMidi.enable({ sysex: true })
     this.scanPorts()
 
-    WebMidi.addListener("portschanged", (e) => {
+    WebMidi.addListener("portschanged", () => {
       // Re-scan the ports if they change.
       this.scanPorts()
     })
@@ -78,7 +78,7 @@ export class MidiManager {
     this.inputs = WebMidi.inputs
     this.outputs = WebMidi.outputs
 
-    // If launchpad is connected, we configure it.
+    // If the launchpad is connected, we configure it.
     launchpad.setup(this.outputs)
 
     $midi.set({
@@ -102,7 +102,7 @@ export class MidiManager {
     const debounceMs = this.debounceSettings[listener.type]
     const shouldDebounce = debounceMs > 0
 
-    // Debounce handle to prevent spamming, if the debounce time is greater than 0.
+    // Debounce handle to prevent spamming if the debounced time is greater than 0.
     const handle = shouldDebounce
       ? debounce(listener.handle, debounceMs, {
           leading: true,
