@@ -94,10 +94,10 @@ export class Scheduler {
     // Increment the frame counter.
     this.frame++
 
-    // Render blocks at maximum FPS.
-    // TODO: adaptive FPS based on canvas heuristics.
+    // TODO: update different block types at different rates. might not need 60FPS?
     updaters.blocks()
 
+    // TODO: adaptive FPS based on canvas heuristics.
     if (this.every(20)) updaters.highlight()
     if (this.every(10)) updaters.machine()
 
