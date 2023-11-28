@@ -16,7 +16,7 @@ export const SynthBlock = (props: NodeProps<SynthProps>) => {
       />
 
       <div className="px-4 py-2 border-2 rounded-2">
-        <div>{JSON.stringify(props.data)}</div>
+        <div>Synth</div>
       </div>
 
       <Handle

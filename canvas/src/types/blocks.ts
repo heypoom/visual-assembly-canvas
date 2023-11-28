@@ -6,6 +6,7 @@ import {
   MidiInputEvent,
   MidiOutputFormat,
 } from "./enums"
+import { SynthConfig } from "./synth"
 
 export interface BaseProps {
   id: number
@@ -66,5 +67,5 @@ export interface MidiOutProps extends BaseProps {
 
 export interface SynthProps extends BaseProps {
   synth_id: number
-  mode: SynthMode
+  config: SynthConfig
 }

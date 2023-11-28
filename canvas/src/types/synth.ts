@@ -8,3 +8,14 @@ export type SynthConfig =
   | { Poly: { synth: SynthConfig } }
 
 export type SynthType = keyof UnionToIntersection<SynthConfig>
+
+export type SynthTrigger =
+  | { Attack: { freq: number; time: number } }
+  | { Release: { time: number } }
+  | { AttackRelease: AttackReleaseConfig }
+
+export interface AttackReleaseConfig {
+  freq: number
+  duration: number
+  time: number
+}
