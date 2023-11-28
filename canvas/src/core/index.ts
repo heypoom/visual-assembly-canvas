@@ -24,7 +24,7 @@ import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 
 import { $delay } from "../store/canvas"
-import { isBlock } from "../canvas/blocks"
+import { isBlock as is } from "../canvas/blocks"
 import { syncBlockData } from "../store/blocks"
 import { midiManager } from "../services/midi/manager"
 import { processMidiEvent } from "../services/midi/event"
@@ -60,6 +60,8 @@ type HaltReason = "paused" | "cycle" | "duration" | "halted"
 export class CanvasManager {
   ctx: Controller | null = null
 
+  cycle = 0
+
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
 
@@ -81,6 +83,11 @@ export class CanvasManager {
 
   /** Map<blockId, Map<programCounter, sourceLine>>  */
   highlightMaps: Map<number, Map<number, number>> = new Map()
+
+  startMs = 0
+  hasMachines = false
+  hasProducers = false
+  shouldRunUntilPause = false
 
   async setup() {
     await setup()
@@ -119,8 +126,8 @@ export class CanvasManager {
     clearPreviousRun(this)
   }
 
-  get isHalted(): boolean {
-    if (this.runUntilPause) return false
+  isHalted(): boolean {
+    if (this.shouldRunUntilPause) return false
 
     return this.ctx?.is_halted() ?? false
   }
@@ -129,100 +136,85 @@ export class CanvasManager {
     return $delay.get()
   }
 
-  /**
-   * Indicate that we should run until pause, without any cycle limit or halting checks.
-   */
-  get runUntilPause(): boolean {
-    return this.delayMs > 0 && this.hasProducers
-  }
-
   get nodes() {
     return $nodes.get()
   }
 
-  /**
-   * Does the canvas has any signal producers, e.g. clocks or real-time interactors?
-   */
-  get hasProducers() {
-    return this.nodes.some(
-      (n) => isBlock.clock(n) || isBlock.midiIn(n) || isBlock.tap(n),
-    )
-  }
-
-  /** Does the canvas has any machines? */
-  get hasMachines() {
-    return this.nodes.some(isBlock.machine)
-  }
-
-  /** Continue the execution. */
-  run = async () => {
-    await audioManager.ready()
-
-    const startMs = performance.now()
+  async prepareRun() {
     $status.setKey("running", true)
 
-    // Check the canvas for presence of blocks that alter run behaviour.
-    const hasMachines = this.hasMachines
+    // Wait for the audio context to be ready.
+    await audioManager.ready()
 
-    // Disable the watchdog if we have interactors, e.g. tap blocks.
+    this.startMs = performance.now()
+    this.hasMachines = this.nodes.some(is.machine)
+
+    this.hasProducers = this.nodes.some(
+      (n) => is.clock(n) || is.midiIn(n) || is.tap(n),
+    )
+
+    this.shouldRunUntilPause = this.delayMs > 0 && this.hasProducers
+
+    // Disable the watchdog if we have interactors, e.g., tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
-    this.ctx?.set_await_watchdog(!this.runUntilPause)
+    this.ctx?.set_await_watchdog(!this.shouldRunUntilPause)
+  }
 
-    // Should we enable halting detection?
-    const runUntilPause = this.runUntilPause
-    const detectHang = !runUntilPause
-    let cycle = 0
-
-    while (runUntilPause || cycle < this.maxCycle) {
-      // Execution is forced to pause by the user.
-      if (this.pause) {
-        this.pause = false
-        this.haltReason = "paused"
-        break
-      }
-
-      timed("run::step", () => this.step({ batch: true }), 1.1)
-
-      // Add an artificial delay to allow the user to see the changes
-      if (this.delayMs > 0) await delay(this.delayMs)
-
-      // Halt detection - machine gracefully completes a run.
-      if (hasMachines && this.isHalted) {
-        this.haltReason = "halted"
-        break
-      }
-
-      // Hang detection. Detect infinite loops and deadlocks.
-      if (detectHang) {
-        cycle++
-
-        // We take the artificial delay into account.
-        const duration = performance.now() - startMs
-        const limit = this.maxRuntime * (this.delayMs || 1)
-
-        // Did we exceed the execution time limit?
-        if (duration > limit) {
-          this.haltReason = "duration"
-          break
-        }
-      }
-    }
-
-    // extra step to let the blocks tick
+  cleanupRun() {
+    // extra step to let the block tick
     this.step({ batch: true })
 
-    if (cycle >= this.maxCycle) this.haltReason = "cycle"
+    if (this.cycle >= this.maxCycle) this.haltReason = "cycle"
 
     $status.setKey("running", false)
     this.ctx?.set_await_watchdog(true)
 
-    if (detectHang) this.reportHang()
+    if (!this.shouldRunUntilPause) this.reportHang()
+  }
+
+  /** Continue the execution. */
+  run = async () => {
+    await this.prepareRun()
+
+    while (this.shouldRunUntilPause || this.cycle < this.maxCycle) {
+      const ok = await this.stepWithChecks()
+      if (!ok) break
+    }
+
+    this.cleanupRun()
+  }
+
+  async stepWithChecks() {
+    // Execution is forced to pause by the user.
+    if (this.haltIf(this.pause, "paused")) {
+      this.pause = false
+      return
+    }
+
+    timed("run::step", () => this.step({ batch: true }), 1.1)
+
+    // Add an artificial delay to allow the user to see the changes
+    // TODO: replace this with a proper scheduler
+    if (this.delayMs > 0) await delay(this.delayMs)
+
+    // Halt detection - machine gracefully completes a run.
+    if (this.haltIf(this.hasMachines && this.isHalted(), "halted")) return
+
+    // Hang detection. Detect infinite loops and deadlocks.
+    if (!this.shouldRunUntilPause) this.cycle++
+
+    return true
+  }
+
+  haltIf(condition: boolean, reason: HaltReason) {
+    if (condition) this.haltReason = reason
+    return condition
   }
 
   /** Check if our program ever halts. Helps prevent hangs, infinite loops, and awaiting for messages. */
   reportHang() {
     setTimeout(() => {
-      if (!this.isHalted) {
+      if (!this.isHalted()) {
         this.statuses.forEach((status, id) => {
           const error = this.getHaltError(id, status)
           if (error) setError(id, machineError(error))
@@ -282,7 +274,7 @@ export class CanvasManager {
     // TODO: add an indicator to the block for a halted machine.
     // TODO: we should remove this behaviour to prevent confusion!
     // If running in steps, we should reset the machine once it halts.
-    const halted = this.isHalted
+    const halted = this.isHalted()
     if (!config.batch && halted) this.reloadMachines()
     if (halted) $status.setKey("halted", true)
   }
@@ -384,7 +376,7 @@ export class CanvasManager {
     // Teardown the blocks.
     if (block) {
       // Remove the midi listeners.
-      if (isBlock.midiIn(block) || isBlock.midiOut(block)) midiManager.off(id)
+      if (is.midiIn(block) || is.midiOut(block)) midiManager.off(id)
     }
 
     // Remove the block.

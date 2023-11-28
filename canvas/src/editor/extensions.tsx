@@ -14,7 +14,7 @@ export function getExtensions(m: MachineProps, _config: EditorConfig) {
       key: "Enter",
       shift: () => {
         manager.load(m.id, m.source)
-        manager.run()
+        manager.run().then()
 
         return true
       },
