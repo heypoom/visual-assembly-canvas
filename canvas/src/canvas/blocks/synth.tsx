@@ -6,7 +6,8 @@ const S0 = 0
 const S1 = 1
 
 export const SynthBlock = (props: NodeProps<SynthProps>) => {
-  const name = Object.keys(props.data.config)?.[0]
+  const { config } = props.data ?? {}
+  const name = typeof config === "string" ? config : Object.keys(config)?.[0]
 
   return (
     <div>

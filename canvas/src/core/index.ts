@@ -96,7 +96,7 @@ export class CanvasManager {
 
   load(id: number, source: string, force?: boolean) {
     // If the source is the same, we don't need to reload.
-    if (this.sources.get(id) === source && !force) return this.invalidate()
+    if (this.sources.get(id) === source && !force) return
     this.sources.set(id, source)
 
     try {
