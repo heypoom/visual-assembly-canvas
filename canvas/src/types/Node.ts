@@ -8,8 +8,10 @@ import {
   OscProps,
   PixelProps,
   PlotterProps,
+  SynthProps,
   TapProps,
 } from "./blocks"
+import type { ReactNode } from "react"
 
 export interface BlockTypeMap {
   Machine: MachineProps
@@ -20,6 +22,7 @@ export interface BlockTypeMap {
   Osc: OscProps
   MidiIn: MidiInProps
   MidiOut: MidiOutProps
+  Synth: SynthProps
 }
 
 export type BlockTypes = keyof BlockTypeMap
@@ -29,5 +32,5 @@ export type BlockNode = Node<BlockValues, BlockTypes>
 export type TNode<T extends BlockTypes> = Node<BlockTypeMap[T], T>
 
 export type BlockComponentMap = {
-  [N in BlockTypes]: (props: NodeProps<BlockTypeMap[N]>) => React.ReactNode
+  [N in BlockTypes]: (props: NodeProps<BlockTypeMap[N]>) => ReactNode
 }

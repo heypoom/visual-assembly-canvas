@@ -6,6 +6,7 @@ import {
   MidiInputEvent,
   MidiOutputFormat,
 } from "./enums"
+import { SynthConfig } from "./synth"
 
 export interface BaseProps {
   id: number
@@ -53,7 +54,7 @@ export interface MidiInProps extends BaseProps {
 
   port: number
 
-  /** Accept all channels if empty. Otherwise only accept filtered channels. */
+  /** Accept all channels if empty. Otherwise, only accept filtered channels. */
   channels: number[]
 }
 
@@ -62,4 +63,9 @@ export interface MidiOutProps extends BaseProps {
 
   port: number
   channel: number
+}
+
+export interface SynthProps extends BaseProps {
+  synth_id: number
+  config: SynthConfig
 }

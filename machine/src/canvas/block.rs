@@ -4,6 +4,7 @@ use crate::audio::waveform::Waveform;
 use crate::canvas::pixel::PixelMode;
 use strum_macros::{EnumIs};
 use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
+use crate::audio::synth::SynthConfig;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {
@@ -67,6 +68,15 @@ pub enum BlockData {
 
         channel: u16,
         port: u16,
+    },
+
+    /// Basic synthesizer.
+    Synth {
+        /// Synth identifier.
+        synth_id: u16,
+
+        /// Synth configuration.
+        config: SynthConfig,
     },
 }
 

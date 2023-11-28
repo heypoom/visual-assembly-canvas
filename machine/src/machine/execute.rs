@@ -167,9 +167,6 @@ impl Execute for Machine {
                 self.expected_receives += 1;
             }
 
-            // TODO: implement the memory map operation.
-            Op::MemoryMap(..) => {}
-
             // Bitwise operations.
             Op::And => s.apply_two(|a, b| Ok(a & b))?,
             Op::Or => s.apply_two(|a, b| Ok(a | b))?,

@@ -31,6 +31,8 @@ import { processMidiEvent } from "../midi/event"
 import { Effect } from "../types/effects"
 import { timed } from "../utils/timed"
 import { Action } from "../types/actions"
+import { processSynthEffect } from "../audio/process-synth"
+import { audioManager } from "../audio/manager"
 
 /** When running in real-time mode with 1ms delay, we need to throttle to avoid side effect lag. */
 const throttles = {
@@ -154,6 +156,8 @@ export class CanvasManager {
 
   /** Continue the execution. */
   run = async () => {
+    await audioManager.ready()
+
     const startMs = performance.now()
     $status.setKey("running", true)
 
@@ -290,7 +294,10 @@ export class CanvasManager {
   performSideEffects() {
     this.consumeSideEffects().forEach((effects, id) => {
       for (const effect of effects) {
-        if ("Midi" in effect) processMidiEvent(id, effect).then()
+        if ("Midi" in effect) return processMidiEvent(id, effect).then()
+        if ("Synth" in effect) return processSynthEffect(id, effect)
+
+        console.info("unknown effect:", effect)
       }
     })
   }
