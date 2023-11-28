@@ -10,15 +10,6 @@ pub enum SynthConfig {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub enum Note {
-    /// Frequency in hertz (e.g. 440.0)
-    Freq(f32),
-
-    /// Pitch-octave notation (e.g. A4)
-    Pitch(String),
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Duration {
     /// Duration in seconds (e.g. 0.5)
     Sec(f32),
@@ -36,17 +27,26 @@ pub enum Duration {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum SynthTrigger {
     Attack {
-        note: Note,
+        /// Note to play, in MIDI format
+        note: u8,
+
+        /// Time offset from start of frame
         time: f32,
     },
 
     Release {
-        time: Option<f32>
+        /// Time offset from start of frame
+        time: f32
     },
 
     AttackRelease {
-        note: Note,
+        /// Note to play, in MIDI format
+        note: u8,
+
+        /// How long should we hold the note?
         duration: Duration,
-        time: Option<f32>,
+
+        /// Time offset from start of frame
+        time: f32,
     },
 }
