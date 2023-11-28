@@ -10,32 +10,17 @@ pub enum SynthConfig {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub enum Duration {
-    /// Duration in seconds (e.g. 0.5)
-    Sec(f32),
-
-    /// e.g. 4 = quarter note
-    Note(u8),
-
-    /// e.g. 8 = eighth note triplet
-    Triplet(u8),
-
-    /// e.g. 1 = one measure
-    Measure(u8),
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum SynthTrigger {
     Attack {
         /// Frequency of the note.
         freq: f32,
 
-        /// Time offset from start of frame
+        /// Time offset from start of frame, in seconds.
         time: f32,
     },
 
     Release {
-        /// Time offset from start of frame
+        /// Time offset from start of frame, in seconds.
         time: f32
     },
 
@@ -43,10 +28,14 @@ pub enum SynthTrigger {
         /// Frequency of the note.
         freq: f32,
 
-        /// How long should we hold the note?
-        duration: Duration,
+        /// How long should we hold the note, in seconds.
+        duration: f32,
 
-        /// Time offset from start of frame
+        /// Time offset from start of frame, in seconds.
         time: f32,
     },
+}
+
+pub fn note_to_freq(note: u8) -> f32 {
+    440.0 * 2f32.powf((note as f32 - 69.0) / 12.0)
 }
