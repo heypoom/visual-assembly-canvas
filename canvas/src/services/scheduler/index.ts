@@ -38,7 +38,7 @@ export class Scheduler {
 
   frame = 0
 
-  timers: Partial<Record<Updater, Timer>> = {}
+  timers: Partial<Record<Updater, Timer | null>> = {}
 
   constructor() {
     this.setup().then()
@@ -63,12 +63,6 @@ export class Scheduler {
     // Begin requesting animation frame.
     this.frame = 0
     this.frameRequestId = requestAnimationFrame(this.render)
-
-    // Engine is ticked as fast as possible, given the user-defined delay.
-    this.loop("canvas", $delay.get())
-
-    // Side effects such as MIDI and synths are processed every 5ms.
-    this.loop("effect", 5)
   }
 
   private loop(type: Updater, delay: number) {
@@ -77,7 +71,12 @@ export class Scheduler {
   }
 
   private clearTimers(...updaters: Updater[]) {
-    updaters.forEach((updater) => clearInterval(this.timers[updater]))
+    updaters.forEach((updater) => {
+      const timer = this.timers[updater]
+      if (timer !== null) clearInterval(timer)
+
+      this.timers[updater] = null
+    })
   }
 
   public pause = () => {
@@ -94,12 +93,20 @@ export class Scheduler {
     // Increment the frame counter.
     this.frame++
 
+    // Process side effects first.
+    // TODO: effect timing is now tied to the frame rate; this is not ideal...
+    if (this.every(4)) updaters.effect()
+
+    // TODO: canvas timing is now tied to the frame rate; this is not ideal...
+    // TODO: respect the "delay" setting.
+    updaters.canvas()
+
     // TODO: update different block types at different rates. might not need 60FPS?
     updaters.blocks()
 
     // TODO: adaptive FPS based on canvas heuristics.
-    if (this.every(20)) updaters.highlight()
     if (this.every(10)) updaters.machine()
+    if (this.every(20)) updaters.highlight()
 
     this.frameRequestId = requestAnimationFrame(this.render)
   }
