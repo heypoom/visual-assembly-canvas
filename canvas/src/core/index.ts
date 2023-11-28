@@ -290,7 +290,9 @@ export class CanvasManager {
   performSideEffects() {
     this.consumeSideEffects().forEach((effects, id) => {
       for (const effect of effects) {
-        if ("Midi" in effect) processMidiEvent(id, effect).then()
+        if ("Midi" in effect) return processMidiEvent(id, effect).then()
+
+        console.info("unknown effect:", effect)
       }
     })
   }

@@ -174,7 +174,7 @@ impl Canvas {
             Clock { .. } => self.tick_clock_block(id, messages)?,
             MidiIn { .. } => self.tick_midi_in_block(id, messages)?,
             MidiOut { .. } => self.tick_midi_out_block(id, messages)?,
-            BlockData::Synth { .. } => self.tick_synth_block(id, messages)?,
+            Synth { .. } => self.tick_synth_block(id, messages)?,
             _ => {}
         }
 
