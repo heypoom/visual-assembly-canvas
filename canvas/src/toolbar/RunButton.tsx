@@ -6,6 +6,7 @@ import { $status } from "../store/status"
 
 import { manager } from "../core"
 import { $hasBlocks } from "../store/nodes"
+import { scheduler } from "../services/scheduler"
 
 export const RunButton = () => {
   const status = useStore($status)
@@ -16,7 +17,7 @@ export const RunButton = () => {
       <Button
         color="tomato"
         variant="soft"
-        onClick={() => (manager.pause = true)}
+        onClick={scheduler.pause}
         className="font-semibold"
       >
         <PauseIcon />
@@ -28,7 +29,7 @@ export const RunButton = () => {
     <Button
       color="green"
       variant="soft"
-      onClick={manager.run}
+      onClick={scheduler.start}
       className="font-semibold"
       disabled={!hasBlocks}
     >

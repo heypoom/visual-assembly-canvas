@@ -3,9 +3,10 @@ import { Extension, keymap } from "@uiw/react-codemirror"
 import { vasmLanguage } from "./syntax"
 
 import { MachineProps } from "../types/blocks"
-import { manager } from "../core/index"
+import { manager } from "../core"
 import { EditorConfig } from "../store/editor"
 import { lineHighlighter } from "./highlight"
+import { scheduler } from "../services/scheduler"
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getExtensions(m: MachineProps, _config: EditorConfig) {
@@ -14,7 +15,7 @@ export function getExtensions(m: MachineProps, _config: EditorConfig) {
       key: "Enter",
       shift: () => {
         manager.load(m.id, m.source)
-        manager.run().then()
+        scheduler.start().then()
 
         return true
       },

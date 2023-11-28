@@ -4,14 +4,12 @@ import { $nodes } from "../store/nodes"
 
 import {
   setError,
-  syncMachineState as _syncMachineState,
+  syncMachineState,
   clearPreviousRun,
   $output,
 } from "../store/results"
 
 import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
-
-import { throttle } from "lodash"
 
 import {
   MachineStatus,
@@ -26,28 +24,12 @@ import { $status } from "../store/status"
 import { $delay } from "../store/canvas"
 import { isBlock as is } from "../canvas/blocks"
 import { syncBlockData } from "../store/blocks"
-import { midiManager } from "../services/midi/manager"
+import { midiManager } from "../services/midi"
 import { processMidiEvent } from "../services/midi/event"
 import { Effect } from "../types/effects"
-import { timed } from "../utils/timed"
 import { Action } from "../types/actions"
 import { processSynthEffect } from "../services/audio/process-synth"
-import { audioManager } from "../services/audio/manager"
-
-/** When running in real-time mode with 1ms delay, we need to throttle to avoid side effect lag. */
-const throttles = {
-  highlight: 10,
-  updateBlocks: 1,
-  syncMachineState: 4,
-}
-
-const syncMachineState = throttle(
-  _syncMachineState,
-  throttles.syncMachineState,
-  { trailing: true },
-)
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+import { scheduler } from "../services/scheduler"
 
 const machineError = (cause: MachineError): CanvasError => ({
   MachineError: { cause },
@@ -55,7 +37,10 @@ const machineError = (cause: MachineError): CanvasError => ({
 
 export type HighlighterFn = (lineNo: number) => void
 
-type HaltReason = "paused" | "cycle" | "duration" | "halted"
+/** Map<blockId, Map<programCounter, sourceLine>>  */
+type HighlightMaps = Map<number, Map<number, number>>
+
+type HaltReason = "cycle" | "halted"
 
 export class CanvasManager {
   ctx: Controller | null = null
@@ -65,36 +50,32 @@ export class CanvasManager {
   /** What is the limit on number of cycles? This prevents crashes. */
   maxCycle = 200
 
-  /** What is the limit on execution time, excluding the delay? This prevents crashes. */
-  maxRuntime = 2000
-
   /** Is every machine ready to run? */
   ready = false
-
-  /** Should machine prepare to pause execution? */
-  pause = false
 
   /** Why did the machine last halt? */
   haltReason: HaltReason | null = null
 
   sources: Map<number, string> = new Map()
-
   highlighters: Map<number, HighlighterFn> = new Map()
-
-  /** Map<blockId, Map<programCounter, sourceLine>>  */
-  highlightMaps: Map<number, Map<number, number>> = new Map()
+  highlightMaps: HighlightMaps = new Map()
 
   startMs = 0
   hasMachines = false
   hasProducers = false
-  shouldRunUntilPause = false
+
+  /** Should the canvas be ticked continuously? */
+  continuous = false
 
   async setup() {
+    // Initialize the WebAssembly module.
     await setup()
+
+    // Create the canvas controller instance from WebAssembly.
     this.ctx = Controller.create()
   }
 
-  load(id: number, source: string, force?: boolean) {
+  public load(id: number, source: string, force?: boolean) {
     // If the source is the same, we don't need to reload.
     if (this.sources.get(id) === source && !force) return
     this.sources.set(id, source)
@@ -109,15 +90,15 @@ export class CanvasManager {
     }
   }
 
-  setSyntaxError(id: number, error: unknown | null) {
+  private setSyntaxError(id: number, error: unknown | null) {
     if (error) setError(id, error as CanvasError)
   }
 
-  inspect(id: number): InspectionState {
+  public inspect(id: number): InspectionState {
     return this.ctx?.inspect(id)
   }
 
-  prepare = () => {
+  private prepare = () => {
     if (this.ready) return
 
     this.ctx?.ready()
@@ -126,87 +107,73 @@ export class CanvasManager {
     clearPreviousRun(this)
   }
 
-  isHalted(): boolean {
-    if (this.shouldRunUntilPause) return false
+  private get isHalted(): boolean {
+    if (this.continuous) return false
 
     return this.ctx?.is_halted() ?? false
-  }
-
-  get delayMs(): number {
-    return $delay.get()
   }
 
   get nodes() {
     return $nodes.get()
   }
 
-  async prepareRun() {
-    $status.setKey("running", true)
+  /**
+   * Prepare the canvas for execution.
+   * Initialize run variables when the run starts.
+   **/
+  public onRunStart() {
+    this.startMs = performance.now()
 
-    // Wait for the audio context to be ready.
-    await audioManager.ready()
-
+    // Reset the cycle counter.
     this.cycle = 0
     this.haltReason = null
-    this.startMs = performance.now()
+
+    // Introspect the current state of the canvas.
     this.hasMachines = this.nodes.some(is.machine)
-
-    this.hasProducers = this.nodes.some(
-      (n) => is.clock(n) || is.midiIn(n) || is.tap(n),
-    )
-
-    this.shouldRunUntilPause = this.delayMs > 0 && this.hasProducers
+    this.hasProducers = this.nodes.some(is.producer)
+    this.continuous = $delay.get() > 0 && this.hasProducers
 
     // Disable the watchdog if we have interactors, e.g., tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
-    this.ctx?.set_await_watchdog(!this.shouldRunUntilPause)
+    this.ctx?.set_await_watchdog(!this.continuous)
+
+    // Prepare for the next run.
+    this.prepare()
   }
 
-  cleanupRun() {
-    // extra step to let the block tick
-    this.step({ batch: true })
+  /**
+   * Cleanup the canvas after execution.
+   */
+  public onRunCleanup() {
+    // Extra step to let the block tick
+    this.step()
 
+    // Report that we have exceeded the execution cycle limit.
     if (this.cycle >= this.maxCycle) this.haltReason = "cycle"
 
-    $status.setKey("running", false)
+    // Reset the watchdog.
     this.ctx?.set_await_watchdog(true)
 
-    if (!this.shouldRunUntilPause) this.reportHang()
+    // Report if our program did not halt properly.
+    if (!this.continuous) this.reportHang()
   }
 
-  /** Continue the execution. */
-  run = async () => {
-    await this.prepareRun()
+  /** Tick the canvas. */
+  public tickOnce() {
+    if (!this.continuous && this.cycle >= this.maxCycle) return
+    if (this.shouldHalt()) return
 
-    while (this.shouldRunUntilPause || this.cycle < this.maxCycle) {
-      if (!this.detectHalt()) break
+    this.step()
 
-      // Tick the canvas.
-      timed("run::step", () => this.step({ batch: true }), 1.1)
+    if (!this.continuous) this.cycle++
 
-      // Increment the cycle counter.
-      if (!this.shouldRunUntilPause) this.cycle++
-
-      // Add an artificial delay to allow the user to see the changes
-      // TODO: replace this with a proper scheduler
-      if (this.delayMs > 0) await delay(this.delayMs)
-    }
-
-    this.cleanupRun()
+    return true
   }
 
   /** Check if we should halt the canvas. */
-  detectHalt() {
-    // Execution is forced to pause by the user.
-    if (this.haltIf(this.pause, "paused")) {
-      this.pause = false
-      return
-    }
-
-    // If all machines are halted, we can stop running.
-    if (this.haltIf(this.hasMachines && this.isHalted(), "halted")) return
-
-    return true
+  private shouldHalt() {
+    // If all machines are halted, we stop running.
+    return this.haltIf(this.hasMachines && this.isHalted, "halted")
   }
 
   haltIf(condition: boolean, reason: HaltReason) {
@@ -217,7 +184,7 @@ export class CanvasManager {
   /** Check if our program ever halts. Helps prevent hangs, infinite loops, and awaiting for messages. */
   reportHang() {
     setTimeout(() => {
-      if (!this.isHalted()) {
+      if (!this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getHaltError(id, status)
           if (error) setError(id, machineError(error))
@@ -232,16 +199,12 @@ export class CanvasManager {
 
   /** Returns an error that explains why the machine halted. */
   getHaltError(id: number, status: MachineStatus): MachineError | undefined {
-    if (status === "Awaiting") {
-      return { MessageNeverReceived: { id } }
-    }
+    if (status === "Awaiting") return { MessageNeverReceived: { id } }
 
     if (status === "Running") {
       switch (this.haltReason) {
         case "cycle":
           return { ExecutionCycleExceeded: { id } }
-        case "duration":
-          return { ExecutionTimeExceeded: { id } }
       }
     }
   }
@@ -250,69 +213,69 @@ export class CanvasManager {
     return this.ctx?.statuses()
   }
 
-  step = (config: { batch?: boolean } = {}) => {
-    $status.setKey("halted", false)
+  set halted(state: boolean) {
+    $status.setKey("halted", state)
+  }
 
-    // If the program is not initialized yet, we need to initialize it.
+  /**
+   * Step the canvas once.
+   * Used for the step button.
+   *
+   * [SLOW]
+   **/
+  public stepOnce = () => {
+    this.halted = false
+
     this.prepare()
+    this.step()
 
+    // Perform effects and updates immediately after stepping.
+    this.performSideEffects()
+    this.syncMachineState()
+    this.highlight()
+    this.syncBlocks()
+
+    if (this.isHalted) this.reloadMachines()
+  }
+
+  public syncMachineState() {
+    syncMachineState(this)
+  }
+
+  private step() {
     try {
-      timed("wasm::step", () => this.ctx?.step())
+      this.ctx?.step()
     } catch (error) {
       this.detectCanvasError(error)
     }
-
-    // Perform side effects first so it feels fast.
-    timed("side effects", this.performSideEffects.bind(this))
-
-    // Synchronize the machine state with the store.
-    timed("sync machine state", () => syncMachineState(this))
-
-    // Highlight the current line.
-    if (this.delayMs > 0) this.highlight()
-
-    // Tick the blocks.
-    this.updateBlocks()
-
-    // TODO: add an indicator to the block for a halted machine.
-    // TODO: we should remove this behaviour to prevent confusion!
-    // If running in steps, we should reset the machine once it halts.
-    const halted = this.isHalted()
-    if (!config.batch && halted) this.reloadMachines()
-    if (halted) $status.setKey("halted", true)
   }
 
   consumeSideEffects(): Map<number, Effect[]> {
     return this.ctx?.consume_block_side_effects()
   }
 
-  performSideEffects() {
+  public performSideEffects() {
+    // TODO: collect different types of effects separately
     this.consumeSideEffects().forEach((effects, id) => {
       for (const effect of effects) {
         if ("Midi" in effect) return processMidiEvent(id, effect).then()
         if ("Synth" in effect) return processSynthEffect(id, effect)
 
-        console.info("unknown effect:", effect)
+        console.warn("unknown effect:", effect)
       }
     })
   }
 
-  _updateBlocks() {
-    const blocks = timed("wasm::get_blocks", () => this.ctx?.get_blocks())
-    timed("syncBlockData", () => blocks.forEach(syncBlockData))
+  public syncBlocks() {
+    const blocks = this.ctx?.get_blocks()
+    blocks.forEach(syncBlockData)
   }
 
-  updateBlocks = throttle(
-    this._updateBlocks.bind(this),
-    throttles.updateBlocks,
-    { trailing: true },
-  )
-
-  updateBlock(id: number) {
+  private updateBlock(id: number) {
     syncBlockData(this.ctx?.get_block(id))
   }
 
-  detectCanvasError(error: unknown) {
+  private detectCanvasError(error: unknown) {
     const e = error as CanvasError
 
     if (canvasErrors.disconnectedPort(e)) {
@@ -333,7 +296,7 @@ export class CanvasManager {
     console.error("Unhandled canvas error:", error)
   }
 
-  _highlight() {
+  public highlight() {
     const output = $output.get()
 
     this.highlighters.forEach((highlight, id) => {
@@ -342,37 +305,30 @@ export class CanvasManager {
       const pc = state?.registers?.pc ?? 0
       const lineNo = (mapping?.get(pc) ?? 0) + 1
 
-      timed(`highlight(${id}, ${lineNo})`, () => highlight(lineNo), 0.25)
+      highlight(lineNo)
     })
   }
 
-  highlight = throttle(this._highlight.bind(this), throttles.highlight, {
-    trailing: true,
-  })
-
-  reloadMachines() {
+  private reloadMachines() {
     this.sources.forEach((source, id) => {
       this.load(id, source, true)
     })
   }
 
-  reset() {
-    const { running } = $status.get()
-    if (running) this.pause = true
-
+  public reset() {
     // Invalidate the ready flag.
     this.invalidate()
 
     // Reset blocks and update UI
     this.ctx?.reset_blocks()
-    this.updateBlocks()
+    this.syncBlocks()
 
     // Reset machines and update UI
     this.reloadMachines()
-    syncMachineState(this)
+    this.syncMachineState()
   }
 
-  removeBlock(id: number) {
+  public removeBlock(id: number) {
     // Get the block before it is removed.
     const block = this.nodes.find((n) => n.data.id === id)
 
@@ -390,12 +346,12 @@ export class CanvasManager {
     this.highlightMaps.delete(id)
   }
 
-  resetBlock(id: number) {
+  public resetBlock(id: number) {
     this.ctx?.reset_block(id)
     this.updateBlock(id)
   }
 
-  send(id: number, action: Action) {
+  public send(id: number, action: Action) {
     this.ctx?.send_message_to_block(id, action)
   }
 }

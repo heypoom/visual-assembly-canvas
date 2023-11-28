@@ -15,6 +15,12 @@ import { addBlock } from "../canvas"
 import { $hasBlocks } from "../store/nodes"
 import { addMachine } from "../canvas/utils/addBlock"
 import { BlockTypes } from "../types/Node"
+import { scheduler } from "../services/scheduler"
+
+function reset() {
+  scheduler.pause()
+  manager.reset()
+}
 
 export function Toolbar() {
   const status = useStore($status)
@@ -61,7 +67,7 @@ export function Toolbar() {
           color={halted ? "blue" : "cyan"}
           variant="soft"
           className="font-semibold"
-          onClick={() => manager.step()}
+          onClick={manager.stepOnce}
           disabled={status.running || !hasBlocks}
         >
           <TrackNextIcon />
@@ -72,7 +78,7 @@ export function Toolbar() {
           color="tomato"
           variant="soft"
           className="font-semibold"
-          onClick={() => manager.reset()}
+          onClick={reset}
           disabled={!hasBlocks}
         >
           <ReloadIcon />

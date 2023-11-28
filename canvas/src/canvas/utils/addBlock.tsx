@@ -12,7 +12,7 @@ export function addBlock<T extends BlockTypes>(type: T) {
   if (typeof id !== "number") return
 
   if (type === "Synth") {
-    audioManager.setup(id, defaultProps.Synth.config)
+    audioManager.add(id, defaultProps.Synth.config)
   }
 
   addCanvasNode(id, type, { ...props, id } as BlockTypeMap[T])

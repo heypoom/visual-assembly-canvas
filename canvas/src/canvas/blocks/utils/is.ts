@@ -14,4 +14,6 @@ export const isBlock = {
   plot: isBlockType("Plot"),
   midiIn: isBlockType("MidiIn"),
   midiOut: isBlockType("MidiOut"),
+  producer: (n: BlockNode) =>
+    isBlock.clock(n) || isBlock.midiIn(n) || isBlock.tap(n),
 }

@@ -75,7 +75,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
       setLast([note, value, channel])
       manager.send(id, { Midi: { event: on, value, note, channel, port } })
 
-      if (!status.running) manager.step()
+      if (!status.running) manager.stepOnce()
     },
     [id, on, port, status.running],
   )

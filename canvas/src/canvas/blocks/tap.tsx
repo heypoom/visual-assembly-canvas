@@ -35,7 +35,7 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
     // Only step the execution if the program is not running.
     // TODO: can we improve this?
     // TODO: traverse the graph node to only tick connected nodes.
-    if (!status.running) manager.step()
+    if (!status.running) manager.stepOnce()
   }
 
   function setSignal() {

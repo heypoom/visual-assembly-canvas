@@ -1,8 +1,15 @@
-import { PolySynth, AMSynth, FMSynth, NoiseSynth, Synth } from "tone"
-import * as Tone from "tone"
+import {
+  start,
+  now,
+  PolySynth,
+  AMSynth,
+  FMSynth,
+  NoiseSynth,
+  Synth,
+} from "tone"
 
 import { AttackReleaseConfig, SynthConfig, SynthType } from "../../types/synth"
-import { Instrument } from "tone/build/esm/instrument/Instrument"
+import type { Instrument } from "tone/build/esm/instrument/Instrument"
 
 const synthMap: Record<SynthType, () => Instrument<any>> = {
   Basic: () => new PolySynth(Synth).toDestination(),
@@ -20,10 +27,10 @@ export class AudioManager {
   async ready() {
     if (this.isReady) return
 
-    await Tone.start()
+    await start()
   }
 
-  setup(id: number, config: SynthConfig) {
+  add(id: number, config: SynthConfig) {
     if (this.synths.has(id)) return
 
     const key = Object.keys(config)[0] as SynthType
@@ -37,7 +44,7 @@ export class AudioManager {
 
     if (!synth) return
 
-    const time = Tone.now() + config.time
+    const time = now() + config.time
     synth.triggerAttackRelease(config.freq, config.duration, time)
   }
 }
