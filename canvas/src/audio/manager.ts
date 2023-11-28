@@ -1,15 +1,15 @@
-import { AMSynth, FMSynth, NoiseSynth, Synth } from "tone"
+import { PolySynth, AMSynth, FMSynth, NoiseSynth, Synth } from "tone"
 import * as Tone from "tone"
 
 import { AttackReleaseConfig, SynthConfig, SynthType } from "../types/synth"
 import { Instrument } from "tone/build/esm/instrument/Instrument"
 
 const synthMap: Record<SynthType, () => Instrument<any>> = {
-  Basic: () => new Synth().toDestination(),
-  FM: () => new FMSynth().toDestination(),
-  AM: () => new AMSynth().toDestination(),
+  Basic: () => new PolySynth(Synth).toDestination(),
+  FM: () => new PolySynth(FMSynth).toDestination(),
+  AM: () => new PolySynth(AMSynth).toDestination(),
   Noise: () => new NoiseSynth().toDestination(),
-  Poly: () => new Synth().toDestination(),
+  Poly: () => new PolySynth(),
 }
 
 export class AudioManager {
