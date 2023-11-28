@@ -77,10 +77,6 @@ pub enum Op {
     /// Push the received bytes onto the stack.
     Receive,
 
-    /// Map a memory address to a port
-    /// Send(Port, Start, Size)
-    MemoryMap(u16, u16, u16),
-
     /// Bitwise AND (&)
     And,
 
