@@ -24,11 +24,20 @@ pub enum Duration {
     Measure(u8),
 }
 
+/// Note or frequency.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub enum SynthValue {
+    /// MIDI note.
+    Note(u8),
+
+    // Frequency in Hz
+    Freq(u16),
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum SynthTrigger {
     Attack {
-        /// Note to play, in MIDI format
-        note: u8,
+        value: SynthValue,
 
         /// Time offset from start of frame
         time: f32,
@@ -40,8 +49,7 @@ pub enum SynthTrigger {
     },
 
     AttackRelease {
-        /// Note to play, in MIDI format
-        note: u8,
+        value: SynthValue,
 
         /// How long should we hold the note?
         duration: Duration,
