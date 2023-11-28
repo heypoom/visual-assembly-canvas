@@ -1,18 +1,16 @@
 pub mod actor;
 pub mod decode;
-pub mod event;
 pub mod execute;
-pub mod message;
 pub mod runtime_error;
 
 use crate::mem::{Memory, StackManager};
-use crate::{Op, ParseError, Parser, Register::FP, Registers, CALL_STACK_END, CALL_STACK_START};
+use crate::{CALL_STACK_END, CALL_STACK_START, Op, ParseError, Parser, Register::FP, Registers};
 
 pub use self::actor::Actor;
 pub use self::decode::Decode;
-pub use self::event::Event;
+pub use crate::canvas::event::Event;
 pub use self::execute::Execute;
-pub use self::message::{Action, Message};
+pub use crate::canvas::message::{Action, Message};
 pub use self::runtime_error::RuntimeError;
 
 #[derive(Debug, Clone, PartialEq)]

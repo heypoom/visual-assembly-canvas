@@ -172,6 +172,7 @@ impl Canvas {
             Clock { .. } => self.tick_clock_block(id, messages)?,
             MidiIn { .. } => self.tick_midi_in_block(id, messages)?,
             MidiOut { .. } => self.tick_midi_out_block(id, messages)?,
+            BlockData::Synth { .. } => self.tick_synth_block(id, messages)?,
             _ => {}
         }
 
@@ -214,6 +215,11 @@ impl Canvas {
             }
         }
 
+        Ok(())
+    }
+
+    pub fn tick_synth_block(&mut self, _id: u16, _messages: Vec<Message>) -> Errorable {
+        // TODO: implement synth block
         Ok(())
     }
 

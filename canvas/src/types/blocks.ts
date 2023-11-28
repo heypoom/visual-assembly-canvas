@@ -53,7 +53,7 @@ export interface MidiInProps extends BaseProps {
 
   port: number
 
-  /** Accept all channels if empty. Otherwise only accept filtered channels. */
+  /** Accept all channels if empty. Otherwise, only accept filtered channels. */
   channels: number[]
 }
 
@@ -62,4 +62,9 @@ export interface MidiOutProps extends BaseProps {
 
   port: number
   channel: number
+}
+
+export interface SynthProps extends BaseProps {
+  synth_id: number
+  mode: SynthMode
 }

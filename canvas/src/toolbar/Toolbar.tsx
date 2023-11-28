@@ -30,6 +30,7 @@ export function Toolbar() {
     "Plot",
     "MidiIn",
     "MidiOut",
+    "Synth",
   ]
 
   return (

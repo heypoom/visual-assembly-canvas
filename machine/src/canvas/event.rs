@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::audio::midi::{MidiOutputFormat};
+use crate::audio::synth::SynthTrigger;
 
 /// Events that can be sent by blocks and machines.
 /// This event can be considered a side effect that will be executed by the host.
@@ -16,6 +17,12 @@ pub enum Event {
         data: Vec<u8>,
         channel: u8,
         port: u8,
+    },
+
+    /// Triggers a synthesizer message.
+    Synth {
+        target: u16,
+        triggers: Vec<SynthTrigger>,
     },
 }
 
