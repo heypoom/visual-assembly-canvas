@@ -146,6 +146,8 @@ export class CanvasManager {
     // Wait for the audio context to be ready.
     await audioManager.ready()
 
+    this.cycle = 0
+    this.haltReason = null
     this.startMs = performance.now()
     this.hasMachines = this.nodes.some(is.machine)
 
@@ -177,31 +179,32 @@ export class CanvasManager {
     await this.prepareRun()
 
     while (this.shouldRunUntilPause || this.cycle < this.maxCycle) {
-      const ok = await this.stepWithChecks()
-      if (!ok) break
+      if (!this.detectHalt()) break
+
+      // Tick the canvas.
+      timed("run::step", () => this.step({ batch: true }), 1.1)
+
+      // Increment the cycle counter.
+      if (!this.shouldRunUntilPause) this.cycle++
+
+      // Add an artificial delay to allow the user to see the changes
+      // TODO: replace this with a proper scheduler
+      if (this.delayMs > 0) await delay(this.delayMs)
     }
 
     this.cleanupRun()
   }
 
-  async stepWithChecks() {
+  /** Check if we should halt the canvas. */
+  detectHalt() {
     // Execution is forced to pause by the user.
     if (this.haltIf(this.pause, "paused")) {
       this.pause = false
       return
     }
 
-    timed("run::step", () => this.step({ batch: true }), 1.1)
-
-    // Add an artificial delay to allow the user to see the changes
-    // TODO: replace this with a proper scheduler
-    if (this.delayMs > 0) await delay(this.delayMs)
-
-    // Halt detection - machine gracefully completes a run.
+    // If all machines are halted, we can stop running.
     if (this.haltIf(this.hasMachines && this.isHalted(), "halted")) return
-
-    // Hang detection. Detect infinite loops and deadlocks.
-    if (!this.shouldRunUntilPause) this.cycle++
 
     return true
   }
