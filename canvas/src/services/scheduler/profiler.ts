@@ -1,8 +1,6 @@
 import RingBuffer from "ringbufferjs"
 
-const MAX_LOGS = 100
-
-const [W, H] = [600, 200]
+const [W, H] = [200, 200]
 
 const colors: Record<string, string> = {
   canvas: "orange",
@@ -18,9 +16,9 @@ export class Profiler {
   enabled = true
   logs: Map<string, RingBuffer<number>> = new Map()
 
-  hide: Record<string, boolean> = {
-    highlight: true,
-  }
+  maxLogs = 100
+
+  hide: Record<string, boolean> = {}
 
   frame = 0
   requestFrameId = 0
@@ -41,10 +39,9 @@ export class Profiler {
     root.style.pointerEvents = "none"
     root.style.position = "fixed"
     root.style.display = "flex"
-    root.style.flexDirection = "column"
     root.style.bottom = "0"
     root.style.right = "0"
-    root.style.width = `${W / 2}px`
+    root.style.width = `100%`
     root.style.height = `${H / 2}px`
     document.body.appendChild(root)
 
@@ -53,7 +50,7 @@ export class Profiler {
   }
 
   log = (key: string, value: number) => {
-    if (!this.logs.has(key)) this.logs.set(key, new RingBuffer(MAX_LOGS))
+    if (!this.logs.has(key)) this.logs.set(key, new RingBuffer(this.maxLogs))
 
     this.logs.get(key)?.enq(value)
   }
@@ -78,6 +75,9 @@ export class Profiler {
   }
 
   addChart(name: string) {
+    if (!this.chartRoot) return
+    if (this.chartElements.has(name)) return
+
     const chart = document.createElement("canvas")
     chart.setAttribute("data-profiler-chart", "true")
     chart.setAttribute("data-profiler-name", name)
@@ -90,10 +90,12 @@ export class Profiler {
     this.chartElements.set(name, chart)
   }
 
-  draw(name: string) {
-    if (!this.chartElements.has(name)) this.addChart(name)
+  draw(key: string) {
+    if (this.hide[key]) return
 
-    const canvas = this.chartElements.get(name)
+    this.addChart(key)
+
+    const canvas = this.chartElements.get(key)
     if (!canvas) return
 
     const ctx = canvas.getContext("2d")
@@ -101,36 +103,31 @@ export class Profiler {
 
     ctx.clearRect(0, 0, W, H)
 
-    const keys = Array.from(this.logs.keys())
-    const max = Math.max(...keys.map((key) => this.logs.get(key)?.peek() ?? 0))
+    const color = colors[key] || "white"
 
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      if (this.hide[key]) continue
+    const log = this.logs.get(key)
+    if (!log) return
 
-      const color = colors[key] || "white"
+    const values = log.peekN(log.size())
+    const step = W / values.length
 
-      const log = this.logs.get(key)
-      if (!log) continue
+    let max = Math.max(...values) ?? 0
+    max = Math.min(max, 10)
 
-      const values = log.peekN(log.size())
-      const step = W / values.length
+    ctx.beginPath()
+    ctx.strokeStyle = color
+    ctx.lineWidth = 3
+    ctx.moveTo(0, H)
 
-      ctx.beginPath()
-      ctx.strokeStyle = color
-      ctx.lineWidth = 3
-      ctx.moveTo(0, H)
+    for (let j = 0; j < values.length; j++) {
+      const value = values[j]
+      const x = j * step
+      const y = H - (value / max) * H
 
-      for (let j = 0; j < values.length; j++) {
-        const value = values[j]
-        const x = j * step
-        const y = H - (value / max) * H
-
-        ctx.lineTo(x, y)
-      }
-
-      ctx.stroke()
+      ctx.lineTo(x, y)
     }
+
+    ctx.stroke()
   }
 
   start = () => {
@@ -142,7 +139,9 @@ export class Profiler {
   loop = () => {
     if (!this.enabled) return cancelAnimationFrame(this.requestFrameId)
 
-    if (this.frame % 20) this.draw("base")
+    if (this.frame % 20) {
+      for (const key of this.logs.keys()) this.draw(key)
+    }
 
     this.frame++
     this.requestFrameId = requestAnimationFrame(this.loop)
