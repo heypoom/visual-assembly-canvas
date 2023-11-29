@@ -217,7 +217,7 @@ impl Canvas {
     }
 
     pub fn generate_waveform(&mut self, waveform: Waveform, time: u16) -> u16 {
-        self.wavetable.generate(waveform, time)
+        self.wavetable.get(waveform, time)
     }
 
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
