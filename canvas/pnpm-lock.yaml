@@ -83,6 +83,9 @@ dependencies:
   reactflow:
     specifier: ^11.9.4
     version: 11.9.4(@types/react@18.2.33)(immer@10.0.3)(react-dom@18.2.0)(react@18.2.0)
+  ringbufferjs:
+    specifier: ^2.0.0
+    version: 2.0.0
   rollup:
     specifier: link:@lezer/generator/rollup
     version: link:@lezer/generator/rollup
@@ -112,6 +115,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18.2.14
     version: 18.2.14
+  '@types/ringbufferjs':
+    specifier: ^1.1.2
+    version: 1.1.2
   '@types/webmidi':
     specifier: ^2.0.10
     version: 2.0.10
@@ -2487,6 +2493,10 @@ packages:
       '@types/scheduler': 0.16.4
       csstype: 3.1.2
 
+  /@types/ringbufferjs@1.1.2:
+    resolution: {integrity: sha512-zajAIwjkbW9nkFFPfq+lyGU/aqvrZ/PXzTjSavUeZY5NSqX0xogfHKuhj1nN8kcvZ2159qNL3M5782lO4NkosQ==}
+    dev: true
+
   /@types/scheduler@0.16.4:
     resolution: {integrity: sha512-2L9ifAGl7wmXwP4v3pN4p2FLhD0O1qsJpvKmNin5VA8+UvNVb447UDaAEV6UdrkA+m/Xs58U1RFps44x6TFsVQ==}
 
@@ -4206,6 +4216,10 @@ packages:
     dependencies:
       glob: 7.2.3
     dev: true
+
+  /ringbufferjs@2.0.0:
+    resolution: {integrity: sha512-GCOqTzUsTHF7nrqcgtNGAFotXztLgiePpIDpyWZ7R5I02tmfJWV+/yuJc//Hlsd8G+WzI1t/dc2y/w2imDZdog==}
+    dev: false
 
   /rollup@3.29.4:
     resolution: {integrity: sha512-oWzmBZwvYrU0iJHtDmhsm662rC15FRXmcjCk1xD771dFDx5jJ02ufAQQTn0etB2emNk4J9EZg/yWKpsn9BWGRw==}

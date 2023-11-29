@@ -2,6 +2,7 @@ import { manager } from "../../core"
 import { audioManager } from "../audio/manager"
 
 import { $status } from "../../store/status"
+import { profiler } from "./profiler"
 
 const handlers = {
   start: async () => {
@@ -60,7 +61,8 @@ export class Scheduler {
 
   /** Schedule a task every n milliseconds. */
   private schedule(type: Updater, wait: number) {
-    const fn = updaters[type]
+    const fn = this.fn(type)
+
     this.timers[type] = setInterval(fn, wait)
   }
 
@@ -88,13 +90,26 @@ export class Scheduler {
     this.frame++
 
     // TODO: update different block types at different rates. some might not need 60FPS?
-    updaters.blocks()
+    this.update("blocks")
 
     // TODO: adaptive FPS based on canvas heuristics.
-    if (this.every(10)) updaters.machine()
-    if (this.every(20)) updaters.highlight()
+    if (this.every(10)) this.update("machine")
+    if (this.every(20)) this.update("highlight")
 
     this.frameRequestId = requestAnimationFrame(this.render)
+  }
+
+  private fn(type: Updater) {
+    const fn = updaters[type]
+    if (profiler.enabled) return profiler.spy(type, fn)
+
+    return fn
+  }
+
+  public update(type: Updater) {
+    const fn = this.fn(type)
+
+    return fn()
   }
 
   every(frame: number) {
