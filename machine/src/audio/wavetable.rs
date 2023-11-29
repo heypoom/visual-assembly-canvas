@@ -20,13 +20,12 @@ impl Wavetable {
                 }
             }
             None => {
-                self.cache.insert(waveform, vec![]);
+                self.cache.insert(waveform, vec![0; 256]);
             }
         }
 
-        let value = generate_waveform(waveform, time);
-
         let cache = self.cache.get_mut(&waveform).unwrap();
+        let value = generate_waveform(waveform, time);
         cache.insert(time as usize, value);
 
         value

@@ -50,6 +50,9 @@ export class Scheduler {
     // Start the run.
     await handlers.start()
 
+    this.schedule("canvas", 20)
+    this.schedule("effect", 20)
+
     // Begin requesting animation frame.
     this.frame = 0
     this.frameRequestId = requestAnimationFrame(this.render)
@@ -84,15 +87,7 @@ export class Scheduler {
     // Increment the frame counter.
     this.frame++
 
-    // Process side effects first.
-    // TODO: effect timing is now tied to the frame rate; this is not ideal...
-    if (this.every(4)) updaters.effect()
-
-    // TODO: canvas timing is now tied to the frame rate; this is not ideal...
-    // TODO: respect the "delay" setting.
-    updaters.canvas()
-
-    // TODO: update different block types at different rates. might not need 60FPS?
+    // TODO: update different block types at different rates. some might not need 60FPS?
     updaters.blocks()
 
     // TODO: adaptive FPS based on canvas heuristics.
