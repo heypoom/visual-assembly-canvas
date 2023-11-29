@@ -1,23 +1,22 @@
 import RingBuffer from "ringbufferjs"
 
-const [W, H] = [200, 200]
+const [W, H] = [200, 100]
 
 const colors: Record<string, string> = {
-  canvas: "orange",
-  effect: "lime",
-
-  blocks: "cyan",
-  machine: "pink",
-  highlight: "grey",
+  canvas: "#3DD68C",
+  effect: "#70B8FF",
+  blocks: "#FF92AD",
+  machine: "#B1A9FF",
+  highlight: "#FFFF57",
 }
 
 const ranges: Record<string, [number, number]> = {
-  canvas: [0.1, 1000],
-  effect: [0.1, 1000],
+  canvas: [0.1, 0.8],
+  effect: [0.1, 0.8],
 
-  blocks: [0.1, 1000],
-  machine: [0.1, 1000],
-  highlight: [0.1, 1000],
+  blocks: [0.1, 0.8],
+  machine: [0.1, 0.8],
+  highlight: [0.1, 0.8],
 }
 
 export class Profiler {
@@ -48,10 +47,10 @@ export class Profiler {
     root.style.pointerEvents = "none"
     root.style.position = "fixed"
     root.style.display = "flex"
+    root.style.alignItems = "flex-end"
     root.style.bottom = "0"
     root.style.right = "0"
     root.style.width = `100%`
-    root.style.height = `${H / 2}px`
     document.body.appendChild(root)
 
     this.chartRoot = root
@@ -112,22 +111,27 @@ export class Profiler {
 
     ctx.clearRect(0, 0, W, H)
 
-    const color = colors[key] || "white"
-
     const log = this.logs.get(key)
     if (!log) return
 
     const values = log.peekN(log.size())
     const step = W / values.length
 
-    const [defMin, defMax] = ranges[key] ?? [-Infinity, Infinity]
+    const [defMin, warnMax] = ranges[key] ?? [-Infinity, Infinity]
 
-    let max = Math.max(...values) ?? 0
-    max = Math.min(max, defMax)
+    const maxVal = Math.max(...values) ?? 0
+
+    const color = colors[key] || "white"
 
     ctx.beginPath()
     ctx.strokeStyle = color
     ctx.lineWidth = 3
+
+    if (maxVal > warnMax) {
+      ctx.strokeStyle = "#E54D2E"
+      ctx.lineWidth = 4
+    }
+
     ctx.moveTo(0, H)
 
     for (let j = 0; j < values.length; j++) {
@@ -135,7 +139,7 @@ export class Profiler {
       if (value < defMin) value = defMin
 
       const x = j * step
-      const y = H - (value / max) * H
+      const y = H - ((value - defMin) / warnMax) * H
 
       ctx.lineTo(x, y)
     }
