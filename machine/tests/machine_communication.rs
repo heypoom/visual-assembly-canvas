@@ -102,11 +102,11 @@ mod machine_communication_tests {
         c.load_program(0, src_1)?;
         c.seq.ready();
 
-        c.tick()?;
-        c.tick()?;
+        c.tick(1)?;
+        c.tick(1)?;
         assert_eq!(c.seq.statuses.get(&0), Some(&Running));
 
-        c.tick()?;
+        c.tick(1)?;
         assert_eq!(c.seq.statuses.get(&0), Some(&Halted));
 
         Ok(())

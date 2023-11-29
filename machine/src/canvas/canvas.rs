@@ -157,18 +157,23 @@ impl Canvas {
         self.blocks.iter_mut().find(|b| b.id == id).ok_or(BlockNotFound { id })
     }
 
-    pub fn tick(&mut self) -> Errorable {
+    pub fn tick(&mut self, count: u16) -> Errorable {
         let ids: Vec<u16> = self.blocks.iter().map(|b| b.id).collect();
 
-        self.route_messages()?;
+        for _ in 0..count {
+            // Collect the messages, and route them to their destination blocks.
+            self.route_messages()?;
 
-        for id in ids {
-            self.tick_block(id)?
-        }
+            // Tick each block.
+            for id in ids.clone() {
+                self.tick_block(id)?
+            }
 
-        if !self.seq.is_halted() {
             // Tick the machine sequencer.
-            self.seq.step(self.machine_cycle_per_tick).map_err(|cause| MachineError { cause })?;
+            if !self.seq.is_halted() {
+                self.seq.step(self.machine_cycle_per_tick)
+                    .map_err(|cause| MachineError { cause: cause.clone() })?;
+            }
         }
 
         Ok(())
@@ -466,10 +471,10 @@ impl Canvas {
 
         for _ in 1..1000 {
             if self.seq.is_halted() { break; }
-            self.tick()?;
+            self.tick(1)?;
         }
 
-        self.tick()?;
+        self.tick(1)?;
 
         Ok(())
     }

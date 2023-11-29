@@ -89,9 +89,7 @@ mod canvas_tests {
         c.connect(port(0, 0), port(1, 0))?;
         c.seq.ready();
 
-        for _ in 0..32 {
-            c.tick()?;
-        }
+        c.tick(32)?;
 
         assert_eq!(c.blocks[1].data, Plot { values: vec![2, 2, 2, 2, 2], size: 5 });
 
@@ -105,13 +103,13 @@ mod canvas_tests {
         c.add_block(Plot { values: vec![], size: 5 })?;
         c.connect(port(0, 0), port(1, 0))?;
 
-        c.tick()?;
+        c.tick(1)?;
 
         if let Clock { time } = c.blocks[0].data {
             assert_eq!(time, 251);
         }
 
-        for _ in 0..10 { c.tick()?; }
+        c.tick(10)?;
 
         if let Clock { time } = c.blocks[0].data {
             assert_eq!(time, 6);

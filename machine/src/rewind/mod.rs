@@ -163,7 +163,7 @@ mod rewind_tests {
         c.seq.ready();
         r.save(&c);
 
-        c.tick()?;
+        c.tick(1)?;
         r.save(&c);
 
         c.add_machine()?;
