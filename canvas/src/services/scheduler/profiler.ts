@@ -124,7 +124,7 @@ export class Profiler {
   loop = () => {
     if (!this.enabled) return cancelAnimationFrame(this.requestFrameId)
 
-    if (this.frame % 5) this.draw("base")
+    if (this.frame % 20) this.draw("base")
 
     this.frame++
     this.requestFrameId = requestAnimationFrame(this.loop)
