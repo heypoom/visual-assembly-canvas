@@ -1,18 +1,19 @@
 import { useStore } from "@nanostores/react"
 import { LapTimerIcon } from "@radix-ui/react-icons"
 import { Dialog, Button, Flex, TextField } from "@radix-ui/themes"
-import { $delay } from "../store/canvas"
 import { useState } from "react"
 
+import { $clock } from "../store/clock"
+
 export const SetDelayButton = () => {
-  const currDelay = useStore($delay)
-  const [delay, setDelay] = useState(currDelay.toString())
+  const clock = useStore($clock)
+  const [delay, setDelay] = useState(clock.delay.toString())
 
   const update = () => {
     const delayMs = parseInt(delay)
     if (isNaN(delayMs)) return
 
-    $delay.set(delayMs)
+    $clock.setKey("delay", delayMs)
   }
 
   return (
@@ -20,7 +21,7 @@ export const SetDelayButton = () => {
       <Dialog.Trigger>
         <Button color="gray" variant="soft" className="font-semibold">
           <LapTimerIcon />
-          {currDelay === 0 ? "Delay" : `${currDelay}ms`}
+          {clock.delay === 0 ? "Delay" : `${clock.delay}ms`}
         </Button>
       </Dialog.Trigger>
 
@@ -39,7 +40,11 @@ export const SetDelayButton = () => {
 
         <Flex gap="3" mt="4" justify="end">
           <Dialog.Close>
-            <Button variant="soft" color="green" onClick={() => $delay.set(0)}>
+            <Button
+              variant="soft"
+              color="green"
+              onClick={() => $clock.setKey("delay", 0)}
+            >
               Remove Delay
             </Button>
           </Dialog.Close>

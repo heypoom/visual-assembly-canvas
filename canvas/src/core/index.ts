@@ -21,7 +21,7 @@ import {
 import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 
-import { $delay } from "../store/canvas"
+import { $clock } from "../store/clock"
 import { isBlock as is } from "../canvas/blocks"
 import { syncBlockData } from "../store/blocks"
 import { midiManager } from "../services/midi"
@@ -29,7 +29,6 @@ import { processMidiEvent } from "../services/midi/event"
 import { Effect } from "../types/effects"
 import { Action } from "../types/actions"
 import { processSynthEffect } from "../services/audio/process-synth"
-import { scheduler } from "../services/scheduler"
 
 const machineError = (cause: MachineError): CanvasError => ({
   MachineError: { cause },
@@ -43,31 +42,40 @@ type HighlightMaps = Map<number, Map<number, number>>
 type HaltReason = "cycle" | "halted"
 
 export class CanvasManager {
-  ctx: Controller | null = null
-
-  cycle = 0
+  public ctx: Controller | null = null
 
   /** What is the limit on number of cycles? This prevents crashes. */
-  maxCycle = 200
+  public maxCycle = 200
+
+  private cycle = 0
 
   /** Is every machine ready to run? */
-  ready = false
+  private ready = false
 
   /** Why did the machine last halt? */
-  haltReason: HaltReason | null = null
+  public haltReason: HaltReason | null = null
 
-  sources: Map<number, string> = new Map()
-  highlighters: Map<number, HighlighterFn> = new Map()
-  highlightMaps: HighlightMaps = new Map()
+  private sources: Map<number, string> = new Map()
+  private highlighters: Map<number, HighlighterFn> = new Map()
+  private highlightMaps: HighlightMaps = new Map()
 
-  startMs = 0
-  hasMachines = false
-  hasProducers = false
+  // Does the canvas contain machines or producers?
+  private hasMachines = false
+  private hasProducers = false
 
   /** Should the canvas be ticked continuously? */
-  continuous = false
+  private continuous = false
 
-  async setup() {
+  public setMachineSpeed(cycles: number) {
+    this.ctx?.set_machine_clock_speed(cycles)
+    $clock.setKey("machine", cycles)
+  }
+
+  public setCanvasSpeed(cycles: number) {
+    $clock.setKey("canvas", cycles)
+  }
+
+  public async setup() {
     // Initialize the WebAssembly module.
     await setup()
 
@@ -122,8 +130,6 @@ export class CanvasManager {
    * Initialize run variables when the run starts.
    **/
   public onRunStart() {
-    this.startMs = performance.now()
-
     // Reset the cycle counter.
     this.cycle = 0
     this.haltReason = null
@@ -131,7 +137,7 @@ export class CanvasManager {
     // Introspect the current state of the canvas.
     this.hasMachines = this.nodes.some(is.machine)
     this.hasProducers = this.nodes.some(is.producer)
-    this.continuous = $delay.get() > 0 && this.hasProducers
+    this.continuous = $clock.get().delay > 0 && this.hasProducers
 
     // Disable the watchdog if we have interactors, e.g., tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
@@ -139,6 +145,10 @@ export class CanvasManager {
 
     // Prepare for the next run.
     this.prepare()
+  }
+
+  get clockSpeed() {
+    return $clock.get()
   }
 
   /**
@@ -159,7 +169,7 @@ export class CanvasManager {
   }
 
   /** Tick the canvas. */
-  public tickOnce() {
+  public tick() {
     if (!this.continuous && this.cycle >= this.maxCycle) return
     if (this.shouldHalt()) return
 
@@ -242,9 +252,9 @@ export class CanvasManager {
     syncMachineState(this)
   }
 
-  private step() {
+  private step(count = this.clockSpeed.canvas) {
     try {
-      this.ctx?.step()
+      this.ctx?.step(count)
     } catch (error) {
       this.detectCanvasError(error)
     }

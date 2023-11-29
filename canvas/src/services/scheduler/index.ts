@@ -2,14 +2,12 @@ import { manager } from "../../core"
 import { audioManager } from "../audio/manager"
 
 import { $status } from "../../store/status"
-import { $delay } from "../../store/canvas"
 
 const handlers = {
   start: async () => {
     await audioManager.ready()
     manager.onRunStart()
   },
-
   stop: async () => {
     manager.onRunCleanup()
   },
@@ -17,8 +15,7 @@ const handlers = {
 
 const updaters = {
   canvas() {
-    // TODO: implement tickBatch() to the WebAssembly API to batch ticks for performance in large programs.
-    const ok = manager.tickOnce()
+    const ok = manager.tick()
     if (!ok) scheduler.pause()
   },
 
@@ -35,14 +32,9 @@ type Timer = ReturnType<typeof setTimeout>
 export class Scheduler {
   /** Request ID of the current animation frame. */
   frameRequestId = 0
-
   frame = 0
 
   timers: Partial<Record<Updater, Timer | null>> = {}
-
-  constructor() {
-    this.setup().then()
-  }
 
   get running() {
     return $status.value?.running ?? false
@@ -51,8 +43,6 @@ export class Scheduler {
   set running(value: boolean) {
     $status.setKey("running", value)
   }
-
-  async setup() {}
 
   public start = async () => {
     this.running = true
@@ -65,9 +55,10 @@ export class Scheduler {
     this.frameRequestId = requestAnimationFrame(this.render)
   }
 
-  private loop(type: Updater, delay: number) {
+  /** Schedule a task every n milliseconds. */
+  private schedule(type: Updater, wait: number) {
     const fn = updaters[type]
-    this.timers[type] = setInterval(fn, delay)
+    this.timers[type] = setInterval(fn, wait)
   }
 
   private clearTimers(...updaters: Updater[]) {
