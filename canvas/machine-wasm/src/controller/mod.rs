@@ -2,7 +2,7 @@ use machine::canvas::block::BlockData;
 use machine::canvas::wire::Port;
 use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};
-use machine::{Event, Message};
+use machine::Event;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
@@ -191,6 +191,14 @@ impl Controller {
 
     pub fn set_await_watchdog(&mut self, state: bool) {
         self.canvas.set_await_watchdog(state)
+    }
+
+    pub fn get_machine_queue_counts(&mut self, id: u16) -> Return {
+        let Some(m) = self.canvas.seq.get(id) else {
+            return Ok(NULL);
+        };
+
+        Ok(to_value(&[m.inbox.len(), m.outbox.len()])?)
     }
 }
 
