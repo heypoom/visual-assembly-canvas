@@ -236,8 +236,11 @@ export class CanvasManager {
   public stepOnce = () => {
     this.halted = false
 
+    // Prepare for this run.
     this.prepare()
-    this.step()
+
+    // Step the canvas once.
+    this.step(1)
 
     // Perform effects and updates immediately after stepping.
     this.performSideEffects()
@@ -245,6 +248,7 @@ export class CanvasManager {
     this.highlight()
     this.syncBlocks()
 
+    // If the current run is complete, cleanup.
     if (this.isHalted) this.reloadMachines()
   }
 
