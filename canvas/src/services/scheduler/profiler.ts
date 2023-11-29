@@ -4,10 +4,23 @@ const MAX_LOGS = 100
 
 const [W, H] = [600, 200]
 
+const colors: Record<string, string> = {
+  canvas: "orange",
+  effect: "lime",
+
+  blocks: "cyan",
+  machine: "pink",
+  highlight: "teal",
+}
+
 export class Profiler {
   ready = false
   enabled = true
   logs: Map<string, RingBuffer<number>> = new Map()
+
+  hide: Record<string, boolean> = {
+    highlight: true,
+  }
 
   frame = 0
   requestFrameId = 0
@@ -93,6 +106,10 @@ export class Profiler {
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
+      if (this.hide[key]) continue
+
+      const color = colors[key] || "white"
+
       const log = this.logs.get(key)
       if (!log) continue
 
@@ -100,7 +117,8 @@ export class Profiler {
       const step = W / values.length
 
       ctx.beginPath()
-      ctx.strokeStyle = `hsl(${i * 30}, 100%, 50%)`
+      ctx.strokeStyle = color
+      ctx.lineWidth = 3
       ctx.moveTo(0, H)
 
       for (let j = 0; j < values.length; j++) {
