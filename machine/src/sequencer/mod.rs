@@ -93,9 +93,9 @@ impl Sequencer {
         }
     }
 
-    /// Step once for all machines.
+    /// Step a number of times for all machines.
     /// Messages must be routed before this method is called.
-    pub fn step(&mut self) -> Errorable {
+    pub fn step(&mut self, count: u16) -> Errorable {
         for machine in &mut self.machines {
             let Some(id) = machine.id else { continue; };
             let statuses = self.statuses.clone();
@@ -113,9 +113,12 @@ impl Sequencer {
             // Before each instruction cycle, we collect and process the messages sequentially.
             machine.receive_messages().map_err(|error| ReceiveFailed { error: error.into() })?;
 
+            // If a message is received, we resume the machine's execution.
+            // Otherwise, we suspend the machine's execution until subsequent cycles.
             if status == Awaiting {
                 // Do not tick the machine if the still did not receive the message.
                 if machine.expected_receives > 0 {
+                    // Watchdog prevents the `receive` instruction from blocking forever.
                     if self.await_watchdog {
                         // Raise an error if all peers are halted.
                         if self.await_watchdog_counter == 0 {
@@ -123,7 +126,7 @@ impl Sequencer {
                             return Err(MessageNeverReceived { id });
                         }
 
-                        // Reduce the watchdog counter
+                        // Decrement the watchdog counter
                         if peers_halted(statuses.clone(), id) {
                             self.await_watchdog_counter -= 1;
                         }
@@ -141,22 +144,26 @@ impl Sequencer {
                 self.statuses.insert(id, Running);
             }
 
-            // Execute the instruction.
-            machine.tick().map_err(|error| {
-                self.statuses.insert(id, Errored);
-                ExecutionFailed { id, error: error.into() }
-            })?;
+            for _ in 0..count {
+                // Execute the instruction.
+                machine.tick().map_err(|error| {
+                    self.statuses.insert(id, Errored);
+                    ExecutionFailed { id, error: error.into() }
+                })?;
 
-            // Pause execution until subsequent cycles
-            // if the machine is awaiting for messages.
-            if machine.expected_receives > 0 {
-                self.statuses.insert(id, Awaiting);
-                continue;
-            }
+                // If the last instruction is a `receive`,
+                // we suspend the machine's execution until subsequent cycles,
+                // until the machine receives a message.
+                if machine.expected_receives > 0 {
+                    self.statuses.insert(id, Awaiting);
+                    break;
+                }
 
-            // Halt the machine if we reached the end of the program.
-            if machine.should_halt() {
-                self.statuses.insert(id, Halted);
+                // Halt the machine if we reached the end of the program.
+                if machine.should_halt() {
+                    self.statuses.insert(id, Halted);
+                    break;
+                }
             }
         }
 

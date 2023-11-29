@@ -25,6 +25,9 @@ pub struct Canvas {
 
     block_id_counter: u16,
     wire_id_counter: u16,
+
+    /// How many cycles should the machine run per tick? i.e. their clock speed.
+    pub machine_cycle_per_tick: u16,
 }
 
 impl Canvas {
@@ -36,6 +39,8 @@ impl Canvas {
 
             block_id_counter: 0,
             wire_id_counter: 0,
+
+            machine_cycle_per_tick: 1,
         }
     }
 
@@ -43,6 +48,11 @@ impl Canvas {
         let id = self.block_id_counter;
         self.block_id_counter += 1;
         id
+    }
+
+    /// Set the machine's clock speed, in cycles per tick.
+    pub fn set_machine_clock_speed(&mut self, cycle_per_tick: u16) {
+        self.machine_cycle_per_tick = cycle_per_tick;
     }
 
     pub fn remove_block(&mut self, id: u16) -> Errorable {
@@ -157,7 +167,8 @@ impl Canvas {
         }
 
         if !self.seq.is_halted() {
-            self.seq.step().map_err(|cause| MachineError { cause })?;
+            // Tick the machine sequencer.
+            self.seq.step(self.machine_cycle_per_tick).map_err(|cause| MachineError { cause })?;
         }
 
         Ok(())
