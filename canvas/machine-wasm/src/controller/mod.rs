@@ -27,7 +27,6 @@ pub struct InspectRegister {
 pub struct InspectState {
     pub stack: Vec<u16>,
     pub events: Vec<Event>,
-    pub inbox: Vec<Message>,
     pub registers: InspectRegister,
 }
 
@@ -134,7 +133,6 @@ impl Controller {
 
         let state = InspectState {
             events: m.events.clone(),
-            inbox: m.inbox.clone(),
             stack: m.mem.read_stack(10),
             registers: InspectRegister {
                 pc: m.reg.get(PC),

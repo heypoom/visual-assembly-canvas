@@ -40,10 +40,12 @@ export const syncMachineState = action(
       if (node.type !== "Machine") continue
 
       const { id } = node.data
+
       const events = manager.ctx?.consume_machine_side_effects(id)
+      const inspected = manager.inspect(id)
 
       const curr = output[id]
-      const next = toState({ ...manager.inspect(id), events })
+      const next = toState({ ...inspected, events })
 
       // Preserve parse errors between steps, but discard cycle errors.
       const error =
