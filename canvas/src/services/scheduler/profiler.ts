@@ -8,7 +8,16 @@ const colors: Record<string, string> = {
 
   blocks: "cyan",
   machine: "pink",
-  highlight: "teal",
+  highlight: "grey",
+}
+
+const ranges: Record<string, [number, number]> = {
+  canvas: [0.1, 1000],
+  effect: [0.1, 1000],
+
+  blocks: [0.1, 1000],
+  machine: [0.1, 1000],
+  highlight: [0.1, 1000],
 }
 
 export class Profiler {
@@ -111,8 +120,10 @@ export class Profiler {
     const values = log.peekN(log.size())
     const step = W / values.length
 
+    const [defMin, defMax] = ranges[key] ?? [-Infinity, Infinity]
+
     let max = Math.max(...values) ?? 0
-    max = Math.min(max, 10)
+    max = Math.min(max, defMax)
 
     ctx.beginPath()
     ctx.strokeStyle = color
@@ -120,7 +131,9 @@ export class Profiler {
     ctx.moveTo(0, H)
 
     for (let j = 0; j < values.length; j++) {
-      const value = values[j]
+      let value = values[j]
+      if (value < defMin) value = defMin
+
       const x = j * step
       const y = H - (value / max) * H
 
@@ -149,6 +162,17 @@ export class Profiler {
 
   stop = () => {
     cancelAnimationFrame(this.requestFrameId)
+  }
+
+  public getCurrentMax() {
+    const entries = [...this.logs.entries()].map(([key, log]) => {
+      const values = log.peekN(log.size())
+      const max = Math.max(...values)
+
+      return [key, max]
+    })
+
+    return Object.fromEntries(entries)
   }
 }
 
