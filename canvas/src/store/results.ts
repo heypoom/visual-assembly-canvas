@@ -34,8 +34,11 @@ export const syncMachineState = action(
   "sync machine state",
   (store, manager: CanvasManager) => {
     const output = store.get()
+    const nodes = $nodes.get()
 
-    $nodes.get().forEach((node) => {
+    for (const node of nodes) {
+      if (node.type !== "Machine") continue
+
       const { id } = node.data
       const events = manager.ctx?.consume_machine_side_effects(id)
 
@@ -53,7 +56,7 @@ export const syncMachineState = action(
         // Preserve logs between steps.
         logs: [...(curr?.logs ?? []), ...next.logs],
       })
-    })
+    }
   },
 )
 
