@@ -86,11 +86,13 @@ export class Scheduler {
     // Abort the render loop if the scheduler is not running.
     if (!this.running) return cancelAnimationFrame(this.frameRequestId)
 
+    // Update blocks first!
+    this.update("blocks")
+
     // TODO: update different block types at different rates. some might not need 60FPS?
     // TODO: adaptive FPS based on canvas heuristics.
+    if (this.every(40)) this.update("machine")
     if (this.every(20)) this.update("highlight")
-    else if (this.every(10)) this.update("machine")
-    else this.update("blocks")
 
     // Increment the frame counter.
     this.frame++
