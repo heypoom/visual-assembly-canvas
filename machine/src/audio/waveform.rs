@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 use serde::{Deserialize, Serialize};
 
 /// Types of waveforms the oscillator can produce.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Hash)]
 pub enum Waveform {
     Sine,
     Cosine,

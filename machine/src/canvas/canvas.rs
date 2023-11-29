@@ -4,7 +4,7 @@ use crate::canvas::block::BlockData::{Clock, Machine, MidiIn, MidiOut, Osc, Pixe
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Event, Message, Sequencer};
 use crate::audio::midi::{MidiOutputFormat};
-use crate::audio::waveform::generate_waveform;
+use crate::audio::wavetable::Wavetable;
 use crate::canvas::{BlockIdInUseSnafu};
 use crate::canvas::CanvasError::{CannotFindWire};
 use crate::canvas::PixelMode::{Append, Command, Replace};
@@ -14,6 +14,7 @@ use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, Mac
 use super::wire::{Port, port, Wire};
 use crate::audio::synth::{note_to_freq};
 use crate::audio::synth::SynthTrigger::AttackRelease;
+use crate::audio::waveform::Waveform;
 
 type Errorable = Result<(), CanvasError>;
 
@@ -21,7 +22,9 @@ type Errorable = Result<(), CanvasError>;
 pub struct Canvas {
     pub blocks: Vec<Block>,
     pub wires: Vec<Wire>,
+
     pub seq: Sequencer,
+    pub wavetable: Wavetable,
 
     block_id_counter: u16,
     wire_id_counter: u16,
@@ -35,7 +38,9 @@ impl Canvas {
         Canvas {
             blocks: vec![],
             wires: vec![],
+
             seq: Sequencer::new(),
+            wavetable: Wavetable::new(),
 
             block_id_counter: 0,
             wire_id_counter: 0,
@@ -211,6 +216,10 @@ impl Canvas {
         Ok(())
     }
 
+    pub fn generate_waveform(&mut self, waveform: Waveform, time: u16) -> u16 {
+        self.wavetable.generate(waveform, time)
+    }
+
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         for message in &messages {
             match &message.action {
@@ -220,13 +229,21 @@ impl Canvas {
                     };
                 }
                 Action::Data { body } => {
-                    if let Osc { waveform } = &self.get_block(id)?.data {
-                        // Generate the waveform values out of the given input values, between (0 - 255).
-                        let values: Vec<u16> = body.iter().map(|v| generate_waveform(*waveform, *v)).collect();
+                    let mut waveform = Waveform::Sine;
 
-                        // Send the waveform values to the connected blocks.
-                        self.send_data_to_sinks(id, values)?;
+                    if let Osc { waveform: wf } = &self.get_block(id)?.data {
+                        waveform = wf.clone();
                     }
+
+                    // Generate the waveform values out of the given input values, between (0 - 255).
+                    let mut values: Vec<u16> = vec![];
+
+                    for v in body {
+                        values.push(self.generate_waveform(waveform, *v));
+                    }
+
+                    // Send the waveform values to the connected blocks.
+                    self.send_data_to_sinks(id, values)?;
                 }
 
                 _ => {}
