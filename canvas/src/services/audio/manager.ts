@@ -40,7 +40,6 @@ export class AudioManager {
 
   attackRelease(id: number, config: AttackReleaseConfig) {
     const synth = this.synths.get(id)
-    console.log(id, config)
 
     if (!synth) return
 
