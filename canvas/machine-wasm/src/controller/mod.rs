@@ -111,8 +111,8 @@ impl Controller {
         self.canvas.seq.ready()
     }
 
-    pub fn step(&mut self) -> Return {
-        returns(self.canvas.tick())
+    pub fn step(&mut self, count: u16) -> Return {
+        returns(self.canvas.tick(count))
     }
 
     pub fn run(&mut self) -> Return {
@@ -162,6 +162,10 @@ impl Controller {
     /// Allows the frontend to consume events from the blocks.
     pub fn consume_block_side_effects(&mut self) -> Return {
         Ok(to_value(&self.canvas.consume_block_side_effects())?)
+    }
+
+    pub fn set_machine_clock_speed(&mut self, cycle_per_tick: u16) {
+        self.canvas.set_machine_clock_speed(cycle_per_tick)
     }
 
     pub fn send_message(&mut self, message: JsValue) -> Return {
