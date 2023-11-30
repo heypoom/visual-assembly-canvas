@@ -126,6 +126,13 @@ export class Scheduler {
   every(frame: number) {
     return this.frame % frame === 0
   }
+
+  public restart() {
+    if (scheduler.running) {
+      scheduler.pause()
+      scheduler.start().then()
+    }
+  }
 }
 
 export const scheduler = new Scheduler()

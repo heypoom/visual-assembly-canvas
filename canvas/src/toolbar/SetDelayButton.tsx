@@ -4,6 +4,7 @@ import { Dialog, Button, Flex, TextField } from "@radix-ui/themes"
 import { useState } from "react"
 
 import { $clock } from "../store/clock"
+import { scheduler } from "../services/scheduler"
 
 export const SetDelayButton = () => {
   const clock = useStore($clock)
@@ -14,6 +15,9 @@ export const SetDelayButton = () => {
     if (isNaN(delayMs)) return
 
     $clock.setKey("canvasMs", delayMs)
+
+    // Restart the scheduler if it's running
+    scheduler.restart()
   }
 
   return (
@@ -39,16 +43,6 @@ export const SetDelayButton = () => {
         </Flex>
 
         <Flex gap="3" mt="4" justify="end">
-          <Dialog.Close>
-            <Button
-              variant="soft"
-              color="green"
-              onClick={() => $clock.setKey("canvasMs", 0)}
-            >
-              Remove Delay
-            </Button>
-          </Dialog.Close>
-
           <Dialog.Close>
             <Button onClick={update}>Set Delay</Button>
           </Dialog.Close>
