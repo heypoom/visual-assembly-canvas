@@ -108,6 +108,7 @@ export function SlashCommand() {
                 key={preview.prefix}
                 className={cn(
                   "flex items-center justify-between gap-x-2 px-4 py-[3px]",
+                  preview.destructive && "text-red-11",
                   selected === i && "text-green-11 bg-gray-3",
                 )}
               >

@@ -20,15 +20,12 @@ interface Command {
   name: string
   prefix: string
   action?: CommandAction
+  destructive?: boolean
 }
 
 const commands: Command[] = [
   {
-    name: "Clear All",
-    prefix: "clear_all",
-  },
-  {
-    name: "Run",
+    name: "Run / Pause",
     prefix: "run",
   },
   {
@@ -53,13 +50,31 @@ blocks.forEach((block) => {
   })
 })
 
+commands.push({
+  name: "Clear All",
+  prefix: "clear_all",
+  destructive: true,
+})
+
 export const getMatchedCommands = (input: string): Command[] => {
   input = input.replace(/^\//, "").toLowerCase()
 
   const matches: Command[] = []
+  const found: Record<string, boolean> = {}
 
+  // Pass 1: match by prefix
   for (const command of commands) {
     if (command.prefix.startsWith(input)) {
+      found[command.prefix] = true
+      matches.push(command)
+    }
+  }
+
+  // Pass 2: fuzzy match by name
+  for (const command of commands) {
+    if (found[command.prefix]) continue
+
+    if (command.name.toLowerCase().includes(input)) {
       matches.push(command)
     }
   }
@@ -67,31 +82,17 @@ export const getMatchedCommands = (input: string): Command[] => {
   return matches
 }
 
-const createCommandRunner =
-  (context: Context) =>
-  (command: Command, options?: Options): boolean => {
-    if (command.action?.type === "add_block") {
-      addBlock(command.action.block, options)
-      return true
-    }
+const createCommandRunner = (context: Context) => {
+  const actions: Record<string, () => void> = {
+    reset: () => engine.reset(),
+    step: () => engine.stepOnce(),
 
-    if (command.prefix === "clear_all") {
+    clear_all() {
       context.clearAll()
       localStorage.removeItem(STORAGE_KEY)
-      return true
-    }
+    },
 
-    if (command.prefix === "reset") {
-      engine.reset()
-      return true
-    }
-
-    if (command.prefix === "step") {
-      engine.stepOnce()
-      return true
-    }
-
-    if (command.prefix === "run") {
+    run() {
       const running = $status.get().running
 
       if (running) {
@@ -99,12 +100,23 @@ const createCommandRunner =
       } else {
         scheduler.start().then()
       }
+    },
+  }
 
+  return (command: Command, options?: Options): boolean => {
+    if (command.action?.type === "add_block") {
+      addBlock(command.action.block, options)
       return true
     }
 
-    return false
+    // Match by prefix
+    const action = actions[command.prefix]
+    if (!action) return false
+
+    action()
+    return true
   }
+}
 
 export function useCommandRunner() {
   const { clear } = useSaveState()
