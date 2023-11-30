@@ -200,6 +200,10 @@ impl Controller {
 
         Ok(to_value(&[m.inbox.len(), m.outbox.len()])?)
     }
+
+    pub fn serialize(&self) -> Return {
+        Ok(to_value(&self.canvas)?)
+    }
 }
 
 #[cfg(test)]

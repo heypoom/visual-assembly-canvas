@@ -378,4 +378,4 @@ await engine.setup()
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-window.manager = engine
+window.engine = engine
