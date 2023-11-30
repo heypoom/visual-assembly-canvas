@@ -1,5 +1,5 @@
 import { BlockNode } from "../types/Node"
-import { isBlock } from "../canvas/blocks"
+import { isBlock } from "../blocks"
 import { audioManager } from "../services/audio/manager"
 
 export function setupBlock(block: BlockNode) {

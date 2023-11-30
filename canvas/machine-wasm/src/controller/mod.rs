@@ -16,7 +16,7 @@ pub struct Controller {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct InspectRegister {
+pub struct InspectedRegister {
     pc: u16,
     sp: u16,
     fp: u16,
@@ -24,10 +24,10 @@ pub struct InspectRegister {
 
 /// Machine state returned by the inspection function.
 #[derive(Serialize, Deserialize)]
-pub struct InspectState {
+pub struct InspectedMachine {
     pub stack: Vec<u16>,
     pub events: Vec<Event>,
-    pub registers: InspectRegister,
+    pub registers: InspectedRegister,
 
     pub inbox_size: usize,
     pub outbox_size: usize,
@@ -129,15 +129,15 @@ impl Controller {
         self.canvas.seq.is_halted()
     }
 
-    pub fn inspect(&mut self, id: u16) -> Return {
+    pub fn inspect_machine(&mut self, id: u16) -> Return {
         let Some(m) = self.canvas.seq.get_mut(id) else {
             return Ok(NULL);
         };
 
-        let state = InspectState {
+        let state = InspectedMachine {
             events: m.events.clone(),
             stack: m.mem.read_stack(10),
-            registers: InspectRegister {
+            registers: InspectedRegister {
                 pc: m.reg.get(PC),
                 sp: m.reg.get(SP),
                 fp: m.reg.get(FP),

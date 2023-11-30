@@ -2,7 +2,7 @@ import { useStore } from "@nanostores/react"
 
 import { ErrorIndicator } from "./ErrorIndicator"
 
-import { $output } from "../../../store/results"
+import { $output } from "../../store/results"
 
 interface Props {
   id: number
@@ -50,6 +50,18 @@ export const MachineValueViewer = (props: Props) => {
           <div>
             <span>ID</span> <strong>{id}</strong>
           </div>
+
+          {state.inboxSize > 0 && (
+            <div>
+              <span>IB</span> <strong>{state.inboxSize}</strong>
+            </div>
+          )}
+
+          {state.outboxSize > 0 && (
+            <div>
+              <span>OB</span> <strong>{state.outboxSize}</strong>
+            </div>
+          )}
         </div>
       )}
 

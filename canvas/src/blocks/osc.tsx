@@ -1,13 +1,13 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
-import { OscProps } from "../../types/blocks"
-import { engine } from "../../engine"
+import { OscProps } from "../types/blocks"
+import { engine } from "../engine"
 import { Select, TextField } from "@radix-ui/themes"
 
-import { RightClickMenu } from "../components/RightClickMenu"
+import { RightClickMenu } from "../canvas/components/RightClickMenu"
 import { useReducer, useState } from "react"
-import { updateNodeData } from "../../store/blocks"
-import { WaveformKey, Waveform } from "../../types/waveform"
+import { updateNodeData } from "../store/blocks"
+import { WaveformKey, Waveform } from "../types/waveform"
 
 const S0 = 0
 const S1 = 1

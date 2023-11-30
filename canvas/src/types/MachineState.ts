@@ -5,6 +5,9 @@ export interface MachineState {
   stack: number[]
   logs: string[]
   registers: { pc: number; sp: number; fp: number }
+
+  inboxSize: number
+  outboxSize: number
 }
 
 export type MachineStates = Record<number, MachineState>

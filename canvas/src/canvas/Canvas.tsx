@@ -6,7 +6,7 @@ import "reactflow/dist/style.css"
 
 import { $edges, $nodes } from "../store/nodes"
 
-import { nodeTypes } from "./blocks"
+import { nodeTypes } from "../blocks"
 
 import {
   onConnect,

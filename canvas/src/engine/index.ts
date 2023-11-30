@@ -22,7 +22,7 @@ import { InspectionState } from "../types/MachineEvent"
 import { $status } from "../store/status"
 
 import { $clock } from "../store/clock"
-import { isBlock as is } from "../canvas/blocks"
+import { isBlock as is } from "../blocks"
 import { syncBlockData } from "../store/blocks"
 import { midiManager } from "../services/midi"
 import { processMidiEvent } from "../services/midi/event"
@@ -103,7 +103,7 @@ export class CanvasEngine {
   }
 
   public inspect(id: number): InspectionState {
-    return this.ctx?.inspect(id)
+    return this.ctx?.inspect_machine(id)
   }
 
   private prepare = () => {

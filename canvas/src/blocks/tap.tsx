@@ -1,14 +1,14 @@
 import { Handle, NodeProps, Position } from "reactflow"
-import { engine } from "../../engine"
+import { engine } from "../engine"
 import { Port } from "machine-wasm"
-import { TapProps } from "../../types/blocks"
+import { TapProps } from "../types/blocks"
 import { Flex, TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
 
-import { RightClickMenu } from "../components/RightClickMenu"
-import { updateNodeData } from "../../store/blocks"
+import { RightClickMenu } from "../canvas/components/RightClickMenu"
+import { updateNodeData } from "../store/blocks"
 import { useStore } from "@nanostores/react"
-import { $status } from "../../store/status"
+import { $status } from "../store/status"
 
 const S1 = 1
 

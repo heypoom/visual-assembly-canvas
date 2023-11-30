@@ -7,7 +7,7 @@ import { ClockBlock } from "./clock"
 import { MidiInBlock, MidiOutBlock } from "./midi"
 import { SynthBlock } from "./synth"
 
-import { BlockComponentMap } from "../../types/Node"
+import { BlockComponentMap } from "../types/Node"
 
 export const nodeTypes: BlockComponentMap = {
   Tap: TapBlock,

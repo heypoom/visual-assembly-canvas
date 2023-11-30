@@ -6,11 +6,11 @@ import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
 import { PaletteKey, getPixelColor, palettes } from "./palette"
 
-import type { PixelProps } from "../../../types/blocks"
+import type { PixelProps } from "../../types/blocks"
 
-import { engine } from "../../../engine"
-import { updateNodeData } from "../../../store/blocks"
-import { PixelMode } from "../../../types/enums"
+import { engine } from "../../engine"
+import { updateNodeData } from "../../store/blocks"
+import { PixelMode } from "../../types/enums"
 
 const modes = Object.keys(_PixelMode).filter(
   (key) => !isNaN(Number(_PixelMode[key as PixelMode])),

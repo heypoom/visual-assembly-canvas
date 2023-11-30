@@ -4,8 +4,8 @@ import { cyanP3 } from "@radix-ui/colors"
 
 import { rescale } from "./rescale"
 
-import { RightClickMenu } from "../../components/RightClickMenu"
-import { PlotterProps } from "../../../types/blocks"
+import { RightClickMenu } from "../../canvas/components/RightClickMenu"
+import { PlotterProps } from "../../types/blocks"
 
 const S0 = 0
 

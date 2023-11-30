@@ -2,8 +2,8 @@ import { Handle, Position, NodeProps } from "reactflow"
 
 import { MachineValueViewer } from "./MachineValueViewer"
 
-import { MachineEditor } from "../../../editor/Editor"
-import { MachineProps } from "../../../types/blocks"
+import { MachineEditor } from "../../editor/Editor"
+import { MachineProps } from "../../types/blocks"
 
 export function MachineBlock(props: NodeProps<MachineProps>) {
   const { data } = props

@@ -3,26 +3,26 @@ import cx from "classnames"
 import { Handle, NodeProps, Position } from "reactflow"
 import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
 
-import { MidiInProps } from "../../../types/blocks"
-import { RightClickMenu } from "../../components/RightClickMenu"
+import { MidiInProps } from "../../types/blocks"
+import { RightClickMenu } from "../../canvas/components/RightClickMenu"
 
 import { useStore } from "@nanostores/react"
-import { $midi } from "../../../store/midi"
-import { engine } from "../../../engine"
+import { $midi } from "../../store/midi"
+import { engine } from "../../engine"
 
 import {
   MidiEvent,
   isControlChangeEvent,
   isNoteEvent,
   midiManager,
-} from "../../../services/midi"
+} from "../../services/midi"
 
-import { $status } from "../../../store/status"
-import { updateNodeData } from "../../../store/blocks"
+import { $status } from "../../store/status"
+import { updateNodeData } from "../../store/blocks"
 import { MidiTransportForm } from "./transport"
 import { Select } from "@radix-ui/themes"
 
-import { MidiInputEvent } from "../../../types/enums"
+import { MidiInputEvent } from "../../types/enums"
 
 const events = Object.keys(_MidiInputEvent).filter(
   (key) => !isNaN(Number(_MidiInputEvent[key as MidiInputEvent])),

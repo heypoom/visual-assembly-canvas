@@ -4,7 +4,7 @@ import {
   MidiOutputFormat as _MidiOutputFormat,
 } from "machine-wasm"
 
-export type { PaletteKey } from "../canvas/blocks"
+export type { PaletteKey } from "../blocks"
 
 export type PixelMode = keyof typeof _PixelMode
 export type MidiInputEvent = keyof typeof _MidiInputEvent

@@ -1,6 +1,6 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
-import { SynthProps } from "../../types/blocks"
+import { SynthProps } from "../types/blocks"
 
 const S0 = 0
 const S1 = 1
