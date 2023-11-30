@@ -18,6 +18,7 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
   const errored = state.status === "Invalid"
   const awaiting = state.status === "Awaiting"
   const halted = state.status === "Halted"
+  const backpressuring = state.inboxSize > 50
 
   return (
     <div className="font-mono bg-slate-1 relative group">
@@ -34,6 +35,7 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
           errored && "!border-red-9",
           awaiting && "!border-purple-11",
           halted && "border-gray-11",
+          backpressuring && "!border-orange-9",
         )}
       >
         <div className="flex flex-col space-y-2 text-gray-50">
