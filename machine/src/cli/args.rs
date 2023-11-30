@@ -32,7 +32,4 @@ pub enum Commands {
         #[arg(short, long)]
         debug: bool,
     },
-
-    /// Shows a help message.
-    Help,
 }

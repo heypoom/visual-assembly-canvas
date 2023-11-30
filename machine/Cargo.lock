@@ -192,6 +192,7 @@ dependencies = [
  "clap",
  "log",
  "poom_macros",
+ "ringbuffer",
  "serde",
  "serde-json-core",
  "snafu",
@@ -231,6 +232,12 @@ checksum = "5267fca4496028628a95160fc423a33e8b2e6af8a5302579e322e4b520293cae"
 dependencies = [
  "proc-macro2",
 ]
+
+[[package]]
+name = "ringbuffer"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3df6368f71f205ff9c33c076d170dd56ebf68e8161c733c0caa07a7a5509ed53"
 
 [[package]]
 name = "rustc_version"

@@ -6,7 +6,12 @@ use machine::cli::{compile_to_file, run_from_binary_file, run_from_source, Args,
 fn main() {
     let args = Args::parse();
 
-    let result = match args.command.unwrap_or(Commands::Help) {
+    if args.command.is_none() {
+        println!("No command specified. Use --help to see the list of commands.");
+        return;
+    }
+
+    let result = match args.command.unwrap() {
         Commands::Compile { src, out } => compile_to_file(&src, &out),
         Commands::Run {
             path,
@@ -19,7 +24,6 @@ fn main() {
                 run_from_binary_file(&path, debug)
             }
         }
-        Commands::Help => Ok(())
     };
 
     if let Err(error) = result {
