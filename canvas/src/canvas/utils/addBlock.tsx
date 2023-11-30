@@ -1,4 +1,4 @@
-import { manager } from "../../core"
+import { engine } from "../../core"
 import { BlockTypeMap, BlockTypes } from "../../types/Node"
 import { defaultProps, DEFAULT_SOURCE } from "../blocks"
 import { addCanvasNode } from "./addCanvasNode"
@@ -8,7 +8,7 @@ export function addBlock<T extends BlockTypes>(type: T) {
   if (type === "Machine") return addMachine()
 
   const props = defaultProps[type]
-  const id = manager.ctx?.add_block({ [type]: props })
+  const id = engine.ctx?.add_block({ [type]: props })
   if (typeof id !== "number") return
 
   if (type === "Synth") {
@@ -19,9 +19,9 @@ export function addBlock<T extends BlockTypes>(type: T) {
 }
 
 export function addMachine() {
-  const id = manager.ctx?.add_machine()
+  const id = engine.ctx?.add_machine()
   if (typeof id !== "number") return
 
-  manager.load(id, DEFAULT_SOURCE)
+  engine.load(id, DEFAULT_SOURCE)
   addCanvasNode(id, "Machine", { id, source: DEFAULT_SOURCE })
 }

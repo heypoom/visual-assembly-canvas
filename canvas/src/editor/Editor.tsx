@@ -6,7 +6,7 @@ import { cmTheme } from "./theme"
 import { getExtensions } from "./extensions"
 import { addLineHighlight } from "./highlight"
 
-import { manager } from "../core"
+import { engine } from "../core"
 import { $editorConfig } from "../store/editor"
 
 import { MachineProps } from "../types/blocks"
@@ -26,7 +26,7 @@ export function MachineEditor(props: Props) {
 
   const onCreate = useCallback(
     (view: EditorView) => {
-      manager.highlighters.set(id, (lineNo) => {
+      engine.highlighters.set(id, (lineNo) => {
         const pos = view.state.doc.line(lineNo).from
         view.dispatch({ effects: addLineHighlight.of(pos) })
       })
@@ -36,7 +36,7 @@ export function MachineEditor(props: Props) {
 
   return (
     <CodeMirror
-      onBlur={() => manager.load(id, source)}
+      onBlur={() => engine.load(id, source)}
       basicSetup={{ lineNumbers: false, foldGutter: false }}
       maxHeight="400px"
       minWidth="300px"

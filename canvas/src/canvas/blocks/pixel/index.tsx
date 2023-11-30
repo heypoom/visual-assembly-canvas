@@ -8,7 +8,7 @@ import { PaletteKey, getPixelColor, palettes } from "./palette"
 
 import type { PixelProps } from "../../../types/blocks"
 
-import { manager } from "../../../core"
+import { engine } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
 import { PixelMode } from "../../../types/enums"
 
@@ -31,7 +31,7 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
 
     // Update the behaviour of pixel block.
     if (typeof input.mode === "string") {
-      manager.send(id, { SetPixelMode: { mode: input.mode } })
+      engine.send(id, { SetPixelMode: { mode: input.mode } })
     }
   }
 

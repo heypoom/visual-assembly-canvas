@@ -6,7 +6,7 @@ import { MidiOutProps } from "../../../types/blocks"
 import { RightClickMenu } from "../../components/RightClickMenu"
 import { Select } from "@radix-ui/themes"
 import { MidiOutputFormat } from "../../../types/enums"
-import { manager } from "../../../core"
+import { engine } from "../../../core"
 import { updateNodeData } from "../../../store/blocks"
 import { useStore } from "@nanostores/react"
 import { $lastMidiEvent, $midi } from "../../../store/midi"
@@ -32,15 +32,15 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
     updateNodeData(id, input)
 
     if (typeof input.format === "string") {
-      manager.send(id, { SetMidiOutputFormat: { format: input.format } })
+      engine.send(id, { SetMidiOutputFormat: { format: input.format } })
     }
 
     if (input.port !== undefined) {
-      manager.send(id, { SetMidiPort: { port: input.port } })
+      engine.send(id, { SetMidiPort: { port: input.port } })
     }
 
     if (input.channel !== undefined) {
-      manager.send(id, { SetMidiChannels: { channels: [input.channel] } })
+      engine.send(id, { SetMidiChannels: { channels: [input.channel] } })
     }
   }
 

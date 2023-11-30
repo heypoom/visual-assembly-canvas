@@ -10,7 +10,7 @@ import { RunButton } from "./RunButton"
 import { SetDelayButton } from "./SetDelayButton"
 
 import { $status } from "../store/status"
-import { manager } from "../core"
+import { engine } from "../core"
 import { addBlock } from "../canvas"
 import { $hasBlocks } from "../store/nodes"
 import { addMachine } from "../canvas/utils/addBlock"
@@ -19,7 +19,7 @@ import { scheduler } from "../services/scheduler"
 
 function reset() {
   scheduler.pause()
-  manager.reset()
+  engine.reset()
 }
 
 export function Toolbar() {
@@ -67,7 +67,7 @@ export function Toolbar() {
           color={halted ? "blue" : "cyan"}
           variant="soft"
           className="font-semibold"
-          onClick={manager.stepOnce}
+          onClick={engine.stepOnce}
           disabled={status.running || !hasBlocks}
         >
           <TrackNextIcon />

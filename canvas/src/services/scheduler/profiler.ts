@@ -130,8 +130,6 @@ export class Profiler {
     if (maxVal > warnMax) {
       ctx.strokeStyle = "#E54D2E"
       ctx.lineWidth = 4
-
-      console.log(`[${key}] ${maxVal} exceeds ${warnMax}`)
     }
 
     ctx.moveTo(0, H)

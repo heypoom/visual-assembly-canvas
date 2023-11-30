@@ -3,7 +3,7 @@ import { Extension, keymap } from "@uiw/react-codemirror"
 import { vasmLanguage } from "./syntax"
 
 import { MachineProps } from "../types/blocks"
-import { manager } from "../core"
+import { engine } from "../core"
 import { EditorConfig } from "../store/editor"
 import { lineHighlighter } from "./highlight"
 import { scheduler } from "../services/scheduler"
@@ -14,7 +14,7 @@ export function getExtensions(m: MachineProps, _config: EditorConfig) {
     {
       key: "Enter",
       shift: () => {
-        manager.load(m.id, m.source)
+        engine.load(m.id, m.source)
         scheduler.start().then()
 
         return true

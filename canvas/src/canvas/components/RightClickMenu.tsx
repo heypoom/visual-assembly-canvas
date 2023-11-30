@@ -1,5 +1,5 @@
 import { ContextMenu } from "@radix-ui/themes"
-import { manager } from "../../core"
+import { engine } from "../../core"
 
 interface Props {
   id: number
@@ -13,7 +13,7 @@ export const RightClickMenu = (props: Props) => {
   const { id } = props
 
   function reset() {
-    if (id) manager.resetBlock(id)
+    if (id) engine.resetBlock(id)
 
     props.onReset?.()
   }

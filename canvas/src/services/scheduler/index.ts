@@ -1,4 +1,4 @@
-import { manager } from "../../core"
+import { engine } from "../../core"
 import { audioManager } from "../audio/manager"
 
 import { $status } from "../../store/status"
@@ -7,23 +7,23 @@ import { profiler } from "./profiler"
 const handlers = {
   start: async () => {
     await audioManager.ready()
-    manager.onRunStart()
+    engine.onRunStart()
   },
   stop: async () => {
-    manager.onRunCleanup()
+    engine.onRunCleanup()
   },
 } as const
 
 const updaters = {
   canvas() {
-    const ok = manager.tick()
+    const ok = engine.tick()
     if (!ok) scheduler.pause()
   },
 
-  effect: () => manager.performSideEffects(),
-  blocks: () => manager.syncBlocks(),
-  machine: () => manager.syncMachineState(),
-  highlight: () => manager.highlight(),
+  effect: () => engine.performSideEffects(),
+  blocks: () => engine.syncBlocks(),
+  machine: () => engine.syncMachineState(),
+  highlight: () => engine.highlight(),
 } as const
 
 type Updater = keyof typeof updaters

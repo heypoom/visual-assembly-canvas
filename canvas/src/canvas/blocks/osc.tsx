@@ -1,7 +1,7 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
 import { OscProps } from "../../types/blocks"
-import { manager } from "../../core"
+import { engine } from "../../core"
 import { Select, TextField } from "@radix-ui/themes"
 
 import { RightClickMenu } from "../components/RightClickMenu"
@@ -39,7 +39,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
 
   function setWaveform(waveform: Waveform) {
     updateNodeData(id, { waveform })
-    manager.send(id, { SetWaveform: { waveform } })
+    engine.send(id, { SetWaveform: { waveform } })
   }
 
   function handleWaveChange(key: string) {

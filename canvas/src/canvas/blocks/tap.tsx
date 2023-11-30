@@ -1,5 +1,5 @@
 import { Handle, NodeProps, Position } from "reactflow"
-import { manager } from "../../core"
+import { engine } from "../../core"
 import { Port } from "machine-wasm"
 import { TapProps } from "../../types/blocks"
 import { Flex, TextField } from "@radix-ui/themes"
@@ -24,7 +24,7 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
 
   function tap() {
     try {
-      manager.ctx?.send_message({
+      engine.ctx?.send_message({
         port: new Port(id, S1),
         action: { Data: { body: signal } },
       })
@@ -35,7 +35,7 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
     // Only step the execution if the program is not running.
     // TODO: can we improve this?
     // TODO: traverse the graph node to only tick connected nodes.
-    if (!status.running) manager.stepOnce()
+    if (!status.running) engine.stepOnce()
   }
 
   function setSignal() {

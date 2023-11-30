@@ -41,7 +41,7 @@ type HighlightMaps = Map<number, Map<number, number>>
 
 type HaltReason = "cycle" | "halted"
 
-export class CanvasManager {
+export class CanvasEngine {
   public ctx: Controller | null = null
 
   /** What is the limit on number of cycles? This prevents crashes. */
@@ -281,7 +281,10 @@ export class CanvasManager {
   }
 
   public syncBlocks() {
+    // TODO: we can optimize this by only syncing the blocks that have changed.
+    //       currently, we pull every data from the engine.
     const blocks = this.ctx?.get_blocks()
+
     blocks.forEach(syncBlockData)
   }
 
@@ -370,9 +373,9 @@ export class CanvasManager {
   }
 }
 
-export const manager = new CanvasManager()
-await manager.setup()
+export const engine = new CanvasEngine()
+await engine.setup()
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-window.manager = manager
+window.manager = engine

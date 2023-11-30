@@ -3,7 +3,7 @@ import { map, action } from "nanostores"
 import { CanvasError, MachineState, MachineStates } from "../types/MachineState"
 
 import { $nodes } from "./nodes"
-import { CanvasManager } from "../core"
+import { CanvasEngine } from "../core"
 import { MachineEvent, InspectionState } from "../types/MachineEvent"
 
 export const $output = map<MachineStates>({})
@@ -32,7 +32,7 @@ export const setError = action(
 export const syncMachineState = action(
   $output,
   "sync machine state",
-  (store, manager: CanvasManager) => {
+  (store, manager: CanvasEngine) => {
     const output = store.get()
     const nodes = $nodes.get()
 
@@ -65,7 +65,7 @@ export const syncMachineState = action(
 export const clearPreviousRun = action(
   $output,
   "clear previous run",
-  (store, manager: CanvasManager) => {
+  (store, manager: CanvasEngine) => {
     const curr = store.get()
 
     manager.statuses.forEach((status, id) => {

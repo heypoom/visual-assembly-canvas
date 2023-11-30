@@ -9,7 +9,7 @@ import {
   addEdge,
 } from "reactflow"
 
-import { manager } from "../../core"
+import { engine } from "../../core"
 import { $nodes, $edges } from "../nodes"
 
 import { BlockNode } from "../../types/Node"
@@ -26,7 +26,7 @@ export const onNodesChange = (changes: NodeChange[]) => {
         const id = parseInt(change.id)
         if (isNaN(id)) continue
 
-        manager.removeBlock(id)
+        engine.removeBlock(id)
       } catch (error) {
         console.warn("remove block failed:", error)
       }
@@ -52,7 +52,7 @@ export const onEdgesChange = (changes: EdgeChange[]) => {
         const source = port(e.source, e.sourceHandle)
         const target = port(e.target, e.targetHandle)
 
-        manager.ctx?.disconnect(source, target)
+        engine.ctx?.disconnect(source, target)
       } catch (err) {
         console.warn("cannot disconnect edge!")
       }
@@ -70,6 +70,6 @@ export const onConnect = (c: Connection) => {
 
   const source = port(c.source, c.sourceHandle)
   const target = port(c.target, c.targetHandle)
-  manager.ctx?.connect(source, target)
+  engine.ctx?.connect(source, target)
   $edges.set(addEdge(c, $edges.get()))
 }

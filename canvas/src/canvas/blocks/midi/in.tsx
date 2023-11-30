@@ -8,7 +8,7 @@ import { RightClickMenu } from "../../components/RightClickMenu"
 
 import { useStore } from "@nanostores/react"
 import { $midi } from "../../../store/midi"
-import { manager } from "../../../core"
+import { engine } from "../../../core"
 
 import {
   MidiEvent,
@@ -44,15 +44,15 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
     updateNodeData(id, input)
 
     if (typeof input.on === "string") {
-      manager.send(id, { SetMidiInputEvent: { event: input.on } })
+      engine.send(id, { SetMidiInputEvent: { event: input.on } })
     }
 
     if (typeof input.port === "number") {
-      manager.send(id, { SetMidiPort: { port: input.port } })
+      engine.send(id, { SetMidiPort: { port: input.port } })
     }
 
     if ("channels" in input) {
-      manager.send(id, { SetMidiChannels: { channels: input.channels ?? [] } })
+      engine.send(id, { SetMidiChannels: { channels: input.channels ?? [] } })
     }
   }
 
@@ -73,9 +73,9 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
       }
 
       setLast([note, value, channel])
-      manager.send(id, { Midi: { event: on, value, note, channel, port } })
+      engine.send(id, { Midi: { event: on, value, note, channel, port } })
 
-      if (!status.running) manager.stepOnce()
+      if (!status.running) engine.stepOnce()
     },
     [id, on, port, status.running],
   )
