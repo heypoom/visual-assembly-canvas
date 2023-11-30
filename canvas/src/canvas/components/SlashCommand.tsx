@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { getMatchedCommands, useCommandRunner } from "../commands/commands"
 import { useHotkeys } from "react-hotkeys-hook"
 import cn from "classnames"
+import { useReactFlow } from "reactflow"
 
 type Pos = { x: number; y: number } | null
 
@@ -12,6 +13,7 @@ export function SlashCommand() {
   const [selected, setSelected] = useState(0)
 
   const { run } = useCommandRunner()
+  const flow = useReactFlow()
 
   const matches = useMemo(() => getMatchedCommands(command), [command])
 
@@ -85,7 +87,8 @@ export function SlashCommand() {
             if (e.key === "Enter") {
               if (matches.length === 0) return
 
-              const ok = run(matches[selected], { position: cursor })
+              const position = flow.project(cursor)
+              const ok = run(matches[selected], { position })
               if (ok) hide()
 
               return
