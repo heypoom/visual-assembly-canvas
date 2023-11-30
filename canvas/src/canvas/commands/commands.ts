@@ -7,6 +7,7 @@ import { defaultProps } from "../../blocks"
 import { scheduler } from "../../services/scheduler"
 import { $status } from "../../store/status"
 import { engine } from "../../engine"
+import { profiler } from "../../services/scheduler/profiler"
 
 interface Options {
   position?: { x: number; y: number }
@@ -50,11 +51,17 @@ blocks.forEach((block) => {
   })
 })
 
-commands.push({
-  name: "Clear All",
-  prefix: "clear_all",
-  destructive: true,
-})
+commands.push(
+  {
+    name: "Clear All",
+    prefix: "clear_all",
+    destructive: true,
+  },
+  {
+    name: "Toggle Profiler",
+    prefix: "profiler",
+  },
+)
 
 export const getMatchedCommands = (input: string): Command[] => {
   input = input.replace(/^\//, "").toLowerCase()
@@ -100,6 +107,10 @@ const createCommandRunner = (context: Context) => {
       } else {
         scheduler.start().then()
       }
+    },
+
+    profiler() {
+      profiler.toggle()
     },
   }
 

@@ -21,11 +21,10 @@ const ranges: Record<string, [number, number]> = {
 
 export class Profiler {
   ready = false
-  enabled = true
+  enabled = false
+
   logs: Map<string, RingBuffer<number>> = new Map()
-
   maxLogs = 100
-
   hide: Record<string, boolean> = {}
 
   frame = 0
@@ -35,11 +34,10 @@ export class Profiler {
   chartElements: Map<string, HTMLCanvasElement> = new Map()
 
   constructor() {
-    this.setup()
     this.start()
   }
 
-  setup() {
+  private setup() {
     if (!this.enabled || this.ready) return
 
     const root = document.createElement("div")
@@ -57,13 +55,23 @@ export class Profiler {
     this.ready = true
   }
 
-  log = (key: string, value: number) => {
+  public destroy() {
+    if (!this.chartRoot) return
+
+    this.chartRoot.remove()
+    this.chartRoot = null
+    this.ready = false
+    this.enabled = false
+    this.chartElements.clear()
+  }
+
+  public log = (key: string, value: number) => {
     if (!this.logs.has(key)) this.logs.set(key, new RingBuffer(this.maxLogs))
 
     this.logs.get(key)?.enq(value)
   }
 
-  spy = <T extends (...args: any[]) => any>(key: string, fn: T): T => {
+  public spy = <T extends (...args: any[]) => any>(key: string, fn: T): T => {
     if (!this.enabled) return fn
 
     const spy = (...args: Parameters<T>) => {
@@ -82,7 +90,7 @@ export class Profiler {
     return spy as T
   }
 
-  addChart(name: string) {
+  private addChart(name: string) {
     if (!this.chartRoot) return
     if (this.chartElements.has(name)) return
 
@@ -98,7 +106,7 @@ export class Profiler {
     this.chartElements.set(name, chart)
   }
 
-  draw(key: string) {
+  private draw(key: string) {
     if (this.hide[key]) return
 
     this.addChart(key)
@@ -147,13 +155,14 @@ export class Profiler {
     ctx.stroke()
   }
 
-  start = () => {
+  public start = () => {
     if (!this.enabled) return
 
+    this.setup()
     requestAnimationFrame(this.loop)
   }
 
-  loop = () => {
+  private loop = () => {
     if (!this.enabled) return cancelAnimationFrame(this.requestFrameId)
 
     if (this.frame % 20) {
@@ -164,11 +173,21 @@ export class Profiler {
     this.requestFrameId = requestAnimationFrame(this.loop)
   }
 
-  stop = () => {
+  public stop = () => {
     cancelAnimationFrame(this.requestFrameId)
   }
 
-  public getCurrentMax() {
+  public toggle = () => {
+    this.enabled = !this.enabled
+
+    if (this.enabled) {
+      this.start()
+    } else {
+      this.destroy()
+    }
+  }
+
+  public getMaxValues() {
     const entries = [...this.logs.entries()].map(([key, log]) => {
       const values = log.peekN(log.size())
       const max = Math.max(...values)
