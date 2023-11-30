@@ -8,7 +8,7 @@ const REG_COUNT: usize = 0xF;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Registers {
-    pub buffer: [u16; REG_COUNT],
+    pub buffer: Vec<u16>,
 }
 
 #[allow(dead_code)]
@@ -29,7 +29,7 @@ type R = Register;
 impl Registers {
     pub fn new() -> Registers {
         let mut v = Registers {
-            buffer: [0; REG_COUNT],
+            buffer: vec![0; REG_COUNT],
         };
         v.reset();
         v

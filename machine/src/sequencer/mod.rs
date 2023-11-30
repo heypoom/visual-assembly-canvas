@@ -2,6 +2,7 @@ pub mod status;
 pub mod seq_error;
 
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 use crate::{Actor, Event, Execute, Machine, Message, Parser};
 
 use status::MachineStatus;
@@ -14,7 +15,7 @@ use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready};
 type Errorable = Result<(), SequencerError>;
 type Statuses = HashMap<u16, MachineStatus>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Sequencer {
     pub machines: Vec<Machine>,
 

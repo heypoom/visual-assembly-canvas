@@ -1,17 +1,18 @@
+use serde::{Deserialize, Serialize};
 use crate::{compile_to_bytecode, Symbols, Op, CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START, DATA_START, STACK_END, CALL_STACK_END};
 
 /**
  * Memory defines a fixed-size memory area for the program.
  */
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Memory {
-    pub buffer: [u16; MEMORY_SIZE as usize],
+    pub buffer: Vec<u16>,
 }
 
 impl Memory {
     pub fn new() -> Memory {
         Memory {
-            buffer: [0; MEMORY_SIZE as usize],
+            buffer: vec![0; MEMORY_SIZE as usize],
         }
     }
 
@@ -74,6 +75,7 @@ impl Memory {
         self.write(DATA_START, &symbols.bytes());
     }
 }
+
 
 #[cfg(test)]
 mod tests {

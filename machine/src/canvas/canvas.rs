@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 use snafu::ensure;
 use crate::canvas::block::BlockData::{Clock, Machine, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
@@ -18,19 +19,21 @@ use crate::audio::waveform::Waveform;
 
 type Errorable = Result<(), CanvasError>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Canvas {
     pub blocks: Vec<Block>,
     pub wires: Vec<Wire>,
-
     pub seq: Sequencer,
-    pub wavetable: Wavetable,
 
-    block_id_counter: u16,
-    wire_id_counter: u16,
+    pub block_id_counter: u16,
+    pub wire_id_counter: u16,
 
     /// How many cycles should the machine run per tick? i.e. their clock speed.
     pub machine_cycle_per_tick: u16,
+
+    /// Used for pre-computing waveforms for performance.
+    #[serde(skip)]
+    pub wavetable: Wavetable,
 }
 
 impl Canvas {

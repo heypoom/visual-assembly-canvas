@@ -3,6 +3,7 @@ pub mod decode;
 pub mod execute;
 pub mod runtime_error;
 
+use serde::{Deserialize, Serialize};
 use crate::mem::{Memory, StackManager};
 use crate::{CALL_STACK_END, CALL_STACK_START, Op, ParseError, Parser, Register::FP, Registers};
 
@@ -13,7 +14,7 @@ pub use self::execute::Execute;
 pub use crate::canvas::message::{Action, Message};
 pub use self::runtime_error::RuntimeError;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Machine {
     /// Addressable identifier of the machine.
     pub id: Option<u16>,

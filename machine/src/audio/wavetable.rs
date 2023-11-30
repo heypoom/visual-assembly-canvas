@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use crate::audio::waveform::{generate_waveform, Waveform};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Wavetable {
     pub cache: HashMap<Waveform, Vec<u16>>,
 
