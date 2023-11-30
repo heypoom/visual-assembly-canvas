@@ -74,13 +74,25 @@ export function SlashCommand() {
           onKeyDown={(e) => {
             if (e.key === "ArrowDown") {
               e.preventDefault()
-              setSelected((s) => Math.min(s + 1, matches.length - 1))
+
+              setSelected((s) => {
+                if (s >= matches.length - 1) return 0
+
+                return s + 1
+              })
+
               return
             }
 
             if (e.key === "ArrowUp") {
               e.preventDefault()
-              setSelected((s) => Math.max(s - 1, 0))
+
+              setSelected((s) => {
+                if (s <= 0) return matches.length - 1
+
+                return s - 1
+              })
+
               return
             }
 

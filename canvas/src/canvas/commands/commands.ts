@@ -77,7 +77,7 @@ export const getMatchedCommands = (input: string): Command[] => {
     }
   }
 
-  // Pass 2: fuzzy match by name
+  // Pass 2: match by name
   for (const command of commands) {
     if (found[command.prefix]) continue
 
