@@ -1,4 +1,4 @@
-import { engine } from "../../core"
+import { engine } from "../../engine"
 import { BlockTypeMap, BlockTypes } from "../../types/Node"
 import { defaultProps, DEFAULT_SOURCE } from "../blocks"
 import { addCanvasNode } from "./addCanvasNode"

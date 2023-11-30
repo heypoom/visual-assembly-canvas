@@ -1,5 +1,5 @@
 import { ContextMenu } from "@radix-ui/themes"
-import { engine } from "../../core"
+import { engine } from "../../engine"
 
 interface Props {
   id: number

@@ -10,7 +10,7 @@ import { RunButton } from "./RunButton"
 import { SetDelayButton } from "./SetDelayButton"
 
 import { $status } from "../store/status"
-import { engine } from "../core"
+import { engine } from "../engine"
 import { addBlock } from "../canvas"
 import { $hasBlocks } from "../store/nodes"
 import { addMachine } from "../canvas/utils/addBlock"

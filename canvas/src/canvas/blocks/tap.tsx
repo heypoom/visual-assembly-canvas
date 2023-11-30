@@ -1,5 +1,5 @@
 import { Handle, NodeProps, Position } from "reactflow"
-import { engine } from "../../core"
+import { engine } from "../../engine"
 import { Port } from "machine-wasm"
 import { TapProps } from "../../types/blocks"
 import { Flex, TextField } from "@radix-ui/themes"

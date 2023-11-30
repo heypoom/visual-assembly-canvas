@@ -8,7 +8,7 @@ import { PaletteKey, getPixelColor, palettes } from "./palette"
 
 import type { PixelProps } from "../../../types/blocks"
 
-import { engine } from "../../../core"
+import { engine } from "../../../engine"
 import { updateNodeData } from "../../../store/blocks"
 import { PixelMode } from "../../../types/enums"
 

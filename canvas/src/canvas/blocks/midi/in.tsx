@@ -8,7 +8,7 @@ import { RightClickMenu } from "../../components/RightClickMenu"
 
 import { useStore } from "@nanostores/react"
 import { $midi } from "../../../store/midi"
-import { engine } from "../../../core"
+import { engine } from "../../../engine"
 
 import {
   MidiEvent,

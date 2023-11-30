@@ -1,7 +1,7 @@
 import { Handle, NodeProps, Position } from "reactflow"
 
 import { OscProps } from "../../types/blocks"
-import { engine } from "../../core"
+import { engine } from "../../engine"
 import { Select, TextField } from "@radix-ui/themes"
 
 import { RightClickMenu } from "../components/RightClickMenu"

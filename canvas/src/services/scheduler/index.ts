@@ -1,4 +1,4 @@
-import { engine } from "../../core"
+import { engine } from "../../engine"
 import { audioManager } from "../audio/manager"
 
 import { $status } from "../../store/status"

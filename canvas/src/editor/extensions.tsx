@@ -3,7 +3,7 @@ import { Extension, keymap } from "@uiw/react-codemirror"
 import { vasmLanguage } from "./syntax"
 
 import { MachineProps } from "../types/blocks"
-import { engine } from "../core"
+import { engine } from "../engine"
 import { EditorConfig } from "../store/editor"
 import { lineHighlighter } from "./highlight"
 import { scheduler } from "../services/scheduler"

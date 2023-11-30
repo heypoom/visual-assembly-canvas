@@ -9,7 +9,7 @@ import {
   addEdge,
 } from "reactflow"
 
-import { engine } from "../../core"
+import { engine } from "../../engine"
 import { $nodes, $edges } from "../nodes"
 
 import { BlockNode } from "../../types/Node"
