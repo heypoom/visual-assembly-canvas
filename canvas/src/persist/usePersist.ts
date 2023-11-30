@@ -22,10 +22,16 @@ interface Config {
   driver?: PersistenceDriver
 }
 
+type Timer = ReturnType<typeof setInterval>
+
+const AUTO_SAVE_INTERVAL = 3000
+
 export function usePersist(config: Config = {}) {
   const { driver = LocalStorageDriver } = config
 
   const done = useRef<boolean>()
+  const saveTimer = useRef<Timer>()
+
   const flow = useReactFlow()
 
   const serialize = (): SaveState => {
@@ -72,8 +78,17 @@ export function usePersist(config: Config = {}) {
       storage.load()
     }, 0)
 
+    // Auto-save at an interval.
+    saveTimer.current = setInterval(() => {
+      storage.save()
+    }, AUTO_SAVE_INTERVAL)
+
     done.current = true
     window.persist = { storage, serialize, restore, clear, flow }
+
+    return () => {
+      clearInterval(saveTimer.current)
+    }
   }, [])
 
   return { storage, serialize, restore, clear }
