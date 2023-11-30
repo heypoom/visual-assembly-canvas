@@ -8,6 +8,7 @@ import { scheduler } from "../../services/scheduler"
 import { $status } from "../../store/status"
 import { engine } from "../../engine"
 import { profiler } from "../../services/scheduler/profiler"
+import { $clock } from "../../store/clock"
 
 interface Options {
   position?: { x: number; y: number }
@@ -42,7 +43,6 @@ const commands: Command[] = [
 ]
 
 interface CommandArg {
-  name: string
   type?: "number" | "string"
 }
 
@@ -60,14 +60,24 @@ blocks.forEach((block) => {
 
 commands.push(
   {
-    name: "Cycles Per Tick",
-    prefix: "machine_ticks",
-    args: [{ name: "iter", type: "number" }],
+    name: "Machine Speed (ops/tick)",
+    prefix: "machine_speed",
+    args: [{ type: "number" }],
   },
   {
-    name: "Canvas Tick Speed",
-    prefix: "canvas_ticks",
-    args: [{ name: "iter", type: "number" }],
+    name: "Canvas Speed (ops/tick)",
+    prefix: "canvas_speed",
+    args: [{ type: "number" }],
+  },
+  {
+    name: "Canvas Delay (ms)",
+    prefix: "canvas_delay",
+    args: [{ type: "number" }],
+  },
+  {
+    name: "Side Effect Delay (ms)",
+    prefix: "effect_delay",
+    args: [{ type: "number" }],
   },
   {
     name: "Clear All",
@@ -158,16 +168,30 @@ const createCommandRunner = (context: Context) => {
       profiler.toggle()
     },
 
-    machine_ticks(ctx) {
-      const value = Number(ctx.args[0])
+    machine_speed(ctx) {
+      const ops = Number(ctx.args[0])
 
-      engine.setInstructionsPerTick(value)
+      engine.setInstructionsPerTick(ops)
     },
 
-    canvas_ticks(ctx) {
-      const value = Number(ctx.args[0])
+    canvas_speed(ctx) {
+      const ops = Number(ctx.args[0])
 
-      engine.setCanvasBatchedTicks(value)
+      engine.setCanvasBatchedTicks(ops)
+    },
+
+    canvas_delay(ctx) {
+      const delay = Number(ctx.args[0])
+
+      $clock.setKey("canvasMs", delay)
+      scheduler.restart()
+    },
+
+    effect_delay(ctx) {
+      const delay = Number(ctx.args[0])
+
+      $clock.setKey("effectMs", delay)
+      scheduler.restart()
     },
   }
 
