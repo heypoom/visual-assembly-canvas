@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react"
-import { insertCommand, useInsertCommand } from "../commands/insert"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { getMatchedCommands, useCommandRunner } from "../commands/commands"
 import { useHotkeys } from "react-hotkeys-hook"
 
 type Pos = { x: number; y: number } | null
@@ -9,7 +9,9 @@ export function Insert() {
   const [cursor, setCursor] = useState<Pos>(null)
   const [active, setActive] = useState(false)
 
-  const { insertCommand } = useInsertCommand()
+  const { run } = useCommandRunner()
+
+  const matches = useMemo(() => getMatchedCommands(command), [command])
 
   useHotkeys("/", () => {
     setActive(!active)
@@ -63,11 +65,24 @@ export function Insert() {
           onChange={(e) => setCommand(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              const match = insertCommand(command, { position: cursor })
-              if (match) disable()
+              if (matches.length === 0) return
+
+              const [match] = matches
+
+              const ok = run(match, { position: cursor })
+              if (ok) disable()
             }
           }}
         />
+
+        <div>
+          {matches.map((preview) => (
+            <div key={preview.prefix} className="flex gap-x-2">
+              <div className="text-2">/{preview.prefix}</div>
+              <div className="text-2">{preview.name}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
