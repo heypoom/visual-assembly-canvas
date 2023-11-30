@@ -201,8 +201,14 @@ impl Controller {
         Ok(to_value(&[m.inbox.len(), m.outbox.len()])?)
     }
 
-    pub fn serialize(&self) -> Return {
+    pub fn serialize_canvas_state(&self) -> Return {
         Ok(to_value(&self.canvas)?)
+    }
+
+    pub fn load_canvas_state(&mut self, state: JsValue) -> Return {
+        self.canvas = from_value(state)?;
+
+        Ok(true.into())
     }
 }
 
