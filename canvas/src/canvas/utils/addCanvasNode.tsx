@@ -3,18 +3,23 @@ import { getCenterWithOffset } from "./center"
 import { addNode } from "../../store/actions/nodes"
 import { BlockNode, BlockTypeMap, BlockTypes } from "../../types/Node"
 
+interface Options {
+  position?: { x: number; y: number }
+}
+
 export function addCanvasNode<T extends BlockTypes>(
   id: number,
   type: T,
   data: BlockTypeMap[T],
+  options?: Options,
 ) {
-  const center = getCenterWithOffset()
+  const { position = getCenterWithOffset() } = options ?? {}
 
   const node: BlockNode = {
     id: id.toString(),
     type,
     data,
-    position: center,
+    position,
   }
 
   addNode(node)
