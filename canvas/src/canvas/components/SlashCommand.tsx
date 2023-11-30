@@ -57,12 +57,12 @@ export function SlashCommand() {
   return (
     <div>
       <div
-        className="flex flex-col fixed font-mono px-4 py-3 bg-gray-2 rounded-3 gap-y-2"
+        className="flex flex-col fixed font-mono py-3 bg-gray-2 rounded-3 gap-y-2"
         style={{ top: `${top}px`, left: `${left}px` }}
       >
         <input
           className={cn(
-            "bg-transparent text-4 outline-none",
+            "bg-transparent text-4 outline-none px-4",
             noMatches && "text-red-11",
           )}
           value={command}
@@ -102,13 +102,13 @@ export function SlashCommand() {
         />
 
         {matches.length > 0 && (
-          <div className="flex flex-col gap-y-1">
+          <div className="flex flex-col">
             {matches.map((preview, i) => (
               <div
                 key={preview.prefix}
                 className={cn(
-                  "flex justify-between gap-x-2",
-                  selected === i && "text-green-11",
+                  "flex items-center justify-between gap-x-2 px-4 py-[3px]",
+                  selected === i && "text-green-11 bg-gray-3",
                 )}
               >
                 <div>
