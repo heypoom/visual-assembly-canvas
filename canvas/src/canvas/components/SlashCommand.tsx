@@ -5,7 +5,7 @@ import cn from "classnames"
 
 type Pos = { x: number; y: number } | null
 
-export function Insert() {
+export function SlashCommand() {
   const [command, setCommand] = useState("")
   const [cursor, setCursor] = useState<Pos>(null)
   const [active, setActive] = useState(false)
@@ -50,14 +50,19 @@ export function Insert() {
   const top = cursor.y - 25
   const left = cursor.x - 20
 
+  const noMatches = matches.length === 0
+
   return (
     <div>
       <div
-        className="flex flex-col fixed font-mono px-4 py-3 bg-gray-5 rounded-3 gap-y-2"
+        className="flex flex-col fixed font-mono px-4 py-3 bg-gray-2 rounded-3 gap-y-2"
         style={{ top: `${top}px`, left: `${left}px` }}
       >
         <input
-          className="bg-transparent text-4 outline-none"
+          className={cn(
+            "bg-transparent text-4 outline-none",
+            noMatches && "text-red-11",
+          )}
           value={command}
           autoFocus
           onChange={(e) => {
@@ -94,14 +99,22 @@ export function Insert() {
         />
 
         {matches.length > 0 && (
-          <div>
+          <div className="flex flex-col gap-y-1">
             {matches.map((preview, i) => (
               <div
                 key={preview.prefix}
-                className={cn("flex gap-x-2", selected === i && "text-red-11")}
+                className={cn(
+                  "flex justify-between gap-x-2",
+                  selected === i && "text-green-11",
+                )}
               >
-                <div className="text-2">/{preview.prefix}</div>
-                <div className="text-2">{preview.name}</div>
+                <div>
+                  <div className="text-2">/{preview.prefix}</div>
+                </div>
+
+                <div>
+                  <div className="text-2">{preview.name}</div>
+                </div>
               </div>
             ))}
           </div>
