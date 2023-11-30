@@ -60,7 +60,9 @@ export function usePersist(config: Config = {}) {
   useEffect(() => {
     if (done.current) return
 
-    storage.load()
+    setTimeout(() => {
+      storage.load()
+    }, 0)
 
     done.current = true
     window.persist = { storage, serialize, restore, clear }
