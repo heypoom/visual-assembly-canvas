@@ -26,7 +26,11 @@ export const ErrorIndicator = ({ error }: { error: CanvasError }) => {
     }
 
     if (runErrors.messageNeverReceived(cause)) {
-      return <pre>Machine is expecting a message which never arrives.</pre>
+      return (
+        <pre className="text-purple-11">
+          Machine is waiting for a message which never arrives.
+        </pre>
+      )
     }
 
     if (runErrors.executionFailed(cause)) {
