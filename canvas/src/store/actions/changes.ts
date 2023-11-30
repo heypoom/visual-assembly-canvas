@@ -28,6 +28,11 @@ export const onNodesChange = (changes: NodeChange[]) => {
 
         engine.removeBlock(id)
       } catch (error) {
+        // If block is not in the engine, ignore.
+        if ((error as { BlockNotFound: unknown }).BlockNotFound) {
+          continue
+        }
+
         console.warn("remove block failed:", error)
       }
     }
