@@ -6,6 +6,7 @@ import { BlockTypes } from "../../types/Node"
 import { defaultProps } from "../../blocks"
 import { scheduler } from "../../services/scheduler"
 import { $status } from "../../store/status"
+import { engine } from "../../engine"
 
 interface Options {
   position?: { x: number; y: number }
@@ -18,7 +19,6 @@ interface Context {
 interface Command {
   name: string
   prefix: string
-  description?: string
   action?: CommandAction
 }
 
@@ -31,6 +31,14 @@ const commands: Command[] = [
     name: "Run",
     prefix: "run",
   },
+  {
+    name: "Step",
+    prefix: "step",
+  },
+  {
+    name: "Reset",
+    prefix: "reset",
+  },
 ]
 
 const blocks = Object.keys(defaultProps) as BlockTypes[]
@@ -40,7 +48,6 @@ type CommandAction = { type: "add_block"; block: BlockTypes }
 blocks.forEach((block) => {
   commands.push({
     name: `Add ${block}`,
-    description: `Add the ${block} block`,
     prefix: block.toLowerCase(),
     action: { type: "add_block", block },
   })
@@ -71,6 +78,16 @@ const createCommandRunner =
     if (command.prefix === "clear_all") {
       context.clearAll()
       localStorage.removeItem(STORAGE_KEY)
+      return true
+    }
+
+    if (command.prefix === "reset") {
+      engine.reset()
+      return true
+    }
+
+    if (command.prefix === "step") {
+      engine.stepOnce()
       return true
     }
 
