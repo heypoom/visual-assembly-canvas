@@ -31,7 +31,7 @@ export function usePersist(config: Config = {}) {
   const serialize = (): SaveState => {
     return {
       flow: flow.toObject(),
-      engine: engine.ctx?.serialize_canvas_state(),
+      engine: engine.ctx?.partial_serialize_canvas_state(),
     }
   }
 

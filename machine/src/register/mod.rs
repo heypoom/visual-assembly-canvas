@@ -4,7 +4,7 @@ use crate::register::Register::{PC, SP};
 use crate::Register::FP;
 use crate::{CALL_STACK_START, STACK_START};
 
-const REG_COUNT: usize = 0xF;
+pub const REG_COUNT: usize = 0xF;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Registers {

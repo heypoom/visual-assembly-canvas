@@ -2,7 +2,7 @@ use machine::canvas::block::BlockData;
 use machine::canvas::wire::Port;
 use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};
-use machine::Event;
+use machine::{Event, MEMORY_SIZE, REG_COUNT};
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
@@ -205,12 +205,42 @@ impl Controller {
         self.canvas = Canvas::new();
     }
 
-    pub fn serialize_canvas_state(&self) -> Return {
+    /// Serialize the entire canvas state - very slow!
+    /// Should only be used for debugging.
+    pub fn full_serialize_canvas_state(&self) -> Return {
         Ok(to_value(&self.canvas)?)
+    }
+
+    pub fn partial_serialize_canvas_state(&self) -> Return {
+        let mut canvas = self.canvas.clone();
+
+        for m in canvas.seq.machines.iter_mut() {
+            m.inbox.clear();
+            m.mem.buffer = vec![];
+            m.reg.buffer = vec![];
+        }
+
+        for b in canvas.blocks.iter_mut() {
+            b.inbox.clear();
+            b.outbox.clear();
+        }
+
+        Ok(to_value(&canvas)?)
     }
 
     pub fn load_canvas_state(&mut self, state: JsValue) -> Return {
         self.canvas = from_value(state)?;
+
+        /// Ensure that the memory and registers are the correct size.
+        for m in self.canvas.seq.machines.iter_mut() {
+            if m.mem.buffer.len() < MEMORY_SIZE as usize {
+                m.mem.buffer = vec![0; MEMORY_SIZE as usize];
+            }
+
+            if m.reg.buffer.len() < REG_COUNT {
+                m.reg.buffer = vec![0; REG_COUNT];
+            }
+        }
 
         Ok(true.into())
     }
