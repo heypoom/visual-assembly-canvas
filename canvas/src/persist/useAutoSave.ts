@@ -12,7 +12,7 @@ const AUTO_SAVE_INTERVAL = 3000
 export function useAutoSave(config: PersistConfig = {}) {
   const { driver = LocalStorageDriver } = config
 
-  const { getState, restore, clear } = useSaveState()
+  const { serialize, restore, clear } = useSaveState()
 
   const restored = useRef(false)
   const saveTimer = useRef<Timer>()
@@ -25,8 +25,11 @@ export function useAutoSave(config: PersistConfig = {}) {
     }, 0)
 
     saveTimer.current = setInterval(() => {
-      driver.save(getState)
+      driver.save(serialize)
     }, AUTO_SAVE_INTERVAL)
+
+    // @ts-ignore
+    window.persist = { driver, serialize, restore, clear }
 
     restored.current = true
 
@@ -35,5 +38,5 @@ export function useAutoSave(config: PersistConfig = {}) {
     }
   }, [])
 
-  return { getState, restore, clear }
+  return { serialize, restore, clear }
 }

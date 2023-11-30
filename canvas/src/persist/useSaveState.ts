@@ -9,7 +9,7 @@ import { BlockNode } from "../types/Node"
 export function useSaveState() {
   const flow = useReactFlow()
 
-  const getState = (): SaveState => ({
+  const serialize = (): SaveState => ({
     flow: flow.toObject(),
     engine: engine.ctx?.partial_serialize_canvas_state(),
   })
@@ -38,5 +38,5 @@ export function useSaveState() {
     engine.ctx?.clear()
   }
 
-  return { getState, restore, clear }
+  return { serialize, restore, clear }
 }
