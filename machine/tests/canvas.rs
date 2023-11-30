@@ -99,21 +99,35 @@ mod canvas_tests {
     #[test]
     fn test_clock_wraparound() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Clock { time: 250 })?;
+        c.add_block(Clock { time: 250, rate: 1 })?;
         c.add_block(Plot { values: vec![], size: 5 })?;
         c.connect(port(0, 0), port(1, 0))?;
 
         c.tick(1)?;
 
-        if let Clock { time } = c.blocks[0].data {
+        if let Clock { time, .. } = c.blocks[0].data {
             assert_eq!(time, 251);
         }
 
         c.tick(10)?;
 
-        if let Clock { time } = c.blocks[0].data {
+        if let Clock { time, .. } = c.blocks[0].data {
             assert_eq!(time, 6);
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_clock_rate() -> Errorable {
+        let mut c = Canvas::new();
+        c.add_block(Clock { time: 250, rate: 8 })?;
+        c.add_block(Plot { values: vec![], size: 5 })?;
+        c.connect(port(0, 0), port(1, 0))?;
+
+        c.tick(50)?;
+
+        assert_eq!(c.blocks[1].data, Plot { values: vec![8, 16, 24, 32, 40], size: 5 });
 
         Ok(())
     }

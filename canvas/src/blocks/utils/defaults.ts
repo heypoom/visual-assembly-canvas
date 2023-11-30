@@ -11,7 +11,7 @@ export const defaultProps: DefaultPropsMap = {
   Pixel: { pixels: [], mode: "Append" },
   Tap: { signal: [1] },
   Osc: { waveform: { Sine: null } },
-  Clock: { time: 0 },
+  Clock: { time: 0, rate: 1 },
   Plot: { values: [], size: 250 },
   MidiIn: { on: "NoteOn", port: 0, channels: [] },
   MidiOut: { format: "Note", channel: 1, port: 0 },

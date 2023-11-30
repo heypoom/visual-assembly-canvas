@@ -47,6 +47,7 @@ export interface OscProps extends BaseProps {
 
 export interface ClockProps extends BaseProps {
   time: number
+  rate: number
 }
 
 export interface MidiInProps extends BaseProps {
