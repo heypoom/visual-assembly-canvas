@@ -45,7 +45,9 @@ export function usePersist(config: Config = {}) {
     const { nodes, edges, viewport } = state.flow
     flow.setNodes(nodes)
     flow.setEdges(edges)
-    flow.setViewport(viewport)
+
+    const { x = 0, y = 0, zoom = 1 } = viewport
+    flow.setViewport({ x, y, zoom })
 
     // Re-initialize the blocks
     nodes.forEach((node) => setupBlock(node as BlockNode))
@@ -71,7 +73,7 @@ export function usePersist(config: Config = {}) {
     }, 0)
 
     done.current = true
-    window.persist = { storage, serialize, restore, clear }
+    window.persist = { storage, serialize, restore, clear, flow }
   }, [])
 
   return { storage, serialize, restore, clear }

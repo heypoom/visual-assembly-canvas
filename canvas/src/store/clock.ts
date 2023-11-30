@@ -1,18 +1,23 @@
 import { map } from "nanostores"
 
-interface ClockSpeedConfig {
-  /** machine's clock speed (in cycles per tick) */
-  machine: number
+interface ClockConfig {
+  /** how many instructions will the machine process in a single tick? */
+  instructionsPerTick: number
 
-  /** canvas's clock speed (in cycles per tick) */
-  canvas: number
+  /** how many ticks will the canvas batch-process in a single invocation? */
+  canvasBatchedTicks: number
 
-  /** target amount of delay (in milliseconds) */
-  delay: number
+  /** how long is the delay between each canvas processing? */
+  canvasMs: number
+
+  /** how long is the delay between each effect processing? */
+  effectMs: number
 }
 
-export const $clock = map<ClockSpeedConfig>({
-  machine: 1,
-  canvas: 1,
-  delay: 1,
+export const $clock = map<ClockConfig>({
+  instructionsPerTick: 1,
+  canvasBatchedTicks: 1,
+
+  canvasMs: 20,
+  effectMs: 20,
 })

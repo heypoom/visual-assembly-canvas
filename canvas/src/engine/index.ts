@@ -66,13 +66,13 @@ export class CanvasEngine {
   /** Should the canvas be ticked continuously? */
   private continuous = false
 
-  public setMachineSpeed(cycles: number) {
+  public setInstructionsPerTick(cycles: number) {
     this.ctx?.set_machine_clock_speed(cycles)
-    $clock.setKey("machine", cycles)
+    $clock.setKey("instructionsPerTick", cycles)
   }
 
-  public setCanvasSpeed(cycles: number) {
-    $clock.setKey("canvas", cycles)
+  public setCanvasBatchedTicks(cycles: number) {
+    $clock.setKey("canvasBatchedTicks", cycles)
   }
 
   public async setup() {
@@ -137,7 +137,7 @@ export class CanvasEngine {
     // Introspect the current state of the canvas.
     this.hasMachines = this.nodes.some(is.machine)
     this.hasProducers = this.nodes.some(is.producer)
-    this.continuous = $clock.get().delay > 0 && this.hasProducers
+    this.continuous = this.clock.canvasMs > 0 && this.hasProducers
 
     // Disable the watchdog if we have interactors, e.g., tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
@@ -147,7 +147,7 @@ export class CanvasEngine {
     this.prepare()
   }
 
-  get clockSpeed() {
+  get clock() {
     return $clock.get()
   }
 
@@ -256,7 +256,7 @@ export class CanvasEngine {
     syncMachineState(this)
   }
 
-  private step(count = this.clockSpeed.canvas) {
+  private step(count = this.clock.canvasBatchedTicks) {
     try {
       this.ctx?.step(count)
     } catch (error) {

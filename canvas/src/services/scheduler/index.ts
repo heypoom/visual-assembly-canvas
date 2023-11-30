@@ -3,6 +3,7 @@ import { audioManager } from "../audio/manager"
 
 import { $status } from "../../store/status"
 import { profiler } from "./profiler"
+import { $clock } from "../../store/clock"
 
 const handlers = {
   start: async () => {
@@ -45,14 +46,19 @@ export class Scheduler {
     $status.setKey("running", value)
   }
 
+  get clock() {
+    return $clock.get()
+  }
+
   public start = async () => {
     this.running = true
 
     // Start the run.
     await handlers.start()
 
-    this.schedule("canvas", 20)
-    this.schedule("effect", 20)
+    const { canvasMs, effectMs } = this.clock
+    this.schedule("canvas", canvasMs)
+    this.schedule("effect", effectMs)
 
     // Begin requesting animation frame.
     this.frame = 0

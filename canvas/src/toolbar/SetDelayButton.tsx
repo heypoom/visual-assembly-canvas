@@ -7,13 +7,13 @@ import { $clock } from "../store/clock"
 
 export const SetDelayButton = () => {
   const clock = useStore($clock)
-  const [delay, setDelay] = useState(clock.delay.toString())
+  const [delay, setDelay] = useState(clock.canvasMs.toString())
 
   const update = () => {
     const delayMs = parseInt(delay)
     if (isNaN(delayMs)) return
 
-    $clock.setKey("delay", delayMs)
+    $clock.setKey("canvasMs", delayMs)
   }
 
   return (
@@ -21,7 +21,7 @@ export const SetDelayButton = () => {
       <Dialog.Trigger>
         <Button color="gray" variant="soft" className="font-semibold">
           <LapTimerIcon />
-          {clock.delay === 0 ? "Delay" : `${clock.delay}ms`}
+          {clock.canvasMs === 0 ? "Delay" : `${clock.canvasMs}ms`}
         </Button>
       </Dialog.Trigger>
 
@@ -43,7 +43,7 @@ export const SetDelayButton = () => {
             <Button
               variant="soft"
               color="green"
-              onClick={() => $clock.setKey("delay", 0)}
+              onClick={() => $clock.setKey("canvasMs", 0)}
             >
               Remove Delay
             </Button>
