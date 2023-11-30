@@ -1,19 +1,15 @@
-import { useStore } from "@nanostores/react"
-
 import { ErrorIndicator } from "./ErrorIndicator"
 
-import { $output } from "../../store/results"
+import { MachineState } from "../../types/MachineState"
 
 interface Props {
   id: number
+  state: MachineState
 }
 
 export const MachineValueViewer = (props: Props) => {
-  const { id } = props
+  const { id, state } = props
 
-  const outputs = useStore($output)
-
-  const state = outputs[id] ?? {}
   const { registers } = state
   const stack = state.stack ? [...state.stack].map((x) => x) : null
 

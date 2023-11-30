@@ -8,6 +8,7 @@ export interface MachineState {
 
   inboxSize: number
   outboxSize: number
+  status: MachineStatus
 }
 
 export type MachineStates = Record<number, MachineState>

@@ -19,6 +19,7 @@ const toState = (result: InspectionState): MachineState => ({
 
   inboxSize: result.inbox_size ?? 0,
   outboxSize: result.outbox_size ?? 0,
+  status: result.status,
 })
 
 export const setError = action(
