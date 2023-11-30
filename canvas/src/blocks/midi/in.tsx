@@ -75,7 +75,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
       setLast([note, value, channel])
       engine.send(id, { Midi: { event: on, value, note, channel, port } })
 
-      if (!status.running) engine.stepOnce()
+      if (!status.running) engine.stepSlow()
     },
     [id, on, port, status.running],
   )

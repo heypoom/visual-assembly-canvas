@@ -232,17 +232,15 @@ export class CanvasEngine {
   /**
    * Step the canvas once.
    * Used for the step button.
-   *
-   * [SLOW]
    **/
-  public stepOnce = () => {
+  public stepSlow = (count = 1) => {
     this.halted = false
 
     // Prepare for this run.
     this.prepare()
 
     // Step the canvas once.
-    this.step(1)
+    this.step(count)
 
     // Perform effects and updates immediately after stepping.
     this.performSideEffects()

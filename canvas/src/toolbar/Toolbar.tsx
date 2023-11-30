@@ -37,7 +37,7 @@ export function Toolbar() {
           color={halted ? "blue" : "cyan"}
           variant="soft"
           className="font-semibold"
-          onClick={engine.stepOnce}
+          onClick={() => engine.stepSlow()}
           disabled={status.running || !hasBlocks}
         >
           <TrackNextIcon />

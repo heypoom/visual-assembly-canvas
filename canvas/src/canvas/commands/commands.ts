@@ -147,7 +147,13 @@ type Fn = (context: ActionContext) => void
 const createCommandRunner = (context: Context) => {
   const actions: Record<string, Fn> = {
     reset: () => engine.reset(),
-    step: () => engine.stepOnce(),
+
+    step(ctx) {
+      let count = Number(ctx.args[0])
+      if (isNaN(count)) count = 1
+
+      engine.stepSlow(count)
+    },
 
     clear_all() {
       context.clearAll()
