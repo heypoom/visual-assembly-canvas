@@ -25,6 +25,7 @@ interface Command {
   action?: CommandAction
   destructive?: boolean
   args?: CommandArg[]
+  hint?: () => string
 }
 
 const commands: Command[] = [
@@ -63,21 +64,25 @@ commands.push(
     name: "Machine Speed (ops/tick)",
     prefix: "machine_speed",
     args: [{ type: "number" }],
+    hint: () => `${$clock.get().instructionsPerTick} ops/tick`,
   },
   {
     name: "Canvas Speed (ops/tick)",
     prefix: "canvas_speed",
     args: [{ type: "number" }],
+    hint: () => `${$clock.get().canvasBatchedTicks} ops/tick`,
   },
   {
     name: "Canvas Delay (ms)",
     prefix: "canvas_delay",
     args: [{ type: "number" }],
+    hint: () => `${$clock.get().canvasMs}ms`,
   },
   {
     name: "Side Effect Delay (ms)",
     prefix: "effect_delay",
     args: [{ type: "number" }],
+    hint: () => `${$clock.get().effectMs}ms`,
   },
   {
     name: "Clear All",

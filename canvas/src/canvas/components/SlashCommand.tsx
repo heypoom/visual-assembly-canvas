@@ -28,6 +28,7 @@ export function SlashCommand() {
   function hide() {
     setActive(false)
     setInput("")
+    setSelected(0)
   }
 
   const onMouseMove = useCallback((event: MouseEvent) => {
@@ -50,9 +51,8 @@ export function SlashCommand() {
     }
   }, [active])
 
-  const argsValid = useMemo(() => {
-    return isArgsValid(input, matches[selected])
-  }, [input, matches, selected])
+  const command = useMemo(() => matches[selected], [matches, selected])
+  const argsValid = useMemo(() => isArgsValid(input, command), [input, command])
 
   if (!cursor) return null
   if (!active) return null
@@ -67,80 +67,86 @@ export function SlashCommand() {
       className="flex flex-col fixed font-mono py-3 bg-gray-2 rounded-3 gap-y-2 min-w-[400px]"
       style={{ top: `${top}px`, left: `${left}px` }}
     >
-      <input
-        className={cn(
-          "bg-transparent text-4 outline-none px-4",
-          (noMatches || !argsValid) && "text-red-11",
-        )}
-        value={input}
-        autoFocus
-        onChange={(e) => {
-          setSelected(0)
-          setInput(e.target.value)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "ArrowDown") {
-            e.preventDefault()
+      <div className="relative">
+        <input
+          className={cn(
+            "bg-transparent text-4 outline-none px-4",
+            (noMatches || !argsValid) && "text-red-11",
+          )}
+          value={input}
+          autoFocus
+          onChange={(e) => {
+            setInput(e.target.value)
+            setSelected(0)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") {
+              e.preventDefault()
 
-            setSelected((s) => {
-              if (s >= matches.length - 1) return 0
+              setSelected((s) => {
+                if (s >= matches.length - 1) return 0
 
-              return s + 1
-            })
+                return s + 1
+              })
 
-            return
-          }
-
-          if (e.key === "ArrowUp") {
-            e.preventDefault()
-
-            setSelected((s) => {
-              if (s <= 0) return matches.length - 1
-
-              return s - 1
-            })
-
-            return
-          }
-
-          if (e.key === "Tab") {
-            e.preventDefault()
-
-            if (matches.length === 0) return
-
-            const command = matches[selected]
-            if (!command) return
-
-            setInput(`/${command.prefix}${command.args ? " " : ""}`)
-
-            return
-          }
-
-          if (e.key === "Enter") {
-            if (matches.length === 0) return
-
-            const command = matches[selected]
-            if (!command) return
-
-            if (!isArgsValid(input, command)) {
-              setInput(`/${command.prefix} `)
               return
             }
 
-            const position = flow.project(cursor)
+            if (e.key === "ArrowUp") {
+              e.preventDefault()
 
-            const ok = run(command, { input, position })
-            if (ok) hide()
+              setSelected((s) => {
+                if (s <= 0) return matches.length - 1
 
-            return
-          }
+                return s - 1
+              })
 
-          if (e.key === "Escape") {
-            hide()
-            return
-          }
-        }}
-      />
+              return
+            }
+
+            if (e.key === "Tab") {
+              e.preventDefault()
+              if (!command) return
+
+              setInput(`/${command.prefix}${command.args ? " " : ""}`)
+              setSelected(0)
+
+              return
+            }
+
+            if (e.key === "Enter") {
+              e.preventDefault()
+              if (!command) return
+
+              if (!isArgsValid(input, command)) {
+                setInput(`/${command.prefix} `)
+                setSelected(0)
+
+                return
+              }
+
+              const position = flow.project(cursor)
+
+              const ok = run(command, { input, position })
+              if (ok) hide()
+
+              return
+            }
+
+            if (e.key === "Escape") {
+              e.preventDefault()
+              hide()
+              return
+            }
+          }}
+        />
+
+        {command?.hint && (
+          <div className="text-2 text-gray-10 absolute top-[2px] right-4">
+            {command.hint()}
+          </div>
+        )}
+      </div>
 
       {matches.length > 0 && (
         <div className="flex flex-col">

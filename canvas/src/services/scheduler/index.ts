@@ -99,7 +99,7 @@ export class Scheduler {
     // Update blocks first!
     this.update("blocks")
 
-    // TODO: update different block types at different rates. some might not need 60FPS?
+    // TODO: upate different block types at different rates. some might not need 60FPS?
     // TODO: adaptive FPS based on canvas heuristics.
     if (this.every(5)) this.update("machine")
     if (this.every(10)) this.update("highlight")
