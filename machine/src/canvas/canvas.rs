@@ -19,8 +19,6 @@ use crate::audio::waveform::Waveform;
 
 type Errorable = Result<(), CanvasError>;
 
-const INBOX_SIZE: usize = 100;
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Canvas {
     pub blocks: Vec<Block>,
@@ -32,6 +30,9 @@ pub struct Canvas {
 
     /// How many cycles should the machine run per tick? i.e. their clock speed.
     pub machine_cycle_per_tick: u16,
+
+    /// How many messages can the inbox hold before it starts dropping messages?
+    pub inbox_limit: usize,
 
     /// Used for pre-computing waveforms for performance.
     #[serde(skip)]
@@ -50,6 +51,7 @@ impl Canvas {
             block_id_counter: 0,
             wire_id_counter: 0,
 
+            inbox_limit: 100,
             machine_cycle_per_tick: 1,
         }
     }
@@ -525,6 +527,8 @@ impl Canvas {
 
     /// Sends the message to the destination port.
     pub fn send_message(&mut self, message: Message) -> Errorable {
+        let inbox_limit = self.inbox_limit;
+
         // There might be more than one destination machine connected to a port.
         let recipients = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
 
@@ -537,8 +541,7 @@ impl Canvas {
                         if let Some(m) = self.seq.get_mut(machine_id) {
                             m.inbox.push_back(message.clone());
 
-                            // Limit the size of the inbox.
-                            if m.inbox.len() > INBOX_SIZE {
+                            if m.inbox.len() > inbox_limit {
                                 m.inbox.pop_front();
                             }
                         }
@@ -547,8 +550,7 @@ impl Canvas {
                     _ => {
                         block.inbox.push_back(message.clone());
 
-                        // Limit the size of the inbox.
-                        if block.inbox.len() > INBOX_SIZE {
+                        if block.inbox.len() > inbox_limit {
                             block.inbox.pop_front();
                         }
                     }
