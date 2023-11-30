@@ -3,6 +3,7 @@ use machine::canvas::wire::Port;
 use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};
 use machine::{Event, MEMORY_SIZE, REG_COUNT};
+use machine::status::MachineStatus;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
@@ -31,6 +32,7 @@ pub struct InspectedMachine {
 
     pub inbox_size: usize,
     pub outbox_size: usize,
+    pub status: MachineStatus
 }
 
 type Return = Result<JsValue, JsValue>;
@@ -130,6 +132,12 @@ impl Controller {
     }
 
     pub fn inspect_machine(&mut self, id: u16) -> Return {
+        let Some(status) = self.canvas.seq.statuses.get(&id) else {
+            return Ok(NULL);
+        };
+
+        let status = status.clone();
+
         let Some(m) = self.canvas.seq.get_mut(id) else {
             return Ok(NULL);
         };
@@ -144,6 +152,7 @@ impl Controller {
             },
             inbox_size: m.inbox.len(),
             outbox_size: m.outbox.len(),
+            status
         };
 
         Ok(to_value(&state)?)
@@ -228,7 +237,7 @@ impl Controller {
     pub fn load_canvas_state(&mut self, state: JsValue) -> Return {
         self.canvas = from_value(state)?;
 
-        /// Ensure that the memory and registers are the correct size.
+        // Ensure that the memory and registers are the correct size.
         for m in self.canvas.seq.machines.iter_mut() {
             if m.mem.buffer.len() < MEMORY_SIZE as usize {
                 m.mem.buffer = vec![0; MEMORY_SIZE as usize];
