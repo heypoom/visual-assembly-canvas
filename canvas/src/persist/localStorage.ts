@@ -1,4 +1,4 @@
-import { PersistenceDriver } from "./useAutoSave"
+import { PersistenceDriver } from "./types"
 
 const KEY = "CANVAS_STATE"
 

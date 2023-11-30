@@ -57,8 +57,9 @@ export class CanvasEngine {
   public haltReason: HaltReason | null = null
 
   private sources: Map<number, string> = new Map()
-  private highlighters: Map<number, HighlighterFn> = new Map()
   private highlightMaps: HighlightMaps = new Map()
+
+  public highlighters: Map<number, HighlighterFn> = new Map()
 
   // Does the canvas contain machines or producers?
   private hasMachines = false

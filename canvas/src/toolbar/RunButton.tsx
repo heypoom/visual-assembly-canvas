@@ -4,7 +4,6 @@ import { PauseIcon, PlayIcon } from "@radix-ui/react-icons"
 
 import { $status } from "../store/status"
 
-import { engine } from "../engine"
 import { $hasBlocks } from "../store/nodes"
 import { scheduler } from "../services/scheduler"
 

@@ -182,4 +182,5 @@ export class Profiler {
 
 export const profiler = new Profiler()
 
+// @ts-ignore
 window.profiler = profiler
