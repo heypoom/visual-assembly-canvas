@@ -12,6 +12,7 @@ export function addBlock<T extends BlockTypes>(type: T) {
   if (typeof id !== "number") return
 
   const data = { ...props, id } as BlockTypeMap[T]
+
   const node = addCanvasNode(id, type, data)
   setupBlock(node)
 }

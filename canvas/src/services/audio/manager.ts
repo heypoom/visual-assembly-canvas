@@ -30,11 +30,12 @@ export class AudioManager {
     await start()
   }
 
-  add(id: number, config: SynthConfig) {
+  add(id: number, config: string | SynthConfig) {
     if (this.synths.has(id)) return
 
-    const key = Object.keys(config)[0] as SynthType
-    const createSynth = synthMap[key]
+    const key = typeof config === "string" ? config : Object.keys(config)[0]
+    const createSynth = synthMap[key as SynthType]
+
     this.synths.set(id, createSynth())
   }
 
