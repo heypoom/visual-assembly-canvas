@@ -11,6 +11,7 @@ import { profiler } from "../../services/scheduler/profiler"
 
 interface Options {
   position?: { x: number; y: number }
+  input?: string
 }
 
 interface Context {
@@ -22,6 +23,7 @@ interface Command {
   prefix: string
   action?: CommandAction
   destructive?: boolean
+  args?: CommandArg[]
 }
 
 const commands: Command[] = [
@@ -39,6 +41,11 @@ const commands: Command[] = [
   },
 ]
 
+interface CommandArg {
+  name: string
+  type?: "number" | "string"
+}
+
 const blocks = Object.keys(defaultProps) as BlockTypes[]
 
 type CommandAction = { type: "add_block"; block: BlockTypes }
@@ -53,6 +60,16 @@ blocks.forEach((block) => {
 
 commands.push(
   {
+    name: "Cycles Per Tick",
+    prefix: "machine_ticks",
+    args: [{ name: "iter", type: "number" }],
+  },
+  {
+    name: "Canvas Tick Speed",
+    prefix: "canvas_ticks",
+    args: [{ name: "iter", type: "number" }],
+  },
+  {
     name: "Clear All",
     prefix: "clear_all",
     destructive: true,
@@ -63,15 +80,37 @@ commands.push(
   },
 )
 
+export const isArgsValid = (input: string, command: Command): boolean => {
+  if (!command) return false
+  if (!command.args) return true
+
+  const args = input.split(" ").slice(1)
+  if (args.length < command.args.length) return false
+
+  for (const [i, str] of args.entries()) {
+    if (!str) return false
+
+    const schema = command.args[i]
+
+    if (schema.type === "number") {
+      if (isNaN(Number(str))) return false
+    }
+  }
+
+  return true
+}
+
 export const getMatchedCommands = (input: string): Command[] => {
   input = input.replace(/^\//, "").toLowerCase()
+
+  const [query] = input.split(" ")
 
   const matches: Command[] = []
   const found: Record<string, boolean> = {}
 
   // Pass 1: match by prefix
   for (const command of commands) {
-    if (command.prefix.startsWith(input)) {
+    if (command.prefix.startsWith(query)) {
       found[command.prefix] = true
       matches.push(command)
     }
@@ -81,7 +120,7 @@ export const getMatchedCommands = (input: string): Command[] => {
   for (const command of commands) {
     if (found[command.prefix]) continue
 
-    if (command.name.toLowerCase().includes(input)) {
+    if (command.name.toLowerCase().includes(query)) {
       matches.push(command)
     }
   }
@@ -89,8 +128,14 @@ export const getMatchedCommands = (input: string): Command[] => {
   return matches
 }
 
+interface ActionContext {
+  args: string[]
+}
+
+type Fn = (context: ActionContext) => void
+
 const createCommandRunner = (context: Context) => {
-  const actions: Record<string, () => void> = {
+  const actions: Record<string, Fn> = {
     reset: () => engine.reset(),
     step: () => engine.stepOnce(),
 
@@ -112,6 +157,18 @@ const createCommandRunner = (context: Context) => {
     profiler() {
       profiler.toggle()
     },
+
+    machine_ticks(ctx) {
+      const value = Number(ctx.args[0])
+
+      engine.setInstructionsPerTick(value)
+    },
+
+    canvas_ticks(ctx) {
+      const value = Number(ctx.args[0])
+
+      engine.setCanvasBatchedTicks(value)
+    },
   }
 
   return (command: Command, options?: Options): boolean => {
@@ -124,7 +181,9 @@ const createCommandRunner = (context: Context) => {
     const action = actions[command.prefix]
     if (!action) return false
 
-    action()
+    const args = options?.input?.split(" ").slice(1) ?? []
+    action({ args })
+
     return true
   }
 }
