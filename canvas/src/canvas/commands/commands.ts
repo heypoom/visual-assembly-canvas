@@ -32,6 +32,7 @@ const commands: Command[] = [
   {
     name: "Run / Pause",
     prefix: "run",
+    hint: () => ($status.get().running ? "Pause" : "Run"),
   },
   {
     name: "Step",
@@ -92,6 +93,7 @@ commands.push(
   {
     name: "Toggle Profiler",
     prefix: "profiler",
+    hint: () => (profiler.enabled ? "Disable" : "Enable"),
   },
 )
 
