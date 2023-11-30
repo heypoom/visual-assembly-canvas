@@ -28,6 +28,9 @@ pub struct InspectState {
     pub stack: Vec<u16>,
     pub events: Vec<Event>,
     pub registers: InspectRegister,
+
+    pub inbox_size: usize,
+    pub outbox_size: usize,
 }
 
 type Return = Result<JsValue, JsValue>;
@@ -139,6 +142,8 @@ impl Controller {
                 sp: m.reg.get(SP),
                 fp: m.reg.get(FP),
             },
+            inbox_size: m.inbox.len(),
+            outbox_size: m.outbox.len(),
         };
 
         Ok(to_value(&state)?)
@@ -191,14 +196,6 @@ impl Controller {
 
     pub fn set_await_watchdog(&mut self, state: bool) {
         self.canvas.set_await_watchdog(state)
-    }
-
-    pub fn get_machine_queue_counts(&mut self, id: u16) -> Return {
-        let Some(m) = self.canvas.seq.get(id) else {
-            return Ok(NULL);
-        };
-
-        Ok(to_value(&[m.inbox.len(), m.outbox.len()])?)
     }
 
     pub fn clear(&mut self) {
