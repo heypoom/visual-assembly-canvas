@@ -19,6 +19,8 @@ use crate::audio::waveform::Waveform;
 
 type Errorable = Result<(), CanvasError>;
 
+const INBOX_SIZE: usize = 100;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Canvas {
     pub blocks: Vec<Block>,
@@ -533,11 +535,23 @@ impl Canvas {
                     // Send the message directly to the machine.
                     Machine { machine_id } => {
                         if let Some(m) = self.seq.get_mut(machine_id) {
-                            m.inbox.push(message.clone());
+                            m.inbox.push_back(message.clone());
+
+                            // Limit the size of the inbox.
+                            if m.inbox.len() > INBOX_SIZE {
+                                m.inbox.pop_front();
+                            }
                         }
                     }
 
-                    _ => block.inbox.push(message.clone())
+                    _ => {
+                        block.inbox.push_back(message.clone());
+
+                        // Limit the size of the inbox.
+                        if block.inbox.len() > INBOX_SIZE {
+                            block.inbox.pop_front();
+                        }
+                    }
                 }
             }
         }
@@ -547,7 +561,7 @@ impl Canvas {
 
     /// Sends the message to the specified block.
     pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
-        self.mut_block(block_id)?.inbox.push(Message { port: port(block_id, 60000), action });
+        self.mut_block(block_id)?.inbox.push_back(Message { port: port(block_id, 60000), action });
         Ok(())
     }
 

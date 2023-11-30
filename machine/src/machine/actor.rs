@@ -28,7 +28,7 @@ impl Actor for Machine {
 
             // A new message arrived!
             // We can process them now.
-            let Some(message) = self.inbox.pop() else { break; };
+            let Some(message) = self.inbox.pop_back() else { break; };
             self.expected_receives -= 1;
 
             match message.action {

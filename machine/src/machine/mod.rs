@@ -3,6 +3,7 @@ pub mod decode;
 pub mod execute;
 pub mod runtime_error;
 
+use std::collections::VecDeque;
 use serde::{Deserialize, Serialize};
 use crate::mem::{Memory, StackManager};
 use crate::{CALL_STACK_END, CALL_STACK_START, Op, ParseError, Parser, Register::FP, Registers};
@@ -29,7 +30,7 @@ pub struct Machine {
     pub events: Vec<Event>,
 
     /// Inbox contains messages sent to this machine.
-    pub inbox: Vec<Message>,
+    pub inbox: VecDeque<Message>,
 
     /// Outbox contains messages sent from this machine.
     pub outbox: Vec<Message>,
@@ -51,8 +52,7 @@ impl Machine {
             reg: Registers::new(),
 
             events: vec![],
-
-            inbox: vec![],
+            inbox: VecDeque::new(),
             outbox: vec![],
 
             is_debug: false,

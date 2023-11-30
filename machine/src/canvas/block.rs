@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use serde::{Deserialize, Serialize};
 use crate::{Event, Message};
 use crate::audio::waveform::Waveform;
@@ -12,7 +13,7 @@ pub struct Block {
 
     pub data: BlockData,
 
-    pub inbox: Vec<Message>,
+    pub inbox: VecDeque<Message>,
     pub outbox: Vec<Message>,
     pub events: Vec<Event>,
 }
@@ -85,7 +86,7 @@ pub enum BlockData {
 
 impl Block {
     pub fn new(id: u16, data: BlockData) -> Block {
-        Block { id, data, inbox: vec![], outbox: vec![], events: vec![] }
+        Block { id, data, inbox: VecDeque::new(), outbox: vec![], events: vec![] }
     }
 
     pub fn consume_messages(&mut self) -> Vec<Message> {

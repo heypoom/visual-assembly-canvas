@@ -54,7 +54,8 @@ impl Rewind {
                     let memory = diff_slice(&prev.mem.buffer, &curr.mem.buffer);
                     let register = diff_slice(&prev.reg.buffer, &curr.reg.buffer);
 
-                    let inbox = diff_slice(&prev.inbox, &curr.inbox);
+                    // let inbox = diff_slice(prev.inbox.make_contiguous(), &curr.inbox);
+                    let inbox = vec![];
                     let outbox = diff_slice(&prev.outbox, &curr.outbox);
                     let events = diff_slice(&prev.events, &curr.events);
 
@@ -66,7 +67,7 @@ impl Rewind {
                         });
                     }
 
-                    if !inbox.is_empty() || !outbox.is_empty() || !events.is_empty() {
+                    if !outbox.is_empty() || !events.is_empty() {
                         mailboxes.push(MailboxPatch {
                             id,
                             inbox,
