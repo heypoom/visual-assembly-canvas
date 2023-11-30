@@ -18,4 +18,6 @@ export function addCanvasNode<T extends BlockTypes>(
   }
 
   addNode(node)
+
+  return node
 }

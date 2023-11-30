@@ -4,9 +4,13 @@ import { ReactFlowJsonObject, useReactFlow } from "reactflow"
 import { LocalStorageDriver } from "./localStorage"
 
 import { engine } from "../engine"
+import { BlockNode } from "../types/Node"
+import { audioManager } from "../services/audio/manager"
+import { defaultProps, isBlock } from "../canvas/blocks"
+import { setupBlock } from "./setupBlock"
 
 export interface SaveState {
-  flow: ReactFlowJsonObject
+  flow: ReactFlowJsonObject<BlockNode>
   engine: any
 }
 
@@ -43,6 +47,10 @@ export function usePersist(config: Config = {}) {
     flow.setNodes(nodes)
     flow.setEdges(edges)
     flow.setViewport(viewport)
+
+    // Re-initialize the blocks
+    const blocks = nodes.map((n) => n.data)
+    blocks.forEach(setupBlock)
   }
 
   function clear() {

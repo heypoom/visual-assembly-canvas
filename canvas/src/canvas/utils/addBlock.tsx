@@ -2,7 +2,7 @@ import { engine } from "../../engine"
 import { BlockTypeMap, BlockTypes } from "../../types/Node"
 import { defaultProps, DEFAULT_SOURCE } from "../blocks"
 import { addCanvasNode } from "./addCanvasNode"
-import { audioManager } from "../../services/audio/manager"
+import { setupBlock } from "../../persist/setupBlock"
 
 export function addBlock<T extends BlockTypes>(type: T) {
   if (type === "Machine") return addMachine()
@@ -11,11 +11,9 @@ export function addBlock<T extends BlockTypes>(type: T) {
   const id = engine.ctx?.add_block({ [type]: props })
   if (typeof id !== "number") return
 
-  if (type === "Synth") {
-    audioManager.add(id, defaultProps.Synth.config)
-  }
-
-  addCanvasNode(id, type, { ...props, id } as BlockTypeMap[T])
+  const data = { ...props, id } as BlockTypeMap[T]
+  const node = addCanvasNode(id, type, data)
+  setupBlock(node)
 }
 
 export function addMachine() {

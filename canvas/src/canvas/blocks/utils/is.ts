@@ -10,6 +10,7 @@ export const isBlock = {
   pixel: isBlockType("Pixel"),
   tap: isBlockType("Tap"),
   osc: isBlockType("Osc"),
+  synth: isBlockType("Synth"),
   clock: isBlockType("Clock"),
   plot: isBlockType("Plot"),
   midiIn: isBlockType("MidiIn"),
