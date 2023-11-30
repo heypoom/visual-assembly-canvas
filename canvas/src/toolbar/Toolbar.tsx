@@ -16,7 +16,7 @@ import { $hasBlocks } from "../store/nodes"
 import { addMachine } from "../canvas/utils/addBlock"
 import { BlockTypes } from "../types/Node"
 import { scheduler } from "../services/scheduler"
-import { usePersist } from "../persist/usePersist"
+import { useAutoSave } from "../persist/useAutoSave"
 
 function reset() {
   scheduler.pause()
@@ -27,7 +27,7 @@ export function Toolbar() {
   const status = useStore($status)
   const hasBlocks = useStore($hasBlocks)
 
-  usePersist()
+  useAutoSave()
 
   const { halted } = status
 

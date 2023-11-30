@@ -1,5 +1,7 @@
 import setup, { Controller } from "machine-wasm"
 
+import { processEffects } from "./effects"
+
 import { $nodes } from "../store/nodes"
 
 import {
@@ -25,10 +27,9 @@ import { $clock } from "../store/clock"
 import { isBlock as is } from "../blocks"
 import { syncBlockData } from "../store/blocks"
 import { midiManager } from "../services/midi"
-import { processMidiEvent } from "../services/midi/event"
+
 import { Effect } from "../types/effects"
 import { Action } from "../types/actions"
-import { processSynthEffect } from "../services/audio/process-synth"
 
 const machineError = (cause: MachineError): CanvasError => ({
   MachineError: { cause },
@@ -264,25 +265,19 @@ export class CanvasEngine {
     }
   }
 
-  consumeSideEffects(): Map<number, Effect[]> {
+  // TODO(Perf): consume different types of effects separately?
+  private consumeSideEffects(): Map<number, Effect[]> {
     return this.ctx?.consume_block_side_effects()
   }
 
   public performSideEffects() {
-    // TODO: collect different types of effects separately
-    this.consumeSideEffects().forEach((effects, id) => {
-      for (const effect of effects) {
-        if ("Midi" in effect) return processMidiEvent(id, effect).then()
-        if ("Synth" in effect) return processSynthEffect(id, effect)
-
-        console.warn("unknown effect:", effect)
-      }
-    })
+    const effects = this.consumeSideEffects()
+    effects.forEach(processEffects)
   }
 
   public syncBlocks() {
-    // TODO: we can optimize this by only syncing the blocks that have changed.
-    //       currently, we pull every data from the engine.
+    // TODO(Perf): we can optimize this by only syncing the blocks that have changed.
+    //             currently, we pull every data from the engine.
     const blocks = this.ctx?.get_blocks()
 
     blocks.forEach(syncBlockData)
