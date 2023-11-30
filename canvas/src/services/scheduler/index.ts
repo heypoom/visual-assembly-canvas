@@ -63,7 +63,11 @@ export class Scheduler {
   private schedule(type: Updater, wait: number) {
     const fn = this.fn(type)
 
-    this.timers[type] = setInterval(fn, wait)
+    this.timers[type] = setInterval(() => {
+      if (!this.running) return this.clearTimers(type)
+
+      fn()
+    }, wait)
   }
 
   private clearTimers(...updaters: Updater[]) {
@@ -77,7 +81,7 @@ export class Scheduler {
 
   public pause = () => {
     this.running = false
-    this.clearTimers("canvas", "effect", "highlight", "machine")
+    this.clearTimers("canvas", "effect")
     cancelAnimationFrame(this.frameRequestId)
   }
 
