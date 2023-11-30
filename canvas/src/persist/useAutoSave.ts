@@ -35,6 +35,7 @@ export function useAutoSave(config: PersistConfig = {}) {
 
     return () => {
       clearInterval(saveTimer.current)
+      restored.current = false
     }
   }, [])
 
