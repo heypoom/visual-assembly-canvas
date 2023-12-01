@@ -1,6 +1,6 @@
 import { map } from "nanostores"
 
-interface ClockConfig {
+export interface ClockConfig {
   /** how many instructions will the machine process in a single tick? */
   instructionsPerTick: number
 

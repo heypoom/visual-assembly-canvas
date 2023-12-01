@@ -5,6 +5,7 @@ import { setupBlock } from "./setupBlock"
 
 import { engine } from "../engine"
 import { BlockNode } from "../types/Node"
+import { $clock } from "../store/clock"
 
 export function useSaveState() {
   const flow = useReactFlow()
@@ -12,6 +13,7 @@ export function useSaveState() {
   const serialize = (): SaveState => ({
     flow: flow.toObject(),
     engine: engine.ctx?.partial_serialize_canvas_state(),
+    clock: $clock.get(),
   })
 
   function restore(state: SaveState) {
@@ -25,8 +27,13 @@ export function useSaveState() {
     flow.setNodes(nodes)
     flow.setEdges(edges)
 
+    // Restore viewport
     const { x = 0, y = 0, zoom = 1 } = viewport
     flow.setViewport({ x, y, zoom })
+
+    // Restore clock configuration.
+    $clock.set(state.clock)
+    engine.setInstructionsPerTick(state.clock.instructionsPerTick)
 
     // Re-initialize the blocks
     nodes.forEach((node) => setupBlock(node as BlockNode))
