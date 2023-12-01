@@ -63,12 +63,9 @@ export const MachineValueViewer = (props: Props) => {
       )}
 
       {stack && (
-        <div className="flex">
+        <div className="flex px-1">
           {stack.map((u, i) => (
-            <div
-              className="text-1 text-crimson-11 px-1 bg-stone-800 mx-1"
-              key={i}
-            >
+            <div className="text-1 text-crimson-11 bg-stone-800 mx-1" key={i}>
               {u.toString().padStart(2, "0")}
             </div>
           ))}
