@@ -35,7 +35,7 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
           "px-3 py-3 border-2 rounded-2 hover:border-cyan-11",
           errored && "!border-red-9",
           awaiting && "!border-purple-11",
-          halted && "border-gray-7",
+          halted && "border-gray-9",
           backpressuring && "!border-orange-9",
           sending && "border-crimson-11",
         )}
