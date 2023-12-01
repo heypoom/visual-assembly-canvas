@@ -397,7 +397,7 @@ impl Canvas {
                 }
 
                 Action::Write { address, data } => {
-                    let Memory { values } = &mut self.mut_block(id)?.data else { return Ok(()); };
+                    let Memory { values } = &mut self.mut_block(id)?.data else { continue; };
 
                     if address as usize + data.len() >= values.len() {
                         values.resize(address as usize + data.len() + 1, 0);
@@ -409,7 +409,7 @@ impl Canvas {
                 }
 
                 Action::Read { address, count } => {
-                    let Memory { values } = &self.get_block(id)?.data else { return Ok(()); };
+                    let Memory { values } = &self.get_block(id)?.data else { continue; };
                     let mut body = vec![];
 
                     if !values.is_empty() {
