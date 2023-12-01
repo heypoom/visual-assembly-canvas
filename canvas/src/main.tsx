@@ -5,7 +5,6 @@ import { Theme } from "@radix-ui/themes"
 
 import App from "./App"
 
-import "./store/logger"
 import "./styles/index.css"
 
 import "@radix-ui/themes/styles.css"
