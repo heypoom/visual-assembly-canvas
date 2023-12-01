@@ -29,24 +29,7 @@ interface Command {
   shortcut?: string
 }
 
-const commands: Command[] = [
-  {
-    name: "Run / Pause",
-    prefix: "run",
-    hint: () => ($status.get().running ? "Pause" : "Run"),
-    shortcut: "P",
-  },
-  {
-    name: "Step",
-    prefix: "step",
-    shortcut: "S",
-  },
-  {
-    name: "Reset",
-    prefix: "reset",
-    shortcut: "R",
-  },
-]
+const commands: Command[] = []
 
 interface CommandArg {
   type?: "number" | "string"
@@ -65,6 +48,22 @@ blocks.forEach((block) => {
 })
 
 commands.push(
+  {
+    name: "Run / Pause",
+    prefix: "run",
+    hint: () => ($status.get().running ? "Pause" : "Run"),
+    shortcut: "P",
+  },
+  {
+    name: "Step",
+    prefix: "step",
+    shortcut: "S",
+  },
+  {
+    name: "Reset",
+    prefix: "reset",
+    shortcut: "R",
+  },
   {
     name: "Machine Speed (ops/tick)",
     prefix: "machine_speed",

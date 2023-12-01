@@ -8,12 +8,12 @@ export type DefaultPropsMap = {
 
 export const defaultProps: DefaultPropsMap = {
   Machine: { source: DEFAULT_SOURCE },
+  Plot: { values: [], size: 250 },
+  Clock: { time: 0, rate: 1 },
   Pixel: { pixels: [], mode: "Append" },
   Tap: { signal: [1] },
   Osc: { waveform: { Sine: null } },
-  Clock: { time: 0, rate: 1 },
-  Plot: { values: [], size: 250 },
+  Synth: { synth_id: 0, config: { Basic: null } },
   MidiIn: { on: "NoteOn", port: 0, channels: [] },
   MidiOut: { format: "Note", channel: 1, port: 0 },
-  Synth: { synth_id: 0, config: { Basic: null } },
 }
