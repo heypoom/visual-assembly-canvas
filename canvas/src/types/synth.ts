@@ -5,7 +5,6 @@ export type SynthConfig =
   | { FM: null }
   | { AM: null }
   | { Noise: null }
-  | { Poly: { synth: SynthConfig } }
 
 export type SynthType = keyof UnionToIntersection<SynthConfig>
 
