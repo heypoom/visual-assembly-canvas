@@ -47,9 +47,9 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
         </div>
       </div>
 
-      <BlockHandle port={0} type="source" side="right" className="mt-[30px]" />
+      <BlockHandle port={0} type="source" side="right" className="mt-[-30px]" />
       <BlockHandle port={1} type="source" side="right" />
-      <BlockHandle port={2} type="source" side="right" className="mt-[-30px]" />
+      <BlockHandle port={2} type="source" side="right" className="mt-[30px]" />
     </div>
   )
 }
