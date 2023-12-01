@@ -139,12 +139,7 @@ export class Scheduler {
   }
 
   public toggle() {
-    if (scheduler.running) {
-      console.log("--- trigger pause ---")
-      return scheduler.pause()
-    }
-
-    console.log("--- trigger start ---")
+    if (scheduler.running) return scheduler.pause()
 
     scheduler.start().then()
   }

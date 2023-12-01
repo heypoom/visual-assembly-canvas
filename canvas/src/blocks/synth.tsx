@@ -18,7 +18,7 @@ export const SynthBlock = (props: NodeProps<SynthProps>) => {
         className="bg-cyan-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-cyan-9 px-1 py-1 ml-[-1px] border-2 z-10"
       />
 
-      <div className="px-4 py-2 border-2 rounded-2">
+      <div className="px-4 py-2 border-2 rounded-2 font-mono">
         <div>{name} Synth</div>
       </div>
 
