@@ -9,6 +9,7 @@ import { $status } from "../../store/status"
 import { engine } from "../../engine"
 import { profiler } from "../../services/scheduler/profiler"
 import { $clock } from "../../store/clock"
+import { download } from "../../utils/download"
 
 interface Options {
   position?: { x: number; y: number }
@@ -73,11 +74,20 @@ commands.push(
     args: [{ type: "string" }],
   },
   {
+    name: "Export File",
+    prefix: "export_file",
+    args: [{ type: "string", optional: true }],
+  },
+  {
     name: "Load",
     prefix: "load",
     args: [{ type: "string" }],
     hint: () => LocalStorageDriver.list().join(", "),
     options: () => LocalStorageDriver.list(),
+  },
+  {
+    name: "Import File",
+    prefix: "import_file",
   },
   {
     name: "Delete Save",
@@ -257,6 +267,30 @@ const createCommandRunner = (context: Context) => {
       if (!name) return
 
       LocalStorageDriver.delete(name)
+    },
+
+    export_file(ctx) {
+      const [name = "save"] = ctx.args
+
+      const state = JSON.stringify(context.saveState.serialize())
+      download(state, `${name}.json`, "application/json")
+    },
+
+    async import_file() {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          multiple: false,
+          types: [{ accept: { "application/json": [".json"] } }],
+          startIn: "downloads",
+        })
+
+        if (!handle) return
+
+        const file = await handle.getFile()
+        const plain = await file.text()
+
+        context.saveState.restore(JSON.parse(plain))
+      } catch (err) {}
     },
   }
 

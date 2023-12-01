@@ -53,6 +53,7 @@
     "@types/react-dom": "^18.2.14",
     "@types/ringbufferjs": "^1.1.2",
     "@types/webmidi": "^2.0.10",
+    "@types/wicg-file-system-access": "^2023.10.4",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
     "@vitejs/plugin-react": "^4.0.3",

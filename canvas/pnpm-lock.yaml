@@ -121,6 +121,9 @@ devDependencies:
   '@types/webmidi':
     specifier: ^2.0.10
     version: 2.0.10
+  '@types/wicg-file-system-access':
+    specifier: ^2023.10.4
+    version: 2023.10.4
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.9.1
     version: 6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@5.2.2)
@@ -2507,6 +2510,10 @@ packages:
   /@types/webmidi@2.0.10:
     resolution: {integrity: sha512-4RmTFMB6mN2h8XbJa1x3cOs9IOkXvFyHGcPUpUvWfmATuKg/J+dsFiMVgCE2EkpS+/8a8AP2tE3rQT1mLG7vEg==}
     requiresBuild: true
+
+  /@types/wicg-file-system-access@2023.10.4:
+    resolution: {integrity: sha512-ewOj7hWhsUTS2+aY6zY+7BwlgqGBj5ZXxKuHt3TAWpIJH0bDW/6bO1N1SdUDAzV8r0Nc+/ZtpAEETYTwrehBMw==}
+    dev: true
 
   /@typescript-eslint/eslint-plugin@6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@5.2.2):
     resolution: {integrity: sha512-w0tiiRc9I4S5XSXXrMHOWgHgxbrBn1Ro+PmiYhSg2ZVdxrAJtQgzU5o2m1BfP6UOn7Vxcc6152vFjQfmZR4xEg==}
