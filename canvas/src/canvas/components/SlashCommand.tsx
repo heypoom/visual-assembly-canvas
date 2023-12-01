@@ -137,8 +137,8 @@ export function SlashCommand() {
         />
 
         {command?.hint && (
-          <div className="text-2 text-gray-10 absolute top-[2px] right-4">
-            {command.hint()}
+          <div className="text-1 text-gray-10 absolute top-[3px] right-4">
+            {command.hint()?.slice(0, 40)}
           </div>
         )}
       </div>
