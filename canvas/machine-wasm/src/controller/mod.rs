@@ -181,7 +181,7 @@ impl Controller {
     }
 
     pub fn send_message(&mut self, message: JsValue) -> Return {
-        returns(self.canvas.send_message(from_value(message)?))
+        returns(self.canvas.send_message_to_port(from_value(message)?))
     }
 
     pub fn send_message_to_block(&mut self, block_id: u16, action: JsValue) -> Return {

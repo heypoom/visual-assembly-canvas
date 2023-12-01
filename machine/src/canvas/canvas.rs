@@ -633,12 +633,6 @@ impl Canvas {
         Ok(())
     }
 
-    /// Send a message from an actor to another actor.
-    pub fn send_direct_message(&mut self, from: u16, to: u16, action: Action) -> Errorable {
-        self.send_message_to_recipient(to, Message { action, sender: port(from, 0) })?;
-
-        Ok(())
-    }
 
     // TODO: improve bi-directional connection resolution.
     pub fn resolve_port(&self, port: Port) -> Option<Vec<u16>> {
@@ -693,6 +687,20 @@ impl Canvas {
         Ok(())
     }
 
+    /// Send a message from an actor to another actor.
+    pub fn send_direct_message(&mut self, from: u16, to: u16, action: Action) -> Errorable {
+        self.send_message_to_recipient(to, Message { action, sender: port(from, 0) })?;
+
+        Ok(())
+    }
+
+    /// Sends the message to the specified block.
+    pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
+        self.mut_block(block_id)?.inbox.push_back(Message { sender: port(block_id, 60000), action });
+
+        Ok(())
+    }
+
     pub fn send_message_to_recipient(&mut self, recipient_id: u16, message: Message) -> Errorable {
         let inbox_limit = self.inbox_limit;
 
@@ -718,14 +726,6 @@ impl Canvas {
                 }
             }
         }
-
-        Ok(())
-    }
-
-    /// Sends the message to the specified block.
-    pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
-        println!("message sent to {block_id}: {:?}", action.clone());
-        self.mut_block(block_id)?.inbox.push_back(Message { sender: port(block_id, 60000), action });
 
         Ok(())
     }
