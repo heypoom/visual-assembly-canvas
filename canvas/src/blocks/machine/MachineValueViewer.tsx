@@ -32,7 +32,8 @@ export const MachineValueViewer = (props: Props) => {
       {registers && (
         <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
           <div>
-            <span>PC</span> <strong>{registers.pc}</strong>
+            <span>PC</span>{" "}
+            <strong>{registers.pc.toString().padStart(2, "0")}</strong>
           </div>
 
           <div>
@@ -68,7 +69,7 @@ export const MachineValueViewer = (props: Props) => {
               className="text-1 text-crimson-11 px-1 bg-stone-800 mx-1"
               key={i}
             >
-              {u}
+              {u.toString().padStart(2, "0")}
             </div>
           ))}
         </div>
