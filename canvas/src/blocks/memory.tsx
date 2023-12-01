@@ -73,46 +73,48 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
       <RightClickMenu id={id} show={showSettings} toggle={toggle}>
         <div className="group border-2 border-green-9 font-mono py-2">
-          <div
-            className="grid items-center justify-center gap-x-1 px-2"
-            style={{
-              gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-            }}
-          >
-            {[...Array(count)].map((_, index) => {
-              const value = values[index]
+          {!isBatch && (
+            <div
+              className="grid items-center justify-center gap-x-1 px-2"
+              style={{
+                gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+              }}
+            >
+              {[...Array(count)].map((_, index) => {
+                const value = values[index]
 
-              return (
-                <div key={index} className="w-8">
-                  <input
-                    value={!value ? "" : value.toString(base)}
-                    placeholder="00"
-                    className={cn(
-                      "w-8 text-center bg-transparent outline-gray-3 outline-1 text-1 uppercase",
-                      value === 0 && "placeholder-gray-6",
-                      value === undefined && "placeholder-gray-4",
-                      value > 0 && "text-green-11",
-                    )}
-                    onChange={(e) => {
-                      const n = parseInt(e.target.value, base)
-                      if (isNaN(n)) return set(index, 0)
+                return (
+                  <div key={index} className="w-8">
+                    <input
+                      value={!value ? "" : value.toString(base)}
+                      placeholder="0"
+                      className={cn(
+                        "w-8 text-center bg-transparent outline-gray-3 outline-1 text-1 uppercase",
+                        value === 0 && "placeholder-gray-6",
+                        value === undefined && "placeholder-gray-4",
+                        value > 0 && "text-green-11",
+                      )}
+                      onChange={(e) => {
+                        const n = parseInt(e.target.value, base)
+                        if (isNaN(n)) return set(index, 0)
 
-                      set(index, n)
-                    }}
-                    onBlur={() => {
-                      if (value === undefined || value === null) return
+                        set(index, n)
+                      }}
+                      onBlur={() => {
+                        if (value === undefined || value === null) return
 
-                      engine.send(id, {
-                        Write: { address: index, data: [value] },
-                      })
+                        engine.send(id, {
+                          Write: { address: index, data: [value] },
+                        })
 
-                      engine.ctx?.force_tick_block(id)
-                    }}
-                  />
-                </div>
-              )
-            })}
-          </div>
+                        engine.ctx?.force_tick_block(id)
+                      }}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
           {isBatch && (
             <div className="px-4 nodrag py-2 text-green-11">
