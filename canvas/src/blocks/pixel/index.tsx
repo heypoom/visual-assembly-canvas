@@ -1,6 +1,6 @@
 import { useReducer } from "react"
 import { PixelMode as _PixelMode } from "machine-wasm"
-import { Select, TextField } from "@radix-ui/themes"
+import { TextField } from "@radix-ui/themes"
 import { NodeProps } from "reactflow"
 import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
@@ -12,10 +12,18 @@ import { engine } from "../../engine"
 import { updateNodeData } from "../../store/blocks"
 import { PixelMode } from "../../types/enums"
 import { BlockHandle } from "../components/BlockHandle"
+import { RadixSelect } from "../../ui/select"
 
 const modes = Object.keys(_PixelMode).filter(
   (key) => !isNaN(Number(_PixelMode[key as PixelMode])),
 )
+
+const modeOptions = modes.map((value) => ({ value, label: value }))
+
+const paletteOptions = Object.keys(palettes).map((value) => ({
+  value,
+  label: value,
+}))
 
 export const PixelBlock = (props: NodeProps<PixelProps>) => {
   const { id } = props.data
@@ -99,41 +107,21 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
               <div className="flex items-center gap-4 w-full">
                 <p className="text-1">Palette</p>
 
-                <Select.Root
-                  size="1"
+                <RadixSelect
                   value={palette}
-                  onValueChange={(p) => update({ palette: p as PaletteKey })}
-                >
-                  <Select.Trigger className="w-[70px]" />
-
-                  <Select.Content>
-                    {Object.keys(palettes).map((palette) => (
-                      <Select.Item value={palette} key={palette}>
-                        {palette}
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Root>
+                  onChange={(p) => update({ palette: p as PaletteKey })}
+                  options={paletteOptions}
+                />
               </div>
 
               <div className="flex items-center gap-4 w-full">
                 <p className="text-1">Behavior</p>
 
-                <Select.Root
-                  size="1"
+                <RadixSelect
                   value={mode.toString()}
-                  onValueChange={(p) => update({ mode: p as PixelMode })}
-                >
-                  <Select.Trigger className="w-[70px]" />
-
-                  <Select.Content>
-                    {modes.map((key) => (
-                      <Select.Item value={key} key={key}>
-                        {key}
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Root>
+                  onChange={(p) => update({ mode: p as PixelMode })}
+                  options={modeOptions}
+                />
               </div>
             </div>
           </div>
