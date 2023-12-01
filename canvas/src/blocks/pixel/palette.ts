@@ -1,7 +1,7 @@
 export const palettes = {
   base: [
     "transparent",
-    ...[...Array(255)].map((_, i) => `hsl(${i}, 100%, 50%)`),
+    ...[...Array(360)].map((_, i) => `hsl(${i}, 100%, 50%)`),
   ],
 } satisfies Record<string, string[]>
 
