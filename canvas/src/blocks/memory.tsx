@@ -18,7 +18,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
   const [isHex, setHex] = useState(false)
 
-  const [isBatch, setBatch] = useState(false)
+  const [isBatch, setBatch] = useState(true)
   const [batchInput, setBatchInput] = useState("")
 
   const [showSettings, toggle] = useReducer((n) => !n, false)
