@@ -86,9 +86,9 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
             </div>
           )}
 
-          <div className="px-2 flex justify-end">
+          <div className="px-2 flex justify-center items-center text-center">
             <div
-              className="text-1 text-gray-9"
+              className="text-1 text-gray-6"
               onClick={() => setHex((s) => !s)}
             >
               {isHex ? "hex" : "oct"}
