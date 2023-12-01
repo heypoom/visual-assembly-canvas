@@ -295,11 +295,11 @@ impl Canvas {
                     let mut triggers = vec![];
                     let duration = *address + 1;
 
-                    for (i, note) in data.iter().enumerate() {
+                    for note in data {
                         triggers.push(AttackRelease {
                             freq: note_to_freq(*note as u8),
                             duration: (duration as f32) / 255f32,
-                            time: i as f32,
+                            time: 0.0,
                         });
                     }
 
