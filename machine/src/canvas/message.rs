@@ -19,6 +19,12 @@ pub enum Action {
     /// Send information to the specified node.
     Data { body: Vec<u16> },
 
+    /// Request to read from the specified address.
+    Read { address: u16 },
+
+    /// Request to read from the specified address.
+    Write { address: u16, data: Vec<u16> },
+
     /// Reset the node to its initial state.
     Reset,
 

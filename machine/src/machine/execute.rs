@@ -6,6 +6,7 @@ use crate::register::Register::PC;
 use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
+use crate::machine::virtual_mem::VirtualMemory;
 use crate::runtime_error::{NotEnoughValuesSnafu};
 use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow, MissingMessageBody, MissingReturnAddress, MissingValueToStore};
 
@@ -46,13 +47,18 @@ impl Execute for Machine {
             }
 
             Op::Load(addr) => {
-                let v = self.mem.get(addr);
-                self.stack().push(v).map_err(|_| CannotLoadFromMemory)?;
+                if !self.read_virtual(addr) {
+                    let v = self.mem.get(addr);
+                    self.stack().push(v).map_err(|_| CannotLoadFromMemory)?;
+                }
             }
 
             Op::Store(addr) => {
                 let value = s.pop().map_err(|_| MissingValueToStore)?;
-                self.mem.set(addr, value);
+
+                if !self.write_virtual(addr, vec![value]) {
+                    self.mem.set(addr, value);
+                }
             }
 
             // Addition, subtraction, multiplication, division and modulo.

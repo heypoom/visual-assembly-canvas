@@ -2,6 +2,7 @@ pub mod actor;
 pub mod decode;
 pub mod execute;
 pub mod runtime_error;
+mod virtual_mem;
 
 use std::collections::VecDeque;
 use serde::{Deserialize, Serialize};
