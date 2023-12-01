@@ -1,19 +1,20 @@
-import { Handle, NodeProps, Position } from "reactflow"
-import { engine } from "../engine"
-import { Port } from "machine-wasm"
-import { TapProps } from "../types/blocks"
-import { Flex, TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
-
-import { RightClickMenu } from "./components/RightClickMenu"
-import { updateNodeData } from "../store/blocks"
+import { NodeProps } from "reactflow"
+import { Flex, TextField } from "@radix-ui/themes"
+import { Port } from "machine-wasm"
 import { useStore } from "@nanostores/react"
+
+import { engine } from "../engine"
+import { TapProps } from "../types/blocks"
+
+import { BlockHandle } from "./components/BlockHandle"
+import { RightClickMenu } from "./components/RightClickMenu"
+
 import { $status } from "../store/status"
+import { updateNodeData } from "../store/blocks"
 
-const S1 = 1
+const PORT = 0
 
-// TODO: send message to connected port on tap
-// TODO: add ways for blocks to send events from the frontend
 export const TapBlock = (props: NodeProps<TapProps>) => {
   const { id, signal } = props.data
 
@@ -25,17 +26,14 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
   function tap() {
     try {
       engine.ctx?.send_message({
-        sender: new Port(id, S1),
+        sender: new Port(id, PORT),
         action: { Data: { body: signal } },
       })
     } catch (err) {
       console.warn("cannot send tap:", err)
     }
 
-    // Only step the execution if the program is not running.
-    // TODO: can we improve this?
-    // TODO: traverse the graph node to only tick connected nodes?
-    if (!status.running) engine.stepSlow()
+    if (!status.running) engine.stepSlow(1)
   }
 
   function setSignal() {
@@ -76,12 +74,7 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
         </RightClickMenu>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={S1.toString()}
-        className="bg-gray-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:!border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10 border-gray-11 group-hover:border-gray-12"
-      />
+      <BlockHandle port={PORT} side="right" type="source" />
     </div>
   )
 }

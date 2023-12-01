@@ -1,7 +1,7 @@
 import { useReducer } from "react"
 import { PixelMode as _PixelMode } from "machine-wasm"
 import { Select, TextField } from "@radix-ui/themes"
-import { Handle, NodeProps, Position } from "reactflow"
+import { NodeProps } from "reactflow"
 import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
 import { PaletteKey, getPixelColor, palettes } from "./palette"
@@ -11,6 +11,7 @@ import type { PixelProps } from "../../types/blocks"
 import { engine } from "../../engine"
 import { updateNodeData } from "../../store/blocks"
 import { PixelMode } from "../../types/enums"
+import { BlockHandle } from "../components/BlockHandle"
 
 const modes = Object.keys(_PixelMode).filter(
   (key) => !isNaN(Number(_PixelMode[key as PixelMode])),
@@ -39,12 +40,7 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
 
   return (
     <div className="group">
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="0"
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
-      ></Handle>
+      <BlockHandle port={1} side="left" type="target" />
 
       <div className="border-2 border-crimson-9 rounded-2 relative hover:border-cyan-9">
         <div

@@ -1,4 +1,4 @@
-import { Handle, NodeProps, Position } from "reactflow"
+import { NodeProps } from "reactflow"
 
 import { OscProps } from "../types/blocks"
 import { engine } from "../engine"
@@ -8,9 +8,7 @@ import { RightClickMenu } from "./components/RightClickMenu"
 import { useReducer, useState } from "react"
 import { updateNodeData } from "../store/blocks"
 import { WaveformKey, Waveform } from "../types/waveform"
-
-const S0 = 0
-const S1 = 1
+import { BlockHandle } from "./components/BlockHandle"
 
 const waveforms: Record<WaveformKey, Waveform> = {
   Sine: { Sine: null },
@@ -75,12 +73,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
 
   return (
     <div>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={S0.toString()}
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
-      />
+      <BlockHandle port={1} side="left" type="target" />
 
       <RightClickMenu id={id} show={showSettings} toggle={toggle}>
         <div className="group border-2 border-crimson-9 font-mono px-3 py-2 space-y-2">
@@ -140,12 +133,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
         </div>
       </RightClickMenu>
 
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={S1.toString()}
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
-      />
+      <BlockHandle port={0} side="right" type="source" />
     </div>
   )
 }

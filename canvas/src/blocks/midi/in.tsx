@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import cx from "classnames"
-import { Handle, NodeProps, Position } from "reactflow"
+import { NodeProps } from "reactflow"
 import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
 
 import { MidiInProps } from "../../types/blocks"
@@ -23,12 +23,11 @@ import { MidiTransportForm } from "./transport"
 import { Select } from "@radix-ui/themes"
 
 import { MidiInputEvent } from "../../types/enums"
+import { BlockHandle } from "../components/BlockHandle"
 
 const events = Object.keys(_MidiInputEvent).filter(
   (key) => !isNaN(Number(_MidiInputEvent[key as MidiInputEvent])),
 ) as MidiInputEvent[]
-
-const S1 = 1
 
 export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
   const { id, on, port, channels } = props.data
@@ -153,12 +152,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
         </RightClickMenu>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={S1.toString()}
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 mr-[-1px] border-2 z-10"
-      />
+      <BlockHandle port={0} side="right" type="source" />
     </div>
   )
 }

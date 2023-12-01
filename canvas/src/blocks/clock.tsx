@@ -1,11 +1,10 @@
-import { Handle, NodeProps, Position } from "reactflow"
+import { NodeProps } from "reactflow"
 
 import { ClockProps } from "../types/blocks"
 
 import { RightClickMenu } from "./components/RightClickMenu"
 import { useReducer } from "react"
-
-const S1 = 1
+import { BlockHandle } from "./components/BlockHandle"
 
 export const ClockBlock = (props: NodeProps<ClockProps>) => {
   const { id } = props.data
@@ -22,12 +21,7 @@ export const ClockBlock = (props: NodeProps<ClockProps>) => {
         </div>
       </RightClickMenu>
 
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={S1.toString()}
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
-      />
+      <BlockHandle port={0} side="right" type="source" />
     </div>
   )
 }

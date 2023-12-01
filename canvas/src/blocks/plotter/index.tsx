@@ -1,13 +1,12 @@
 import { useEffect, useReducer, useRef } from "react"
-import { Handle, NodeProps, Position } from "reactflow"
+import { NodeProps } from "reactflow"
 import { cyanP3 } from "@radix-ui/colors"
 
 import { rescale } from "./rescale"
 
 import { RightClickMenu } from "../components/RightClickMenu"
 import { PlotterProps } from "../../types/blocks"
-
-const S0 = 0
+import { BlockHandle } from "../components/BlockHandle"
 
 export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
   const { id, values, size } = props.data
@@ -46,12 +45,7 @@ export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
 
   return (
     <div>
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={S0.toString()}
-        className="bg-cyan-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-cyan-9 px-1 py-1 ml-[-1px] border-2 z-10"
-      />
+      <BlockHandle port={1} side="left" type="target" />
 
       <RightClickMenu id={id} toggle={toggle} show={showSettings}>
         <div className="group">

@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react"
-import { Handle, NodeProps, Position } from "reactflow"
+import { NodeProps } from "reactflow"
 import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 
 import { MidiOutProps } from "../../types/blocks"
@@ -12,8 +12,7 @@ import { useStore } from "@nanostores/react"
 import { $lastMidiEvent, $midi } from "../../store/midi"
 import { midiManager } from "../../services/midi"
 import { MidiTransportForm } from "./transport"
-
-const S0 = 0
+import { BlockHandle } from "../components/BlockHandle"
 
 const formats = Object.keys(_MidiOutputFormat).filter(
   (key) => !isNaN(Number(_MidiOutputFormat[key as MidiOutputFormat])),
@@ -62,12 +61,7 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
 
   return (
     <div className="group">
-      <Handle
-        type="target"
-        position={Position.Left}
-        id={S0.toString()}
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
-      />
+      <BlockHandle port={1} side="left" type="target" />
 
       <RightClickMenu id={id} show={showSettings} toggle={toggle}>
         <div className="border-2 px-4 py-3 border-cyan-9 space-y-2 text-1 font-mono">
