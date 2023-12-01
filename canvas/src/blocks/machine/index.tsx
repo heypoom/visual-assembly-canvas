@@ -19,6 +19,7 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
   const awaiting = state.status === "Awaiting"
   const halted = state.status === "Halted"
   const backpressuring = state.inboxSize > 50
+  const sending = state.outboxSize >= 1
 
   return (
     <div className="font-mono bg-slate-1 relative group">
@@ -36,6 +37,7 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
           awaiting && "!border-purple-11",
           halted && "border-gray-11",
           backpressuring && "!border-orange-9",
+          sending && "border-crimson-11",
         )}
       >
         <div className="flex flex-col space-y-2 text-gray-50">
