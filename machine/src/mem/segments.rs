@@ -15,14 +15,14 @@ pub const CODE_END: u16 = CODE_START + CODE_SIZE - 1;
 pub const DATA_START: u16 = CODE_END + 1;
 pub const DATA_END: u16 = DATA_START + DATA_SIZE - 1;
 
-// Call stack segment
-pub const CALL_STACK_START: u16 = DATA_END + 1;
-pub const CALL_STACK_END: u16 = CALL_STACK_START + CALL_STACK_SIZE - 1;
-
 // Memory-mapped segment
-pub const MAPPED_START: u16 = CALL_STACK_END + 1;
+pub const MAPPED_START: u16 = DATA_END + 1;
 pub const MAPPED_END: u16 = MAPPED_START + MAPPED_SIZE - 1;
 
+// Call stack segment
+pub const CALL_STACK_START: u16 = MAPPED_END + 1;
+pub const CALL_STACK_END: u16 = CALL_STACK_START + CALL_STACK_SIZE - 1;
+
 // Stack segment
-pub const STACK_START: u16 = MAPPED_END + 1;
+pub const STACK_START: u16 = CALL_STACK_END + 1;
 pub const STACK_END: u16 = MEMORY_SIZE - 1;
