@@ -67,7 +67,6 @@ export interface MidiOutProps extends BaseProps {
 }
 
 export interface SynthProps extends BaseProps {
-  synth_id: number
   config: SynthConfig
 }
 

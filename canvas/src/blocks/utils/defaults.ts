@@ -13,7 +13,7 @@ export const defaultProps: DefaultPropsMap = {
   Pixel: { pixels: [], mode: "Append" },
   Tap: { signal: [1] },
   Osc: { waveform: { Sine: null } },
-  Synth: { synth_id: 0, config: { Basic: null } },
+  Synth: { config: { Basic: null } },
   MidiIn: { on: "NoteOn", port: 0, channels: [] },
   MidiOut: { format: "Note", channel: 1, port: 0 },
   Memory: { values: [] },
