@@ -33,7 +33,7 @@ export const RunButton = () => {
       disabled={!hasBlocks}
     >
       <PlayIcon />
-      Run
+      Play
     </Button>
   )
 }

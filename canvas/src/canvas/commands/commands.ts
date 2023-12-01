@@ -49,9 +49,9 @@ blocks.forEach((block) => {
 
 commands.push(
   {
-    name: "Run / Pause",
-    prefix: "run",
-    hint: () => ($status.get().running ? "Pause" : "Run"),
+    name: "Play / Pause",
+    prefix: "play",
+    hint: () => ($status.get().running ? "Pause" : "Play"),
     shortcut: "P",
   },
   {
@@ -176,7 +176,7 @@ const createCommandRunner = (context: Context) => {
       localStorage.removeItem(STORAGE_KEY)
     },
 
-    run() {
+    play() {
       scheduler.toggle()
     },
 
