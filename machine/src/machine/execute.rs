@@ -37,8 +37,13 @@ impl Execute for Machine {
         match op {
             Op::Noop | Op::Halt | Op::Eof => {}
 
-            Op::Push(v) => { s.push(v)?; }
-            Op::Pop => { s.pop()?; }
+            Op::Push(v) => {
+                s.push(v)?;
+            }
+
+            Op::Pop => {
+                s.pop()?;
+            }
 
             Op::Load(addr) => {
                 let v = self.mem.get(addr);

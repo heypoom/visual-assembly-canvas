@@ -41,11 +41,6 @@ impl<'a> StackManager<'a> {
     pub fn push(&mut self, val: u16) -> Result<(), RuntimeError> {
         ensure!(self.top() < self.max, StackOverflowSnafu { top: self.top(), max: self.max });
 
-        // DEBUG: log the pushed value.
-        if self.is_debug {
-            println!("{:?}-> pushing {} to stack", self.sp, val);
-        }
-
         // Increment the stack pointer.
         self.reg.inc(self.sp);
 
@@ -73,11 +68,6 @@ impl<'a> StackManager<'a> {
 
         // Decrement the stack pointer.
         self.reg.dec(self.sp);
-
-        // DEBUG: log the popped value.
-        if self.is_debug {
-            println!("<-{:?} popping {} from stack", self.sp, v);
-        }
 
         // Return the value at the top of the stack.
         Ok(v)

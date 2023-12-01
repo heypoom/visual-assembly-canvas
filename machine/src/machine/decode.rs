@@ -32,18 +32,7 @@ impl Decode for Machine {
         // Fetch the opcode and decode it.
         let op: Op = self.opcode().into();
 
-        // DEBUG: store the initial program counter.
-        let initial_pc = if self.is_debug { self.reg.get(PC) } else { 0 };
-
         // Load the arguments into the instruction.
-        let op = op.with_arg(|| self.arg());
-
-        // DEBUG: log the program counter, instruction and raw instruction bytes.
-        if self.is_debug {
-            let raw = self.mem.read(initial_pc, (op.arity() + 1) as u16);
-            println!("{:02} | {:?} | {:?}", initial_pc, op, raw);
-        }
-
-        op
+        op.with_arg(|| self.arg())
     }
 }

@@ -41,11 +41,7 @@ pub fn run_from_source(path: &str, is_debug: bool) -> Errorable {
     m.is_debug = is_debug;
 
     m.run().map_err(|error| RunFailed { error })?;
-
-    if is_debug {
-        println!("stack: {:?}", m.mem.read_stack(10));
-    }
-
+   
     Ok(())
 }
 
