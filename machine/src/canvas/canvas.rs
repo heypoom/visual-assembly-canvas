@@ -287,6 +287,22 @@ impl Canvas {
                     }
                 }
 
+                Action::Write { address, data } => {
+                    let block = self.mut_block(id)?;
+
+                    let Synth { synth_id, .. } = block.data else { continue; };
+                    let [time] = data[..] else { continue; };
+
+                    block.events.push(Event::Synth {
+                        target: synth_id,
+                        triggers: vec![AttackRelease {
+                            freq: note_to_freq(*address as u8),
+                            duration: (time as f32) / 255f32,
+                            time: 0.0,
+                        }],
+                    })
+                }
+
                 _ => {}
             }
         }
