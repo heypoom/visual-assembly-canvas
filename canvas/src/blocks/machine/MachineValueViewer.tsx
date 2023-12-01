@@ -50,7 +50,7 @@ export const MachineValueViewer = (props: Props) => {
           </div>
 
           {state.inboxSize > 0 && (
-            <div>
+            <div className={cn(state.inboxSize > 50 && "text-orange-11")}>
               <span>IB</span> <strong>{state.inboxSize}</strong>
             </div>
           )}
