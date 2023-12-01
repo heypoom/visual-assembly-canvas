@@ -67,8 +67,10 @@ impl Execute for Machine {
                 let mut body = vec![];
 
                 for _ in 0..size {
-                    let v = s.pop().map_err(|_| MissingValueToStore)?;
-                    body.push(v);
+                    match s.pop() {
+                        Ok(v) => body.push(v),
+                        Err(_) => break,
+                    }
                 }
 
                 if !self.write_virtual(address, body.clone()) {
