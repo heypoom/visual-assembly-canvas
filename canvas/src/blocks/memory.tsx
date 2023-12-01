@@ -18,15 +18,14 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
   const [showSettings, toggle] = useReducer((n) => !n, false)
 
-  function write(address: number, data: number) {
+  function set(address: number, data: number) {
+    if (data > 65535) return
+
     updateNode(id, (node) => {
       if (isBlock.memory(node)) {
         node.data.values[address] = data
       }
     })
-
-    engine.send(id, { Write: { address, data: [data] } })
-    engine.ctx?.force_tick_block(id)
   }
 
   return (
@@ -56,9 +55,16 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
                       )}
                       onChange={(e) => {
                         const n = Number(e.target.value)
-                        if (isNaN(n)) return write(index, 0)
+                        if (isNaN(n)) return set(index, 0)
 
-                        write(index, n)
+                        set(index, n)
+                      }}
+                      onBlur={() => {
+                        engine.send(id, {
+                          Write: { address: index, data: [value] },
+                        })
+
+                        engine.ctx?.force_tick_block(id)
                       }}
                     />
                   </div>
