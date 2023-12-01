@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod canvas_tests {
-    use machine::canvas::block::BlockData::{Clock, Pixel, Plot};
+    use machine::canvas::block::BlockData::{Clock, Memory, Pixel, Plot};
     use machine::canvas::{Canvas, PixelMode};
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};
@@ -133,7 +133,7 @@ mod canvas_tests {
     }
 
     #[test]
-    fn test_mapped_memory() -> Errorable {
+    fn test_mapped_store() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
         c.add_block(Pixel { pixels: vec![], mode: PixelMode::Replace })?;
@@ -148,7 +148,6 @@ mod canvas_tests {
         ")?;
 
         c.seq.ready();
-
         c.tick(5)?;
 
         assert_eq!(c.blocks[1].data, Pixel {
@@ -156,6 +155,25 @@ mod canvas_tests {
             mode: PixelMode::Replace,
         });
 
+        Ok(())
+    }
+
+    #[test]
+    fn test_mapped_load() -> Errorable {
+        let mut c = Canvas::new();
+        c.add_machine()?;
+        c.add_block(Memory { values: vec![20, 40] })?;
+        c.connect(port(0, 0), port(1, 0))?;
+
+        c.load_program(0, r"
+            load 0x2000
+            load 0x2001
+        ")?;
+
+        c.seq.ready();
+        c.tick(3)?;
+
+        assert_eq!(c.seq.get(0).unwrap().mem.read_stack(2), [20, 40]);
         Ok(())
     }
 }

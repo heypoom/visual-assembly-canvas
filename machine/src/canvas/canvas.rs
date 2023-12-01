@@ -218,7 +218,7 @@ impl Canvas {
         let wires = self.get_connected_sinks(id);
 
         for wire in wires {
-            self.send_message(Message { sender: wire.source, action: Action::Data { body: body.clone() } })?;
+            self.send_message_to_port(Message { sender: wire.source, action: Action::Data { body: body.clone() } })?;
         }
 
         Ok(())
@@ -378,7 +378,7 @@ impl Canvas {
                         }
                     }
 
-                    self.send_message_to_block(message.sender.block, Action::Data { body })?;
+                    self.send_direct_message(id, message.sender.block, Action::Data { body })?;
                 }
 
                 _ => {}
@@ -418,7 +418,8 @@ impl Canvas {
                         }
                     }
 
-                    self.send_message_to_block(message.sender.block, Action::Data { body })?;
+
+                    self.send_direct_message(id, message.sender.block, Action::Data { body })?;
                 }
 
                 Action::Reset => {
@@ -610,7 +611,7 @@ impl Canvas {
                         }
                     }
 
-                    self.send_message_to_block(message.sender.block, Action::Data { body })?;
+                    self.send_direct_message(id, message.sender.block, Action::Data { body })?;
                 }
 
                 Action::SetPixelMode { mode: m } => {
@@ -628,6 +629,13 @@ impl Canvas {
                 _ => {}
             }
         }
+
+        Ok(())
+    }
+
+    /// Send a message from an actor to another actor.
+    pub fn send_direct_message(&mut self, from: u16, to: u16, action: Action) -> Errorable {
+        self.send_message_to_recipient(to, Message { action, sender: port(from, 0) })?;
 
         Ok(())
     }
@@ -651,13 +659,14 @@ impl Canvas {
         Ok(())
     }
 
+    /// Collect messages from each outboxes to the respective inboxes.
     pub fn route_messages(&mut self) -> Errorable {
         // Collect the messages from the blocks and the machines.
         let mut messages = self.consume_messages();
         messages.extend(self.seq.consume_messages());
 
         for message in messages {
-            self.send_message(message)?;
+            self.send_message_to_port(message)?;
         }
 
         Ok(())
@@ -672,33 +681,39 @@ impl Canvas {
     }
 
     /// Sends the message to the destination port.
-    pub fn send_message(&mut self, message: Message) -> Errorable {
-        let inbox_limit = self.inbox_limit;
-
+    pub fn send_message_to_port(&mut self, message: Message) -> Errorable {
         // There might be more than one destination machine connected to a port.
         let recipients = self.resolve_port(message.sender).ok_or(DisconnectedPort { port: message.sender })?;
 
         // We submit different messages to each machines.
         for recipient_id in recipients {
-            if let Ok(block) = self.mut_block(recipient_id) {
-                match block.data {
-                    // Send the message directly to the machine.
-                    Machine { machine_id } => {
-                        if let Some(m) = self.seq.get_mut(machine_id) {
-                            m.inbox.push_back(message.clone());
+            self.send_message_to_recipient(recipient_id, message.clone())?;
+        }
 
-                            if m.inbox.len() > inbox_limit {
-                                m.inbox.pop_front();
-                            }
+        Ok(())
+    }
+
+    pub fn send_message_to_recipient(&mut self, recipient_id: u16, message: Message) -> Errorable {
+        let inbox_limit = self.inbox_limit;
+
+        if let Ok(block) = self.mut_block(recipient_id) {
+            match block.data {
+                // Send the message directly to the machine.
+                Machine { machine_id } => {
+                    if let Some(m) = self.seq.get_mut(machine_id) {
+                        m.inbox.push_back(message);
+
+                        if m.inbox.len() > inbox_limit {
+                            m.inbox.pop_front();
                         }
                     }
+                }
 
-                    _ => {
-                        block.inbox.push_back(message.clone());
+                _ => {
+                    block.inbox.push_back(message);
 
-                        if block.inbox.len() > inbox_limit {
-                            block.inbox.pop_front();
-                        }
+                    if block.inbox.len() > inbox_limit {
+                        block.inbox.pop_front();
                     }
                 }
             }
@@ -709,7 +724,9 @@ impl Canvas {
 
     /// Sends the message to the specified block.
     pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
+        println!("message sent to {block_id}: {:?}", action.clone());
         self.mut_block(block_id)?.inbox.push_back(Message { sender: port(block_id, 60000), action });
+
         Ok(())
     }
 
