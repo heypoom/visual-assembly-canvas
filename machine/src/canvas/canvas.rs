@@ -478,8 +478,8 @@ impl Canvas {
 
                     if address >= 5000 { continue; }
 
-                    if address >= pixels.len() as u16 {
-                        pixels.resize(address as usize + 1, 0);
+                    if address as usize + data.len() >= pixels.len() {
+                        pixels.resize(address as usize + data.len() + 1, 0);
                     }
 
                     for (i, byte) in data.iter().enumerate() {
