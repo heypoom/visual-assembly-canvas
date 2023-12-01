@@ -217,7 +217,7 @@ impl Canvas {
         let wires = self.get_connected_sinks(id);
 
         for wire in wires {
-            self.send_message(Message { port: wire.source, action: Action::Data { body: body.clone() } })?;
+            self.send_message(Message { sender: wire.source, action: Action::Data { body: body.clone() } })?;
         }
 
         Ok(())
@@ -530,7 +530,7 @@ impl Canvas {
         let inbox_limit = self.inbox_limit;
 
         // There might be more than one destination machine connected to a port.
-        let recipients = self.resolve_port(message.port).ok_or(DisconnectedPort { port: message.port })?;
+        let recipients = self.resolve_port(message.sender).ok_or(DisconnectedPort { port: message.sender })?;
 
         // We submit different messages to each machines.
         for recipient_id in recipients {
@@ -563,7 +563,7 @@ impl Canvas {
 
     /// Sends the message to the specified block.
     pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
-        self.mut_block(block_id)?.inbox.push_back(Message { port: port(block_id, 60000), action });
+        self.mut_block(block_id)?.inbox.push_back(Message { sender: port(block_id, 60000), action });
         Ok(())
     }
 

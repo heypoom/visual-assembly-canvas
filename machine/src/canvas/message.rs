@@ -10,7 +10,7 @@ pub struct Message {
     pub action: Action,
 
     /// Address of the sender block.
-    pub port: Port,
+    pub sender: Port,
 }
 
 /// Messages that can be sent between nodes and machines.

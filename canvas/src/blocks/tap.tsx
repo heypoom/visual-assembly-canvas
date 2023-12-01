@@ -25,7 +25,7 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
   function tap() {
     try {
       engine.ctx?.send_message({
-        port: new Port(id, S1),
+        sender: new Port(id, S1),
         action: { Data: { body: signal } },
       })
     } catch (err) {

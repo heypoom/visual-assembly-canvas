@@ -17,7 +17,7 @@ impl Actor for Machine {
         let Some(sender) = self.id else { return; };
 
         // Add the message to the mailbox.
-        self.outbox.push(Message { port: port(sender, src_port), action });
+        self.outbox.push(Message { sender: port(sender, src_port), action });
     }
 
     fn receive_messages(&mut self) -> Errorable {
