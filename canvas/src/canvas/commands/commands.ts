@@ -89,6 +89,12 @@ commands.push(
     hint: () => `${$clock.get().effectMs}ms`,
   },
   {
+    name: "Execution Cycles Limit",
+    prefix: "cycles_limit",
+    args: [{ type: "number" }],
+    hint: () => `${engine.maxCycle}`,
+  },
+  {
     name: "Clear All",
     prefix: "clear_all",
     destructive: true,
@@ -202,6 +208,10 @@ const createCommandRunner = (context: Context) => {
 
       $clock.setKey("effectMs", delay)
       scheduler.restart()
+    },
+
+    cycles_limit(ctx) {
+      engine.maxCycle = Number(ctx.args[0])
     },
   }
 

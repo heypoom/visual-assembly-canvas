@@ -46,7 +46,7 @@ export class CanvasEngine {
   public ctx: Controller | null = null
 
   /** What is the limit on number of cycles? This prevents crashes. */
-  public maxCycle = 200
+  public maxCycle = 500
 
   private cycle = 0
 
@@ -139,7 +139,10 @@ export class CanvasEngine {
     // Introspect the current state of the canvas.
     this.hasMachines = this.nodes.some(is.machine)
     this.hasProducers = this.nodes.some(is.producer)
-    this.continuous = this.clock.canvasMs > 0 && this.hasProducers
+
+    // Determine if we should run continuously.
+    this.continuous =
+      this.clock.canvasMs > 0 && (this.hasProducers || !isFinite(this.maxCycle))
 
     // Disable the watchdog if we have interactors, e.g., tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
