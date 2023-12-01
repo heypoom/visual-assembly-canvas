@@ -417,6 +417,12 @@ impl Canvas {
                     self.send_message_to_block(message.sender.block, Action::Data { body })?;
                 }
 
+                Action::Reset => {
+                    if let Memory { values } = &mut self.mut_block(id)?.data {
+                        values.clear()
+                    };
+                }
+
                 _ => {}
             }
         }
@@ -712,6 +718,8 @@ impl Canvas {
         let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine()).map(|b| b.id).collect();
 
         for id in ids {
+            if let Memory { .. } = self.get_block(id)?.data { continue; }
+
             self.reset_block(id)?;
         }
 
