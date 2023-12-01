@@ -10,7 +10,7 @@ const handlers = {
     await audioManager.ready()
     engine.onRunStart()
   },
-  stop: async () => {
+  cleanup: async () => {
     engine.onRunCleanup()
   },
 } as const
@@ -90,9 +90,8 @@ export class Scheduler {
     this.clearTimers("canvas", "effect")
     cancelAnimationFrame(this.frameRequestId)
 
-    // Sync the UI state and side effects after stepping or running.
-    // This is necessary because UI updates might have not been performed yet.
-    engine.forceSync()
+    // Cleanup the run
+    handlers.cleanup().then()
   }
 
   /** The render loop updates the UI. */

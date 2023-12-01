@@ -161,7 +161,10 @@ export class CanvasEngine {
    */
   public onRunCleanup() {
     // Extra step to let the block tick
-    this.step()
+    this.step(1)
+
+    // Perform effects and updates immediately after the final tick.
+    this.syncAll()
 
     // Report that we have exceeded the execution cycle limit.
     if (this.cycle >= this.maxCycle) this.haltReason = "cycle"
@@ -246,14 +249,14 @@ export class CanvasEngine {
     this.step(count)
 
     // Perform effects and updates immediately after stepping.
-    this.forceSync()
+    this.syncAll()
 
     // If the current run is complete, cleanup.
     if (this.isHalted) this.reloadMachines()
   }
 
   /** Sync the effects after stepping or running. */
-  public forceSync() {
+  private syncAll() {
     this.performSideEffects()
     this.syncMachineState()
     this.highlight()
