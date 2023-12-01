@@ -61,6 +61,21 @@ impl Execute for Machine {
                 }
             }
 
+            Op::Write(size) => {
+                let address = s.pop().map_err(|_| MissingValueToStore)?;
+
+                let mut body = vec![];
+
+                for _ in 0..size {
+                    let v = s.pop().map_err(|_| MissingValueToStore)?;
+                    body.push(v);
+                }
+
+                if !self.write_virtual(address, body.clone()) {
+                    self.mem.write(address, &body);
+                }
+            }
+
             // Addition, subtraction, multiplication, division and modulo.
             Op::Add => s.apply_two(|a, b| a.checked_add(b).ok_or(IntegerOverflow))?,
             Op::Sub => s.apply_two(|a, b| a.checked_sub(b).ok_or(IntegerUnderflow))?,
@@ -184,7 +199,7 @@ impl Execute for Machine {
             Op::Xor => s.apply_two(|a, b| Ok(a ^ b))?,
             Op::Not => s.apply(|a| Ok(a.not()))?,
             Op::LeftShift => s.apply_two(|a, b| Ok(a << b))?,
-            Op::RightShift => s.apply_two(|a, b| Ok(a >> b))?
+            Op::RightShift => s.apply_two(|a, b| Ok(a >> b))?,
         };
 
         // Advance or jump the program counter.

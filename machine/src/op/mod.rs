@@ -25,6 +25,9 @@ pub enum Op {
     /// Pop data from the stack and store it into the specified address.
     Store(u16),
 
+    /// Pop the address from the stack, then write n values to the address.
+    Write(u16),
+
     /// Duplicates the value at the top of the stack.
     /// Makes a copy of the top value and pushes it onto the stack.
     Dup,
