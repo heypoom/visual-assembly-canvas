@@ -87,7 +87,7 @@ export class CanvasEngine {
 
   public load(id: number, source: string, force?: boolean) {
     // If the source is the same, we don't need to reload.
-    if (this.sources.get(id) === source && !force) return
+    if (this.sources.get(id) === source && !force) return this.invalidate()
     this.sources.set(id, source)
 
     try {
