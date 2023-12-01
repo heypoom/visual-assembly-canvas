@@ -7,7 +7,13 @@ import { engine } from "../engine"
 import { BlockNode } from "../types/Node"
 import { $clock } from "../store/clock"
 
-export function useSaveState() {
+export interface SaveStateContext {
+  serialize: () => SaveState
+  restore: (state: SaveState) => void
+  clear: () => void
+}
+
+export function useSaveState(): SaveStateContext {
   const flow = useReactFlow()
 
   const serialize = (): SaveState => ({

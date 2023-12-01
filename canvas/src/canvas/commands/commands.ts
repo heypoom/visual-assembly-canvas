@@ -1,6 +1,6 @@
 import { addBlock } from "../utils/addBlock"
-import { useSaveState } from "../../persist/useSaveState"
-import { STORAGE_KEY } from "../../persist/localStorage"
+import { SaveStateContext, useSaveState } from "../../persist/useSaveState"
+import { LocalStorageDriver, STORAGE_KEY } from "../../persist/localStorage"
 import { useMemo } from "react"
 import { BlockTypes } from "../../types/Node"
 import { defaultProps } from "../../blocks"
@@ -16,7 +16,7 @@ interface Options {
 }
 
 interface Context {
-  clearAll: () => void
+  saveState: SaveStateContext
 }
 
 interface Command {
@@ -63,6 +63,14 @@ commands.push(
     name: "Reset",
     prefix: "reset",
     shortcut: "R",
+  },
+  {
+    name: "Save",
+    prefix: "save",
+  },
+  {
+    name: "Load",
+    prefix: "load",
   },
   {
     name: "Machine Speed (ops/tick)",
@@ -172,7 +180,7 @@ const createCommandRunner = (context: Context) => {
     },
 
     clear_all() {
-      context.clearAll()
+      context.saveState.clear()
       localStorage.removeItem(STORAGE_KEY)
     },
 
@@ -213,6 +221,14 @@ const createCommandRunner = (context: Context) => {
     cycles_limit(ctx) {
       engine.maxCycle = Number(ctx.args[0])
     },
+
+    save() {
+      LocalStorageDriver.save(context.saveState.serialize)
+    },
+
+    restore() {
+      LocalStorageDriver.load(context.saveState.restore)
+    },
   }
 
   return (command: Command, options?: Options): boolean => {
@@ -233,10 +249,10 @@ const createCommandRunner = (context: Context) => {
 }
 
 export function useCommandRunner() {
-  const { clear } = useSaveState()
+  const saveState = useSaveState()
 
   const run = useMemo(() => {
-    return createCommandRunner({ clearAll: clear })
+    return createCommandRunner({ saveState })
   }, [])
 
   return { run }
