@@ -21,7 +21,6 @@ pub enum Event {
 
     /// Triggers a synthesizer message.
     Synth {
-        target: u16,
         triggers: Vec<SynthTrigger>,
     },
 }

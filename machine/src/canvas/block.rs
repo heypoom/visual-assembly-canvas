@@ -76,9 +76,6 @@ pub enum BlockData {
 
     /// Basic synthesizer.
     Synth {
-        /// Synth identifier.
-        synth_id: u16,
-
         /// Synth configuration.
         config: SynthConfig,
     },

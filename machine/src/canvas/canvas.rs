@@ -280,9 +280,8 @@ impl Canvas {
 
                     let block = self.mut_block(id)?;
 
-                    if let Synth { synth_id, .. } = &block.data {
+                    if let Synth { .. } = &block.data {
                         block.events.push(Event::Synth {
-                            target: *synth_id,
                             triggers,
                         })
                     }
@@ -291,18 +290,20 @@ impl Canvas {
                 Action::Write { address, data } => {
                     let block = self.mut_block(id)?;
 
-                    let Synth { synth_id, .. } = block.data else { continue; };
-                    let [note] = data[..] else { continue; };
+                    let Synth { .. } = block.data else { continue; };
+
+                    let mut triggers = vec![];
                     let duration = *address + 1;
 
-                    block.events.push(Event::Synth {
-                        target: synth_id,
-                        triggers: vec![AttackRelease {
-                            freq: note_to_freq(note as u8),
+                    for (i, note) in data.iter().enumerate() {
+                        triggers.push(AttackRelease {
+                            freq: note_to_freq(*note as u8),
                             duration: (duration as f32) / 255f32,
-                            time: 0.0,
-                        }],
-                    })
+                            time: i as f32,
+                        });
+                    }
+
+                    block.events.push(Event::Synth { triggers })
                 }
 
                 _ => {}
