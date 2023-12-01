@@ -78,6 +78,16 @@ impl Execute for Machine {
                 }
             }
 
+            Op::Read(size) => {
+                let address = s.pop().map_err(|_| MissingValueToStore)?;
+
+                if !self.read_virtual(address, size) {
+                    for v in self.mem.read(address, size) {
+                        self.stack().push(v)?;
+                    }
+                }
+            }
+
             // Addition, subtraction, multiplication, division and modulo.
             Op::Add => s.apply_two(|a, b| a.checked_add(b).ok_or(IntegerOverflow))?,
             Op::Sub => s.apply_two(|a, b| a.checked_sub(b).ok_or(IntegerUnderflow))?,

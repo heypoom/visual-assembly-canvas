@@ -28,6 +28,9 @@ pub enum Op {
     /// Pop the address from the stack, then write n values to the address.
     Write(u16),
 
+    /// Pop the address from the stack, then read n values to the address.
+    Read(u16),
+
     /// Duplicates the value at the top of the stack.
     /// Makes a copy of the top value and pushes it onto the stack.
     Dup,
