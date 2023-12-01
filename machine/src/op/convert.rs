@@ -52,10 +52,19 @@ pub fn bytes_to_code(bytes: Vec<u16>) -> String {
 #[cfg(test)]
 mod convert_op_tests {
     use crate::convert::bytes_to_code;
+    use crate::Op;
 
     #[test]
     fn convert_op() {
-        let bytes = vec![30, 1, 90, 16, 1, 10, 7, 29, 1, 2, 17, 0, 38];
+        let bytes = vec![
+            Op::Receive.opcode(),
+            Op::Push(0).opcode(),
+            90,
+            Op::Mod.opcode(),
+            Op::Push(0).opcode(),
+            10,
+        ];
+
         let result = bytes_to_code(bytes);
 
         let mut lines = result.lines();

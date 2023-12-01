@@ -1,6 +1,6 @@
 use crate::{Action, Actor, Machine, MAPPED_END, MAPPED_START};
 
-const SIZE_PER_PORT: u16 = 0xFF;
+const SIZE_PER_PORT: u16 = 0x100;
 
 pub trait VirtualMemory {
     fn read_virtual(&mut self, addr: u16, count: u16) -> bool;
@@ -49,7 +49,7 @@ mod virtual_mem_test {
         assert_eq!(is_addr_mapped(MAPPED_END + 1), false);
 
         assert_eq!(get_mapped_addr(MAPPED_START), (0, 0));
-        assert_eq!(get_mapped_addr(MAPPED_START + SIZE_PER_PORT - 1), (254, 0));
+        assert_eq!(get_mapped_addr(MAPPED_START + SIZE_PER_PORT - 1), (255, 0));
         assert_eq!(get_mapped_addr(MAPPED_START + SIZE_PER_PORT), (0, 1));
         assert_eq!(get_mapped_addr(MAPPED_START + SIZE_PER_PORT + 1), (1, 1));
     }
