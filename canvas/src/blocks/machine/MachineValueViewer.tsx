@@ -1,6 +1,7 @@
 import { ErrorIndicator } from "./ErrorIndicator"
 
 import { MachineState } from "../../types/MachineState"
+import cn from "classnames"
 
 interface Props {
   id: number
@@ -65,7 +66,13 @@ export const MachineValueViewer = (props: Props) => {
       {stack && (
         <div className="flex px-1">
           {stack.map((u, i) => (
-            <div className="text-1 text-crimson-11 bg-stone-800 mx-1" key={i}>
+            <div
+              className={cn(
+                "text-1 text-crimson-11 bg-stone-800 mx-1",
+                !u && "text-gray-9",
+              )}
+              key={i}
+            >
               {u.toString().padStart(2, "0")}
             </div>
           ))}
