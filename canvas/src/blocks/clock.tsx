@@ -2,7 +2,7 @@ import { Handle, NodeProps, Position } from "reactflow"
 
 import { ClockProps } from "../types/blocks"
 
-import { RightClickMenu } from "../canvas/components/RightClickMenu"
+import { RightClickMenu } from "./components/RightClickMenu"
 import { useReducer } from "react"
 
 const S1 = 1

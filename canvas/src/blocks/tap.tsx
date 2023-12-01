@@ -5,7 +5,7 @@ import { TapProps } from "../types/blocks"
 import { Flex, TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
 
-import { RightClickMenu } from "../canvas/components/RightClickMenu"
+import { RightClickMenu } from "./components/RightClickMenu"
 import { updateNodeData } from "../store/blocks"
 import { useStore } from "@nanostores/react"
 import { $status } from "../store/status"

@@ -3,7 +3,7 @@ import { Handle, NodeProps, Position } from "reactflow"
 import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 
 import { MidiOutProps } from "../../types/blocks"
-import { RightClickMenu } from "../../canvas/components/RightClickMenu"
+import { RightClickMenu } from "../components/RightClickMenu"
 import { Select } from "@radix-ui/themes"
 import { MidiOutputFormat } from "../../types/enums"
 import { engine } from "../../engine"

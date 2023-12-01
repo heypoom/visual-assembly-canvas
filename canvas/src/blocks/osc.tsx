@@ -4,7 +4,7 @@ import { OscProps } from "../types/blocks"
 import { engine } from "../engine"
 import { Select, TextField } from "@radix-ui/themes"
 
-import { RightClickMenu } from "../canvas/components/RightClickMenu"
+import { RightClickMenu } from "./components/RightClickMenu"
 import { useReducer, useState } from "react"
 import { updateNodeData } from "../store/blocks"
 import { WaveformKey, Waveform } from "../types/waveform"

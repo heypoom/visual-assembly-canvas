@@ -4,7 +4,7 @@ import { Handle, NodeProps, Position } from "reactflow"
 import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
 
 import { MidiInProps } from "../../types/blocks"
-import { RightClickMenu } from "../../canvas/components/RightClickMenu"
+import { RightClickMenu } from "../components/RightClickMenu"
 
 import { useStore } from "@nanostores/react"
 import { $midi } from "../../store/midi"

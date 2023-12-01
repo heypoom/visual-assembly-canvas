@@ -1,4 +1,4 @@
-import { Handle, Position, NodeProps } from "reactflow"
+import { NodeProps } from "reactflow"
 import cn from "classnames"
 
 import { MachineValueViewer } from "./MachineValueViewer"
@@ -7,6 +7,7 @@ import { MachineEditor } from "../../editor/Editor"
 import { MachineProps } from "../../types/blocks"
 import { useStore } from "@nanostores/react"
 import { $output } from "../../store/results"
+import { BlockHandle } from "../components/BlockHandle"
 
 export function MachineBlock(props: NodeProps<MachineProps>) {
   const { data } = props
@@ -23,12 +24,7 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
 
   return (
     <div className="font-mono bg-slate-1 relative group">
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="5"
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 ml-[-1px] border-2 z-10"
-      ></Handle>
+      <BlockHandle port={5} type="target" side="left" />
 
       <div
         className={cn(
@@ -51,26 +47,9 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
         </div>
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="0"
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 mr-[-1px] border-2 z-10 mt-[-30px]"
-      />
-
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="1"
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 mr-[-1px] border-2 z-10"
-      />
-
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="2"
-        className="bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 mr-[-1px] border-2 z-10 mt-[30px]"
-      />
+      <BlockHandle port={0} type="source" side="right" className="mt-[30px]" />
+      <BlockHandle port={1} type="source" side="right" />
+      <BlockHandle port={2} type="source" side="right" className="mt-[-30px]" />
     </div>
   )
 }
