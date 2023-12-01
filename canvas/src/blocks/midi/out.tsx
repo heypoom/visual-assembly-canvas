@@ -4,7 +4,6 @@ import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 
 import { MidiOutProps } from "../../types/blocks"
 import { RightClickMenu } from "../components/RightClickMenu"
-import { Select } from "@radix-ui/themes"
 import { MidiOutputFormat } from "../../types/enums"
 import { engine } from "../../engine"
 import { updateNodeData } from "../../store/blocks"
@@ -13,10 +12,13 @@ import { $lastMidiEvent, $midi } from "../../store/midi"
 import { midiManager } from "../../services/midi"
 import { MidiTransportForm } from "./transport"
 import { BlockHandle } from "../components/BlockHandle"
+import { RadixSelect } from "../../ui/select"
 
 const formats = Object.keys(_MidiOutputFormat).filter(
   (key) => !isNaN(Number(_MidiOutputFormat[key as MidiOutputFormat])),
 )
+
+const formatOptions = formats.map((value) => ({ value, label: value }))
 
 export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
   const { id, format, port, channel } = props.data
@@ -55,7 +57,6 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
   }
 
   useEffect(() => {
-    // Setup midi manager if it is not yet initialized.
     midiManager.setup().then()
   }, [])
 
@@ -75,23 +76,11 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
               >
                 <p className="text-[10px]">Format</p>
 
-                <Select.Root
-                  size="1"
+                <RadixSelect
                   value={format}
-                  onValueChange={(v) =>
-                    update({ format: v as MidiOutputFormat })
-                  }
-                >
-                  <Select.Trigger />
-
-                  <Select.Content>
-                    {formats.map((key) => (
-                      <Select.Item value={key} key={key}>
-                        {key}
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Root>
+                  onChange={(v) => update({ format: v as MidiOutputFormat })}
+                  options={formatOptions}
+                />
               </div>
 
               <MidiTransportForm

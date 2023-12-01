@@ -9,6 +9,7 @@ import { useReducer, useState } from "react"
 import { updateNodeData } from "../store/blocks"
 import { WaveformKey, Waveform } from "../types/waveform"
 import { BlockHandle } from "./components/BlockHandle"
+import { RadixSelect } from "../ui/select"
 
 const waveforms: Record<WaveformKey, Waveform> = {
   Sine: { Sine: null },
@@ -19,6 +20,11 @@ const waveforms: Record<WaveformKey, Waveform> = {
   Triangle: { Triangle: null },
   Noise: { Noise: null },
 }
+
+const waveformOptions = Object.keys(waveforms).map((value) => ({
+  value,
+  label: value,
+}))
 
 export const OscBlock = (props: NodeProps<OscProps>) => {
   const { id, waveform } = props.data
@@ -84,21 +90,11 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
               <div className="flex items-center gap-4 w-full">
                 <p className="text-1">Fn</p>
 
-                <Select.Root
-                  size="1"
+                <RadixSelect
                   value={wave.toString()}
-                  onValueChange={handleWaveChange}
-                >
-                  <Select.Trigger className="w-[90px]" />
-
-                  <Select.Content>
-                    {Object.keys(waveforms).map((key) => (
-                      <Select.Item value={key} key={key}>
-                        {key}
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Root>
+                  onChange={handleWaveChange}
+                  options={waveformOptions}
+                />
               </div>
 
               {wave === "Square" && (

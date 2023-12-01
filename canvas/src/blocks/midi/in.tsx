@@ -20,14 +20,16 @@ import {
 import { $status } from "../../store/status"
 import { updateNodeData } from "../../store/blocks"
 import { MidiTransportForm } from "./transport"
-import { Select } from "@radix-ui/themes"
 
 import { MidiInputEvent } from "../../types/enums"
 import { BlockHandle } from "../components/BlockHandle"
+import { RadixSelect } from "../../ui/select"
 
 const events = Object.keys(_MidiInputEvent).filter(
   (key) => !isNaN(Number(_MidiInputEvent[key as MidiInputEvent])),
 ) as MidiInputEvent[]
+
+const eventOptions = events.map((value) => ({ value, label: value }))
 
 export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
   const { id, on, port, channels } = props.data
@@ -122,21 +124,11 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
                 >
                   <p className="text-[10px]">Event</p>
 
-                  <Select.Root
-                    size="1"
+                  <RadixSelect
                     value={on}
-                    onValueChange={(v) => update({ on: v as MidiInputEvent })}
-                  >
-                    <Select.Trigger />
-
-                    <Select.Content>
-                      {events.map((key) => (
-                        <Select.Item value={key} key={key}>
-                          {key}
-                        </Select.Item>
-                      ))}
-                    </Select.Content>
-                  </Select.Root>
+                    onChange={(v) => update({ on: v as MidiInputEvent })}
+                    options={eventOptions}
+                  />
                 </div>
 
                 <MidiTransportForm

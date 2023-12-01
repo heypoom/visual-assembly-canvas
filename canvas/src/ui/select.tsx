@@ -6,7 +6,7 @@ interface Props {
 
   value: string
   onChange: (value: string) => void
-  onBlur: () => void
+  onBlur?: () => void
 
   name?: string
   disabled?: boolean | undefined
