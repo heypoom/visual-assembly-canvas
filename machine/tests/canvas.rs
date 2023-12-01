@@ -140,14 +140,21 @@ mod canvas_tests {
         c.connect(port(0, 0), port(1, 0))?;
 
         c.load_program(0, r"
-            push 10
+            push 69
             store 0x2000
-            push 20
+
+            push 96
+            store 0x2001
         ")?;
 
         c.seq.ready();
 
         c.tick(5)?;
+
+        assert_eq!(c.blocks[1].data, Pixel {
+            pixels: vec![69, 96, 0],
+            mode: PixelMode::Replace,
+        });
 
         Ok(())
     }
