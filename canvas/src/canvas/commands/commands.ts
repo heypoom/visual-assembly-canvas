@@ -20,7 +20,7 @@ interface Context {
   saveState: SaveStateContext
 }
 
-interface Command {
+export interface Command {
   name: string
   prefix: string
   action?: CommandAction

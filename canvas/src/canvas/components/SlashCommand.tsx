@@ -16,7 +16,7 @@ export function SlashCommand() {
   const [input, setInput] = useState("")
   const [cursor, setCursor] = useState<Pos>(null)
   const [active, setActive] = useState(false)
-  const [selected, setSelected] = useState(0)
+  const [selected, select] = useState(0)
 
   const { run } = useCommandRunner()
   const flow = useReactFlow()
@@ -30,7 +30,7 @@ export function SlashCommand() {
   function hide() {
     setActive(false)
     setInput("")
-    setSelected(0)
+    select(0)
   }
 
   const onMouseMove = useCallback((event: MouseEvent) => {
@@ -83,39 +83,29 @@ export function SlashCommand() {
           autoFocus
           onChange={(e) => {
             setInput(e.target.value)
-            setSelected(0)
+            select(0)
           }}
           onKeyDown={(e) => {
             if (e.key === "ArrowDown") {
               e.preventDefault()
-
-              setSelected((s) => {
-                if (s >= matches.length - 1) return 0
-
-                return s + 1
-              })
+              select(nextOf(selected, matches.length))
 
               return
             }
 
             if (e.key === "ArrowUp") {
               e.preventDefault()
-
-              setSelected((s) => {
-                if (s <= 0) return matches.length - 1
-
-                return s - 1
-              })
+              select(prevOf(selected, matches.length))
 
               return
             }
 
             if (e.key === "Tab") {
               e.preventDefault()
+
               if (!command) return
 
               setInput(`/${command.prefix}${command.args ? " " : ""}`)
-              setSelected(0)
 
               return
             }
@@ -125,9 +115,8 @@ export function SlashCommand() {
               if (!command) return
 
               if (!isArgsValid(input, command)) {
+                select(0)
                 setInput(`/${command.prefix} `)
-                setSelected(0)
-
                 return
               }
 
@@ -188,4 +177,16 @@ export function SlashCommand() {
       )}
     </div>
   )
+}
+
+function nextOf(selected: number, len: number) {
+  if (selected >= len - 1) return 0
+
+  return selected + 1
+}
+
+function prevOf(selected: number, len: number) {
+  if (selected <= 0) return len - 1
+
+  return selected - 1
 }
