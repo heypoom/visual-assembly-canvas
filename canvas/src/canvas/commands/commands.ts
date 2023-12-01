@@ -33,6 +33,7 @@ const commands: Command[] = []
 
 interface CommandArg {
   type?: "number" | "string"
+  optional?: boolean
 }
 
 const blocks = Object.keys(defaultProps) as BlockTypes[]
@@ -58,6 +59,7 @@ commands.push(
     name: "Step",
     prefix: "step",
     shortcut: "S",
+    args: [{ type: "number", optional: true }],
   },
   {
     name: "Reset",
@@ -67,10 +69,12 @@ commands.push(
   {
     name: "Save",
     prefix: "save",
+    args: [{ type: "string", optional: true }],
   },
   {
     name: "Load",
     prefix: "load",
+    args: [{ type: "string", optional: true }],
   },
   {
     name: "Machine Speed (ops/tick)",
@@ -118,13 +122,14 @@ export const isArgsValid = (input: string, command: Command): boolean => {
   if (!command) return false
   if (!command.args) return true
 
+  const required = command.args.filter((s) => !s.optional)
+
   const args = input.split(" ").slice(1)
-  if (args.length < command.args.length) return false
+  if (args.length < required.length) return false
 
   for (const [i, str] of args.entries()) {
-    if (!str) return false
-
     const schema = command.args[i]
+    if (!str && !schema.optional) return false
 
     if (schema.type === "number") {
       if (isNaN(Number(str))) return false
@@ -181,7 +186,7 @@ const createCommandRunner = (context: Context) => {
 
     clear_all() {
       context.saveState.clear()
-      localStorage.removeItem(STORAGE_KEY)
+      LocalStorageDriver.delete()
     },
 
     play() {
@@ -222,12 +227,16 @@ const createCommandRunner = (context: Context) => {
       engine.maxCycle = Number(ctx.args[0])
     },
 
-    save() {
-      LocalStorageDriver.save(context.saveState.serialize)
+    save(ctx) {
+      const [name] = ctx.args
+
+      LocalStorageDriver.save(context.saveState.serialize, name)
     },
 
-    load() {
-      LocalStorageDriver.load(context.saveState.restore)
+    load(ctx) {
+      const [name] = ctx.args
+
+      LocalStorageDriver.load(context.saveState.restore, name)
     },
   }
 

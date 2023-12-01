@@ -1,16 +1,30 @@
 import { PersistenceDriver } from "./types"
 
-export const STORAGE_KEY = "CANVAS_STATE"
+export const STORAGE_KEY = "CANVAS_SAVES"
+export const AUTOSAVE_SAVE_KEY = "AUTOSAVE"
+
+const getSaveKey = (name?: string) =>
+  `${STORAGE_KEY}:${name || AUTOSAVE_SAVE_KEY}`
 
 export const LocalStorageDriver: PersistenceDriver = {
-  save(serialize) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()))
+  save(serialize, name) {
+    localStorage.setItem(getSaveKey(name), JSON.stringify(serialize()))
   },
 
-  load(restore) {
-    const persist = localStorage.getItem(STORAGE_KEY)
+  load(restore, name) {
+    const persist = localStorage.getItem(getSaveKey(name))
     if (!persist) return
 
     restore(JSON.parse(persist))
+  },
+
+  delete(name?: string) {
+    localStorage.removeItem(getSaveKey(name))
+  },
+
+  list() {
+    return Object.keys(localStorage).filter((key) =>
+      key.startsWith(STORAGE_KEY),
+    )
   },
 }
