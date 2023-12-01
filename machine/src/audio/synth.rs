@@ -6,7 +6,6 @@ pub enum SynthConfig {
     FM,
     AM,
     Noise,
-    Poly { synth: Box<SynthConfig> },
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
