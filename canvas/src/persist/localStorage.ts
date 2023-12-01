@@ -23,8 +23,9 @@ export const LocalStorageDriver: PersistenceDriver = {
   },
 
   list() {
-    return Object.keys(localStorage).filter((key) =>
-      key.startsWith(STORAGE_KEY),
-    )
+    return Object.keys(localStorage)
+      .filter((key) => key.startsWith(STORAGE_KEY))
+      .map((key) => key.replace(STORAGE_KEY + ":", ""))
+      .filter((key) => key !== AUTOSAVE_SAVE_KEY)
   },
 }

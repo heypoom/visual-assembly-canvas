@@ -26,6 +26,7 @@ interface Command {
   destructive?: boolean
   args?: CommandArg[]
   hint?: () => string
+  options?: () => string[]
   shortcut?: string
 }
 
@@ -69,12 +70,22 @@ commands.push(
   {
     name: "Save",
     prefix: "save",
-    args: [{ type: "string", optional: true }],
+    args: [{ type: "string" }],
   },
   {
     name: "Load",
     prefix: "load",
-    args: [{ type: "string", optional: true }],
+    args: [{ type: "string" }],
+    hint: () => LocalStorageDriver.list().join(", "),
+    options: () => LocalStorageDriver.list(),
+  },
+  {
+    name: "Delete Save",
+    prefix: "delete_save",
+    args: [{ type: "string" }],
+    hint: () => LocalStorageDriver.list().join(", "),
+    options: () => LocalStorageDriver.list(),
+    destructive: true,
   },
   {
     name: "Machine Speed (ops/tick)",
@@ -229,14 +240,23 @@ const createCommandRunner = (context: Context) => {
 
     save(ctx) {
       const [name] = ctx.args
+      if (!name) return
 
       LocalStorageDriver.save(context.saveState.serialize, name)
     },
 
     load(ctx) {
       const [name] = ctx.args
+      if (!name) return
 
       LocalStorageDriver.load(context.saveState.restore, name)
+    },
+
+    delete_save(ctx) {
+      const [name] = ctx.args
+      if (!name) return
+
+      LocalStorageDriver.delete(name)
     },
   }
 
