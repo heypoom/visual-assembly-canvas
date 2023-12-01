@@ -30,6 +30,9 @@ export function useSaveState() {
 
     // Re-initialize the blocks
     nodes.forEach((node) => setupBlock(node as BlockNode))
+
+    // Reset the machines.
+    engine.reset()
   }
 
   function clear() {
