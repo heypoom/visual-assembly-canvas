@@ -119,7 +119,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
           {isBatch && (
             <div className="px-4 nodrag py-2 text-green-11">
               <textarea
-                className="w-full bg-transparent text-1 font-mono"
+                className="w-full bg-transparent text-1 font-mono outline-gray-4"
                 value={batchInput}
                 onChange={(e) => setBatchInput(e.target.value)}
                 onBlur={updateBatch}
