@@ -46,7 +46,7 @@ export class CanvasEngine {
   public ctx: Controller | null = null
 
   /** What is the limit on number of cycles? This prevents crashes. */
-  public maxCycle = 500
+  public maxCycle = 500000
 
   private cycle = 0
 
