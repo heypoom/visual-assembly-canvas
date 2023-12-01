@@ -326,16 +326,40 @@ impl Canvas {
     }
 
     pub fn tick_plotter_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let Plot { values, size } = &mut self.mut_block(id)?.data else { return Ok(()); };
-
         for message in messages {
             match message.action {
                 Action::Data { body } => {
+                    let Plot { values, size } = &mut self.mut_block(id)?.data else { return Ok(()); };
                     extend_and_remove_oldest(values, body, *size as usize);
                 }
 
                 Action::Reset => {
+                    let Plot { values, .. } = &mut self.mut_block(id)?.data else { return Ok(()); };
                     values.clear()
+                }
+
+                Action::Write { address, data } => {
+                    let Plot { values, size } = &mut self.mut_block(id)?.data else { return Ok(()); };
+                    if address >= *size { continue; }
+
+                    if address as usize + data.len() >= values.len() {
+                        values.resize(address as usize + data.len() + 1, 0);
+                    }
+
+                    for (i, byte) in data.iter().enumerate() {
+                        values[address as usize + i] = *byte;
+                    }
+                }
+
+                Action::Read { address, count } => {
+                    let Plot { values, .. } = &self.get_block(id)?.data else { return Ok(()); };
+                    let mut body = vec![];
+
+                    for i in 0..count {
+                        body.push(values[(address + i) as usize]);
+                    }
+
+                    self.send_message_to_block(message.sender.block, Action::Data { body })?;
                 }
 
                 _ => {}
