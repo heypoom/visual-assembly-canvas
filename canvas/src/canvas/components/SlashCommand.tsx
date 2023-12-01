@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   getMatchedCommands,
   isArgsValid,
@@ -11,6 +11,8 @@ import { useReactFlow } from "reactflow"
 type Pos = { x: number; y: number } | null
 
 export function SlashCommand() {
+  const listening = useRef(false)
+
   const [input, setInput] = useState("")
   const [cursor, setCursor] = useState<Pos>(null)
   const [active, setActive] = useState(false)
@@ -37,13 +39,17 @@ export function SlashCommand() {
 
   const destroy = useCallback(() => {
     window.removeEventListener("mousemove", onMouseMove)
+    listening.current = false
   }, [])
 
   const register = useCallback(() => {
     window.addEventListener("mousemove", onMouseMove)
+    listening.current = true
   }, [])
 
   useEffect(() => {
+    if (listening.current) return
+
     register()
 
     return () => {
