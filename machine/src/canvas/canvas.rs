@@ -438,14 +438,14 @@ impl Canvas {
     }
 
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let Pixel { pixels, mode } = &mut self.mut_block(id)?.data else {
-            return Ok(());
-        };
-
         for message in messages {
             match message.action {
                 // The "data" action is used to directly set the pixel data.
                 Action::Data { body } => {
+                    let Pixel { pixels, mode } = &mut self.mut_block(id)?.data else {
+                        return Ok(());
+                    };
+
                     match mode {
                         Replace => {
                             pixels.clear();
@@ -471,12 +471,46 @@ impl Canvas {
                     }
                 }
 
+                Action::Write { address, data } => {
+                    let Pixel { pixels, .. } = &mut self.mut_block(id)?.data else {
+                        return Ok(());
+                    };
+
+                    if address >= 5000 { continue; }
+
+                    if address >= pixels.len() as u16 {
+                        pixels.resize(address as usize + 1, 0);
+                    }
+
+                    for (i, byte) in data.iter().enumerate() {
+                        pixels[address as usize + i] = *byte;
+                    }
+                }
+
+                Action::Read { address, count } => {
+                    let Pixel { pixels, .. } = &self.get_block(id)?.data else {
+                        return Ok(());
+                    };
+
+                    let mut body = vec![];
+
+                    for i in 0..count {
+                        body.push(pixels[(address + i) as usize]);
+                    }
+
+                    self.send_message_to_block(message.sender.block, Action::Data { body })?;
+                }
+
                 Action::SetPixelMode { mode: m } => {
-                    *mode = m;
+                    if let Pixel { mode, .. } = &mut self.mut_block(id)?.data {
+                        *mode = m;
+                    };
                 }
 
                 Action::Reset => {
-                    pixels.clear()
+                    if let Pixel { pixels, .. } = &mut self.mut_block(id)?.data {
+                        pixels.clear()
+                    };
                 }
 
                 _ => {}

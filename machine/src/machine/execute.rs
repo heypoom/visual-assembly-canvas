@@ -47,7 +47,7 @@ impl Execute for Machine {
             }
 
             Op::Load(addr) => {
-                if !self.read_virtual(addr) {
+                if !self.read_virtual(addr, 1) {
                     let v = self.mem.get(addr);
                     self.stack().push(v).map_err(|_| CannotLoadFromMemory)?;
                 }

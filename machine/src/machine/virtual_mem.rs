@@ -3,16 +3,16 @@ use crate::{Action, Actor, Machine, MAPPED_END, MAPPED_START};
 const SIZE_PER_PORT: u16 = 0xFF;
 
 pub trait VirtualMemory {
-    fn read_virtual(&mut self, addr: u16) -> bool;
+    fn read_virtual(&mut self, addr: u16, count: u16) -> bool;
     fn write_virtual(&mut self, addr: u16, data: Vec<u16>) -> bool;
 }
 
 impl VirtualMemory for Machine {
-    fn read_virtual(&mut self, addr: u16) -> bool {
+    fn read_virtual(&mut self, addr: u16, count: u16) -> bool {
         if !is_addr_mapped(addr) { return false; }
 
         let (address, port) = get_mapped_addr(addr);
-        self.send_message(port, Action::Read { address });
+        self.send_message(port, Action::Read { address, count });
         self.expected_receives += 1;
         true
     }
@@ -21,6 +21,7 @@ impl VirtualMemory for Machine {
         if !is_addr_mapped(addr) { return false; }
 
         let (address, port) = get_mapped_addr(addr);
+
         self.send_message(port, Action::Write { address, data });
         true
     }

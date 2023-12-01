@@ -20,7 +20,7 @@ pub enum Action {
     Data { body: Vec<u16> },
 
     /// Request to read from the specified address.
-    Read { address: u16 },
+    Read { address: u16, count: u16 },
 
     /// Request to read from the specified address.
     Write { address: u16, data: Vec<u16> },

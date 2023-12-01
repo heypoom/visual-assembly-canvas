@@ -131,4 +131,24 @@ mod canvas_tests {
 
         Ok(())
     }
+
+    #[test]
+    fn test_mapped_memory() -> Errorable {
+        let mut c = Canvas::new();
+        c.add_machine()?;
+        c.add_block(Pixel { pixels: vec![], mode: PixelMode::Replace })?;
+        c.connect(port(0, 0), port(1, 0))?;
+
+        c.load_program(0, r"
+            push 10
+            store 0x2000
+            push 20
+        ")?;
+
+        c.seq.ready();
+
+        c.tick(5)?;
+
+        Ok(())
+    }
 }
