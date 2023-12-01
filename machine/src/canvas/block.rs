@@ -82,6 +82,12 @@ pub enum BlockData {
         /// Synth configuration.
         config: SynthConfig,
     },
+
+    /// Memory block. Machines can read and write to this block.
+    Memory {
+        /// Data stored in the memory block.
+        values: Vec<u16>,
+    },
 }
 
 impl Block {

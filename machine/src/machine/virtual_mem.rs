@@ -39,7 +39,6 @@ pub fn is_addr_mapped(addr: u16) -> bool {
 
 #[cfg(test)]
 mod virtual_mem_test {
-    use crate::MAPPED_SIZE;
     use super::{is_addr_mapped, MAPPED_START, MAPPED_END, get_mapped_addr, SIZE_PER_PORT};
 
     #[test]

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use snafu::ensure;
-use crate::canvas::block::BlockData::{Clock, Machine, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
+use crate::canvas::block::BlockData::{Clock, Machine, Memory, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Event, Message, Sequencer};
 use crate::audio::midi::{MidiOutputFormat};
@@ -203,6 +203,7 @@ impl Canvas {
             MidiIn { .. } => self.tick_midi_in_block(id, messages)?,
             MidiOut { .. } => self.tick_midi_out_block(id, messages)?,
             Synth { .. } => self.tick_synth_block(id, messages)?,
+            Memory { .. } => self.tick_memory_block(id, messages)?,
             _ => {}
         }
 
@@ -345,17 +346,17 @@ impl Canvas {
         for message in messages {
             match message.action {
                 Action::Data { body } => {
-                    let Plot { values, size } = &mut self.mut_block(id)?.data else { return Ok(()); };
+                    let Plot { values, size } = &mut self.mut_block(id)?.data else { continue; };
                     extend_and_remove_oldest(values, body, *size as usize);
                 }
 
                 Action::Reset => {
-                    let Plot { values, .. } = &mut self.mut_block(id)?.data else { return Ok(()); };
+                    let Plot { values, .. } = &mut self.mut_block(id)?.data else { continue; };
                     values.clear()
                 }
 
                 Action::Write { address, data } => {
-                    let Plot { values, size } = &mut self.mut_block(id)?.data else { return Ok(()); };
+                    let Plot { values, size } = &mut self.mut_block(id)?.data else { continue; };
                     if address >= *size { continue; }
 
                     if address as usize + data.len() >= values.len() {
@@ -368,7 +369,50 @@ impl Canvas {
                 }
 
                 Action::Read { address, count } => {
-                    let Plot { values, .. } = &self.get_block(id)?.data else { return Ok(()); };
+                    let Plot { values, .. } = &self.get_block(id)?.data else { continue; };
+                    let mut body = vec![];
+
+                    for i in 0..count {
+                        body.push(values[(address + i) as usize]);
+                    }
+
+                    self.send_message_to_block(message.sender.block, Action::Data { body })?;
+                }
+
+                _ => {}
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn tick_memory_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
+        for message in messages {
+            match message.action {
+                Action::Data { body } => {
+                    let Memory { values } = &mut self.mut_block(id)?.data else { continue; };
+                    values.extend(body)
+                }
+
+                Action::Reset => {
+                    let Memory { values } = &mut self.mut_block(id)?.data else { continue; };
+                    values.clear()
+                }
+
+                Action::Write { address, data } => {
+                    let Memory { values } = &mut self.mut_block(id)?.data else { return Ok(()); };
+
+                    if address as usize + data.len() >= values.len() {
+                        values.resize(address as usize + data.len() + 1, 0);
+                    }
+
+                    for (i, byte) in data.iter().enumerate() {
+                        values[address as usize + i] = *byte;
+                    }
+                }
+
+                Action::Read { address, count } => {
+                    let Memory { values } = &self.get_block(id)?.data else { return Ok(()); };
                     let mut body = vec![];
 
                     for i in 0..count {
@@ -426,6 +470,7 @@ impl Canvas {
 
     pub fn tick_midi_out_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
+
         let MidiOut { format, channel, port } = &mut block.data else {
             return Ok(());
         };
@@ -467,6 +512,26 @@ impl Canvas {
                 Action::SetMidiChannels { channels } => {
                     if let Some(chan) = channels.first() {
                         *channel = *chan;
+                    }
+                }
+
+                Action::Write { address, data } => {
+                    // MIDI channels and ports cannot be over 255.
+                    if *channel > 255 || *port > 255 { continue; }
+
+                    match *format {
+                        MidiOutputFormat::Note | MidiOutputFormat::ControlChange => {
+                            let [value] = data[..] else { continue; };
+
+                            block.events.push(Event::Midi {
+                                format: *format,
+                                data: vec![(address % 128) as u8, (value % 128) as u8],
+                                channel: (*channel) as u8,
+                                port: (*port) as u8,
+                            })
+                        }
+
+                        _ => {}
                     }
                 }
 
