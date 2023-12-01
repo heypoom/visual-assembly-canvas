@@ -226,7 +226,7 @@ const createCommandRunner = (context: Context) => {
       LocalStorageDriver.save(context.saveState.serialize)
     },
 
-    restore() {
+    load() {
       LocalStorageDriver.load(context.saveState.restore)
     },
   }
