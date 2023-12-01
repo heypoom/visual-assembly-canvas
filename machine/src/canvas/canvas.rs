@@ -372,7 +372,7 @@ impl Canvas {
                     let Plot { values, .. } = &self.get_block(id)?.data else { continue; };
                     let mut body = vec![];
 
-                    if !values.is_empty() {
+                    if !values.is_empty() && address + count <= values.len() as u16 {
                         for i in 0..count {
                             body.push(values[(address + i) as usize]);
                         }
@@ -412,12 +412,11 @@ impl Canvas {
                     let Memory { values } = &self.get_block(id)?.data else { continue; };
                     let mut body = vec![];
 
-                    if !values.is_empty() {
+                    if !values.is_empty() && address + count <= values.len() as u16 {
                         for i in 0..count {
                             body.push(values[(address + i) as usize]);
                         }
                     }
-
 
                     self.send_direct_message(id, message.sender.block, Action::Data { body })?;
                 }
@@ -605,7 +604,7 @@ impl Canvas {
 
                     let mut body = vec![];
 
-                    if !pixels.is_empty() {
+                    if !pixels.is_empty() && address + count <= pixels.len() as u16 {
                         for i in 0..count {
                             body.push(pixels[(address + i) as usize]);
                         }
