@@ -163,8 +163,18 @@ export function SlashCommand() {
                 <div className="text-2">/{preview.prefix}</div>
               </div>
 
-              <div>
-                <div className="text-2">{preview.name}</div>
+              <div className="flex items-center justify-center gap-x-2">
+                <div>
+                  <div className="text-2">{preview.name}</div>
+                </div>
+
+                {preview.shortcut && (
+                  <div>
+                    <div className="text-1 bg-green-5 px-[5px] rounded-2">
+                      {preview.shortcut}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}

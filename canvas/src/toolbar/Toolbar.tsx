@@ -12,6 +12,7 @@ import { $hasBlocks } from "../store/nodes"
 
 import { scheduler } from "../services/scheduler"
 import { useAutoSave } from "../persist/useAutoSave"
+import { useGlobalShortcut } from "../canvas/hooks/useGlobalShortcut"
 
 function reset() {
   scheduler.pause()
@@ -23,6 +24,7 @@ export function Toolbar() {
   const hasBlocks = useStore($hasBlocks)
 
   useAutoSave()
+  useGlobalShortcut()
 
   const { halted } = status
 

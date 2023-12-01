@@ -133,6 +133,12 @@ export class Scheduler {
       scheduler.start().then()
     }
   }
+
+  public toggle() {
+    if (scheduler.running) return scheduler.pause()
+
+    scheduler.start().then()
+  }
 }
 
 export const scheduler = new Scheduler()

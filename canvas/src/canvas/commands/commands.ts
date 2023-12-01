@@ -26,6 +26,7 @@ interface Command {
   destructive?: boolean
   args?: CommandArg[]
   hint?: () => string
+  shortcut?: string
 }
 
 const commands: Command[] = [
@@ -33,14 +34,17 @@ const commands: Command[] = [
     name: "Run / Pause",
     prefix: "run",
     hint: () => ($status.get().running ? "Pause" : "Run"),
+    shortcut: "P",
   },
   {
     name: "Step",
     prefix: "step",
+    shortcut: "S",
   },
   {
     name: "Reset",
     prefix: "reset",
+    shortcut: "R",
   },
 ]
 
@@ -168,13 +172,7 @@ const createCommandRunner = (context: Context) => {
     },
 
     run() {
-      const running = $status.get().running
-
-      if (running) {
-        scheduler.pause()
-      } else {
-        scheduler.start().then()
-      }
+      scheduler.toggle()
     },
 
     profiler() {
