@@ -233,8 +233,8 @@ export class CanvasEngine {
   }
 
   /**
-   * Step the canvas once.
-   * Used for the step button.
+   * Step the canvas a specified amount of time.
+   * Used for the step button and the step command.
    **/
   public stepSlow = (count = 1) => {
     this.halted = false
@@ -246,13 +246,18 @@ export class CanvasEngine {
     this.step(count)
 
     // Perform effects and updates immediately after stepping.
+    this.forceSync()
+
+    // If the current run is complete, cleanup.
+    if (this.isHalted) this.reloadMachines()
+  }
+
+  /** Sync the effects after stepping or running. */
+  public forceSync() {
     this.performSideEffects()
     this.syncMachineState()
     this.highlight()
     this.syncBlocks()
-
-    // If the current run is complete, cleanup.
-    if (this.isHalted) this.reloadMachines()
   }
 
   public syncMachineState() {

@@ -89,6 +89,10 @@ export class Scheduler {
     this.running = false
     this.clearTimers("canvas", "effect")
     cancelAnimationFrame(this.frameRequestId)
+
+    // Sync the UI state and side effects after stepping or running.
+    // This is necessary because UI updates might have not been performed yet.
+    engine.forceSync()
   }
 
   /** The render loop updates the UI. */
@@ -135,7 +139,12 @@ export class Scheduler {
   }
 
   public toggle() {
-    if (scheduler.running) return scheduler.pause()
+    if (scheduler.running) {
+      console.log("--- trigger pause ---")
+      return scheduler.pause()
+    }
+
+    console.log("--- trigger start ---")
 
     scheduler.start().then()
   }
