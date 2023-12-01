@@ -639,7 +639,7 @@ impl Canvas {
         Ok(())
     }
 
-    fn route_messages(&mut self) -> Errorable {
+    pub fn route_messages(&mut self) -> Errorable {
         // Collect the messages from the blocks and the machines.
         let mut messages = self.consume_messages();
         messages.extend(self.seq.consume_messages());

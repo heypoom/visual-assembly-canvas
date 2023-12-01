@@ -21,3 +21,5 @@ export type Action =
   | { SetMidiOutputFormat: { format: MidiOutputFormat } }
   | { SetWaveform: { waveform: Waveform } }
   | { SetPixelMode: { mode: PixelMode } }
+  | { Read: { address: number; count: number } }
+  | { Write: { address: number; data: number[] } }

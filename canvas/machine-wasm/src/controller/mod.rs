@@ -250,6 +250,15 @@ impl Controller {
 
         Ok(true.into())
     }
+
+    pub fn force_tick_block(&mut self, id: u16) -> Return {
+        match self.canvas.route_messages() {
+            Err(_) => return Ok(NULL),
+            Ok(_) => {}
+        };
+
+        returns(self.canvas.tick_block(id))
+    }
 }
 
 #[cfg(test)]
