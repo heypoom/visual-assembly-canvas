@@ -6,6 +6,7 @@ import { MachineBlock } from "./machine"
 import { ClockBlock } from "./clock"
 import { MidiInBlock, MidiOutBlock } from "./midi"
 import { SynthBlock } from "./synth"
+import { MemoryBlock } from "./memory"
 
 import { BlockComponentMap } from "../types/Node"
 
@@ -19,6 +20,7 @@ export const nodeTypes: BlockComponentMap = {
   MidiIn: MidiInBlock,
   MidiOut: MidiOutBlock,
   Synth: SynthBlock,
+  Memory: MemoryBlock,
 }
 
 export * from "./utils/is"

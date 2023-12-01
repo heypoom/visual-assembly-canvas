@@ -2,7 +2,7 @@ import { NodeProps } from "reactflow"
 
 import { OscProps } from "../types/blocks"
 import { engine } from "../engine"
-import { Select, TextField } from "@radix-ui/themes"
+import { TextField } from "@radix-ui/themes"
 
 import { RightClickMenu } from "./components/RightClickMenu"
 import { useReducer, useState } from "react"

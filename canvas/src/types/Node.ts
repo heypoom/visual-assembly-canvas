@@ -3,6 +3,7 @@ import { Node, NodeProps } from "reactflow"
 import {
   ClockProps,
   MachineProps,
+  MemoryProps,
   MidiInProps,
   MidiOutProps,
   OscProps,
@@ -11,6 +12,7 @@ import {
   SynthProps,
   TapProps,
 } from "./blocks"
+
 import type { ReactNode } from "react"
 
 export interface BlockTypeMap {
@@ -23,6 +25,7 @@ export interface BlockTypeMap {
   MidiIn: MidiInProps
   MidiOut: MidiOutProps
   Synth: SynthProps
+  Memory: MemoryProps
 }
 
 export type BlockTypes = keyof BlockTypeMap

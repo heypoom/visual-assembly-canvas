@@ -394,11 +394,6 @@ impl Canvas {
                     values.extend(body)
                 }
 
-                Action::Reset => {
-                    let Memory { values } = &mut self.mut_block(id)?.data else { continue; };
-                    values.clear()
-                }
-
                 Action::Write { address, data } => {
                     let Memory { values } = &mut self.mut_block(id)?.data else { return Ok(()); };
 

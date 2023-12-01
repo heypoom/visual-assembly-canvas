@@ -70,3 +70,7 @@ export interface SynthProps extends BaseProps {
   synth_id: number
   config: SynthConfig
 }
+
+export interface MemoryProps extends BaseProps {
+  values: number[]
+}

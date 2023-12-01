@@ -16,4 +16,5 @@ export const defaultProps: DefaultPropsMap = {
   Synth: { synth_id: 0, config: { Basic: null } },
   MidiIn: { on: "NoteOn", port: 0, channels: [] },
   MidiOut: { format: "Note", channel: 1, port: 0 },
+  Memory: { values: [] },
 }
