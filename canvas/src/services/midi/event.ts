@@ -1,4 +1,7 @@
+import { chunk } from "lodash"
+
 import { launchpad, midiManager } from "./index"
+
 import { $lastMidiEvent } from "../../store/midi"
 import { MidiEffect } from "../../types/effects"
 
@@ -26,11 +29,12 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
       case "Note": {
         if (data.length < 2) return
 
-        const [note, rawAttack] = data
-
-        output?.playNote(note % 128, {
-          rawAttack: rawAttack % 128,
-          channels: channel,
+        // chunk of 2
+        chunk(data, 2).forEach(([note, rawAttack]) => {
+          output?.playNote(note % 128, {
+            rawAttack: rawAttack % 128,
+            channels: channel,
+          })
         })
 
         return
@@ -39,9 +43,10 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
       case "ControlChange": {
         if (data.length < 2) return
 
-        const [controller, value] = data
-        output?.sendControlChange(controller % 128, value % 128, {
-          channels: channel,
+        chunk(data, 2).forEach(([controller, value]) => {
+          output?.sendControlChange(controller % 128, value % 128, {
+            channels: channel,
+          })
         })
 
         return

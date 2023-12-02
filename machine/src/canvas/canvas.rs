@@ -526,16 +526,44 @@ impl Canvas {
                     // MIDI channels and ports cannot be over 255.
                     if *channel > 255 || *port > 255 { continue; }
 
+                    let batch_register = 0x100;
+
                     match *format {
                         MidiOutputFormat::Note | MidiOutputFormat::ControlChange => {
-                            let [value] = data[..] else { continue; };
+                            // Writing below the batch register will send the data as a single note.
+                            if address < batch_register {
+                                let [velocity] = data[..] else { continue; };
 
-                            block.events.push(Event::Midi {
-                                format: *format,
-                                data: vec![(address % 128) as u8, (value % 128) as u8],
-                                channel: (*channel) as u8,
-                                port: (*port) as u8,
-                            })
+                                block.events.push(Event::Midi {
+                                    format: *format,
+                                    data: vec![(address % 128) as u8, (velocity % 128) as u8],
+                                    channel: (*channel) as u8,
+                                    port: (*port) as u8,
+                                });
+
+                                continue;
+                            }
+
+                            // Writing to the BATCH register will send the data as a batch.
+                            if address == batch_register {
+                                if data.len() < 2 { continue; }
+
+                                let mut out = vec![];
+
+                                for chunk in data.chunks(2) {
+                                    let [note, velocity] = chunk[..] else { break; };
+
+                                    out.push((note % 128) as u8);
+                                    out.push((velocity % 128) as u8);
+                                }
+
+                                block.events.push(Event::Midi {
+                                    format: *format,
+                                    data: out,
+                                    channel: (*channel) as u8,
+                                    port: (*port) as u8,
+                                })
+                            }
                         }
 
                         _ => {}

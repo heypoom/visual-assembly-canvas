@@ -11,7 +11,7 @@ import { engine } from "../engine"
 import { updateNode } from "../store/blocks"
 import { isBlock } from "./utils/is"
 
-const columns = 10
+const columns = 20
 
 export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
   const { id } = props.data
