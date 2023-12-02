@@ -320,7 +320,7 @@ export class CanvasEngine {
       const { cause } = e.MachineError
 
       const inner = Object.values(cause)[0]
-      if (inner?.id) setError(inner.id, e)
+      if (typeof inner?.id === "number") setError(inner.id, e)
 
       return
     }
