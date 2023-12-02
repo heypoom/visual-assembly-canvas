@@ -73,13 +73,22 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
     engine.ctx?.force_tick_block(id)
   }
 
+  const gridLimit = 1000
+  const overGridLimit = count > gridLimit
+
   return (
     <div>
       <BlockHandle port={0} side="left" type="target" />
 
       <RightClickMenu id={id} show={showSettings} toggle={toggle}>
         <div className="group border-2 border-green-9 font-mono py-2">
-          {!isBatch && (
+          {overGridLimit && !isBatch && (
+            <p className="text-1 text-tomato-11 px-4 py-2">
+              values too large ({count} items) <br /> use text mode to edit.
+            </p>
+          )}
+
+          {!isBatch && !overGridLimit && (
             <div
               className="grid items-center justify-center gap-x-1 px-2"
               style={{
