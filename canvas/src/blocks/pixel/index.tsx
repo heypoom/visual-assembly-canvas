@@ -1,4 +1,4 @@
-import { useReducer } from "react"
+import { useEffect, useReducer, useRef } from "react"
 import { PixelMode as _PixelMode } from "machine-wasm"
 import { TextField } from "@radix-ui/themes"
 import { NodeProps } from "reactflow"
@@ -25,11 +25,14 @@ const paletteOptions = Object.keys(palettes).map((value) => ({
   label: value,
 }))
 
+const BLOCK_SIZE = 19
+
 export const PixelBlock = (props: NodeProps<PixelProps>) => {
   const { id } = props.data
   const { data } = props
   const { columns = 9, palette = "base", mode = "Append" } = data
 
+  const canvasRef = useRef<HTMLCanvasElement | null>()
   const [isSettings, toggle] = useReducer((n) => !n, false)
 
   const pixels =
@@ -44,7 +47,36 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
     }
   }
 
+  const rows = Math.round(pixels.length / columns)
   const isDrawable = !!pixels && columns > 1
+  const width = columns * BLOCK_SIZE
+  const height = rows * BLOCK_SIZE
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+
+    const ctx = canvas?.getContext("2d")
+    if (!ctx || !canvas) return
+
+    const rect = canvas?.getBoundingClientRect()
+
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+
+    ctx.scale(dpr, dpr)
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+    const size = canvas.width / columns / dpr
+
+    for (let i = 0; i < pixels.length; i++) {
+      const x = i % columns
+      const y = Math.floor(i / columns)
+
+      ctx.fillStyle = getPixelColor(pixels[i], palette)
+      ctx.fillRect(x * size, y * size, size, size)
+    }
+  }, [pixels, columns, palette])
 
   return (
     <div className="group">
@@ -58,28 +90,25 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
           {isSettings ? <EyeClosedIcon /> : <MixerHorizontalIcon />}
         </div>
 
-        <div>
+        <div className="">
           {!isDrawable && (
             <div className="px-4 py-3 font-mono text-1 text-crimson-10">
               Columns must be more than 1!
             </div>
           )}
 
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: `repeat(${columns}, minmax(0, 20px))`,
-            }}
-          >
-            {isDrawable &&
-              pixels?.map((pixel, i) => (
-                <div
-                  key={i}
-                  className="w-5 h-5"
-                  style={{ background: getPixelColor(pixel, palette) }}
-                />
-              ))}
-          </div>
+          {isDrawable && (
+            <div
+              className=""
+              style={{ height: `${height}px`, width: `${width}px` }}
+            >
+              <canvas
+                ref={(r) => (canvasRef.current = r)}
+                className="h-[180px]"
+                style={{ height, width }}
+              />
+            </div>
+          )}
         </div>
 
         {isSettings && (
