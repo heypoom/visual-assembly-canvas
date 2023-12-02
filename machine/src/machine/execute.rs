@@ -97,7 +97,7 @@ impl Execute for Machine {
 
             // Increment and decrement.
             Op::Inc => s.apply(|v| v.checked_add(1).ok_or(IntegerOverflow))?,
-            Op::Dec => s.apply(|v| v.checked_sub(1).ok_or(IntegerUnderflow))?,
+            Op::Dec => s.apply(|v| Ok(v.checked_sub(1).unwrap_or(0)))?,
 
             // Equality and comparison operations.
             Op::Equal => s.apply_two(|a, b| Ok((a == b).into()))?,
