@@ -162,7 +162,7 @@ mod canvas_tests {
     fn test_mapped_load() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(Memory { values: vec![20, 40] })?;
+        c.add_block(Memory { values: vec![20, 40], auto_reset: false })?;
         c.connect(port(0, 0), port(1, 0))?;
 
         c.load_program(0, r"
