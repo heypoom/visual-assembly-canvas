@@ -526,7 +526,7 @@ impl Canvas {
                     // MIDI channels and ports cannot be over 255.
                     if *channel > 255 || *port > 255 { continue; }
 
-                    let batch_register = 0x100;
+                    let batch_register = 0x80;
 
                     match *format {
                         MidiOutputFormat::Note | MidiOutputFormat::ControlChange => {
@@ -536,7 +536,7 @@ impl Canvas {
 
                                 block.events.push(Event::Midi {
                                     format: *format,
-                                    data: vec![(address % 128) as u8, (velocity % 128) as u8],
+                                    data: vec![address as u8, (velocity % 128) as u8],
                                     channel: (*channel) as u8,
                                     port: (*port) as u8,
                                 });
@@ -562,7 +562,9 @@ impl Canvas {
                                     data: out,
                                     channel: (*channel) as u8,
                                     port: (*port) as u8,
-                                })
+                                });
+
+                                continue;
                             }
                         }
 
