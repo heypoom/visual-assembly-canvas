@@ -145,7 +145,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
               className={cn("text-1 text-gray-6", isBatch && "text-green-11")}
               onClick={() => setBatch((s) => !s)}
             >
-              batch
+              txt
             </div>
 
             <div
