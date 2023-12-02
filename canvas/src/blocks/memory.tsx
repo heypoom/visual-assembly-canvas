@@ -46,7 +46,9 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
   useEffect(() => {
     if (isBatch) {
-      setBatchInput(values.map((v) => v.toString(base)).join(" "))
+      const data = props.data.values.map((v) => v.toString(base)).join(" ")
+
+      setBatchInput(data)
     }
   }, [isBatch, isHex, props.data.values])
 
@@ -60,17 +62,10 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
     if (values.length === 0) return
 
-    updateNode(id, (node) => {
-      if (isBlock.memory(node)) {
-        node.data.values = values
-      }
-    })
-
-    engine.send(id, {
-      Write: { address: 0, data: values },
-    })
-
+    updateNodeData(id, { values })
+    engine.send(id, { Override: { data: values } })
     engine.ctx?.force_tick_block(id)
+    engine.syncBlocks()
   }
 
   const gridLimit = 1000

@@ -22,8 +22,11 @@ pub enum Action {
     /// Request to read from the specified address.
     Read { address: u16, count: u16 },
 
-    /// Request to read from the specified address.
+    /// Write to the specified address.
     Write { address: u16, data: Vec<u16> },
+
+    /// Override all existing data.
+    Override { data: Vec<u16> },
 
     /// Reset the node to its initial state.
     Reset,

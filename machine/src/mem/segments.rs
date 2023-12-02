@@ -4,8 +4,8 @@ pub const MEMORY_SIZE: u16 = 0xFFFF;
 // Size of memory segments
 pub const CODE_SIZE: u16 = 0x1000;
 pub const DATA_SIZE: u16 = 0x1000;
-pub const CALL_STACK_SIZE: u16 = 0x100;
 pub const MAPPED_SIZE: u16 = 0x2000;
+pub const CALL_STACK_SIZE: u16 = 0x100;
 
 // Code segment
 pub const CODE_START: u16 = 0x0000;

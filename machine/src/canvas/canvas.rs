@@ -398,6 +398,12 @@ impl Canvas {
                     values.extend(body)
                 }
 
+                Action::Override { data } => {
+                    let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
+                    values.clear();
+                    values.extend(data);
+                }
+
                 Action::Write { address, data } => {
                     let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
 

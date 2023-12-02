@@ -15,6 +15,7 @@ export type Action =
   | { Data: { body: number[] } }
   | { Read: { address: number; count: number } }
   | { Write: { address: number; data: number[] } }
+  | { Override: { data: number[] } }
   | { Reset: null }
   | MidiAction
   | { SetMidiPort: { port: number } }
