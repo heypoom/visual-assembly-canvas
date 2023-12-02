@@ -36,7 +36,7 @@ export function MachineEditor(props: Props) {
 
   return (
     <CodeMirror
-      onBlur={() => engine.load(id, source)}
+      onBlur={() => engine.load(id, source, { invalidate: false })}
       basicSetup={{ lineNumbers: false, foldGutter: false }}
       maxHeight="400px"
       minWidth="300px"

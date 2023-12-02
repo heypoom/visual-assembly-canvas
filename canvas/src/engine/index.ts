@@ -85,9 +85,19 @@ export class CanvasEngine {
     this.ctx = Controller.create()
   }
 
-  public load(id: number, source: string, force?: boolean) {
+  public load(
+    id: number,
+    source: string,
+    config?: { reload?: boolean; invalidate?: boolean },
+  ) {
+    const { reload = false, invalidate = true } = config ?? {}
+
     // If the source is the same, we don't need to reload.
-    if (this.sources.get(id) === source && !force) return this.invalidate()
+    if (this.sources.get(id) === source && !reload) {
+      if (invalidate) this.invalidate()
+      return
+    }
+
     this.sources.set(id, source)
 
     try {
@@ -333,7 +343,7 @@ export class CanvasEngine {
 
   private reloadMachines() {
     this.sources.forEach((source, id) => {
-      this.load(id, source, true)
+      this.load(id, source, { reload: true, invalidate: true })
     })
   }
 
