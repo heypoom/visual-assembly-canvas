@@ -13,6 +13,8 @@ export interface MidiAction {
 
 export type Action =
   | { Data: { body: number[] } }
+  | { Read: { address: number; count: number } }
+  | { Write: { address: number; data: number[] } }
   | { Reset: null }
   | MidiAction
   | { SetMidiPort: { port: number } }
@@ -21,5 +23,4 @@ export type Action =
   | { SetMidiOutputFormat: { format: MidiOutputFormat } }
   | { SetWaveform: { waveform: Waveform } }
   | { SetPixelMode: { mode: PixelMode } }
-  | { Read: { address: number; count: number } }
-  | { Write: { address: number; data: number[] } }
+  | { SetAutoReset: { auto_reset: boolean } }

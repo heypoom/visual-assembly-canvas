@@ -8,13 +8,13 @@ import { BlockHandle } from "./components/BlockHandle"
 import { MemoryProps } from "../types/blocks"
 import cn from "classnames"
 import { engine } from "../engine"
-import { updateNode } from "../store/blocks"
+import { updateNode, updateNodeData } from "../store/blocks"
 import { isBlock } from "./utils/is"
 
 const columns = 20
 
 export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
-  const { id } = props.data
+  const { id, auto_reset } = props.data
 
   const [isHex, setHex] = useState(false)
 
@@ -35,6 +35,12 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
     })
   }
 
+  function toggleReset() {
+    updateNodeData(id, { auto_reset: !auto_reset })
+    engine.send(id, { SetAutoReset: { auto_reset: !auto_reset } })
+    engine.ctx?.force_tick_block(id)
+  }
+
   const values = [...props.data.values, 0]
   const count = Math.max(columns * 6, values.length)
 
@@ -42,7 +48,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
     if (isBatch) {
       setBatchInput(values.map((v) => v.toString(base)).join(" "))
     }
-  }, [isBatch, isHex])
+  }, [isBatch, isHex, props.data.values])
 
   function updateBatch() {
     if (!isBatch) return
@@ -140,6 +146,16 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
               onClick={() => setBatch((s) => !s)}
             >
               batch
+            </div>
+
+            <div
+              className={cn(
+                "text-1 text-gray-6",
+                auto_reset && "text-green-11",
+              )}
+              onClick={toggleReset}
+            >
+              temp
             </div>
           </div>
         </div>
