@@ -72,4 +72,5 @@ export interface SynthProps extends BaseProps {
 
 export interface MemoryProps extends BaseProps {
   values: number[]
+  auto_reset: boolean
 }

@@ -394,12 +394,12 @@ impl Canvas {
         for message in messages {
             match message.action {
                 Action::Data { body } => {
-                    let Memory { values } = &mut self.mut_block(id)?.data else { continue; };
+                    let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
                     values.extend(body)
                 }
 
                 Action::Write { address, data } => {
-                    let Memory { values } = &mut self.mut_block(id)?.data else { continue; };
+                    let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
 
                     if address as usize + data.len() >= values.len() {
                         values.resize(address as usize + data.len() + 1, 0);
@@ -411,7 +411,7 @@ impl Canvas {
                 }
 
                 Action::Read { address, count } => {
-                    let Memory { values } = &self.get_block(id)?.data else { continue; };
+                    let Memory { values, .. } = &self.get_block(id)?.data else { continue; };
                     let mut body = vec![];
 
                     if !values.is_empty() && address + count <= values.len() as u16 {
@@ -424,7 +424,7 @@ impl Canvas {
                 }
 
                 Action::Reset => {
-                    if let Memory { values } = &mut self.mut_block(id)?.data {
+                    if let Memory { values, .. } = &mut self.mut_block(id)?.data {
                         values.clear()
                     };
                 }
@@ -772,7 +772,11 @@ impl Canvas {
         let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine()).map(|b| b.id).collect();
 
         for id in ids {
-            if let Memory { .. } = self.get_block(id)?.data { continue; }
+            // Do not reset if the block is not auto-reset.
+            // This means the memory block is storing persistent data.
+            if let Memory { auto_reset, .. } = self.get_block(id)?.data {
+                if !auto_reset { continue; }
+            }
 
             self.reset_block(id)?;
         }

@@ -84,6 +84,9 @@ pub enum BlockData {
     Memory {
         /// Data stored in the memory block.
         values: Vec<u16>,
+
+        /// Should the memory block be reset automatically?
+        auto_reset: bool,
     },
 }
 

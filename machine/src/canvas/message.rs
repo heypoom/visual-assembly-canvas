@@ -48,4 +48,7 @@ pub enum Action {
 
     /// Set the pixel mode of the pixel block.
     SetPixelMode { mode: PixelMode },
+
+    /// Should the block reset via the reset command?
+    SetAutoReset { auto_reset: bool },
 }
