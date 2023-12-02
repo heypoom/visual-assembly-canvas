@@ -310,6 +310,8 @@ export class CanvasEngine {
   private detectCanvasError(error: unknown) {
     const e = error as CanvasError
 
+    console.warn("canvas error:", e)
+
     if (canvasErrors.disconnectedPort(e)) {
       const id = e.DisconnectedPort.port?.block
       setError(id, e)

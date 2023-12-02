@@ -132,18 +132,18 @@ impl Execute for Machine {
             Op::Swap => {
                 let a = s.pop()?;
 
-                // If there is no second value, push the
-                // first value back onto the stack.
-                let b = match s.pop() {
-                    Ok(v) => v,
+                match s.pop() {
+                    Ok(b) => {
+                        s.push(a)?;
+                        s.push(b)?;
+                    }
+
+                    // If there is no second value, push the
+                    // first value back onto the stack.
                     Err(_) => {
                         s.push(a)?;
-                        return Ok(());
                     }
                 };
-
-                s.push(a)?;
-                s.push(b)?;
             }
 
             Op::Over => {
