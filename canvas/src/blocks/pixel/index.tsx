@@ -65,7 +65,7 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
     canvas.height = rect.height * dpr
 
     ctx.scale(dpr, dpr)
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     const size = canvas.width / columns / dpr
 
