@@ -163,6 +163,28 @@ impl Execute for Machine {
                 s.push(a)?;
             }
 
+            Op::Nip => {
+                let a = s.pop()?;
+                s.pop()?;
+                s.push(a)?;
+            }
+
+            Op::Tuck => {
+                let a = s.pop()?;
+                let b = s.pop()?;
+
+                s.push(a)?;
+                s.push(b)?;
+                s.push(a)?;
+            }
+
+            Op::Pick(n) => {
+                let len = s.len();
+                ensure!(len >= n + 1, NotEnoughValuesSnafu { len, min: n + 1 });
+
+                s.push(s.get(len - n - 1).clone())?;
+            }
+
             Op::Print => {
                 let mut bytes = vec![];
 

@@ -33,16 +33,32 @@ pub enum Op {
 
     /// Duplicates the value at the top of the stack.
     /// Makes a copy of the top value and pushes it onto the stack.
+    /// [1, 2, 3] -> [1, 2, 3, 3]
     Dup,
 
     /// Swaps the positions of the top two values on the stack.
+    /// [1, 2, 3] -> [1, 3, 2]
     Swap,
 
     /// Duplicates the second value from the top of the stack and pushes it onto the stack.
+    /// [1, 2, 3] -> [1, 2, 3, 2]
     Over,
 
     /// Rotate the top three values on the stack.
+    /// [1, 2, 3] -> [2, 3, 1]
     Rotate,
+
+    /// Removes the second value from the top of the stack.
+    /// [1, 2, 3] -> [1, 3]
+    Nip,
+
+    /// Takes the top value from the stack and inserts it one position below the top.
+    /// [1, 2, 3] -> [1, 3, 2, 3]
+    Tuck,
+
+    /// Picks the nth value from the top of the stack and push it onto the stack.
+    /// pick(1) [1, 2, 3] -> [1, 2, 3, 2]
+    Pick(u16),
 
     Inc,
     Dec,

@@ -290,7 +290,9 @@ const createCommandRunner = (context: Context) => {
         const plain = await file.text()
 
         context.saveState.restore(JSON.parse(plain))
-      } catch (err) {}
+      } catch (err) {
+        console.warn(`cannot import save:`, err)
+      }
     },
   }
 
