@@ -2,12 +2,11 @@ import cn from "classnames"
 import { useEffect, useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
+import { BlockHandle, RightClickMenu } from "@/blocks/components"
 import { engine } from "@/engine"
 import { updateNode, updateNodeData } from "@/store/blocks"
 import { MemoryProps } from "@/types/blocks"
 
-import { BlockHandle } from "./components/BlockHandle"
-import { RightClickMenu } from "./components/RightClickMenu"
 import { isBlock } from "./utils/is"
 
 const columns = 8
@@ -75,7 +74,12 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
       <BlockHandle port={0} side="left" type="target" />
 
       <RightClickMenu id={id} show={showSettings} toggle={toggle}>
-        <div className="group border-2 border-green-9 font-mono py-2">
+        <div
+          className={cn(
+            "group border-2 border-green-9 font-mono py-2",
+            props.selected && "!border-yellow-11",
+          )}
+        >
           {overGridLimit && !isBatch && (
             <p className="text-1 text-tomato-11 px-4 py-2">
               values too large ({count} items) <br /> use text mode to edit.

@@ -29,6 +29,7 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
       <div
         className={cn(
           "px-3 py-3 border-2 rounded-2 hover:border-cyan-11",
+          props.selected && "!border-yellow-11",
           errored && "!border-red-9",
           awaiting && "!border-purple-11",
           halted && "border-gray-9",

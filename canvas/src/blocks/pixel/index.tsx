@@ -1,5 +1,6 @@
 import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 import { TextField } from "@radix-ui/themes"
+import cn from "classnames"
 import { PixelMode as _PixelMode } from "machine-wasm"
 import { useEffect, useReducer, useRef } from "react"
 import { NodeProps } from "reactflow"
@@ -81,7 +82,12 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
       <BlockHandle port={1} side="left" type="target" />
 
       <RightClickMenu id={id} show={isSettings} toggle={toggle}>
-        <div className="border-2 border-crimson-9 rounded-2 relative hover:border-cyan-9">
+        <div
+          className={cn(
+            "border-2 border-crimson-9 rounded-2 relative hover:border-cyan-9",
+            props.selected && "!border-yellow-11",
+          )}
+        >
           <div
             className="absolute hidden group-hover:flex right-2 top-1 bg-gray-1 p-1 rounded-6 text-cyan-11 hover:bg-cyan-9 hover:text-gray-1"
             onClick={toggle}
