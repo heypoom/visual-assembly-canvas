@@ -1,10 +1,9 @@
+import { useReducer } from "react"
 import { NodeProps } from "reactflow"
 
 import { ClockProps } from "../types/blocks"
-
-import { RightClickMenu } from "./components/RightClickMenu"
-import { useReducer } from "react"
 import { BlockHandle } from "./components/BlockHandle"
+import { RightClickMenu } from "./components/RightClickMenu"
 
 export const ClockBlock = (props: NodeProps<ClockProps>) => {
   const { id } = props.data

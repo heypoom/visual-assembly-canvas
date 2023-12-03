@@ -1,4 +1,4 @@
-import {Spec} from './specs'
+import { Spec } from "./specs"
 
 export type Scene = number[]
 

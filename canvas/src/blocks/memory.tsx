@@ -1,14 +1,12 @@
+import cn from "classnames"
+import { useEffect, useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
-import { useEffect, useReducer, useState } from "react"
-
-import { RightClickMenu } from "./components/RightClickMenu"
-import { BlockHandle } from "./components/BlockHandle"
-
-import { MemoryProps } from "../types/blocks"
-import cn from "classnames"
 import { engine } from "../engine"
 import { updateNode, updateNodeData } from "../store/blocks"
+import { MemoryProps } from "../types/blocks"
+import { BlockHandle } from "./components/BlockHandle"
+import { RightClickMenu } from "./components/RightClickMenu"
 import { isBlock } from "./utils/is"
 
 const columns = 8

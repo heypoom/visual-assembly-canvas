@@ -1,17 +1,15 @@
 import { Output } from "webmidi"
 
 import { ControlCodes } from "./controls"
-
 import {
+  buildFillGrid,
+  buildSpecFromGrid,
   Flash,
+  getTrait,
   Pulse,
   RGB,
-  buildSpecFromGrid,
-  buildFillGrid,
-  getTrait,
 } from "./specs"
-
-import { Spec, InputGrid } from "./types/specs"
+import { InputGrid, Spec } from "./types/specs"
 
 export const launchpadNames = {
   midiIn: "Launchpad X LPX MIDI Out",

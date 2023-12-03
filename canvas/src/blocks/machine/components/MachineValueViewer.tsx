@@ -1,7 +1,8 @@
-import { ErrorIndicator } from "./ErrorIndicator"
+import cn from "classnames"
 
 import { MachineState } from "@/types/MachineState"
-import cn from "classnames"
+
+import { ErrorIndicator } from "./ErrorIndicator"
 
 interface Props {
   id: number

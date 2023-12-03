@@ -1,8 +1,8 @@
 import { ReactFlowProvider } from "reactflow"
 
 import { Canvas } from "./canvas/Canvas"
-import { Toolbar } from "./toolbar/Toolbar"
 import { SlashCommand } from "./canvas/components/SlashCommand"
+import { Toolbar } from "./toolbar/Toolbar"
 
 function App() {
   return (

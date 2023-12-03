@@ -1,18 +1,17 @@
-import { useEffect, useReducer, useRef } from "react"
-import { PixelMode as _PixelMode } from "machine-wasm"
-import { TextField } from "@radix-ui/themes"
-import { NodeProps } from "reactflow"
 import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
-
-import { PaletteKey, getPixelColor, palettes } from "./palette"
-
-import type { PixelProps } from "@/types/blocks"
+import { TextField } from "@radix-ui/themes"
+import { PixelMode as _PixelMode } from "machine-wasm"
+import { useEffect, useReducer, useRef } from "react"
+import { NodeProps } from "reactflow"
 
 import { engine } from "@/engine"
-import { updateNodeData } from "../../store/blocks"
+import type { PixelProps } from "@/types/blocks"
 import { PixelMode } from "@/types/enums"
-import { BlockHandle } from "../components/BlockHandle"
+
+import { updateNodeData } from "../../store/blocks"
 import { RadixSelect } from "../../ui/select"
+import { BlockHandle } from "../components/BlockHandle"
+import { getPixelColor, PaletteKey, palettes } from "./palette"
 
 const modes = Object.keys(_PixelMode).filter(
   (key) => !isNaN(Number(_PixelMode[key as PixelMode])),

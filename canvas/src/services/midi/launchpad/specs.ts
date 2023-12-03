@@ -1,6 +1,5 @@
+import { InputGrid, Spec } from "./types/specs"
 import { range } from "./utils"
-
-import { Spec, InputGrid } from "./types/specs"
 
 // Fixed-color lights.
 export const Color = (color: number): Spec => [0, color % 128]

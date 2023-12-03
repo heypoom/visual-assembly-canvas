@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react"
 
 import { LocalStorageDriver } from "../drivers/localStorage"
-
 import { PersistConfig } from "../types"
 import { useSaveState } from "./useSaveState"
 

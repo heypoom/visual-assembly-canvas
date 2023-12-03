@@ -1,15 +1,15 @@
 import {
-  start,
-  now,
-  PolySynth,
   AMSynth,
   FMSynth,
   NoiseSynth,
+  now,
+  PolySynth,
+  start,
   Synth,
 } from "tone"
+import type { Instrument } from "tone/build/esm/instrument/Instrument"
 
 import { AttackReleaseConfig, SynthConfig, SynthType } from "@/types/synth"
-import type { Instrument } from "tone/build/esm/instrument/Instrument"
 
 const synthMap: Record<SynthType, () => Instrument<any>> = {
   Basic: () => new PolySynth(Synth).toDestination(),

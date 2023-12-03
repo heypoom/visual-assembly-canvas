@@ -1,6 +1,6 @@
-import { createTheme } from "@uiw/codemirror-themes"
 import { tags as t } from "@lezer/highlight"
 import { slateDark } from "@radix-ui/colors"
+import { createTheme } from "@uiw/codemirror-themes"
 
 export const BG_DARK = slateDark.slate1
 export const FG_TEXT = "#ffffff"

@@ -1,19 +1,17 @@
 import { Port } from "machine-wasm"
-
 import {
-  NodeChange,
-  applyNodeChanges,
-  EdgeChange,
-  applyEdgeChanges,
-  Connection,
   addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Connection,
+  EdgeChange,
+  NodeChange,
 } from "reactflow"
 
 import { engine } from "@/engine"
-
-import { $nodes, $edges } from "../nodes"
-
 import { BlockNode } from "@/types/Node"
+
+import { $edges, $nodes } from "../nodes"
 
 export const port = (id: string, p: string): Port =>
   new Port(Number(id), Number(p))

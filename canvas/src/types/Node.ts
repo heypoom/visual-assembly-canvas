@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { Node, NodeProps } from "reactflow"
 
 import {
@@ -12,8 +13,6 @@ import {
   SynthProps,
   TapProps,
 } from "./blocks"
-
-import type { ReactNode } from "react"
 
 export interface BlockTypeMap {
   Machine: MachineProps

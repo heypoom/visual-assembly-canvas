@@ -1,4 +1,4 @@
-import { BlockTypes, BlockTypeMap } from "@/types/Node"
+import { BlockTypeMap, BlockTypes } from "@/types/Node"
 
 export const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
 

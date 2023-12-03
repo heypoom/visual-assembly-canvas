@@ -1,14 +1,14 @@
-import { TapBlock } from "./tap"
-import { OscBlock } from "./osc"
-import { PlotterBlock } from "./plotter"
-import { PixelBlock } from "./pixel"
-import { MachineBlock } from "./machine"
-import { ClockBlock } from "./clock"
-import { MidiInBlock, MidiOutBlock } from "./midi"
-import { SynthBlock } from "./synth"
-import { MemoryBlock } from "./memory"
-
 import { BlockComponentMap } from "@/types/Node"
+
+import { ClockBlock } from "./clock"
+import { MachineBlock } from "./machine"
+import { MemoryBlock } from "./memory"
+import { MidiInBlock, MidiOutBlock } from "./midi"
+import { OscBlock } from "./osc"
+import { PixelBlock } from "./pixel"
+import { PlotterBlock } from "./plotter"
+import { SynthBlock } from "./synth"
+import { TapBlock } from "./tap"
 
 export const nodeTypes: BlockComponentMap = {
   Tap: TapBlock,
@@ -23,6 +23,6 @@ export const nodeTypes: BlockComponentMap = {
   Memory: MemoryBlock,
 }
 
-export * from "./utils/is"
-export * from "./utils/defaults"
 export * from "./pixel/palette"
+export * from "./utils/defaults"
+export * from "./utils/is"

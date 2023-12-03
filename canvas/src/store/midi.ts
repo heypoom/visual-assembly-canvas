@@ -1,7 +1,7 @@
 import { map } from "nanostores"
 
-import { MidiState } from "@/types/midi"
 import { MidiEffect } from "@/types/effects"
+import { MidiState } from "@/types/midi"
 
 const defaultMidiState: MidiState = {
   ready: false,

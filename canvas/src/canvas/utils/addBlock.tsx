@@ -1,8 +1,9 @@
 import { engine } from "@/engine"
 import { BlockTypeMap, BlockTypes } from "@/types/Node"
+
 import { defaultProps } from "../../blocks"
-import { addCanvasNode } from "./addCanvasNode"
 import { setupBlock } from "../../persist/utils/setupBlock"
+import { addCanvasNode } from "./addCanvasNode"
 
 interface Options<T extends BlockTypes> {
   position?: { x: number; y: number }

@@ -1,13 +1,13 @@
 import { useReactFlow } from "reactflow"
 
+import { defaultProps } from "@/blocks"
+import { engine } from "@/engine"
+import { port } from "@/store/actions/changes"
+import { $clock } from "@/store/clock"
+import { BlockNode } from "@/types/Node"
+
 import { SaveState } from "../types"
 import { setupBlock } from "../utils/setupBlock"
-
-import { engine } from "@/engine"
-import { BlockNode } from "@/types/Node"
-import { $clock } from "@/store/clock"
-import { defaultProps } from "@/blocks"
-import { port } from "@/store/actions/changes"
 
 export interface SaveStateContext {
   serialize: () => SaveState

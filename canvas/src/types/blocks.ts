@@ -1,9 +1,8 @@
 import { PaletteKey } from "@/blocks"
 
-import { Waveform } from "./waveform"
-
-import { PixelMode, MidiInputEvent, MidiOutputFormat } from "./enums"
+import { MidiInputEvent, MidiOutputFormat, PixelMode } from "./enums"
 import { SynthConfig } from "./synth"
+import { Waveform } from "./waveform"
 
 export interface BaseProps {
   id: number

@@ -1,12 +1,12 @@
+import { cyanP3 } from "@radix-ui/colors"
 import { useEffect, useReducer, useRef } from "react"
 import { NodeProps } from "reactflow"
-import { cyanP3 } from "@radix-ui/colors"
 
-import { rescale } from "./rescale"
-
-import { RightClickMenu } from "../components/RightClickMenu"
 import { PlotterProps } from "@/types/blocks"
+
 import { BlockHandle } from "../components/BlockHandle"
+import { RightClickMenu } from "../components/RightClickMenu"
+import { rescale } from "./rescale"
 
 export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
   const { id, values, size } = props.data

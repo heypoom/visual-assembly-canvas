@@ -1,29 +1,26 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react"
-import cx from "classnames"
-import { NodeProps } from "reactflow"
-import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
-
-import { MidiInProps } from "@/types/blocks"
-import { RightClickMenu } from "../components/RightClickMenu"
-
 import { useStore } from "@nanostores/react"
-import { $midi } from "../../store/midi"
+import cx from "classnames"
+import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
+import { NodeProps } from "reactflow"
+
 import { engine } from "@/engine"
+import { MidiInProps } from "@/types/blocks"
+import { MidiInputEvent } from "@/types/enums"
 
 import {
-  MidiEvent,
   isControlChangeEvent,
   isNoteEvent,
+  MidiEvent,
   midiManager,
 } from "../../services/midi"
-
-import { $status } from "../../store/status"
 import { updateNodeData } from "../../store/blocks"
-import { MidiTransportForm } from "./transport"
-
-import { MidiInputEvent } from "@/types/enums"
-import { BlockHandle } from "../components/BlockHandle"
+import { $midi } from "../../store/midi"
+import { $status } from "../../store/status"
 import { RadixSelect } from "../../ui/select"
+import { BlockHandle } from "../components/BlockHandle"
+import { RightClickMenu } from "../components/RightClickMenu"
+import { MidiTransportForm } from "./transport"
 
 const events = Object.keys(_MidiInputEvent).filter(
   (key) => !isNaN(Number(_MidiInputEvent[key as MidiInputEvent])),

@@ -1,7 +1,7 @@
 import {
-  PixelMode as _PixelMode,
   MidiInputEvent as _MidiInputEvent,
   MidiOutputFormat as _MidiOutputFormat,
+  PixelMode as _PixelMode,
 } from "machine-wasm"
 
 export type PixelMode = keyof typeof _PixelMode

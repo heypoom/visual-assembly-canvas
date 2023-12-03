@@ -1,5 +1,5 @@
-import { Edge } from "reactflow"
 import { atom, computed } from "nanostores"
+import { Edge } from "reactflow"
 
 import { BlockNode } from "@/types/Node"
 

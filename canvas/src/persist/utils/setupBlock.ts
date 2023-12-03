@@ -1,8 +1,8 @@
-import { BlockNode } from "@/types/Node"
 import { isBlock } from "@/blocks"
-import { audioManager } from "@/services/audio/manager"
 import { engine } from "@/engine"
+import { audioManager } from "@/services/audio/manager"
 import { midiManager } from "@/services/midi"
+import { BlockNode } from "@/types/Node"
 
 export function setupBlock(block: BlockNode) {
   const { id } = block.data

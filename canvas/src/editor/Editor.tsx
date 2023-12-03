@@ -1,16 +1,14 @@
-import { useCallback, useMemo } from "react"
 import { useStore } from "@nanostores/react"
 import CodeMirror, { EditorView } from "@uiw/react-codemirror"
-
-import { cmTheme } from "./theme"
-import { getExtensions } from "./extensions"
-import { addLineHighlight } from "./highlight"
+import { useCallback, useMemo } from "react"
 
 import { engine } from "../engine"
-import { $editorConfig } from "../store/editor"
-
-import { MachineProps } from "../types/blocks"
 import { setSource } from "../store/blocks"
+import { $editorConfig } from "../store/editor"
+import { MachineProps } from "../types/blocks"
+import { getExtensions } from "./extensions"
+import { addLineHighlight } from "./highlight"
+import { cmTheme } from "./theme"
 
 type Props = MachineProps
 

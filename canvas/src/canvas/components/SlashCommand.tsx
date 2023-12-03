@@ -1,12 +1,13 @@
+import cn from "classnames"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
+import { useReactFlow } from "reactflow"
+
 import {
   getMatchedCommands,
   isArgsValid,
   useCommandRunner,
 } from "../commands/commands"
-import { useHotkeys } from "react-hotkeys-hook"
-import cn from "classnames"
-import { useReactFlow } from "reactflow"
 
 type Pos = { x: number; y: number } | null
 

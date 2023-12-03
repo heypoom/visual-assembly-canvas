@@ -1,10 +1,10 @@
 import { useStore } from "@nanostores/react"
 import { LapTimerIcon } from "@radix-ui/react-icons"
-import { Dialog, Button, Flex, TextField } from "@radix-ui/themes"
+import { Button, Dialog, Flex, TextField } from "@radix-ui/themes"
 import { useState } from "react"
 
-import { $clock } from "../store/clock"
 import { scheduler } from "../services/scheduler"
+import { $clock } from "../store/clock"
 
 export const SetDelayButton = () => {
   const clock = useStore($clock)

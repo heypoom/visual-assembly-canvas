@@ -1,13 +1,13 @@
-import { NodeProps } from "reactflow"
+import { useStore } from "@nanostores/react"
 import cn from "classnames"
+import { NodeProps } from "reactflow"
 
-import { MachineValueViewer } from "./components/MachineValueViewer"
+import { MachineProps } from "@/types/blocks"
 
 import { MachineEditor } from "../../editor/Editor"
-import { MachineProps } from "@/types/blocks"
-import { useStore } from "@nanostores/react"
 import { $output } from "../../store/results"
 import { BlockHandle } from "../components/BlockHandle"
+import { MachineValueViewer } from "./components/MachineValueViewer"
 
 export function MachineBlock(props: NodeProps<MachineProps>) {
   const { data } = props

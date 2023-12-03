@@ -1,5 +1,5 @@
-import { Handle, HandleType, Position } from "reactflow"
 import cn from "classnames"
+import { Handle, HandleType, Position } from "reactflow"
 
 type Side = "left" | "right"
 

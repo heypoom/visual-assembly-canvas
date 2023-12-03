@@ -1,15 +1,14 @@
+import { TextField } from "@radix-ui/themes"
+import { useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
-import { OscProps } from "../types/blocks"
 import { engine } from "../engine"
-import { TextField } from "@radix-ui/themes"
-
-import { RightClickMenu } from "./components/RightClickMenu"
-import { useReducer, useState } from "react"
 import { updateNodeData } from "../store/blocks"
-import { WaveformKey, Waveform } from "../types/waveform"
-import { BlockHandle } from "./components/BlockHandle"
+import { OscProps } from "../types/blocks"
+import { Waveform, WaveformKey } from "../types/waveform"
 import { RadixSelect } from "../ui/select"
+import { BlockHandle } from "./components/BlockHandle"
+import { RightClickMenu } from "./components/RightClickMenu"
 
 const waveforms: Record<WaveformKey, Waveform> = {
   Sine: { Sine: null },

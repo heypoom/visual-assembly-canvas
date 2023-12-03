@@ -1,11 +1,10 @@
-import {
-  EditorView,
-  StateField,
-  StateEffect,
-  Decoration,
-} from "@uiw/react-codemirror"
-
 import { slateDark } from "@radix-ui/colors"
+import {
+  Decoration,
+  EditorView,
+  StateEffect,
+  StateField,
+} from "@uiw/react-codemirror"
 
 export const addLineHighlight = StateEffect.define<number>()
 

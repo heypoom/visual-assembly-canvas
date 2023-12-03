@@ -1,12 +1,11 @@
 import { Extension, keymap } from "@uiw/react-codemirror"
 
-import { vasmLanguage } from "./syntax"
-
-import { MachineProps } from "../types/blocks"
 import { engine } from "../engine"
-import { EditorConfig } from "../store/editor"
-import { lineHighlighter } from "./highlight"
 import { scheduler } from "../services/scheduler"
+import { EditorConfig } from "../store/editor"
+import { MachineProps } from "../types/blocks"
+import { lineHighlighter } from "./highlight"
+import { vasmLanguage } from "./syntax"
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getExtensions(m: MachineProps, _config: EditorConfig) {

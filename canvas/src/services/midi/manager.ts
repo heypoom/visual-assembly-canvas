@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { debounce } from "lodash"
 import {
   ControlChangeMessageEvent,
   Input,
@@ -8,10 +8,10 @@ import {
   WebMidi,
 } from "webmidi"
 
+import { $midi } from "@/store/midi"
 import { MidiInputEvent } from "@/types/enums"
 import { FirstArg, UnionToIntersection } from "@/types/helper"
-import { $midi } from "@/store/midi"
-import { debounce } from "lodash"
+
 import { launchpad, launchpadNames } from "./launchpad"
 
 // Maps the event names from WebAssembly to the event names in the MIDI spec.

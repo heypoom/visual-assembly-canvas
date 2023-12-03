@@ -1,7 +1,7 @@
 import { ReactFlowJsonObject } from "reactflow"
 
-import { BlockValues } from "@/types/Node"
 import { ClockConfig } from "@/store/clock"
+import { BlockValues } from "@/types/Node"
 
 export interface SaveState {
   version: string

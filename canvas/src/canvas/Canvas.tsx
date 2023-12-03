@@ -1,18 +1,15 @@
-import ReactFlow from "reactflow"
-
-import { useStore } from "@nanostores/react"
-
 import "reactflow/dist/style.css"
 
-import { $edges, $nodes } from "../store/nodes"
+import { useStore } from "@nanostores/react"
+import ReactFlow from "reactflow"
 
 import { nodeTypes } from "../blocks"
-
 import {
   onConnect,
-  onNodesChange,
   onEdgesChange,
+  onNodesChange,
 } from "../store/actions/changes"
+import { $edges, $nodes } from "../store/nodes"
 
 export const Canvas = () => {
   const nodes = useStore($nodes)

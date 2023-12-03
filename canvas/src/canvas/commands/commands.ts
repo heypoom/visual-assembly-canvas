@@ -1,14 +1,15 @@
-import { addBlock } from "@/canvas"
-import { SaveStateContext, useSaveState } from "@/persist/hooks/useSaveState"
-import { LocalStorageDriver } from "@/persist/drivers/localStorage"
 import { useMemo } from "react"
-import { BlockTypes } from "@/types/Node"
+
 import { defaultProps } from "@/blocks"
-import { scheduler } from "@/services/scheduler"
-import { $status } from "@/store/status"
+import { addBlock } from "@/canvas"
 import { engine } from "@/engine"
+import { LocalStorageDriver } from "@/persist/drivers/localStorage"
+import { SaveStateContext, useSaveState } from "@/persist/hooks/useSaveState"
+import { scheduler } from "@/services/scheduler"
 import { profiler } from "@/services/scheduler/profiler"
 import { $clock } from "@/store/clock"
+import { $status } from "@/store/status"
+import { BlockTypes } from "@/types/Node"
 import { download } from "@/utils/download"
 
 interface Options {

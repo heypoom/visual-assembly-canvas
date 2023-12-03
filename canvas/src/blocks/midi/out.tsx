@@ -1,17 +1,18 @@
+import { useStore } from "@nanostores/react"
+import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 import { useReducer } from "react"
 import { NodeProps } from "reactflow"
-import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 
-import { MidiOutProps } from "@/types/blocks"
-import { RightClickMenu } from "../components/RightClickMenu"
-import { MidiOutputFormat } from "@/types/enums"
 import { engine } from "@/engine"
+import { MidiOutProps } from "@/types/blocks"
+import { MidiOutputFormat } from "@/types/enums"
+
 import { updateNodeData } from "../../store/blocks"
-import { useStore } from "@nanostores/react"
 import { $lastMidiEvent, $midi } from "../../store/midi"
-import { MidiTransportForm } from "./transport"
-import { BlockHandle } from "../components/BlockHandle"
 import { RadixSelect } from "../../ui/select"
+import { BlockHandle } from "../components/BlockHandle"
+import { RightClickMenu } from "../components/RightClickMenu"
+import { MidiTransportForm } from "./transport"
 
 const formats = Object.keys(_MidiOutputFormat).filter(
   (key) => !isNaN(Number(_MidiOutputFormat[key as MidiOutputFormat])),

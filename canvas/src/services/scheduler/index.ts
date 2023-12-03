@@ -1,9 +1,9 @@
 import { engine } from "@/engine"
-import { audioManager } from "../audio/manager"
-
-import { $status } from "@/store/status"
-import { profiler } from "./profiler"
 import { $clock } from "@/store/clock"
+import { $status } from "@/store/status"
+
+import { audioManager } from "../audio/manager"
+import { profiler } from "./profiler"
 
 const handlers = {
   start: async () => {

@@ -1,5 +1,5 @@
-import { Waveform } from "./waveform"
 import { MidiInputEvent, MidiOutputFormat, PixelMode } from "./enums"
+import { Waveform } from "./waveform"
 
 export interface MidiAction {
   Midi: {

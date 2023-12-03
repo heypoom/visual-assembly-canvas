@@ -1,17 +1,15 @@
-import { useReducer, useState } from "react"
-import { NodeProps } from "reactflow"
+import { useStore } from "@nanostores/react"
 import { Flex, TextField } from "@radix-ui/themes"
 import { Port } from "machine-wasm"
-import { useStore } from "@nanostores/react"
+import { useReducer, useState } from "react"
+import { NodeProps } from "reactflow"
 
 import { engine } from "../engine"
+import { updateNodeData } from "../store/blocks"
+import { $status } from "../store/status"
 import { TapProps } from "../types/blocks"
-
 import { BlockHandle } from "./components/BlockHandle"
 import { RightClickMenu } from "./components/RightClickMenu"
-
-import { $status } from "../store/status"
-import { updateNodeData } from "../store/blocks"
 
 const PORT = 0
 

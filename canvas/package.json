@@ -7,7 +7,8 @@
     "dev": "concurrently \"rsw watch\" \"vite\"",
     "build": "source ./ci-setup.sh && rsw build && tsc && vite build",
     "rsw": "rsw",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0 .",
+    "lint:fix": "eslint --fix --ext ts,tsx --report-unused-disable-directives --max-warnings 0 .",
     "test": "vitest",
     "preview": "vite preview",
     "format": "pnpm prettier --write src/**/*.ts*"
@@ -45,7 +46,6 @@
     "use-debounce": "^10.0.0",
     "vite-node": "^0.34.6",
     "vite-plugin-glsl": "^1.1.2",
-    "vite-tsconfig-paths": "^4.2.1",
     "webmidi": "^3.1.6"
   },
   "devDependencies": {
@@ -62,8 +62,11 @@
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
     "eslint": "^8.52.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "postcss": "^8.4.31",
     "prettier": "^3.0.3",
     "radix-themes-tw": "^0.0.8",
@@ -72,6 +75,7 @@
     "vite": "^4.5.0",
     "vite-plugin-rsw": "^2.0.11",
     "vite-plugin-top-level-await": "^1.3.1",
+    "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^0.34.6"
   }
 }

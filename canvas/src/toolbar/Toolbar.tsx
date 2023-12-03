@@ -1,18 +1,15 @@
-import { Button } from "@radix-ui/themes"
 import { useStore } from "@nanostores/react"
 import { ReloadIcon, TrackNextIcon } from "@radix-ui/react-icons"
+import { Button } from "@radix-ui/themes"
 
+import { useGlobalShortcut } from "../canvas/hooks/useGlobalShortcut"
+import { engine } from "../engine"
+import { useAutoSave } from "../persist/hooks/useAutoSave"
+import { scheduler } from "../services/scheduler"
+import { $hasBlocks } from "../store/nodes"
+import { $status } from "../store/status"
 import { RunButton } from "./RunButton"
 import { SetDelayButton } from "./SetDelayButton"
-
-import { $status } from "../store/status"
-import { engine } from "../engine"
-
-import { $hasBlocks } from "../store/nodes"
-
-import { scheduler } from "../services/scheduler"
-import { useAutoSave } from "../persist/hooks/useAutoSave"
-import { useGlobalShortcut } from "../canvas/hooks/useGlobalShortcut"
 
 function reset() {
   scheduler.pause()
