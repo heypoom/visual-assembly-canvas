@@ -31,6 +31,11 @@ export const BaseBlock = (props: BaseBlockProps) => {
   const isSource = sources > 0 && targets === 0
   const isSink = targets > 0 && sources === 0
 
+  const handleClassName = cn(
+    isSink && "!bg-cyan-9",
+    isSource && "!bg-crimson-9",
+  )
+
   return (
     <div className="group">
       {[...Array(targets)].map((_, i) => (
@@ -40,6 +45,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
           side="left"
           type="target"
           style={{ marginTop: `${getTop(i, targets)}px` }}
+          className={handleClassName}
         />
       ))}
 
@@ -52,8 +58,8 @@ export const BaseBlock = (props: BaseBlockProps) => {
           style={props.style}
           className={cn(
             "flex flex-col relative gap-y-2",
-            "border-2 rounded-2",
-            isSource && "border-crimson-9 hover:border-cyan-9",
+            "border-2 rounded-2 group-hover:border-lime-9",
+            isSource && "border-crimson-9",
             isSink && "border-cyan-9",
             node.selected && "!border-yellow-11",
             className,
@@ -71,6 +77,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
           side="right"
           type="source"
           style={{ marginTop: `${getTop(i, sources)}px` }}
+          className={handleClassName}
         />
       ))}
     </div>

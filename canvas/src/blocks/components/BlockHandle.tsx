@@ -27,9 +27,9 @@ export const BlockHandle = memo((props: Props) => {
       id={props.port.toString()}
       style={props.style}
       className={cn(
-        "bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 border-2 z-10",
-        position === Position.Left && "ml-[-1px]",
-        position === Position.Right && "mr-[-1px]",
+        "bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 z-10",
+        position === Position.Left && "ml-[-1px] !left-[-3px]",
+        position === Position.Right && "mr-[-1px] !right-[-3px]",
         props.className,
       )}
     />
