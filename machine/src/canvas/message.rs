@@ -35,6 +35,9 @@ pub enum Action {
     /// Reset the node to its initial state.
     Reset,
 
+    /// Send an empty ping packet. Mostly used for timing to control the machine frequency.
+    Ping,
+
     /// Notify the block that a MIDI message has been received.
     Midi { event: MidiInputEvent, note: u8, value: u8, channel: u8, port: u8 },
 
@@ -61,4 +64,7 @@ pub enum Action {
 
     /// Set the clock's frequency
     SetClockFreq { freq: u16 },
+
+    /// Set whether we should send a ping instead of the time.
+    SetClockPing { ping: bool },
 }

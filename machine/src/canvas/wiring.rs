@@ -44,7 +44,7 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn send_data_to_sinks(&mut self, id: u16, body: Vec<u16>) -> Errorable {
+    pub fn send_message_to_sinks(&mut self, id: u16, action: Action) -> Errorable {
         let wires: Vec<Wire> = self.wires.iter()
             .filter(|w| w.source.block == id)
             .cloned()
@@ -53,11 +53,15 @@ impl Canvas {
         for wire in wires {
             self.send_message_to_port(Message {
                 sender: wire.source,
-                action: Action::Data { body: body.clone() },
+                action: action.clone(),
                 recipient: None,
             })?;
         }
 
         Ok(())
+    }
+
+    pub fn send_data_to_sinks(&mut self, id: u16, body: Vec<u16>) -> Errorable {
+        self.send_message_to_sinks(id, Action::Data { body })
     }
 }

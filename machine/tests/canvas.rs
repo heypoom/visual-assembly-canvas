@@ -100,7 +100,7 @@ mod canvas_tests {
     #[test]
     fn test_clock_wraparound() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Clock { time: 250, freq: 1 })?;
+        c.add_block(Clock { time: 250, freq: 1, ping: false })?;
         c.add_block(Plot { values: vec![], size: 5 })?;
         c.connect(port(0, 0), port(1, 0))?;
 
@@ -122,7 +122,7 @@ mod canvas_tests {
     #[test]
     fn test_clock_rate() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Clock { time: 250, freq: 8 })?;
+        c.add_block(Clock { time: 250, freq: 8, ping: false })?;
         c.add_block(Plot { values: vec![], size: 5 })?;
         c.connect(port(0, 0), port(1, 0))?;
 

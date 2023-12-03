@@ -51,10 +51,17 @@ impl Canvas {
                 Action::Write { address, data } => {
                     let Pixel { pixels, .. } = &mut self.mut_block(id)?.data else { continue; };
 
-                    // Writing "0" to this address clears the block.
                     if address == CLEAR_ADDRESS {
+                        // Writing "0" to this address clears the block.
                         if let Some(0) = data.first() {
                             pixels.clear();
+                            continue;
+                        }
+
+                        // Writing "1" to this address fills the block with the given byte.
+                        if let Some(1) = data.first() {
+                            let color = data.get(1).unwrap_or(&0);
+                            pixels.fill(*color);
                             continue;
                         }
                     }

@@ -26,3 +26,4 @@ export type Action =
   | { SetPixelMode: { mode: PixelMode } }
   | { SetAutoReset: { auto_reset: boolean } }
   | { SetClockFreq: { freq: number } }
+  | { SetClockPing: { ping: boolean } }

@@ -45,6 +45,9 @@ pub enum BlockData {
 
         /// We send a clock signal every nth ticks.
         freq: u16,
+
+        /// Send a "ping" packet instead of the time.
+        ping: bool,
     },
 
     /// Oscillator. Produces the value of a waveform, given a clock.
