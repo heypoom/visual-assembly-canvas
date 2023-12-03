@@ -1,5 +1,6 @@
 import { useStore } from "@nanostores/react"
 import cn from "classnames"
+import { memo } from "react"
 import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks/components"
@@ -9,11 +10,12 @@ import { MachineProps } from "@/types/blocks"
 
 import { MachineValueViewer } from "./components/MachineValueViewer"
 
-export function MachineBlock(props: NodeProps<MachineProps>) {
+export const MachineBlock = memo((props: NodeProps<MachineProps>) => {
   const { data } = props
   const { id } = data
 
   const outputs = useStore($output)
+
   const state = outputs[id] ?? {}
 
   const errored = state.status === "Invalid"
@@ -26,7 +28,6 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
     "font-mono bg-slate-1",
     "px-3 py-3 border-2 rounded-2 hover:border-cyan-11",
     "flex flex-col space-y-2 text-gray-50",
-    props.selected && "!border-yellow-11",
     errored && "!border-red-9",
     awaiting && "!border-purple-11",
     halted && "border-gray-9",
@@ -45,4 +46,4 @@ export function MachineBlock(props: NodeProps<MachineProps>) {
       <MachineValueViewer id={id} state={state} />
     </BaseBlock>
   )
-}
+})
