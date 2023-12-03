@@ -57,7 +57,8 @@ pub enum Op {
     Tuck,
 
     /// Picks the nth value from the top of the stack and push it onto the stack.
-    /// pick(1) [1, 2, 3] -> [1, 2, 3, 2]
+    /// pick(0) [1, 2, 3] -> [1, 2, 3, 3] (same as dup)
+    /// pick(1) [1, 2, 3] -> [1, 2, 3, 2] (same as over)
     Pick(u16),
 
     Inc,
