@@ -372,7 +372,6 @@ impl Canvas {
                 Action::Read { address, count } => {
                     if let Plot { values, .. } = &self.get_block(id)?.data {
                         let action = read_from_address(address, count, &values);
-
                         self.send_direct_message(id, message.sender.block, action)?;
                     };
                 }
@@ -406,7 +405,6 @@ impl Canvas {
                 Action::Read { address, count } => {
                     if let Memory { values, .. } = &self.get_block(id)?.data {
                         let action = read_from_address(address, count, &values);
-
                         self.send_direct_message(id, message.sender.block, action)?;
                     };
                 }
@@ -615,7 +613,6 @@ impl Canvas {
                 Action::Read { address, count } => {
                     if let Pixel { pixels, .. } = &self.get_block(id)?.data {
                         let action = read_from_address(address, count, &pixels);
-
                         self.send_direct_message(id, message.sender.block, action)?;
                     };
                 }
