@@ -1,4 +1,4 @@
-use crate::canvas::blocks::BlockData::{Clock, Memory, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
+use crate::blocks::BlockData::{Clock, Memory, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
 use crate::canvas::Canvas;
 
 impl Canvas {

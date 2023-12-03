@@ -10,6 +10,7 @@ pub mod test_helper;
 pub mod canvas;
 pub mod rewind;
 pub mod audio;
+pub mod blocks;
 
 pub use op::*;
 pub use machine::*;

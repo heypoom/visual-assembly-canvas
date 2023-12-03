@@ -1,12 +1,12 @@
 use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Message};
-use crate::canvas::blocks::BlockData::Pixel;
+use crate::blocks::BlockData::Pixel;
 use crate::canvas::virtual_io::{read_from_address, write_to_address};
 
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::canvas::blocks::pixel::PixelMode::{Append, Command, Replace};
+use crate::blocks::pixel::PixelMode::{Append, Command, Replace};
 
 #[wasm_bindgen]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]

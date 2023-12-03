@@ -1,7 +1,7 @@
 use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Message};
-use crate::canvas::blocks::BlockData::Memory;
+use crate::blocks::BlockData::Memory;
 use crate::canvas::virtual_io::{read_from_address, write_to_address};
 
 impl Canvas {

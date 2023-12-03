@@ -1,4 +1,4 @@
-use machine::canvas::block::BlockData;
+use machine::blocks::BlockData;
 use machine::canvas::wire::{Port, Wire};
 use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};

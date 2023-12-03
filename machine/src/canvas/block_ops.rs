@@ -1,8 +1,8 @@
 use snafu::ensure;
 use crate::Action;
-use crate::canvas::blocks::{Block, BlockData};
+use crate::blocks::{Block, BlockData};
 use crate::canvas::{Canvas, CanvasError};
-use crate::canvas::blocks::BlockData::{Machine, Memory};
+use crate::blocks::BlockData::{Machine, Memory};
 use crate::canvas::canvas::Errorable;
 use crate::canvas::CanvasError::{BlockNotFound};
 use crate::canvas::{BlockIdInUseSnafu, MachineNotFoundSnafu};

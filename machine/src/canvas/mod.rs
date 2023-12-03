@@ -5,7 +5,7 @@ pub mod vec_helper;
 pub mod event;
 pub mod message;
 pub mod virtual_io;
-pub mod blocks;
+
 mod send_message;
 mod wiring;
 mod block_ops;

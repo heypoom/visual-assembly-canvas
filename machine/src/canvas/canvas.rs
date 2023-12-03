@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use crate::{Sequencer};
 use crate::audio::wavetable::Wavetable;
-use super::blocks::{Block};
+use crate::blocks::{Block};
 use super::error::{CanvasError};
 use super::wire::{Wire};
 

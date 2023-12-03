@@ -1,7 +1,7 @@
 pub mod diff;
 
 use diff::{Patch, diff_slice};
-use crate::canvas::blocks::Block;
+use crate::blocks::Block;
 use crate::canvas::Canvas;
 use crate::canvas::wire::Wire;
 use crate::{Event, Message};
