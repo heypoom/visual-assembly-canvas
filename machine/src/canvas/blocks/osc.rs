@@ -37,4 +37,8 @@ impl Canvas {
 
         Ok(())
     }
+
+    fn generate_waveform(&mut self, waveform: Waveform, time: u16) -> u16 {
+        self.wavetable.get(waveform, time)
+    }
 }

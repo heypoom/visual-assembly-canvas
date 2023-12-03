@@ -1,15 +1,11 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use snafu::ensure;
-use crate::canvas::blocks::BlockData::{Machine, Memory};
-use crate::canvas::error::CanvasError::{BlockNotFound, MachineError};
-use crate::{Action, Event, Message, Sequencer};
+use crate::canvas::error::CanvasError::{MachineError};
+use crate::{Event, Sequencer};
 use crate::audio::wavetable::Wavetable;
-use crate::canvas::{BlockIdInUseSnafu};
-use super::blocks::{Block, BlockData};
-use super::error::{CanvasError, MachineNotFoundSnafu};
+use super::blocks::{Block};
+use super::error::{CanvasError};
 use super::wire::{Wire};
-use crate::audio::waveform::Waveform;
 
 pub type Errorable = Result<(), CanvasError>;
 
@@ -50,82 +46,6 @@ impl Canvas {
         }
     }
 
-    pub fn block_id(&mut self) -> u16 {
-        let id = self.block_id_counter;
-        self.block_id_counter += 1;
-        id
-    }
-
-    /// Set the machine's clock speed, in cycles per tick.
-    pub fn set_machine_clock_speed(&mut self, cycle_per_tick: u16) {
-        self.machine_cycle_per_tick = cycle_per_tick;
-    }
-
-    pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
-        let id = self.block_id();
-        self.add_machine_with_id(id)?;
-
-        Ok(id)
-    }
-
-    pub fn add_machine_with_id(&mut self, id: u16) -> Errorable {
-        self.seq.add(id);
-        self.add_block_with_id(id, Machine { machine_id: id })?;
-
-        Ok(())
-    }
-
-    pub fn add_block(&mut self, data: BlockData) -> Result<u16, CanvasError> {
-        let id = self.block_id();
-        self.add_block_with_id(id, data)?;
-
-        Ok(id)
-    }
-
-    pub fn add_block_with_id(&mut self, id: u16, data: BlockData) -> Errorable {
-        // Prevent duplicate block ids from being added.
-        ensure!(!self.blocks.iter().any(|b| b.id == id), BlockIdInUseSnafu {id});
-
-        // Validate block data before adding them.
-        match data {
-            Machine { machine_id } => {
-                ensure!(self.seq.get(machine_id).is_some(), MachineNotFoundSnafu { id: machine_id });
-            }
-            _ => {}
-        }
-
-        self.blocks.push(Block::new(id, data));
-        Ok(())
-    }
-
-    pub fn remove_block(&mut self, id: u16) -> Errorable {
-        let block_idx = self.blocks.iter().position(|b| b.id == id).ok_or(BlockNotFound { id })?;
-
-        // Teardown logic
-        match self.blocks[block_idx].data {
-            // Remove the machine from the sequencer.
-            Machine { machine_id } => self.seq.remove(machine_id),
-
-            _ => {}
-        }
-
-        // Remove blocks from the canvas.
-        self.blocks.remove(block_idx);
-
-        // Remove all wires connected to the block.
-        self.wires.retain(|w| w.source.block != id && w.target.block != id);
-
-        Ok(())
-    }
-
-    pub fn get_block(&self, id: u16) -> Result<&Block, CanvasError> {
-        self.blocks.iter().find(|b| b.id == id).ok_or(BlockNotFound { id })
-    }
-
-    pub fn mut_block(&mut self, id: u16) -> Result<&mut Block, CanvasError> {
-        self.blocks.iter_mut().find(|b| b.id == id).ok_or(BlockNotFound { id })
-    }
-
     pub fn tick(&mut self, count: u16) -> Errorable {
         let ids: Vec<u16> = self.blocks.iter().map(|b| b.id).collect();
 
@@ -148,10 +68,6 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn generate_waveform(&mut self, waveform: Waveform, time: u16) -> u16 {
-        self.wavetable.get(waveform, time)
-    }
-
     /// Run every machine until all halts.
     pub fn run(&mut self) -> Errorable {
         self.seq.ready();
@@ -166,60 +82,9 @@ impl Canvas {
         Ok(())
     }
 
-    /// Collect messages from each outboxes to the respective inboxes.
-    pub fn route_messages(&mut self) -> Errorable {
-        // Collect the messages from the blocks and the machines.
-        let mut messages = self.consume_messages();
-        messages.extend(self.seq.consume_messages());
-
-        // If the message has a recipient, send it directly to the machine.
-        // Otherwise, identify connected blocks and send the message to them.
-        for message in messages {
-            match message.recipient {
-                Some(_) => self.send_message_to_recipient(message)?,
-                None => self.send_message_to_port(message)?,
-            }
-        }
-
-        Ok(())
-    }
-
-    fn consume_messages(&mut self) -> Vec<Message> {
-        self.blocks.iter_mut().flat_map(|block| block.outbox.drain(..)).collect()
-    }
-
+    /// Load the source program in Assembly to the machine.
     pub fn load_program(&mut self, id: u16, source: &str) -> Errorable {
         self.seq.load(id, source).map_err(|cause| MachineError { cause })
-    }
-
-    pub fn update_block(&mut self, id: u16, data: BlockData) -> Errorable {
-        self.mut_block(id)?.data = data;
-        Ok(())
-    }
-
-    pub fn reset_blocks(&mut self) -> Errorable {
-        // Collect the ids of the blocks that we can reset.
-        // Machine block is handled separately, so we don't need to tick them.
-        let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine()).map(|b| b.id).collect();
-
-        for id in ids {
-            // Do not reset if the block is not auto-reset.
-            // This means the memory block is storing persistent data.
-            if let Memory { auto_reset, .. } = self.get_block(id)?.data {
-                if !auto_reset { continue; }
-            }
-
-            self.reset_block(id)?;
-        }
-
-        Ok(())
-    }
-
-    pub fn reset_block(&mut self, id: u16) -> Errorable {
-        self.send_message_to_block(id, Action::Reset)?;
-        self.tick_block(id)?;
-
-        Ok(())
     }
 
     /// Disable the await watchdog if we know the message will eventually arrive.
@@ -238,9 +103,15 @@ impl Canvas {
         effects
     }
 
+    /// When we import existing blocks and wires to the canvas, we must recompute the id counter.
     pub fn recompute_id_counters(&mut self) {
         self.wire_id_counter = self.wires.iter().map(|x| x.id).max().unwrap_or(0) + 1;
         self.block_id_counter = self.blocks.iter().map(|x| x.id).max().unwrap_or(0) + 1;
+    }
+
+    /// Set the machine's clock speed, in cycles per tick.
+    pub fn set_machine_clock_speed(&mut self, cycle_per_tick: u16) {
+        self.machine_cycle_per_tick = cycle_per_tick;
     }
 }
 

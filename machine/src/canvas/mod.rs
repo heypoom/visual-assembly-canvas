@@ -10,6 +10,8 @@ pub mod virtual_io;
 pub mod blocks;
 mod send_message;
 mod wiring;
+mod block_ops;
+mod routing;
 
 pub use canvas::Canvas;
 pub use error::*;
