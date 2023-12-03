@@ -2,14 +2,14 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use snafu::ensure;
 use crate::canvas::blocks::BlockData::{Machine, Memory};
-use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
+use crate::canvas::error::CanvasError::{BlockNotFound, MachineError};
 use crate::{Action, Event, Message, Sequencer};
 use crate::audio::wavetable::Wavetable;
 use crate::canvas::{BlockIdInUseSnafu};
-use crate::canvas::CanvasError::{CannotFindWire, MissingMessageRecipient};
+use crate::canvas::CanvasError::{CannotFindWire};
 use super::blocks::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
-use super::wire::{Port, port, Wire};
+use super::wire::{Port, Wire};
 use crate::audio::waveform::Waveform;
 
 pub type Errorable = Result<(), CanvasError>;
@@ -251,83 +251,6 @@ impl Canvas {
 
     pub fn load_program(&mut self, id: u16, source: &str) -> Errorable {
         self.seq.load(id, source).map_err(|cause| MachineError { cause })
-    }
-
-    /// Sends the message to the destination port.
-    pub fn send_message_to_port(&mut self, message: Message) -> Errorable {
-        // If the message has a recipient, send it directly to the machine instead.
-        if message.recipient.is_some() {
-            return self.send_message_to_recipient(message);
-        }
-
-        // There might be more than one destination machine connected to a port.
-        let recipients = self.resolve_port(message.sender).ok_or(DisconnectedPort { port: message.sender })?;
-
-        // We submit different messages to each blocks.
-        for recipient_id in recipients {
-            self.send_message_to_recipient(Message {
-                action: message.action.clone(),
-                sender: message.sender,
-                recipient: Some(recipient_id),
-            })?;
-        }
-
-        Ok(())
-    }
-
-    /// Send a message from an actor to another actor.
-    pub fn send_direct_message(&mut self, from: u16, to: u16, action: Action) -> Errorable {
-        self.send_message_to_recipient(Message {
-            action,
-            sender: port(from, 0),
-            recipient: Some(to),
-        })?;
-
-        Ok(())
-    }
-
-    /// Sends the message to the specified block.
-    pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
-        self.mut_block(block_id)?.inbox.push_back(Message {
-            sender: port(block_id, 60000),
-            action,
-            recipient: Some(block_id),
-        });
-
-        Ok(())
-    }
-
-    pub fn send_message_to_recipient(&mut self, message: Message) -> Errorable {
-        let inbox_limit = self.inbox_limit;
-
-        let Some(recipient_id) = message.recipient else {
-            return Err(MissingMessageRecipient { message });
-        };
-
-        if let Ok(block) = self.mut_block(recipient_id) {
-            match block.data {
-                // Send the message directly to the machine.
-                Machine { machine_id } => {
-                    if let Some(m) = self.seq.get_mut(machine_id) {
-                        m.inbox.push_back(message);
-
-                        if m.inbox.len() > inbox_limit {
-                            m.inbox.pop_front();
-                        }
-                    }
-                }
-
-                _ => {
-                    block.inbox.push_back(message);
-
-                    if block.inbox.len() > inbox_limit {
-                        block.inbox.pop_front();
-                    }
-                }
-            }
-        }
-
-        Ok(())
     }
 
     pub fn update_block(&mut self, id: u16, data: BlockData) -> Errorable {
