@@ -1,4 +1,5 @@
 import cn from "classnames"
+import { memo } from "react"
 import { Handle, HandleType, Position } from "reactflow"
 
 type Side = "left" | "right"
@@ -15,7 +16,7 @@ const sideMap: Record<Side, Position> = {
   right: Position.Right,
 }
 
-export const BlockHandle = (props: Props) => {
+export const BlockHandle = memo((props: Props) => {
   const position = sideMap[props.side]
 
   return (
@@ -31,4 +32,4 @@ export const BlockHandle = (props: Props) => {
       )}
     />
   )
-}
+})

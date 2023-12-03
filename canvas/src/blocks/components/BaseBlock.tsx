@@ -11,17 +11,29 @@ interface BaseBlockProps {
   sources: number
   targets: number
   children?: ReactNode
+  settings?: () => ReactNode
+  onReset?: () => void
 }
 
 export const BaseBlock = (props: BaseBlockProps) => {
-  const { node, className, sources, targets, children } = props
+  const {
+    node,
+    className,
+    sources,
+    targets,
+    settings: Settings,
+    children,
+  } = props
 
   const [showSettings, toggleSettings] = useReducer((n) => !n, false)
+
+  const isSource = sources > 0 && targets === 0
+  const isSink = targets > 0 && sources === 0
 
   return (
     <div className="group">
       {[...Array(targets)].map((_, i) => (
-        <BlockHandle port={sources + i} side="left" type="target" />
+        <BlockHandle key={i} port={sources + i} side="left" type="target" />
       ))}
 
       <RightClickMenu
@@ -31,18 +43,21 @@ export const BaseBlock = (props: BaseBlockProps) => {
       >
         <div
           className={cn(
-            "relative",
-            "border-2 border-crimson-9 rounded-2 hover:border-cyan-9",
+            "flex flex-col relative gap-y-2",
+            "border-2 rounded-2",
+            isSource && "border-crimson-9 hover:border-cyan-9",
+            isSink && "border-cyan-9",
             node.selected && "!border-yellow-11",
             className,
           )}
         >
           {children}
+          {showSettings && Settings && <Settings />}
         </div>
       </RightClickMenu>
 
       {[...Array(sources)].map((_, i) => (
-        <BlockHandle port={i} side="right" type="source" />
+        <BlockHandle key={i} port={i} side="right" type="source" />
       ))}
     </div>
   )

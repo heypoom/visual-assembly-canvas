@@ -5,6 +5,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import { NodeProps } from "reactflow"
 
 import { BlockHandle, RightClickMenu } from "@/blocks/components"
+import { BaseBlock } from "@/blocks/components/BaseBlock"
 import { engine } from "@/engine"
 import {
   isControlChangeEvent,
@@ -35,7 +36,6 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
   const key = useRef("")
 
   const [last, setLast] = useState<[number, number, number] | null>(null)
-  const [showSettings, toggle] = useReducer((n) => !n, false)
 
   function update(input: Partial<MidiInProps>) {
     updateNodeData(id, input)
@@ -88,59 +88,49 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
 
   const reset = () => setLast(null)
 
-  return (
-    <div className="group">
-      <div>
-        <RightClickMenu
-          id={id}
-          show={showSettings}
-          toggle={toggle}
-          onReset={reset}
-        >
-          <div
-            className={cx(
-              "px-4 py-2 border-2 border-crimson-9 font-mono text-crimson-11 space-y-2",
-            )}
-          >
-            {last ? (
-              <div className="text-1">
-                {on}(n = {last[0]}, v = {last[1]}, ch = {last[2]})
-              </div>
-            ) : (
-              <div className="text-1">{on}</div>
-            )}
+  const MidiSettings = () => (
+    <div className="max-w-[200px] space-y-3">
+      <div
+        className="grid items-center gap-4 w-full text-gray-11"
+        style={{
+          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)",
+        }}
+      >
+        <p className="text-[10px]">Event</p>
 
-            {showSettings && (
-              <div className="max-w-[200px] space-y-3">
-                <div
-                  className="grid items-center gap-4 w-full text-gray-11"
-                  style={{
-                    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)",
-                  }}
-                >
-                  <p className="text-[10px]">Event</p>
-
-                  <RadixSelect
-                    value={on}
-                    onChange={(v) => update({ on: v as MidiInputEvent })}
-                    options={eventOptions}
-                  />
-                </div>
-
-                <MidiTransportForm
-                  port={port}
-                  channels={channels}
-                  ports={midi.inputs}
-                  mode="in"
-                  onChange={update}
-                />
-              </div>
-            )}
-          </div>
-        </RightClickMenu>
+        <RadixSelect
+          value={on}
+          onChange={(v) => update({ on: v as MidiInputEvent })}
+          options={eventOptions}
+        />
       </div>
 
-      <BlockHandle port={0} side="right" type="source" />
+      <MidiTransportForm
+        port={port}
+        channels={channels}
+        ports={midi.inputs}
+        mode="in"
+        onChange={update}
+      />
     </div>
+  )
+
+  return (
+    <BaseBlock
+      node={props}
+      sources={1}
+      targets={0}
+      onReset={reset}
+      settings={MidiSettings}
+      className="px-4 py-2 font-mono"
+    >
+      {last ? (
+        <div className="text-1">
+          {on}(n = {last[0]}, v = {last[1]}, ch = {last[2]})
+        </div>
+      ) : (
+        <div className="text-1">{on}</div>
+      )}
+    </BaseBlock>
   )
 }
