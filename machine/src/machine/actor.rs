@@ -17,7 +17,11 @@ impl Actor for Machine {
         let Some(sender) = self.id else { return; };
 
         // Add the message to the mailbox.
-        self.outbox.push(Message { sender: port(sender, src_port), action, recipient: None });
+        self.outbox.push(Message {
+            sender: port(sender, src_port),
+            action,
+            recipient: None,
+        });
     }
 
     fn receive_messages(&mut self) -> Errorable {
@@ -64,9 +68,6 @@ impl Actor for Machine {
                     }
                 }
 
-                Action::Reset => {
-                    self.partial_reset()
-                }
                 _ => {}
             }
         }
