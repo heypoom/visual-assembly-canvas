@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod canvas_tests {
-    use machine::canvas::block::BlockData::{Clock, Memory, Pixel, Plot};
+    use machine::canvas::blocks::BlockData::{Clock, Memory, Pixel, Plot};
     use machine::canvas::{Canvas, PixelMode};
     use machine::canvas::error::CanvasError;
     use machine::canvas::wire::{port};

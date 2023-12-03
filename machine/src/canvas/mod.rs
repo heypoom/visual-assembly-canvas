@@ -1,4 +1,3 @@
-pub mod block;
 pub mod visualizer;
 pub mod canvas;
 pub mod wire;
@@ -7,7 +6,8 @@ pub mod pixel;
 pub mod vec_helper;
 pub mod event;
 pub mod message;
-mod virtual_io;
+pub mod virtual_io;
+pub mod blocks;
 
 pub use canvas::Canvas;
 pub use error::*;

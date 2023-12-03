@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use snafu::ensure;
-use crate::canvas::block::BlockData::{Clock, Machine, Memory, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
+use crate::canvas::blocks::BlockData::{Clock, Machine, Memory, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
 use crate::canvas::error::CanvasError::{BlockNotFound, DisconnectedPort, MachineError};
 use crate::{Action, Event, Message, Sequencer};
 use crate::audio::midi::{MidiOutputFormat};
@@ -10,7 +10,7 @@ use crate::canvas::{BlockIdInUseSnafu};
 use crate::canvas::CanvasError::{CannotFindWire, MissingMessageRecipient};
 use crate::canvas::PixelMode::{Append, Command, Replace};
 use crate::canvas::vec_helper::extend_and_remove_oldest;
-use super::block::{Block, BlockData};
+use super::blocks::{Block, BlockData};
 use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
 use super::wire::{Port, port, Wire};
 use crate::audio::synth::{note_to_freq};
