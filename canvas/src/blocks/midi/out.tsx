@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react"
+import { useReducer } from "react"
 import { NodeProps } from "reactflow"
 import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 
@@ -9,7 +9,6 @@ import { engine } from "../../engine"
 import { updateNodeData } from "../../store/blocks"
 import { useStore } from "@nanostores/react"
 import { $lastMidiEvent, $midi } from "../../store/midi"
-import { midiManager } from "../../services/midi"
 import { MidiTransportForm } from "./transport"
 import { BlockHandle } from "../components/BlockHandle"
 import { RadixSelect } from "../../ui/select"
@@ -55,10 +54,6 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
 
     return `${last.format}(${last.data.join(", ")})`
   }
-
-  useEffect(() => {
-    midiManager.setup().then()
-  }, [])
 
   return (
     <div className="group">

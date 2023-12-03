@@ -11,7 +11,6 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
 
     const midi = effect.Midi
     if (!midi) return
-    if (!midiManager.initialized) await midiManager.setup()
 
     $lastMidiEvent.setKey(id, effect)
 
@@ -53,7 +52,6 @@ export async function processMidiEvent(id: number, effect: MidiEffect) {
       }
 
       case "Launchpad": {
-        await midiManager.setup()
         launchpad.cmd(...data)
         return
       }
