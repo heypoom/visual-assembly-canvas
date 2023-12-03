@@ -8,9 +8,6 @@ export interface SaveState {
 
   flow: ReactFlowJsonObject<BlockValues>
   clock: ClockConfig
-
-  /** ID counters. */
-  counters: [block: number, wire: number]
 }
 
 export interface PersistenceDriver {

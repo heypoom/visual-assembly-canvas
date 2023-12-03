@@ -26,7 +26,6 @@ export function useSaveState(): SaveStateContext {
     version: SAVE_VERSION,
     flow: flow.toObject(),
     clock: $clock.get(),
-    counters: engine.getIdCounters(),
   })
 
   function restore(state: SaveState) {
@@ -87,13 +86,10 @@ export function useSaveState(): SaveStateContext {
       engine.ctx?.add_wire_with_id(id, source, target)
     })
 
-    // Apply the ID counters.
-    const [blockCounter = 0, wireCounter = 0] = state.counters ?? []
-
-    engine.ctx?.set_id_counters(
-      Math.max(blockCounter, nodes.length),
-      Math.max(wireCounter, edges.length),
-    )
+    // Re-calculate the ID counters.
+    const maxBlockId = Math.max(...nodes.map((node) => node.data.id))
+    const maxWireId = edges.length
+    engine.ctx?.set_id_counters(maxBlockId, maxWireId)
 
     // Reset the machines.
     engine.reset()
