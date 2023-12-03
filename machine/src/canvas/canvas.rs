@@ -736,7 +736,7 @@ impl Canvas {
         // There might be more than one destination machine connected to a port.
         let recipients = self.resolve_port(message.sender).ok_or(DisconnectedPort { port: message.sender })?;
 
-        // We submit different messages to each machines.
+        // We submit different messages to each blocks.
         for recipient_id in recipients {
             self.send_message_to_recipient(Message {
                 action: message.action.clone(),

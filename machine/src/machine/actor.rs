@@ -5,7 +5,7 @@ type Errorable = Result<(), RuntimeError>;
 
 pub trait Actor {
     /// Push a message to a recipient's mailbox.
-    fn send_message_to_port(&mut self, to: u16, action: Action);
+    fn send_message_to_port(&mut self, src_port: u16, action: Action);
 
     /// Receive incoming messages from our mailbox.
     fn receive_messages(&mut self) -> Errorable;
