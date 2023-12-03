@@ -89,7 +89,7 @@ export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
       node={props}
       targets={1}
       settings={Settings}
-      className="px-4 py-2 text-1 text-cyan-11 font-mono text-center"
+      className="px-4 py-2 text-1 text-cyan-11 font-mono"
     >
       {getLog()}
     </BaseBlock>
