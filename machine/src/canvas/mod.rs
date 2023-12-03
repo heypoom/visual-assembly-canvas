@@ -1,4 +1,3 @@
-pub mod visualizer;
 pub mod canvas;
 pub mod wire;
 pub mod error;
