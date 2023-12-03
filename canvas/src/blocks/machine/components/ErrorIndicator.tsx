@@ -1,4 +1,8 @@
-import { CanvasError, canvasErrors, runErrors } from "../../types/MachineState"
+import {
+  CanvasError,
+  canvasErrors,
+  runErrors,
+} from "../../../types/MachineState"
 
 const EMPTY_PROGRAM = "EmptyProgram"
 

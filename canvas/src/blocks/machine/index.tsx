@@ -1,7 +1,7 @@
 import { NodeProps } from "reactflow"
 import cn from "classnames"
 
-import { MachineValueViewer } from "./MachineValueViewer"
+import { MachineValueViewer } from "./components/MachineValueViewer"
 
 import { MachineEditor } from "../../editor/Editor"
 import { MachineProps } from "../../types/blocks"

@@ -1,6 +1,6 @@
 import { ErrorIndicator } from "./ErrorIndicator"
 
-import { MachineState } from "../../types/MachineState"
+import { MachineState } from "../../../types/MachineState"
 import cn from "classnames"
 
 interface Props {
