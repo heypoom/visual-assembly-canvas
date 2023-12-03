@@ -59,8 +59,34 @@ export const BaseBlock = (props: BaseBlockProps) => {
       </RightClickMenu>
 
       {[...Array(sources)].map((_, i) => (
-        <BlockHandle key={i} port={i} side="right" type="source" />
+        <BlockHandle
+          key={i}
+          port={i}
+          side="right"
+          type="source"
+          style={{ marginTop: `${getTop(i, sources)}px` }}
+        />
       ))}
     </div>
   )
+}
+
+function getTop(index: number, total: number) {
+  const width = total % 2 === 0 ? 40 : 60
+
+  // even number of ports
+  if (total % 2 === 0) {
+    const middleIndex = total / 2
+
+    const distanceFromMiddle =
+      index < middleIndex ? index - middleIndex : index - middleIndex + 1
+
+    return distanceFromMiddle * (width / 2)
+  }
+
+  const middleIndex = Math.floor(total / 2)
+  const distanceFromMiddle = index - middleIndex
+
+  // odd
+  return distanceFromMiddle * (width / 2)
 }

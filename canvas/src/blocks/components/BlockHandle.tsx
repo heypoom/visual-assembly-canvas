@@ -1,5 +1,5 @@
 import cn from "classnames"
-import { memo } from "react"
+import { CSSProperties, memo } from "react"
 import { Handle, HandleType, Position } from "reactflow"
 
 type Side = "left" | "right"
@@ -8,6 +8,7 @@ interface Props {
   port: number
   side: Side
   type: HandleType
+  style?: CSSProperties
   className?: string
 }
 
@@ -24,6 +25,7 @@ export const BlockHandle = memo((props: Props) => {
       type={props.type}
       position={position}
       id={props.port.toString()}
+      style={props.style}
       className={cn(
         "bg-crimson-9 group-hover:bg-cyan-11 hover:!bg-gray-12 hover:border-crimson-9 px-1 py-1 border-2 z-10",
         position === Position.Left && "ml-[-1px]",
