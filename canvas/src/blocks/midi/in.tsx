@@ -119,7 +119,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
       sources={1}
       onReset={reset}
       settings={MidiSettings}
-      className="px-4 py-2 font-mono"
+      className="px-4 py-2 font-mono text-crimson-11"
     >
       {last ? (
         <div className="text-1">
