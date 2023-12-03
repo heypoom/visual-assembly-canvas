@@ -6,10 +6,9 @@ use crate::canvas::error::CanvasError::{BlockNotFound, MachineError};
 use crate::{Action, Event, Message, Sequencer};
 use crate::audio::wavetable::Wavetable;
 use crate::canvas::{BlockIdInUseSnafu};
-use crate::canvas::CanvasError::{CannotFindWire};
 use super::blocks::{Block, BlockData};
-use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu, CanvasError, MachineNotFoundSnafu};
-use super::wire::{Port, Wire};
+use super::error::{CanvasError, MachineNotFoundSnafu};
+use super::wire::{Wire};
 use crate::audio::waveform::Waveform;
 
 pub type Errorable = Result<(), CanvasError>;
@@ -62,26 +61,6 @@ impl Canvas {
         self.machine_cycle_per_tick = cycle_per_tick;
     }
 
-    pub fn remove_block(&mut self, id: u16) -> Errorable {
-        let block_idx = self.blocks.iter().position(|b| b.id == id).ok_or(BlockNotFound { id })?;
-
-        // Teardown logic
-        match self.blocks[block_idx].data {
-            // Remove the machine from the sequencer.
-            Machine { machine_id } => self.seq.remove(machine_id),
-
-            _ => {}
-        }
-
-        // Remove blocks from the canvas.
-        self.blocks.remove(block_idx);
-
-        // Remove all wires connected to the block.
-        self.wires.retain(|w| w.source.block != id && w.target.block != id);
-
-        Ok(())
-    }
-
     pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
         let id = self.block_id();
         self.add_machine_with_id(id)?;
@@ -119,40 +98,23 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn connect(&mut self, source: Port, target: Port) -> Result<u16, CanvasError> {
-        ensure!(source != target, CannotWireToItselfSnafu { port: source });
+    pub fn remove_block(&mut self, id: u16) -> Errorable {
+        let block_idx = self.blocks.iter().position(|b| b.id == id).ok_or(BlockNotFound { id })?;
 
-        // Do not add duplicate wires.
-        if let Some(w) = self.wires.iter().find(|w| w.source == source && w.target == target) {
-            return Ok(w.id);
+        // Teardown logic
+        match self.blocks[block_idx].data {
+            // Remove the machine from the sequencer.
+            Machine { machine_id } => self.seq.remove(machine_id),
+
+            _ => {}
         }
 
-        // Source block must exist.
-        ensure!(
-            self.blocks.iter().any(|b| b.id == source.block),
-            BlockNotFoundSnafu { id: source.block },
-        );
+        // Remove blocks from the canvas.
+        self.blocks.remove(block_idx);
 
-        // Target block must exist.
-        ensure!(
-            self.blocks.iter().any(|b| b.id == target.block),
-            BlockNotFoundSnafu { id: target.block },
-        );
+        // Remove all wires connected to the block.
+        self.wires.retain(|w| w.source.block != id && w.target.block != id);
 
-        // Increment the wire id
-        let id = self.wire_id_counter;
-        self.wire_id_counter += 1;
-
-        self.wires.push(Wire { id, source, target });
-        Ok(id)
-    }
-
-    pub fn disconnect(&mut self, src: Port, dst: Port) -> Errorable {
-        let Some(wire_index) = self.wires.iter().position(|w| w.source == src && w.target == dst) else {
-            return Err(CannotFindWire { src, dst });
-        };
-
-        self.wires.remove(wire_index);
         Ok(())
     }
 
@@ -186,31 +148,8 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn get_connected_sinks(&self, id: u16) -> Vec<Wire> {
-        self.wires.iter().filter(|w| w.source.block == id).cloned().collect()
-    }
-
-    pub fn send_data_to_sinks(&mut self, id: u16, body: Vec<u16>) -> Errorable {
-        let wires = self.get_connected_sinks(id);
-
-        for wire in wires {
-            self.send_message_to_port(Message {
-                sender: wire.source,
-                action: Action::Data { body: body.clone() },
-                recipient: None,
-            })?;
-        }
-
-        Ok(())
-    }
-
     pub fn generate_waveform(&mut self, waveform: Waveform, time: u16) -> u16 {
         self.wavetable.get(waveform, time)
-    }
-
-    // TODO: improve bi-directional connection resolution.
-    pub fn resolve_port(&self, port: Port) -> Option<Vec<u16>> {
-        Some(self.wires.iter().filter(|w| w.source == port || w.target == port).map(|w| w.target.block).collect())
     }
 
     /// Run every machine until all halts.

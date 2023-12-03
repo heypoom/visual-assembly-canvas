@@ -1,9 +1,9 @@
 use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
-use crate::canvas::CanvasError::{DisconnectedPort, MissingMessageRecipient};
+use crate::canvas::CanvasError::{MissingMessageRecipient};
 use crate::{Action, Message};
 use crate::canvas::blocks::BlockData::Machine;
-use crate::canvas::wire::port;
+use crate::canvas::wire::{port, Port};
 
 impl Canvas {
     /// Sends the message to the destination port.
@@ -14,7 +14,7 @@ impl Canvas {
         }
 
         // There might be more than one destination machine connected to a port.
-        let recipients = self.resolve_port(message.sender).ok_or(DisconnectedPort { port: message.sender })?;
+        let recipients = self.resolve_port(message.sender);
 
         // We submit different messages to each blocks.
         for recipient_id in recipients {
@@ -81,5 +81,13 @@ impl Canvas {
         }
 
         Ok(())
+    }
+
+    // TODO: improve bi-directional connection resolution.
+    fn resolve_port(&self, port: Port) -> Vec<u16> {
+        self.wires.iter()
+            .filter(|w| w.source == port || w.target == port)
+            .map(|w| w.target.block)
+            .collect()
     }
 }

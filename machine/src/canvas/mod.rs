@@ -9,6 +9,7 @@ pub mod message;
 pub mod virtual_io;
 pub mod blocks;
 mod send_message;
+mod wiring;
 
 pub use canvas::Canvas;
 pub use error::*;
