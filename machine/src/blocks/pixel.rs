@@ -21,6 +21,8 @@ pub enum PixelMode {
     Command,
 }
 
+static CLEAR_ADDRESS: u16 = 0x1FF;
+
 impl Canvas {
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         for message in messages {
@@ -48,7 +50,12 @@ impl Canvas {
 
                 Action::Write { address, data } => {
                     let Pixel { pixels, .. } = &mut self.mut_block(id)?.data else { continue; };
-                    if address >= 5000 { continue; }
+
+                    // Writing to this address clears the block.
+                    if address == CLEAR_ADDRESS {
+                        pixels.clear();
+                        continue;
+                    }
 
                     write_to_address(address, data, pixels);
                 }
