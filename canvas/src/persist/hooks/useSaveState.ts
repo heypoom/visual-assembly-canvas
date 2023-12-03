@@ -86,10 +86,8 @@ export function useSaveState(): SaveStateContext {
       engine.ctx?.add_wire_with_id(id, source, target)
     })
 
-    // Re-calculate the ID counters.
-    const nextBlockId = Math.max(...nodes.map((node) => node.data.id)) + 1
-    const nextWireId = edges.length
-    engine.ctx?.set_id_counters(nextBlockId, nextWireId)
+    // re-calculate the id counters.
+    engine.ctx?.recompute_id_counters()
 
     // Reset the machines.
     engine.reset()

@@ -261,14 +261,9 @@ impl Controller {
         returns(self.canvas.tick_block(id))
     }
 
-    pub fn get_id_counters(&self) -> Vec<u16> {
-        vec![self.canvas.block_id_counter, self.canvas.wire_id_counter]
-    }
-
     /// Used to restore the counter states.
-    pub fn set_id_counters(&mut self, block: u16, wire: u16) {
-        self.canvas.block_id_counter = block;
-        self.canvas.wire_id_counter = wire;
+    pub fn recompute_id_counters(&mut self) {
+        self.canvas.recompute_id_counters();
     }
 
     pub fn add_wire_with_id(&mut self, id: u16, source: Port, target: Port) {
