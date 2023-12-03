@@ -1,4 +1,5 @@
 import cn from "classnames"
+import { useMemo } from "react"
 
 import { MachineState } from "@/types/MachineState"
 import { findLastNonZeroIndex } from "@/utils/findLastNonZero"
@@ -12,11 +13,11 @@ interface Props {
 
 export const MachineValueViewer = (props: Props) => {
   const { id, state } = props
-
   const { registers } = state
-  const stack = state.stack ? [...state.stack].map((x) => x) : null
 
-  const lastStackValue = findLastNonZeroIndex(stack ?? [])
+  const lastStackValue = useMemo(() => {
+    return findLastNonZeroIndex(state.stack ?? [])
+  }, [state.stack])
 
   return (
     <div className="space-y-1">
@@ -67,9 +68,9 @@ export const MachineValueViewer = (props: Props) => {
         </div>
       )}
 
-      {stack && (
+      {state.stack && (
         <div className="px-1 flex flex-wrap max-w-[300px]">
-          {stack.map((u, i) => {
+          {state.stack.map((u, i) => {
             const unset = i > lastStackValue
             if (unset) return null
 
