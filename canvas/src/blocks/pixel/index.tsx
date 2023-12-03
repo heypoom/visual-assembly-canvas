@@ -21,7 +21,7 @@ const paletteOptions = Object.keys(palettes).map((value) => ({
   label: value,
 }))
 
-const BLOCK_SIZE = 19
+const BLOCK_SIZE = 22
 
 export const PixelBlock = (props: NodeProps<PixelProps>) => {
   const { id } = props.data
@@ -44,6 +44,7 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
 
   const rows = Math.round(pixels.length / columns)
   const isDrawable = !!pixels && columns > 1
+
   const width = columns * BLOCK_SIZE
   const height = rows * BLOCK_SIZE
 
@@ -122,13 +123,13 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
     <BaseBlock node={props} targets={1} settings={Settings}>
       {isDrawable ? (
         <div
-          className=""
-          style={{ height: `${height}px`, width: `${width}px` }}
+          className="w-full"
+          style={{ height: `${height}px`, maxWidth: `${width}px` }}
         >
           <canvas
             ref={(r) => (canvasRef.current = r)}
-            className="h-[180px]"
-            style={{ height, width }}
+            className="h-[180px] w-full"
+            style={{ height, minWidth: width }}
           />
         </div>
       ) : (
