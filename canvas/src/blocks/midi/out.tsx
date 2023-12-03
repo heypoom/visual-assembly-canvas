@@ -10,7 +10,7 @@ import { updateNodeData } from "@/store/blocks"
 import { $lastMidiEvent, $midi } from "@/store/midi"
 import { MidiOutProps } from "@/types/blocks"
 import { MidiOutputFormat } from "@/types/enums"
-import { RadixSelect } from "@/ui/select"
+import { RadixSelect } from "@/ui"
 
 import { MidiTransportForm } from "./transport"
 

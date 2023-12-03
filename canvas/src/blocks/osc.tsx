@@ -7,7 +7,7 @@ import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import { OscProps } from "@/types/blocks"
 import { Waveform, WaveformKey } from "@/types/waveform"
-import { RadixSelect } from "@/ui/select"
+import { RadixSelect } from "@/ui"
 
 const waveforms: Record<WaveformKey, Waveform> = {
   Sine: { Sine: null },

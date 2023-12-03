@@ -11,7 +11,7 @@ import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import type { PixelProps } from "@/types/blocks"
 import { PixelMode } from "@/types/enums"
-import { RadixSelect } from "@/ui/select"
+import { RadixSelect } from "@/ui"
 
 const modes = Object.keys(_PixelMode).filter(
   (key) => !isNaN(Number(_PixelMode[key as PixelMode])),

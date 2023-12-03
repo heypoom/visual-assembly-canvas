@@ -16,7 +16,7 @@ import { $midi } from "@/store/midi"
 import { $status } from "@/store/status"
 import { MidiInProps } from "@/types/blocks"
 import { MidiInputEvent } from "@/types/enums"
-import { RadixSelect } from "@/ui/select"
+import { RadixSelect } from "@/ui"
 
 import { MidiTransportForm } from "./transport"
 
