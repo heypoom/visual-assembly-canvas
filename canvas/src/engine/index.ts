@@ -1,6 +1,6 @@
 import setup, { Controller } from "machine-wasm"
 
-import { isBlock as is } from "@/blocks"
+import { isBlock as is, isBlock } from "@/blocks"
 import { midiManager } from "@/services/midi"
 import { syncBlockData } from "@/store/blocks"
 import { $clock } from "@/store/clock"
@@ -102,6 +102,13 @@ export class CanvasEngine {
     } catch (error) {
       this.setSyntaxError(id, error)
     }
+  }
+
+  public reloadProgram(id: number) {
+    const node = this.nodes.find((s) => s.data.id === id)
+    if (!node) return
+
+    if (isBlock.machine(node)) engine.load(id, node.data.source)
   }
 
   private setSyntaxError(id: number, error: unknown | null) {

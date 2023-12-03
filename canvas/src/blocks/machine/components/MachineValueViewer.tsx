@@ -1,5 +1,5 @@
 import cn from "classnames"
-import { useMemo } from "react"
+import { memo, useMemo } from "react"
 
 import { MachineState } from "@/types/MachineState"
 import { findLastNonZeroIndex } from "@/utils/findLastNonZero"
@@ -11,7 +11,7 @@ interface Props {
   state: MachineState
 }
 
-export const MachineValueViewer = (props: Props) => {
+export const MachineValueViewer = memo((props: Props) => {
   const { id, state } = props
   const { registers } = state
 
@@ -90,4 +90,4 @@ export const MachineValueViewer = (props: Props) => {
       )}
     </div>
   )
-}
+})
