@@ -16,6 +16,7 @@ use super::wire::{Port, port, Wire};
 use crate::audio::synth::{note_to_freq};
 use crate::audio::synth::SynthTrigger::AttackRelease;
 use crate::audio::waveform::Waveform;
+use crate::canvas::virtual_io::{read_from_address, write_to_address};
 
 type Errorable = Result<(), CanvasError>;
 
@@ -365,28 +366,15 @@ impl Canvas {
                     let Plot { values, size } = &mut self.mut_block(id)?.data else { continue; };
                     if address >= *size { continue; }
 
-                    if address as usize + data.len() >= values.len() {
-                        values.resize(address as usize + data.len() + 1, 0);
-                    }
-
-                    for (i, byte) in data.iter().enumerate() {
-                        values[address as usize + i] = *byte;
-                    }
+                    write_to_address(address, data, values);
                 }
 
                 Action::Read { address, count } => {
-                    let Plot { values, .. } = &self.get_block(id)?.data else { continue; };
-                    let mut body = vec![];
+                    if let Plot { values, .. } = &self.get_block(id)?.data {
+                        let action = read_from_address(address, count, &values);
 
-                    if !values.is_empty() {
-                        let min = values.len().min(count as usize);
-
-                        for i in 0..min {
-                            body.push(values[address as usize + i]);
-                        }
-                    }
-
-                    self.send_direct_message(id, message.sender.block, Action::Data { body })?;
+                        self.send_direct_message(id, message.sender.block, action)?;
+                    };
                 }
 
                 _ => {}
@@ -412,29 +400,15 @@ impl Canvas {
 
                 Action::Write { address, data } => {
                     let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
-
-                    if address as usize + data.len() >= values.len() {
-                        values.resize(address as usize + data.len() + 1, 0);
-                    }
-
-                    for (i, byte) in data.iter().enumerate() {
-                        values[address as usize + i] = *byte;
-                    }
+                    write_to_address(address, data, values);
                 }
 
                 Action::Read { address, count } => {
-                    let Memory { values, .. } = &self.get_block(id)?.data else { continue; };
-                    let mut body = vec![];
+                    if let Memory { values, .. } = &self.get_block(id)?.data {
+                        let action = read_from_address(address, count, &values);
 
-                    if !values.is_empty() {
-                        let min = values.len().min(count as usize);
-
-                        for i in 0..min {
-                            body.push(values[address as usize + i]);
-                        }
-                    }
-
-                    self.send_direct_message(id, message.sender.block, Action::Data { body })?;
+                        self.send_direct_message(id, message.sender.block, action)?;
+                    };
                 }
 
                 Action::Reset => {
@@ -604,9 +578,7 @@ impl Canvas {
             match message.action {
                 // The "data" action is used to directly set the pixel data.
                 Action::Data { body } => {
-                    let Pixel { pixels, mode } = &mut self.mut_block(id)?.data else {
-                        return Ok(());
-                    };
+                    let Pixel { pixels, mode } = &mut self.mut_block(id)?.data else { continue; };
 
                     match mode {
                         Replace => {
@@ -634,37 +606,18 @@ impl Canvas {
                 }
 
                 Action::Write { address, data } => {
-                    let Pixel { pixels, .. } = &mut self.mut_block(id)?.data else {
-                        return Ok(());
-                    };
-
+                    let Pixel { pixels, .. } = &mut self.mut_block(id)?.data else { continue; };
                     if address >= 5000 { continue; }
 
-                    if address as usize + data.len() >= pixels.len() {
-                        pixels.resize(address as usize + data.len() + 1, 0);
-                    }
-
-                    for (i, byte) in data.iter().enumerate() {
-                        pixels[address as usize + i] = *byte;
-                    }
+                    write_to_address(address, data, pixels);
                 }
 
                 Action::Read { address, count } => {
-                    let Pixel { pixels, .. } = &self.get_block(id)?.data else {
-                        return Ok(());
+                    if let Pixel { pixels, .. } = &self.get_block(id)?.data {
+                        let action = read_from_address(address, count, &pixels);
+
+                        self.send_direct_message(id, message.sender.block, action)?;
                     };
-
-                    let mut body = vec![];
-
-                    if !pixels.is_empty() {
-                        let min = pixels.len().min(count as usize);
-
-                        for i in 0..min {
-                            body.push(pixels[address as usize + i]);
-                        }
-                    }
-
-                    self.send_direct_message(id, message.sender.block, Action::Data { body })?;
                 }
 
                 Action::SetPixelMode { mode: m } => {
@@ -860,3 +813,5 @@ impl Canvas {
         self.block_id_counter = self.blocks.iter().map(|x| x.id).max().unwrap_or(0) + 1;
     }
 }
+
+

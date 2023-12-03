@@ -7,6 +7,7 @@ pub mod pixel;
 pub mod vec_helper;
 pub mod event;
 pub mod message;
+mod virtual_io;
 
 pub use canvas::Canvas;
 pub use error::*;
