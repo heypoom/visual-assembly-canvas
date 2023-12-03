@@ -12,6 +12,7 @@ mod send_message;
 mod wiring;
 mod block_ops;
 mod routing;
+mod execution;
 
 pub use canvas::Canvas;
 pub use error::*;

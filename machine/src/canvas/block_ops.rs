@@ -108,4 +108,10 @@ impl Canvas {
         self.block_id_counter += 1;
         id
     }
+
+    /// When we import existing blocks and wires to the canvas, we must recompute the id counter.
+    pub fn recompute_id_counters(&mut self) {
+        self.wire_id_counter = self.wires.iter().map(|x| x.id).max().unwrap_or(0) + 1;
+        self.block_id_counter = self.blocks.iter().map(|x| x.id).max().unwrap_or(0) + 1;
+    }
 }

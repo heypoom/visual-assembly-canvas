@@ -177,7 +177,7 @@ impl Controller {
     }
 
     pub fn set_machine_clock_speed(&mut self, cycle_per_tick: u16) {
-        self.canvas.set_machine_clock_speed(cycle_per_tick)
+        self.canvas.machine_cycle_per_tick = cycle_per_tick;
     }
 
     pub fn send_message(&mut self, message: JsValue) -> Return {
@@ -204,7 +204,7 @@ impl Controller {
     }
 
     pub fn set_await_watchdog(&mut self, state: bool) {
-        self.canvas.set_await_watchdog(state)
+        self.canvas.seq.await_watchdog = state;
     }
 
     pub fn clear(&mut self) {
