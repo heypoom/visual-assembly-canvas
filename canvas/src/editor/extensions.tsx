@@ -1,9 +1,10 @@
 import { Extension, keymap } from "@uiw/react-codemirror"
 
-import { engine } from "../engine"
-import { scheduler } from "../services/scheduler"
-import { EditorConfig } from "../store/editor"
-import { MachineProps } from "../types/blocks"
+import { engine } from "@/engine"
+import { scheduler } from "@/services/scheduler"
+import { EditorConfig } from "@/store/editor"
+import { MachineProps } from "@/types/blocks"
+
 import { lineHighlighter } from "./highlight"
 import { vasmLanguage } from "./syntax"
 

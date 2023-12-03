@@ -1,5 +1,6 @@
 import setup, { Controller } from "machine-wasm"
 
+import { isBlock as is } from "@/blocks"
 import { midiManager } from "@/services/midi"
 import { syncBlockData } from "@/store/blocks"
 import { $clock } from "@/store/clock"
@@ -21,7 +22,6 @@ import {
   MachineStatus,
 } from "@/types/MachineState"
 
-import { isBlock as is } from "../blocks"
 import { processEffects } from "./effects"
 import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
 

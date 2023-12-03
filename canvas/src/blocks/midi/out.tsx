@@ -3,15 +3,15 @@ import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 import { useReducer } from "react"
 import { NodeProps } from "reactflow"
 
+import { BlockHandle } from "@/blocks/components"
+import { RightClickMenu } from "@/blocks/components"
 import { engine } from "@/engine"
+import { updateNodeData } from "@/store/blocks"
+import { $lastMidiEvent, $midi } from "@/store/midi"
 import { MidiOutProps } from "@/types/blocks"
 import { MidiOutputFormat } from "@/types/enums"
+import { RadixSelect } from "@/ui/select"
 
-import { updateNodeData } from "../../store/blocks"
-import { $lastMidiEvent, $midi } from "../../store/midi"
-import { RadixSelect } from "../../ui/select"
-import { BlockHandle } from "../components/BlockHandle"
-import { RightClickMenu } from "../components/RightClickMenu"
 import { MidiTransportForm } from "./transport"
 
 const formats = Object.keys(_MidiOutputFormat).filter(

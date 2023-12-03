@@ -2,11 +2,12 @@ import { TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
-import { engine } from "../engine"
-import { updateNodeData } from "../store/blocks"
-import { OscProps } from "../types/blocks"
-import { Waveform, WaveformKey } from "../types/waveform"
-import { RadixSelect } from "../ui/select"
+import { engine } from "@/engine"
+import { updateNodeData } from "@/store/blocks"
+import { OscProps } from "@/types/blocks"
+import { Waveform, WaveformKey } from "@/types/waveform"
+import { RadixSelect } from "@/ui/select"
+
 import { BlockHandle } from "./components/BlockHandle"
 import { RightClickMenu } from "./components/RightClickMenu"
 

@@ -2,9 +2,9 @@ import { useStore } from "@nanostores/react"
 import { PauseIcon, PlayIcon } from "@radix-ui/react-icons"
 import { Button } from "@radix-ui/themes"
 
-import { scheduler } from "../services/scheduler"
-import { $hasBlocks } from "../store/nodes"
-import { $status } from "../store/status"
+import { scheduler } from "@/services/scheduler"
+import { $hasBlocks } from "@/store/nodes"
+import { $status } from "@/store/status"
 
 export const RunButton = () => {
   const status = useStore($status)

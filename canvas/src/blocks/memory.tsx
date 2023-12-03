@@ -2,9 +2,10 @@ import cn from "classnames"
 import { useEffect, useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
-import { engine } from "../engine"
-import { updateNode, updateNodeData } from "../store/blocks"
-import { MemoryProps } from "../types/blocks"
+import { engine } from "@/engine"
+import { updateNode, updateNodeData } from "@/store/blocks"
+import { MemoryProps } from "@/types/blocks"
+
 import { BlockHandle } from "./components/BlockHandle"
 import { RightClickMenu } from "./components/RightClickMenu"
 import { isBlock } from "./utils/is"

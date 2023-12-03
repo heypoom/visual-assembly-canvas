@@ -4,22 +4,21 @@ import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import { NodeProps } from "reactflow"
 
+import { BlockHandle, RightClickMenu } from "@/blocks/components"
 import { engine } from "@/engine"
-import { MidiInProps } from "@/types/blocks"
-import { MidiInputEvent } from "@/types/enums"
-
 import {
   isControlChangeEvent,
   isNoteEvent,
   MidiEvent,
   midiManager,
-} from "../../services/midi"
-import { updateNodeData } from "../../store/blocks"
-import { $midi } from "../../store/midi"
-import { $status } from "../../store/status"
-import { RadixSelect } from "../../ui/select"
-import { BlockHandle } from "../components/BlockHandle"
-import { RightClickMenu } from "../components/RightClickMenu"
+} from "@/services/midi"
+import { updateNodeData } from "@/store/blocks"
+import { $midi } from "@/store/midi"
+import { $status } from "@/store/status"
+import { MidiInProps } from "@/types/blocks"
+import { MidiInputEvent } from "@/types/enums"
+import { RadixSelect } from "@/ui/select"
+
 import { MidiTransportForm } from "./transport"
 
 const events = Object.keys(_MidiInputEvent).filter(

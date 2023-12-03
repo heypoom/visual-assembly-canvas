@@ -1,6 +1,6 @@
+import { addNode } from "@/store/actions/nodes"
 import { BlockNode, BlockTypeMap, BlockTypes } from "@/types/Node"
 
-import { addNode } from "../../store/actions/nodes"
 import { getCenterWithOffset } from "./center"
 
 interface Options {

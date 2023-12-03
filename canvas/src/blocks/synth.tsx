@@ -1,6 +1,7 @@
 import { NodeProps } from "reactflow"
 
-import { SynthProps } from "../types/blocks"
+import { SynthProps } from "@/types/blocks"
+
 import { BlockHandle } from "./components/BlockHandle"
 
 export const SynthBlock = (props: NodeProps<SynthProps>) => {

@@ -4,10 +4,11 @@ import { Port } from "machine-wasm"
 import { useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
-import { engine } from "../engine"
-import { updateNodeData } from "../store/blocks"
-import { $status } from "../store/status"
-import { TapProps } from "../types/blocks"
+import { engine } from "@/engine"
+import { updateNodeData } from "@/store/blocks"
+import { $status } from "@/store/status"
+import { TapProps } from "@/types/blocks"
+
 import { BlockHandle } from "./components/BlockHandle"
 import { RightClickMenu } from "./components/RightClickMenu"
 

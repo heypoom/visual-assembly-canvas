@@ -1,7 +1,8 @@
 import { useReducer } from "react"
 import { NodeProps } from "reactflow"
 
-import { ClockProps } from "../types/blocks"
+import { ClockProps } from "@/types/blocks"
+
 import { BlockHandle } from "./components/BlockHandle"
 import { RightClickMenu } from "./components/RightClickMenu"
 

@@ -2,7 +2,7 @@ import { engine } from "@/engine"
 import { $clock } from "@/store/clock"
 import { $status } from "@/store/status"
 
-import { audioManager } from "../audio/manager"
+import { audioManager } from "../audio"
 import { profiler } from "./profiler"
 
 const handlers = {

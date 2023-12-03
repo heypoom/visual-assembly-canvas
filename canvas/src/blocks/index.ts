@@ -26,3 +26,4 @@ export const nodeTypes: BlockComponentMap = {
 export * from "./pixel/palette"
 export * from "./utils/defaults"
 export * from "./utils/is"
+export { setupBlock } from "./utils/setupBlock"

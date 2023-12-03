@@ -4,14 +4,13 @@ import { PixelMode as _PixelMode } from "machine-wasm"
 import { useEffect, useReducer, useRef } from "react"
 import { NodeProps } from "reactflow"
 
+import { getPixelColor, PaletteKey, palettes } from "@/blocks"
+import { BlockHandle } from "@/blocks/components"
 import { engine } from "@/engine"
+import { updateNodeData } from "@/store/blocks"
 import type { PixelProps } from "@/types/blocks"
 import { PixelMode } from "@/types/enums"
-
-import { updateNodeData } from "../../store/blocks"
-import { RadixSelect } from "../../ui/select"
-import { BlockHandle } from "../components/BlockHandle"
-import { getPixelColor, PaletteKey, palettes } from "./palette"
+import { RadixSelect } from "@/ui/select"
 
 const modes = Object.keys(_PixelMode).filter(
   (key) => !isNaN(Number(_PixelMode[key as PixelMode])),

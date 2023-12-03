@@ -3,8 +3,8 @@ import { LapTimerIcon } from "@radix-ui/react-icons"
 import { Button, Dialog, Flex, TextField } from "@radix-ui/themes"
 import { useState } from "react"
 
-import { scheduler } from "../services/scheduler"
-import { $clock } from "../store/clock"
+import { scheduler } from "@/services/scheduler"
+import { $clock } from "@/store/clock"
 
 export const SetDelayButton = () => {
   const clock = useStore($clock)

@@ -2,7 +2,7 @@ import { TextField } from "@radix-ui/themes"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 
-import { RadixSelect } from "../../ui/select"
+import { RadixSelect } from "@/ui/select"
 
 interface Form {
   port: string
