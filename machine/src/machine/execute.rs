@@ -229,7 +229,7 @@ impl Execute for Machine {
                     body.push(v);
                 }
 
-                self.send_message(port, Action::Data { body });
+                self.send_message_to_port(port, Action::Data { body });
             }
 
             Op::Receive => {

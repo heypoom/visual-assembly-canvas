@@ -12,7 +12,7 @@ impl VirtualMemory for Machine {
         if !is_addr_mapped(addr) { return false; }
 
         let (address, port) = get_mapped_addr(addr);
-        self.send_message(port, Action::Read { address, count });
+        self.send_message_to_port(port, Action::Read { address, count });
         self.expected_receives += 1;
         true
     }
@@ -22,7 +22,7 @@ impl VirtualMemory for Machine {
 
         let (address, port) = get_mapped_addr(addr);
 
-        self.send_message(port, Action::Write { address, data });
+        self.send_message_to_port(port, Action::Write { address, data });
         true
     }
 }

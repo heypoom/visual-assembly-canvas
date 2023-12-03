@@ -11,6 +11,10 @@ pub struct Message {
 
     /// Address of the sender block.
     pub sender: Port,
+
+    /// Address of the recipient block.
+    /// If none, the message is sent to the devices connected to the sender port.
+    pub recipient: Option<u16>,
 }
 
 /// Messages that can be sent between nodes and machines.

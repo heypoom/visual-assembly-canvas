@@ -7,7 +7,7 @@ use crate::{Action, Event, Message, Sequencer};
 use crate::audio::midi::{MidiOutputFormat};
 use crate::audio::wavetable::Wavetable;
 use crate::canvas::{BlockIdInUseSnafu};
-use crate::canvas::CanvasError::{CannotFindWire};
+use crate::canvas::CanvasError::{CannotFindWire, MissingMessageRecipient};
 use crate::canvas::PixelMode::{Append, Command, Replace};
 use crate::canvas::vec_helper::extend_and_remove_oldest;
 use super::block::{Block, BlockData};
@@ -218,7 +218,11 @@ impl Canvas {
         let wires = self.get_connected_sinks(id);
 
         for wire in wires {
-            self.send_message_to_port(Message { sender: wire.source, action: Action::Data { body: body.clone() } })?;
+            self.send_message_to_port(Message {
+                sender: wire.source,
+                action: Action::Data { body: body.clone() },
+                recipient: None,
+            })?;
         }
 
         Ok(())
@@ -702,8 +706,13 @@ impl Canvas {
         let mut messages = self.consume_messages();
         messages.extend(self.seq.consume_messages());
 
+        // If the message has a recipient, send it directly to the machine.
+        // Otherwise, identify connected blocks and send the message to them.
         for message in messages {
-            self.send_message_to_port(message)?;
+            match message.recipient {
+                Some(_) => self.send_message_to_recipient(message)?,
+                None => self.send_message_to_port(message)?,
+            }
         }
 
         Ok(())
@@ -719,12 +728,21 @@ impl Canvas {
 
     /// Sends the message to the destination port.
     pub fn send_message_to_port(&mut self, message: Message) -> Errorable {
+        // If the message has a recipient, send it directly to the machine instead.
+        if message.recipient.is_some() {
+            return self.send_message_to_recipient(message);
+        }
+
         // There might be more than one destination machine connected to a port.
         let recipients = self.resolve_port(message.sender).ok_or(DisconnectedPort { port: message.sender })?;
 
         // We submit different messages to each machines.
         for recipient_id in recipients {
-            self.send_message_to_recipient(recipient_id, message.clone())?;
+            self.send_message_to_recipient(Message {
+                action: message.action.clone(),
+                sender: message.sender,
+                recipient: Some(recipient_id),
+            })?;
         }
 
         Ok(())
@@ -732,20 +750,32 @@ impl Canvas {
 
     /// Send a message from an actor to another actor.
     pub fn send_direct_message(&mut self, from: u16, to: u16, action: Action) -> Errorable {
-        self.send_message_to_recipient(to, Message { action, sender: port(from, 0) })?;
+        self.send_message_to_recipient(Message {
+            action,
+            sender: port(from, 0),
+            recipient: Some(to),
+        })?;
 
         Ok(())
     }
 
     /// Sends the message to the specified block.
     pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Errorable {
-        self.mut_block(block_id)?.inbox.push_back(Message { sender: port(block_id, 60000), action });
+        self.mut_block(block_id)?.inbox.push_back(Message {
+            sender: port(block_id, 60000),
+            action,
+            recipient: Some(block_id),
+        });
 
         Ok(())
     }
 
-    pub fn send_message_to_recipient(&mut self, recipient_id: u16, message: Message) -> Errorable {
+    pub fn send_message_to_recipient(&mut self, message: Message) -> Errorable {
         let inbox_limit = self.inbox_limit;
+
+        let Some(recipient_id) = message.recipient else {
+            return Err(MissingMessageRecipient { message });
+        };
 
         if let Ok(block) = self.mut_block(recipient_id) {
             match block.data {

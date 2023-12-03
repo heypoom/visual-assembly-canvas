@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
 use crate::canvas::wire::Port;
-use crate::SequencerError;
+use crate::{Message, SequencerError};
 
 #[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
@@ -23,4 +23,6 @@ pub enum CanvasError {
 
     #[snafu(display("block id {id} is already in use"))]
     BlockIdInUse { id: u16 },
+
+    MissingMessageRecipient { message: Message },
 }
