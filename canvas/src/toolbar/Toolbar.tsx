@@ -2,7 +2,7 @@ import { useStore } from "@nanostores/react"
 import { ReloadIcon, TrackNextIcon } from "@radix-ui/react-icons"
 import { Button } from "@radix-ui/themes"
 
-import { useGlobalShortcut } from "@/canvas/hooks/useGlobalShortcut"
+import { useGlobalShortcut } from "@/canvas"
 import { engine } from "@/engine"
 import { useAutoSave } from "@/persist"
 import { scheduler } from "@/services/scheduler"
