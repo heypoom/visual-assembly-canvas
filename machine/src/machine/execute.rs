@@ -180,9 +180,10 @@ impl Execute for Machine {
 
             Op::Pick(n) => {
                 let len = s.len();
-                ensure!(len > n, NotEnoughValuesSnafu { len, min: s.min });
-
-                s.push(s.get(len - n - 1).clone())?;
+               
+                if len > n {
+                    s.push(s.get(len - n - 1).clone())?;
+                }
             }
 
             Op::Print => {
