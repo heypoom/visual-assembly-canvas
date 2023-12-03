@@ -2,14 +2,12 @@ import { TextField } from "@radix-ui/themes"
 import { useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
+import { BaseBlock } from "@/blocks/components"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import { OscProps } from "@/types/blocks"
 import { Waveform, WaveformKey } from "@/types/waveform"
 import { RadixSelect } from "@/ui/select"
-
-import { BlockHandle } from "./components/BlockHandle"
-import { RightClickMenu } from "./components/RightClickMenu"
 
 const waveforms: Record<WaveformKey, Waveform> = {
   Sine: { Sine: null },
@@ -31,7 +29,6 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
 
   const [cycleText, setCycleText] = useState("")
   const [cycleError, setCycleError] = useState(false)
-  const [showSettings, toggle] = useReducer((n) => !n, false)
 
   const wave = (
     typeof waveform === "object"
@@ -77,59 +74,57 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
     return `${wave?.toLowerCase()}(${argsText})`
   }
 
-  return (
-    <div>
-      <BlockHandle port={1} side="left" type="target" />
+  const Settings = () => (
+    <section className="flex flex-col space-y-2 w-full">
+      <div className="flex items-center gap-4 w-full">
+        <p className="text-1">Fn</p>
 
-      <RightClickMenu id={id} show={showSettings} toggle={toggle}>
-        <div className="group border-2 border-crimson-9 font-mono px-3 py-2 space-y-2">
-          <div className="text-crimson-11">{getOscLog()}</div>
+        <RadixSelect
+          value={wave.toString()}
+          onChange={handleWaveChange}
+          options={waveformOptions}
+        />
+      </div>
 
-          {showSettings && (
-            <section className="flex flex-col space-y-2 w-full">
-              <div className="flex items-center gap-4 w-full">
-                <p className="text-1">Fn</p>
+      {wave === "Square" && (
+        <div className="flex items-center gap-4 w-full">
+          <p className="text-1">Cycle</p>
 
-                <RadixSelect
-                  value={wave.toString()}
-                  onChange={handleWaveChange}
-                  options={waveformOptions}
-                />
-              </div>
+          <TextField.Input
+            className="max-w-[70px]"
+            size="1"
+            type="number"
+            min={0}
+            max={255}
+            value={cycleText}
+            onChange={(k) => {
+              const str = k.target.value
+              setCycleText(str)
 
-              {wave === "Square" && (
-                <div className="flex items-center gap-4 w-full">
-                  <p className="text-1">Cycle</p>
+              const cycle = parseInt(str)
+              const valid = !isNaN(cycle) && cycle >= 0 && cycle <= 255
+              setCycleError(!valid)
 
-                  <TextField.Input
-                    className="max-w-[70px]"
-                    size="1"
-                    type="number"
-                    min={0}
-                    max={255}
-                    value={cycleText}
-                    onChange={(k) => {
-                      const str = k.target.value
-                      setCycleText(str)
-
-                      const cycle = parseInt(str)
-                      const valid = !isNaN(cycle) && cycle >= 0 && cycle <= 255
-                      setCycleError(!valid)
-
-                      if (valid) {
-                        setWaveform({ Square: { duty_cycle: cycle } })
-                      }
-                    }}
-                    {...(cycleError && { color: "tomato" })}
-                  />
-                </div>
-              )}
-            </section>
-          )}
+              if (valid) {
+                setWaveform({ Square: { duty_cycle: cycle } })
+              }
+            }}
+            {...(cycleError && { color: "tomato" })}
+          />
         </div>
-      </RightClickMenu>
+      )}
+    </section>
+  )
 
-      <BlockHandle port={0} side="right" type="source" />
-    </div>
+  return (
+    <BaseBlock
+      node={props}
+      targets={1}
+      sources={1}
+      settings={Settings}
+      className="px-4 py-2 font-mono text-center"
+    >
+      {getOscLog()}
+    </BaseBlock>
   )
 }
