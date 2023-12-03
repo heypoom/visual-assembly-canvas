@@ -7,7 +7,10 @@ pub fn read_from_address(address: u16, count: u16, values: &Vec<u16>) -> Action 
         let min = values.len().min(count as usize);
 
         for i in 0..min {
-            body.push(values[address as usize + i]);
+            let index = address as usize + i;
+            if index >= values.len() { break; }
+
+            body.push(values[index]);
         }
     }
 
