@@ -20,9 +20,13 @@ mod stack_operation_tests {
         m.run().unwrap();
         assert_eq!(m.mem.read_stack(5), [1, 2, 3, 2, 0]);
 
+        let mut m: Machine = vec![Op::Push(1), Op::Push(2), Op::Push(3), Op::Push(4), Op::Push(5), Op::Push(6), Op::Push(7), Op::Pick(2)].into();
+        m.run().unwrap();
+        assert_eq!(m.mem.read_stack(9), [1, 2, 3, 4, 5, 6, 7, 6, 0]);
+
         let mut m: Machine = vec![Op::Push(1), Op::Push(2), Op::Push(3), Op::Pick(2)].into();
         m.run().unwrap();
-        assert_eq!(m.mem.read_stack(5), [1, 2, 3, 3, 0]);
+        assert_eq!(m.mem.read_stack(5), [1, 2, 3, 2, 0]);
 
         let mut m: Machine = vec![Op::Push(1), Op::Push(2), Op::Push(3), Op::Swap].into();
         m.run().unwrap();
