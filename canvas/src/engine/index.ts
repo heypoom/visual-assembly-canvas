@@ -289,11 +289,10 @@ export class CanvasEngine {
     effects.forEach(processEffects)
   }
 
+  // TODO(Perf): we can optimize this by only syncing the blocks that have changed.
+  //             currently, we pull every data from the engine.
   public syncBlocks() {
-    // TODO(Perf): we can optimize this by only syncing the blocks that have changed.
-    //             currently, we pull every data from the engine.
     const blocks = this.ctx?.get_blocks()
-
     blocks.forEach(syncBlockData)
   }
 
