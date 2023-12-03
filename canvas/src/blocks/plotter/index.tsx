@@ -1,21 +1,20 @@
 import { cyanP3 } from "@radix-ui/colors"
-import { useEffect, useReducer, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { NodeProps } from "reactflow"
 
-import { BlockHandle, RightClickMenu } from "@/blocks/components"
+import { BaseBlock } from "@/blocks"
 import { PlotterProps } from "@/types/blocks"
 
-import { rescale } from "./rescale"
+import { rescale } from "./utils/rescale"
 
 export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
-  const { id, values, size } = props.data
-  const [showSettings, toggle] = useReducer((n) => !n, false)
+  const { values, size } = props.data
 
   const scaleY = 2
   const max = 255
 
-  const ref = useRef<HTMLCanvasElement>(null)
   const plotted = rescale(values, max)
+  const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const canvas = ref.current
@@ -43,21 +42,14 @@ export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
   }, [plotted])
 
   return (
-    <div>
-      <BlockHandle port={1} side="left" type="target" />
+    <BaseBlock node={props} targets={1}>
+      {typeof size !== "number" && <div>error: missing size!</div>}
 
-      <RightClickMenu id={id} toggle={toggle} show={showSettings}>
-        <div className="group">
-          {typeof size !== "number" && <div>error: missing size!</div>}
-
-          <div
-            className="flex border-2 border-cyan-9 h-[80px]"
-            style={{ minWidth: `${size + 2}px` }}
-          >
-            <canvas ref={ref} className="w-full" />
-          </div>
-        </div>
-      </RightClickMenu>
-    </div>
+      <canvas
+        ref={ref}
+        className="w-full h-[80px]"
+        style={{ minWidth: `${size + 2}px` }}
+      />
+    </BaseBlock>
   )
 }

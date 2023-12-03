@@ -1,5 +1,5 @@
 import cn from "classnames"
-import { ReactNode, useReducer } from "react"
+import { CSSProperties, ReactNode, useReducer } from "react"
 import { NodeProps } from "reactflow"
 
 import { BlockHandle } from "@/blocks/components/BlockHandle"
@@ -12,6 +12,7 @@ interface BaseBlockProps {
   targets?: number
   children?: ReactNode
   settings?: () => ReactNode
+  style?: CSSProperties
   onReset?: () => void
 }
 
@@ -42,6 +43,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
         toggle={toggleSettings}
       >
         <div
+          style={props.style}
           className={cn(
             "flex flex-col relative gap-y-2",
             "border-2 rounded-2",
