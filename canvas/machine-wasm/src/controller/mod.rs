@@ -166,6 +166,22 @@ impl Controller {
         Ok(to_value(&m.mem.read_code(size))?)
     }
 
+    pub fn read_mem(&mut self, id: u16, addr: u16, size: u16) -> Return {
+        let Some(m) = self.canvas.seq.get_mut(id) else {
+            return Ok(NULL);
+        };
+
+        Ok(to_value(&m.mem.read(addr, size))?)
+    }
+
+    pub fn read_stack(&mut self, id: u16, size: u16) -> Return {
+        let Some(m) = self.canvas.seq.get_mut(id) else {
+            return Ok(NULL);
+        };
+
+        Ok(to_value(&m.mem.read_stack(size))?)
+    }
+
     /// Allows the frontend to consume events from the machine.
     pub fn consume_machine_side_effects(&mut self, id: u16) -> Return {
         Ok(to_value(&self.canvas.seq.consume_side_effects(id))?)
