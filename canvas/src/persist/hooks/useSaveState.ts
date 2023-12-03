@@ -15,11 +15,15 @@ export interface SaveStateContext {
   clear: () => void
 }
 
+/** Increment the version if the save format changes. */
+const SAVE_VERSION = "1.0"
+
 export function useSaveState(): SaveStateContext {
   const flow = useReactFlow()
 
   const serialize = (): SaveState => {
     return {
+      version: SAVE_VERSION,
       flow: flow.toObject(),
       clock: $clock.get(),
       counters: engine.getIdCounters(),

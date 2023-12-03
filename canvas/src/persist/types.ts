@@ -4,6 +4,8 @@ import { BlockValues } from "../types/Node"
 import { ClockConfig } from "../store/clock"
 
 export interface SaveState {
+  version: string
+
   flow: ReactFlowJsonObject<BlockValues>
   clock: ClockConfig
 
