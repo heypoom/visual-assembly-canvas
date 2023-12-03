@@ -1,6 +1,12 @@
 import { addBlock } from "../utils/addBlock"
-import { SaveStateContext, useSaveState } from "../../persist/useSaveState"
-import { LocalStorageDriver, STORAGE_KEY } from "../../persist/localStorage"
+import {
+  SaveStateContext,
+  useSaveState,
+} from "../../persist/hooks/useSaveState"
+import {
+  LocalStorageDriver,
+  STORAGE_KEY,
+} from "../../persist/drivers/localStorage"
 import { useMemo } from "react"
 import { BlockTypes } from "../../types/Node"
 import { defaultProps } from "../../blocks"

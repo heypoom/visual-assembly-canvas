@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react"
 
-import { LocalStorageDriver } from "./localStorage"
+import { LocalStorageDriver } from "../drivers/localStorage"
 
-import { PersistConfig } from "./types"
+import { PersistConfig } from "../types"
 import { useSaveState } from "./useSaveState"
 
 type Timer = ReturnType<typeof setInterval>

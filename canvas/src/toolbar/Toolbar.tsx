@@ -11,7 +11,7 @@ import { engine } from "../engine"
 import { $hasBlocks } from "../store/nodes"
 
 import { scheduler } from "../services/scheduler"
-import { useAutoSave } from "../persist/useAutoSave"
+import { useAutoSave } from "../persist/hooks/useAutoSave"
 import { useGlobalShortcut } from "../canvas/hooks/useGlobalShortcut"
 
 function reset() {

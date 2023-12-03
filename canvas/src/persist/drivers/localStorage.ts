@@ -1,4 +1,4 @@
-import { PersistenceDriver } from "./types"
+import { PersistenceDriver } from "../types"
 
 export const STORAGE_KEY = "CANVAS_SAVES"
 export const AUTOSAVE_SAVE_KEY = "AUTOSAVE"

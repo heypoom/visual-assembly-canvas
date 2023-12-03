@@ -1,13 +1,13 @@
 import { useReactFlow } from "reactflow"
 
-import { SaveState } from "./types"
-import { setupBlock } from "./setupBlock"
+import { SaveState } from "../types"
+import { setupBlock } from "../utils/setupBlock"
 
-import { engine } from "../engine"
-import { BlockNode } from "../types/Node"
-import { $clock } from "../store/clock"
-import { defaultProps } from "../blocks"
-import { port } from "../store/actions/changes"
+import { engine } from "../../engine"
+import { BlockNode } from "../../types/Node"
+import { $clock } from "../../store/clock"
+import { defaultProps } from "../../blocks"
+import { port } from "../../store/actions/changes"
 
 export interface SaveStateContext {
   serialize: () => SaveState
@@ -28,8 +28,6 @@ export function useSaveState(): SaveStateContext {
 
   function restore(state: SaveState) {
     if (!state.flow) return
-
-    console.log("--- restoring ---")
 
     // Restore nodes and edges
     const { nodes, edges, viewport } = state.flow
@@ -54,7 +52,6 @@ export function useSaveState(): SaveStateContext {
 
         const { type } = block
         const { id, ...nodeProps } = block.data
-        console.log(`block id (${type}) = ${id}`)
 
         if (type === undefined) {
           console.warn("node type is missing!", block)
@@ -76,20 +73,24 @@ export function useSaveState(): SaveStateContext {
     }
 
     // Add the wires.
-    // TODO: make the wire ID idempotent across saves!
     edges.forEach((edge, id) => {
       if (!edge.sourceHandle || !edge.targetHandle) return
 
       const source = port(edge.source, edge.sourceHandle)
       const target = port(edge.target, edge.targetHandle)
 
+      // TODO: make the wire ID idempotent across saves!
+      //       we will have to add the Wire ID from the engine to the edge data.
       engine.ctx?.add_wire_with_id(id, source, target)
     })
 
     // Apply the ID counters.
-    // TODO: make the wire ID idempotent across saves!
-    const [blockCounter] = state.counters
-    engine.ctx?.set_id_counters(blockCounter, edges.length)
+    const [blockCounter = 0, wireCounter = 0] = state.counters ?? []
+
+    engine.ctx?.set_id_counters(
+      Math.max(blockCounter, nodes.length),
+      Math.max(wireCounter, edges.length),
+    )
 
     // Reset the machines.
     engine.reset()
