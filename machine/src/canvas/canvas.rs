@@ -378,9 +378,11 @@ impl Canvas {
                     let Plot { values, .. } = &self.get_block(id)?.data else { continue; };
                     let mut body = vec![];
 
-                    if !values.is_empty() && address + count <= values.len() as u16 {
-                        for i in 0..count {
-                            body.push(values[(address + i) as usize]);
+                    if !values.is_empty() {
+                        let min = values.len().min(count as usize);
+
+                        for i in 0..min {
+                            body.push(values[address as usize + i]);
                         }
                     }
 
@@ -424,9 +426,11 @@ impl Canvas {
                     let Memory { values, .. } = &self.get_block(id)?.data else { continue; };
                     let mut body = vec![];
 
-                    if !values.is_empty() && address + count <= values.len() as u16 {
-                        for i in 0..count {
-                            body.push(values[(address + i) as usize]);
+                    if !values.is_empty() {
+                        let min = values.len().min(count as usize);
+
+                        for i in 0..min {
+                            body.push(values[address as usize + i]);
                         }
                     }
 
@@ -652,9 +656,11 @@ impl Canvas {
 
                     let mut body = vec![];
 
-                    if !pixels.is_empty() && address + count <= pixels.len() as u16 {
-                        for i in 0..count {
-                            body.push(pixels[(address + i) as usize]);
+                    if !pixels.is_empty() {
+                        let min = pixels.len().min(count as usize);
+
+                        for i in 0..min {
+                            body.push(pixels[address as usize + i]);
                         }
                     }
 
