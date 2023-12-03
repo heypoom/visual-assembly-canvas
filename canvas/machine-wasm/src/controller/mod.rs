@@ -144,7 +144,7 @@ impl Controller {
 
         let state = InspectedMachine {
             events: m.events.clone(),
-            stack: m.mem.read_stack(10),
+            stack: m.mem.read_stack(50),
             registers: InspectedRegister {
                 pc: m.reg.get(PC),
                 sp: m.reg.get(SP),

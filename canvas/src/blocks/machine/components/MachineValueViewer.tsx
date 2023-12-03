@@ -1,6 +1,7 @@
 import cn from "classnames"
 
 import { MachineState } from "@/types/MachineState"
+import { findLastNonZeroIndex } from "@/utils/findLastNonZero"
 
 import { ErrorIndicator } from "./ErrorIndicator"
 
@@ -14,6 +15,8 @@ export const MachineValueViewer = (props: Props) => {
 
   const { registers } = state
   const stack = state.stack ? [...state.stack].map((x) => x) : null
+
+  const lastStackValue = findLastNonZeroIndex(stack ?? [])
 
   return (
     <div className="space-y-1">
@@ -65,18 +68,23 @@ export const MachineValueViewer = (props: Props) => {
       )}
 
       {stack && (
-        <div className="flex px-1">
-          {stack.map((u, i) => (
-            <div
-              className={cn(
-                "text-1 text-crimson-11 bg-stone-800 mx-1",
-                !u && "text-gray-9",
-              )}
-              key={i}
-            >
-              {u.toString().padStart(2, "0")}
-            </div>
-          ))}
+        <div className="px-1 flex flex-wrap max-w-[300px]">
+          {stack.map((u, i) => {
+            const unset = i > lastStackValue
+            if (unset) return null
+
+            return (
+              <div
+                className={cn(
+                  "text-1 text-crimson-11 bg-stone-800 mx-1",
+                  u === 0 && "text-gray-8",
+                )}
+                key={i}
+              >
+                {u.toString().padStart(2, "0")}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
