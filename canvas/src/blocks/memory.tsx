@@ -1,5 +1,5 @@
 import cn from "classnames"
-import { useEffect, useReducer, useState } from "react"
+import { useEffect, useState } from "react"
 import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks/components"
