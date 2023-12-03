@@ -2,7 +2,7 @@ import cn from "classnames"
 import { useEffect, useReducer, useState } from "react"
 import { NodeProps } from "reactflow"
 
-import { BlockHandle, RightClickMenu } from "@/blocks/components"
+import { BaseBlock } from "@/blocks/components"
 import { engine } from "@/engine"
 import { updateNode, updateNodeData } from "@/store/blocks"
 import { MemoryProps } from "@/types/blocks"
@@ -18,8 +18,6 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
   const [isBatch, setBatch] = useState(true)
   const [batchInput, setBatchInput] = useState("")
-
-  const [showSettings, toggle] = useReducer((n) => !n, false)
 
   const base = isHex ? 16 : 10
 
@@ -69,104 +67,92 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
   const gridLimit = 1000
   const overGridLimit = count > gridLimit
 
-  return (
-    <div>
-      <BlockHandle port={0} side="left" type="target" />
+  const Settings = () => (
+    <div className="px-2 flex justify-center items-center text-center gap-x-2 gap-y-0">
+      <div className="text-1 text-gray-6" onClick={() => setHex((s) => !s)}>
+        {isHex ? "hex" : "dec"}
+      </div>
 
-      <RightClickMenu id={id} show={showSettings} toggle={toggle}>
-        <div
-          className={cn(
-            "group border-2 border-green-9 font-mono py-2",
-            props.selected && "!border-yellow-11",
-          )}
-        >
-          {overGridLimit && !isBatch && (
-            <p className="text-1 text-tomato-11 px-4 py-2">
-              values too large ({count} items) <br /> use text mode to edit.
-            </p>
-          )}
+      <div
+        onClick={() => setBatch((s) => !s)}
+        className={cn("text-1 text-gray-6", isBatch && "text-green-11")}
+      >
+        txt
+      </div>
 
-          {!isBatch && !overGridLimit && (
-            <div
-              className="grid items-center justify-center gap-x-1 px-2"
-              style={{
-                gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-              }}
-            >
-              {[...Array(count)].map((_, index) => {
-                const value = values[index]
-
-                return (
-                  <div key={index} className="w-8">
-                    <input
-                      value={!value ? "" : value.toString(base)}
-                      placeholder="0"
-                      className={cn(
-                        "w-8 text-center bg-transparent outline-gray-3 outline-1 text-1 uppercase",
-                        value === 0 && "placeholder-gray-6",
-                        value === undefined && "placeholder-gray-4",
-                        value > 0 && "text-green-11",
-                      )}
-                      onChange={(e) => {
-                        const n = parseInt(e.target.value, base)
-                        if (isNaN(n)) return set(index, 0)
-
-                        set(index, n)
-                      }}
-                      onBlur={() => {
-                        if (value === undefined || value === null) return
-
-                        engine.send(id, {
-                          Write: { address: index, data: [value] },
-                        })
-
-                        engine.ctx?.force_tick_block(id)
-                      }}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-          {isBatch && (
-            <div className="px-4 nodrag py-2 text-green-11">
-              <textarea
-                className="w-full bg-transparent text-1 font-mono outline-gray-4"
-                value={batchInput}
-                onChange={(e) => setBatchInput(e.target.value)}
-                onBlur={updateBatch}
-              />
-            </div>
-          )}
-
-          <div className="px-2 flex justify-center items-center text-center gap-x-2">
-            <div
-              className="text-1 text-gray-6"
-              onClick={() => setHex((s) => !s)}
-            >
-              {isHex ? "hex" : "dec"}
-            </div>
-
-            <div
-              className={cn("text-1 text-gray-6", isBatch && "text-green-11")}
-              onClick={() => setBatch((s) => !s)}
-            >
-              txt
-            </div>
-
-            <div
-              className={cn(
-                "text-1 text-gray-6",
-                auto_reset && "text-green-11",
-              )}
-              onClick={toggleReset}
-            >
-              temp
-            </div>
-          </div>
-        </div>
-      </RightClickMenu>
+      <div
+        onClick={toggleReset}
+        className={cn("text-1 text-gray-6", auto_reset && "text-green-11")}
+      >
+        temp
+      </div>
     </div>
+  )
+
+  return (
+    <BaseBlock
+      node={props}
+      targets={1}
+      className="border-green-9 font-mono px-4 py-3"
+      settings={Settings}
+    >
+      {overGridLimit && !isBatch && (
+        <p className="text-1 text-tomato-11">
+          values too large ({count} items) <br /> use text mode to edit.
+        </p>
+      )}
+
+      {!isBatch && !overGridLimit && (
+        <div
+          className="grid items-center justify-center gap-x-1 w-full"
+          style={{
+            gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+          }}
+        >
+          {[...Array(count)].map((_, index) => {
+            const value = values[index]
+
+            return (
+              <div key={index} className="w-8">
+                <input
+                  value={!value ? "" : value.toString(base)}
+                  placeholder="0"
+                  className={cn(
+                    "w-8 text-center bg-transparent outline-gray-3 outline-1 text-1 uppercase",
+                    value === 0 && "placeholder-gray-6",
+                    value === undefined && "placeholder-gray-4",
+                    value > 0 && "text-green-11",
+                  )}
+                  onChange={(e) => {
+                    const n = parseInt(e.target.value, base)
+                    if (isNaN(n)) return set(index, 0)
+
+                    set(index, n)
+                  }}
+                  onBlur={() => {
+                    if (value === undefined || value === null) return
+
+                    engine.send(id, {
+                      Write: { address: index, data: [value] },
+                    })
+
+                    engine.ctx?.force_tick_block(id)
+                  }}
+                />
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {isBatch && (
+        <textarea
+          className="w-full bg-transparent text-1 font-mono outline-gray-4 nodrag text-green-11 h-[100px]"
+          value={batchInput}
+          onChange={(e) => setBatchInput(e.target.value)}
+          onBlur={updateBatch}
+        />
+      )}
+    </BaseBlock>
   )
 }
