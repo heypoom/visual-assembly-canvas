@@ -2,10 +2,10 @@ use std::collections::VecDeque;
 use serde::{Deserialize, Serialize};
 use crate::{Event, Message};
 use crate::audio::waveform::Waveform;
-use crate::canvas::pixel::PixelMode;
 use strum_macros::{EnumIs};
 use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
 use crate::audio::synth::SynthConfig;
+use crate::canvas::blocks::pixel::PixelMode;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {

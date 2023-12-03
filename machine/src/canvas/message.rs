@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
 use crate::audio::waveform::Waveform;
-use crate::canvas::PixelMode;
+use crate::canvas::blocks::pixel::PixelMode;
 use crate::canvas::wire::Port;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

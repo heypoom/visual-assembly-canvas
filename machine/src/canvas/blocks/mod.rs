@@ -1,12 +1,12 @@
 pub mod block;
-mod tick;
-mod osc;
-mod plotter;
-mod clock;
-mod memory;
-mod midi_in;
-mod midi_out;
-mod pixel;
-mod synth;
+pub mod tick;
+pub mod osc;
+pub mod plotter;
+pub mod clock;
+pub mod memory;
+pub mod midi_in;
+pub mod midi_out;
+pub mod pixel;
+pub mod synth;
 
 pub use block::*;

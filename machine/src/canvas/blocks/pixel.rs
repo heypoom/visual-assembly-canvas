@@ -2,8 +2,24 @@ use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Message};
 use crate::canvas::blocks::BlockData::Pixel;
-use crate::canvas::PixelMode::{Append, Command, Replace};
 use crate::canvas::virtual_io::{read_from_address, write_to_address};
+
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::wasm_bindgen;
+use crate::canvas::blocks::pixel::PixelMode::{Append, Command, Replace};
+
+#[wasm_bindgen]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PixelMode {
+    /// Replaces the content of the block with the given byte.
+    Replace,
+
+    /// Append the pixel to the block. Byte zero deletes one pixel.
+    Append,
+
+    /// Send command packets to alter the block.
+    Command,
+}
 
 impl Canvas {
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
