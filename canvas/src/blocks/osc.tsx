@@ -1,5 +1,5 @@
 import { TextField } from "@radix-ui/themes"
-import { useReducer, useState } from "react"
+import { useState } from "react"
 import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks/components"
