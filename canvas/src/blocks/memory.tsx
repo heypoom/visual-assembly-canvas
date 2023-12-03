@@ -10,13 +10,18 @@ import { MemoryProps } from "@/types/blocks"
 import { isBlock } from "./utils/is"
 
 const columns = 8
+const gridLimit = 1000
 
 export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
   const { id, auto_reset } = props.data
 
+  const values = [...props.data.values, 0]
+  const count = Math.max(columns * 6, values.length)
+  const overGridLimit = count > gridLimit
+
   const [isHex, setHex] = useState(false)
 
-  const [isBatch, setBatch] = useState(true)
+  const [isBatch, setBatch] = useState(overGridLimit)
   const [batchInput, setBatchInput] = useState("")
 
   const base = isHex ? 16 : 10
@@ -36,9 +41,6 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
     engine.send(id, { SetAutoReset: { auto_reset: !auto_reset } })
     engine.ctx?.force_tick_block(id)
   }
-
-  const values = [...props.data.values, 0]
-  const count = Math.max(columns * 6, values.length)
 
   useEffect(() => {
     if (isBatch) {
@@ -63,9 +65,6 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
     engine.ctx?.force_tick_block(id)
     engine.syncBlocks()
   }
-
-  const gridLimit = 1000
-  const overGridLimit = count > gridLimit
 
   const Settings = () => (
     <div className="px-2 flex justify-center items-center text-center gap-x-2 gap-y-0">
