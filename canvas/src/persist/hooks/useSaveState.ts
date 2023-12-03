@@ -21,14 +21,13 @@ const SAVE_VERSION = "1.0"
 export function useSaveState(): SaveStateContext {
   const flow = useReactFlow()
 
-  const serialize = (): SaveState => {
-    return {
-      version: SAVE_VERSION,
-      flow: flow.toObject(),
-      clock: $clock.get(),
-      counters: engine.getIdCounters(),
-    }
-  }
+  // TODO: prune temporary data from the nodes state.
+  const serialize = (): SaveState => ({
+    version: SAVE_VERSION,
+    flow: flow.toObject(),
+    clock: $clock.get(),
+    counters: engine.getIdCounters(),
+  })
 
   function restore(state: SaveState) {
     if (!state.flow) return
