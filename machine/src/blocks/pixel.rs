@@ -25,29 +25,21 @@ impl Canvas {
     pub fn tick_pixel_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         for message in messages {
             match message.action {
-                // The "data" action is used to directly set the pixel data.
                 Action::Data { body } => {
                     let Pixel { pixels, mode } = &mut self.mut_block(id)?.data else { continue; };
 
                     match mode {
+                        Append => {
+                            for byte in body {
+                                pixels.push(byte);
+                            }
+                        }
+
                         Replace => {
                             pixels.clear();
                             pixels.extend(&body);
                         }
-                        Append => {
-                            for byte in body {
-                                // Remove one pixel.
-                                if byte == 0 {
-                                    if !pixels.is_empty() {
-                                        pixels.pop();
-                                    }
 
-                                    continue;
-                                }
-
-                                pixels.push(byte);
-                            }
-                        }
                         Command => {
                             // TODO: implement command consumer
                         }
