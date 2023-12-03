@@ -388,6 +388,17 @@ export class CanvasEngine {
   public send(id: number, action: Action) {
     this.ctx?.send_message_to_block(id, action)
   }
+
+  public getIdCounters(): [number, number] {
+    const idCounters = this.ctx?.get_id_counters()
+
+    if (!idCounters || idCounters.length < 2)
+      throw new Error("Invalid id counters")
+
+    const [blockCounter, wireCounter] = idCounters
+
+    return [blockCounter, wireCounter]
+  }
 }
 
 export const engine = new CanvasEngine()

@@ -18,11 +18,12 @@ export function useAutoSave(config: PersistConfig = {}) {
   const saveTimer = useRef<Timer>()
 
   useEffect(() => {
-    if (restored.current) return
-
-    setTimeout(() => {
-      driver.load(restore)
-    }, 0)
+    // This operation must be done exactly once.
+    if (!restored.current) {
+      setTimeout(() => {
+        driver.load(restore)
+      }, 0)
+    }
 
     saveTimer.current = setInterval(() => {
       driver.save(serialize)
@@ -35,7 +36,6 @@ export function useAutoSave(config: PersistConfig = {}) {
 
     return () => {
       clearInterval(saveTimer.current)
-      restored.current = false
     }
   }, [])
 

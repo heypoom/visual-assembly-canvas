@@ -1,5 +1,5 @@
 use machine::canvas::block::BlockData;
-use machine::canvas::wire::Port;
+use machine::canvas::wire::{Port, Wire};
 use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};
 use machine::{Event, MEMORY_SIZE, REG_COUNT};
@@ -217,6 +217,7 @@ impl Controller {
         Ok(to_value(&self.canvas)?)
     }
 
+    /// Serialize the canvas state, excluding the buffers.
     pub fn partial_serialize_canvas_state(&self) -> Return {
         let mut canvas = self.canvas.clone();
 
@@ -258,6 +259,20 @@ impl Controller {
         };
 
         returns(self.canvas.tick_block(id))
+    }
+
+    pub fn get_id_counters(&self) -> Vec<u16> {
+        vec![self.canvas.block_id_counter, self.canvas.wire_id_counter]
+    }
+
+    /// Used to restore the counter states.
+    pub fn set_id_counters(&mut self, block: u16, wire: u16) {
+        self.canvas.block_id_counter = block;
+        self.canvas.wire_id_counter = wire;
+    }
+
+    pub fn add_wire_with_id(&mut self, id: u16, source: Port, target: Port) {
+        self.canvas.wires.push(Wire { id, source, target });
     }
 }
 
