@@ -286,6 +286,7 @@ export class CanvasEngine {
 
   public performSideEffects() {
     const effects = this.consumeSideEffects()
+
     effects.forEach(processEffects)
   }
 
