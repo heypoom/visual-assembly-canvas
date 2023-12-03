@@ -1,7 +1,7 @@
 import { getCenterWithOffset } from "./center"
 
 import { addNode } from "../../store/actions/nodes"
-import { BlockNode, BlockTypeMap, BlockTypes } from "../../types/Node"
+import { BlockNode, BlockTypeMap, BlockTypes } from "@/types/Node"
 
 interface Options {
   position?: { x: number; y: number }

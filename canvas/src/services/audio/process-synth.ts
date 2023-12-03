@@ -1,4 +1,4 @@
-import { SynthEffect } from "../../types/effects"
+import { SynthEffect } from "@/types/effects"
 import { audioManager } from "./manager"
 
 export function processSynthEffect(id: number, effect: SynthEffect) {

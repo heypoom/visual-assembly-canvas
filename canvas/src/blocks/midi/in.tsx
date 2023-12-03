@@ -3,12 +3,12 @@ import cx from "classnames"
 import { NodeProps } from "reactflow"
 import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
 
-import { MidiInProps } from "../../types/blocks"
+import { MidiInProps } from "@/types/blocks"
 import { RightClickMenu } from "../components/RightClickMenu"
 
 import { useStore } from "@nanostores/react"
 import { $midi } from "../../store/midi"
-import { engine } from "../../engine"
+import { engine } from "@/engine"
 
 import {
   MidiEvent,
@@ -21,7 +21,7 @@ import { $status } from "../../store/status"
 import { updateNodeData } from "../../store/blocks"
 import { MidiTransportForm } from "./transport"
 
-import { MidiInputEvent } from "../../types/enums"
+import { MidiInputEvent } from "@/types/enums"
 import { BlockHandle } from "../components/BlockHandle"
 import { RadixSelect } from "../../ui/select"
 

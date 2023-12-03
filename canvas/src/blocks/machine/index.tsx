@@ -4,7 +4,7 @@ import cn from "classnames"
 import { MachineValueViewer } from "./components/MachineValueViewer"
 
 import { MachineEditor } from "../../editor/Editor"
-import { MachineProps } from "../../types/blocks"
+import { MachineProps } from "@/types/blocks"
 import { useStore } from "@nanostores/react"
 import { $output } from "../../store/results"
 import { BlockHandle } from "../components/BlockHandle"

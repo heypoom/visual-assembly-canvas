@@ -1,21 +1,15 @@
-import { addBlock } from "../utils/addBlock"
-import {
-  SaveStateContext,
-  useSaveState,
-} from "../../persist/hooks/useSaveState"
-import {
-  LocalStorageDriver,
-  STORAGE_KEY,
-} from "../../persist/drivers/localStorage"
+import { addBlock } from "@/canvas"
+import { SaveStateContext, useSaveState } from "@/persist/hooks/useSaveState"
+import { LocalStorageDriver } from "@/persist/drivers/localStorage"
 import { useMemo } from "react"
-import { BlockTypes } from "../../types/Node"
-import { defaultProps } from "../../blocks"
-import { scheduler } from "../../services/scheduler"
-import { $status } from "../../store/status"
-import { engine } from "../../engine"
-import { profiler } from "../../services/scheduler/profiler"
-import { $clock } from "../../store/clock"
-import { download } from "../../utils/download"
+import { BlockTypes } from "@/types/Node"
+import { defaultProps } from "@/blocks"
+import { scheduler } from "@/services/scheduler"
+import { $status } from "@/store/status"
+import { engine } from "@/engine"
+import { profiler } from "@/services/scheduler/profiler"
+import { $clock } from "@/store/clock"
+import { download } from "@/utils/download"
 
 interface Options {
   position?: { x: number; y: number }

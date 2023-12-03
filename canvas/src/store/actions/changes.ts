@@ -9,10 +9,11 @@ import {
   addEdge,
 } from "reactflow"
 
-import { engine } from "../../engine"
+import { engine } from "@/engine"
+
 import { $nodes, $edges } from "../nodes"
 
-import { BlockNode } from "../../types/Node"
+import { BlockNode } from "@/types/Node"
 
 export const port = (id: string, p: string): Port =>
   new Port(Number(id), Number(p))

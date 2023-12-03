@@ -6,11 +6,11 @@ import { EyeClosedIcon, MixerHorizontalIcon } from "@radix-ui/react-icons"
 
 import { PaletteKey, getPixelColor, palettes } from "./palette"
 
-import type { PixelProps } from "../../types/blocks"
+import type { PixelProps } from "@/types/blocks"
 
-import { engine } from "../../engine"
+import { engine } from "@/engine"
 import { updateNodeData } from "../../store/blocks"
-import { PixelMode } from "../../types/enums"
+import { PixelMode } from "@/types/enums"
 import { BlockHandle } from "../components/BlockHandle"
 import { RadixSelect } from "../../ui/select"
 

@@ -2,8 +2,8 @@ import { chunk } from "lodash"
 
 import { launchpad, midiManager } from "./index"
 
-import { $lastMidiEvent } from "../../store/midi"
-import { MidiEffect } from "../../types/effects"
+import { $lastMidiEvent } from "@/store/midi"
+import { MidiEffect } from "@/types/effects"
 
 export async function processMidiEvent(id: number, effect: MidiEffect) {
   try {

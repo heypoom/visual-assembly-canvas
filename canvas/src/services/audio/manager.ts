@@ -8,7 +8,7 @@ import {
   Synth,
 } from "tone"
 
-import { AttackReleaseConfig, SynthConfig, SynthType } from "../../types/synth"
+import { AttackReleaseConfig, SynthConfig, SynthType } from "@/types/synth"
 import type { Instrument } from "tone/build/esm/instrument/Instrument"
 
 const synthMap: Record<SynthType, () => Instrument<any>> = {
@@ -16,7 +16,6 @@ const synthMap: Record<SynthType, () => Instrument<any>> = {
   FM: () => new PolySynth(FMSynth).toDestination(),
   AM: () => new PolySynth(AMSynth).toDestination(),
   Noise: () => new NoiseSynth().toDestination(),
-  Poly: () => new PolySynth(),
 }
 
 export class AudioManager {

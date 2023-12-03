@@ -8,9 +8,9 @@ import {
   WebMidi,
 } from "webmidi"
 
-import { MidiInputEvent } from "../../types/enums"
-import { FirstArg, UnionToIntersection } from "../../types/helper"
-import { $midi } from "../../store/midi"
+import { MidiInputEvent } from "@/types/enums"
+import { FirstArg, UnionToIntersection } from "@/types/helper"
+import { $midi } from "@/store/midi"
 import { debounce } from "lodash"
 import { launchpad, launchpadNames } from "./launchpad"
 

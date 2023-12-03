@@ -1,10 +1,10 @@
 import { map, action } from "nanostores"
 
-import { CanvasError, MachineState, MachineStates } from "../types/MachineState"
+import { CanvasError, MachineState, MachineStates } from "@/types/MachineState"
 
 import { $nodes } from "./nodes"
-import { CanvasEngine } from "../engine"
-import { MachineEvent, InspectionState } from "../types/MachineEvent"
+import { CanvasEngine } from "@/engine"
+import { MachineEvent, InspectionState } from "@/types/MachineEvent"
 
 export const $output = map<MachineStates>({})
 

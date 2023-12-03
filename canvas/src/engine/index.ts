@@ -2,14 +2,14 @@ import setup, { Controller } from "machine-wasm"
 
 import { processEffects } from "./effects"
 
-import { $nodes } from "../store/nodes"
+import { $nodes } from "@/store/nodes"
 
 import {
   setError,
   syncMachineState,
   clearPreviousRun,
   $output,
-} from "../store/results"
+} from "@/store/results"
 
 import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
 
@@ -18,18 +18,18 @@ import {
   CanvasError,
   canvasErrors,
   MachineError,
-} from "../types/MachineState"
+} from "@/types/MachineState"
 
-import { InspectionState } from "../types/MachineEvent"
-import { $status } from "../store/status"
+import { InspectionState } from "@/types/MachineEvent"
+import { $status } from "@/store/status"
 
-import { $clock } from "../store/clock"
+import { $clock } from "@/store/clock"
 import { isBlock as is } from "../blocks"
-import { syncBlockData } from "../store/blocks"
-import { midiManager } from "../services/midi"
+import { syncBlockData } from "@/store/blocks"
+import { midiManager } from "@/services/midi"
 
-import { Effect } from "../types/effects"
-import { Action } from "../types/actions"
+import { Effect } from "@/types/effects"
+import { Action } from "@/types/actions"
 
 const machineError = (cause: MachineError): CanvasError => ({
   MachineError: { cause },

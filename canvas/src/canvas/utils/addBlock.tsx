@@ -1,5 +1,5 @@
-import { engine } from "../../engine"
-import { BlockTypeMap, BlockTypes } from "../../types/Node"
+import { engine } from "@/engine"
+import { BlockTypeMap, BlockTypes } from "@/types/Node"
 import { defaultProps } from "../../blocks"
 import { addCanvasNode } from "./addCanvasNode"
 import { setupBlock } from "../../persist/utils/setupBlock"

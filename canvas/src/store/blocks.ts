@@ -2,8 +2,9 @@ import { action } from "nanostores"
 import { produce, Draft } from "immer"
 
 import { $nodes } from "./nodes"
-import { BlockNode, BlockTypeMap, BlockValues } from "../types/Node"
-import { isBlock } from "../blocks"
+import { BlockNode, BlockTypeMap, BlockValues } from "@/types/Node"
+
+import { isBlock } from "@/blocks"
 
 type Updater = (node: Draft<BlockNode>) => void
 

@@ -1,4 +1,4 @@
-import { BlockNode, BlockTypes, TNode } from "../../types/Node"
+import { BlockNode, BlockTypes, TNode } from "@/types/Node"
 
 export const isBlockType =
   <T extends BlockTypes>(key: T) =>
