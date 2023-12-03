@@ -145,3 +145,5 @@ export class Scheduler {
 }
 
 export const scheduler = new Scheduler()
+
+export { profiler } from "./profiler"

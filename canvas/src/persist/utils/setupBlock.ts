@@ -1,6 +1,6 @@
 import { isBlock } from "@/blocks"
 import { engine } from "@/engine"
-import { audioManager } from "@/services/audio/manager"
+import { audioManager } from "@/services/audio"
 import { midiManager } from "@/services/midi"
 import { BlockNode } from "@/types/Node"
 

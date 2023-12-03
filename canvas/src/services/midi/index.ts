@@ -1,5 +1,3 @@
-// MIDI manager
-export * from "./manager"
-
-// Novation Launchpad X helper
+export * from "./event"
 export * from "./launchpad"
+export * from "./manager"
