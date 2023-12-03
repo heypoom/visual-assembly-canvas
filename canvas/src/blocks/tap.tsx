@@ -1,31 +1,25 @@
 import { useStore } from "@nanostores/react"
 import { Flex, TextField } from "@radix-ui/themes"
 import { Port } from "machine-wasm"
-import { useReducer, useState } from "react"
+import { memo, useState } from "react"
 import { NodeProps } from "reactflow"
 
+import { BaseBlock } from "@/blocks/components"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import { $status } from "@/store/status"
 import { TapProps } from "@/types/blocks"
 
-import { BlockHandle } from "./components/BlockHandle"
-import { RightClickMenu } from "./components/RightClickMenu"
-
-const PORT = 0
-
-export const TapBlock = (props: NodeProps<TapProps>) => {
+export const TapBlock = memo((props: NodeProps<TapProps>) => {
   const { id, signal } = props.data
 
-  const [signalText, setSignalText] = useState(signal?.join(" ") ?? "")
-  const [showSettings, toggle] = useReducer((n) => !n, false)
-
   const status = useStore($status)
+  const [signalText, setSignalText] = useState(signal?.join(" ") ?? "")
 
   function tap() {
     try {
       engine.ctx?.send_message({
-        sender: new Port(id, PORT),
+        sender: new Port(id, 0),
         action: { Data: { body: signal } },
       })
     } catch (err) {
@@ -35,7 +29,7 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
     if (!status.running) engine.stepSlow(1)
   }
 
-  function setSignal() {
+  function updateSignal() {
     const signal = signalText.split(" ").map((s) => parseInt(s))
 
     if (signal.length === 0) return
@@ -44,36 +38,33 @@ export const TapBlock = (props: NodeProps<TapProps>) => {
     updateNodeData(id, { signal })
   }
 
-  return (
-    <div className="group">
-      <div>
-        <RightClickMenu id={id} show={showSettings} toggle={toggle}>
-          <div className="rounded-1 px-5 py-2 bg-gray-5 border-2 border-gray-8 hover:border-cyan-9 flex flex-col items-center justify-center gap-y-3">
-            <button
-              className="w-5 h-5 rounded-[100%] bg-crimson-9 hover:bg-cyan-11 border-2 border-gray-12 active:bg-cyan-9 focus:bg-cyan-11 outline-gray-12 focus:outline-cyan-12"
-              onClick={tap}
-            />
+  const Settings = () => (
+    <div className="font-mono absolute w-[160px] z-1 bg-gray-2 top-[46px] px-3 py-2 rounded-2 border-2 border-gray-8">
+      <Flex className="gap-x-2" justify="center" align="center">
+        <div className="text-[10px]">signal</div>
 
-            {showSettings && (
-              <div className="font-mono text-1">
-                <Flex className="gap-x-2" justify="center" align="center">
-                  <div className="text-[10px]">signal</div>
-
-                  <TextField.Input
-                    size="1"
-                    className="max-w-[100px]"
-                    value={signalText}
-                    onChange={(e) => setSignalText(e.target.value)}
-                    onBlur={setSignal}
-                  />
-                </Flex>
-              </div>
-            )}
-          </div>
-        </RightClickMenu>
-      </div>
-
-      <BlockHandle port={PORT} side="right" type="source" />
+        <TextField.Input
+          size="1"
+          className="w-[200px] nodrag"
+          value={signalText}
+          onChange={(e) => setSignalText(e.target.value)}
+          onBlur={updateSignal}
+        />
+      </Flex>
     </div>
   )
-}
+
+  return (
+    <BaseBlock
+      node={props}
+      sources={1}
+      className="rounded-1 px-5 py-2 bg-gray-5 border-2 border-gray-8 items-center justify-center gap-y-3"
+      settings={Settings}
+    >
+      <button
+        className="w-5 h-5 rounded-[100%] bg-crimson-9 hover:bg-cyan-11 border-2 border-gray-12 active:bg-cyan-9 focus:bg-cyan-11 outline-gray-12 focus:outline-cyan-12"
+        onClick={tap}
+      />
+    </BaseBlock>
+  )
+})

@@ -52,7 +52,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
           )}
         >
           {children}
-          {showSettings && Settings && <Settings />}
+          {showSettings && Settings && Settings()}
         </div>
       </RightClickMenu>
 
