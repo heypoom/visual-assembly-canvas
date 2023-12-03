@@ -75,7 +75,7 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
 
   const Settings = () => (
     <div className="flex flex-col font-mono bg-gray-1">
-      <div className="flex flex-col max-w-[160px] gap-y-3 px-3 py-3">
+      <div className="flex flex-col max-w-[200px] gap-y-3 px-3 py-3">
         <div className="flex items-center gap-4">
           <p className="text-1">Columns</p>
 
