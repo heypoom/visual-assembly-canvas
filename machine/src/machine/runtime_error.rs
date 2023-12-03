@@ -45,4 +45,7 @@ pub enum RuntimeError {
 
     #[snafu(display("not enough values in stack"))]
     NotEnoughValues { min: u16, len: u16 },
+
+    #[snafu(display("index out of bounds. index {index} is over {len}"))]
+    IndexOutOfBounds { index: u16, len: u16 },
 }

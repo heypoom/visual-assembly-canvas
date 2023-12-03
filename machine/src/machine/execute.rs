@@ -7,7 +7,7 @@ use crate::op::Op;
 use crate::mem::WithStringManager;
 use crate::machine::{Action, Actor};
 use crate::machine::virtual_mem::VirtualMemory;
-use crate::runtime_error::{NotEnoughValuesSnafu};
+use crate::runtime_error::{IndexOutOfBoundsSnafu, NotEnoughValuesSnafu};
 use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow, MissingMessageBody, MissingReturnAddress, MissingValueToStore};
 
 type Errorable = Result<(), RuntimeError>;
@@ -178,11 +178,11 @@ impl Execute for Machine {
                 s.push(a)?;
             }
 
-            Op::Pick(n) => {
+            Op::Pick(i) => {
                 let len = s.len();
-                ensure!(len > n, NotEnoughValuesSnafu { len, min: n + 1 });
+                ensure!(len > i, IndexOutOfBoundsSnafu {len, index: i});
 
-                s.push(s.get(n).clone())?;
+                s.push(s.get(i).clone())?;
             }
 
             Op::Print => {
