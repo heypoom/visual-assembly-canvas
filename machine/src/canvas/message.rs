@@ -58,4 +58,7 @@ pub enum Action {
 
     /// Should the block reset via the reset command?
     SetAutoReset { auto_reset: bool },
+
+    /// Set the clock's frequency
+    SetClockFreq { freq: u16 },
 }

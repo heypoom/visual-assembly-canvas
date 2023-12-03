@@ -44,7 +44,7 @@ pub enum BlockData {
         time: u16,
 
         /// We send a clock signal every nth ticks.
-        rate: u16,
+        freq: u16,
     },
 
     /// Oscillator. Produces the value of a waveform, given a clock.

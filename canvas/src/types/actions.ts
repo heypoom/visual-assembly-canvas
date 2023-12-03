@@ -25,3 +25,4 @@ export type Action =
   | { SetWaveform: { waveform: Waveform } }
   | { SetPixelMode: { mode: PixelMode } }
   | { SetAutoReset: { auto_reset: boolean } }
+  | { SetClockFreq: { freq: number } }
