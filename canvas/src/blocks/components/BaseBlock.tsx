@@ -8,8 +8,8 @@ import { RightClickMenu } from "@/blocks/components/RightClickMenu"
 interface BaseBlockProps {
   node: NodeProps
   className?: string
-  sources: number
-  targets: number
+  sources?: number
+  targets?: number
   children?: ReactNode
   settings?: () => ReactNode
   onReset?: () => void
@@ -19,8 +19,8 @@ export const BaseBlock = (props: BaseBlockProps) => {
   const {
     node,
     className,
-    sources,
-    targets,
+    sources = 0,
+    targets = 0,
     settings: Settings,
     children,
   } = props

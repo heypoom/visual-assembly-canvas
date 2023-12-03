@@ -1,11 +1,9 @@
 import { useStore } from "@nanostores/react"
-import cx from "classnames"
 import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
-import { useCallback, useEffect, useReducer, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { NodeProps } from "reactflow"
 
-import { BlockHandle, RightClickMenu } from "@/blocks/components"
-import { BaseBlock } from "@/blocks/components/BaseBlock"
+import { BaseBlock } from "@/blocks"
 import { engine } from "@/engine"
 import {
   isControlChangeEvent,
@@ -119,7 +117,6 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
     <BaseBlock
       node={props}
       sources={1}
-      targets={0}
       onReset={reset}
       settings={MidiSettings}
       className="px-4 py-2 font-mono"

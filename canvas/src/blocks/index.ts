@@ -23,6 +23,7 @@ export const nodeTypes: BlockComponentMap = {
   Memory: MemoryBlock,
 }
 
+export * from "./components/BaseBlock"
 export * from "./pixel/palette"
 export * from "./utils/defaults"
 export * from "./utils/is"
