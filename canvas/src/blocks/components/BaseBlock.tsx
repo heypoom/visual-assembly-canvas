@@ -34,7 +34,13 @@ export const BaseBlock = (props: BaseBlockProps) => {
   return (
     <div className="group">
       {[...Array(targets)].map((_, i) => (
-        <BlockHandle key={i} port={sources + i} side="left" type="target" />
+        <BlockHandle
+          key={i}
+          port={sources + i}
+          side="left"
+          type="target"
+          style={{ marginTop: `${getTop(i, targets)}px` }}
+        />
       ))}
 
       <RightClickMenu
