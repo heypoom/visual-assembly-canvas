@@ -177,7 +177,7 @@ impl Controller {
     pub fn read_stack(&mut self, id: u16, size: u16) -> Return {
         let Some(m) = self.canvas.seq.get_mut(id) else {
             return Ok(NULL);
-        }
+        };
 
         Ok(to_value(&m.mem.read_stack(size))?)
     }
