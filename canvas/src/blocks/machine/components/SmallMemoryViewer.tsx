@@ -13,6 +13,7 @@ export const SmallMemoryViewer = (props: Props) => {
   const lastStackValue = useMemo(() => {
     return findLastNonZeroIndex(stack ?? [])
   }, [stack])
+
   const isMemoryEnabled = lastStackValue > -1
 
   if (!stack?.length || !isMemoryEnabled) return null
