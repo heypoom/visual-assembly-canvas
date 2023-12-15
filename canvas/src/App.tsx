@@ -1,3 +1,4 @@
+import { DndContext } from "@dnd-kit/core"
 import { ReactFlowProvider } from "reactflow"
 
 import { Canvas } from "./canvas/Canvas"
@@ -6,13 +7,15 @@ import { Toolbar } from "./toolbar/Toolbar"
 
 function App() {
   return (
-    <ReactFlowProvider>
-      <div className="relative bg-stone">
-        <Toolbar />
-        <Canvas />
-        <SlashCommand />
-      </div>
-    </ReactFlowProvider>
+    <DndContext>
+      <ReactFlowProvider>
+        <div className="relative bg-stone">
+          <Toolbar />
+          <Canvas />
+          <SlashCommand />
+        </div>
+      </ReactFlowProvider>
+    </DndContext>
   )
 }
 

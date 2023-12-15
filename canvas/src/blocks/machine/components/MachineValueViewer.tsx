@@ -17,7 +17,7 @@ export const MachineValueViewer = memo((props: Props) => {
   const { registers } = state
 
   const isMemoryEnabled = useMemo(() => {
-    return state.stack.some((x) => x !== 0)
+    return state.stack?.some((x) => x !== 0)
   }, [state.stack])
 
   return (
@@ -71,7 +71,7 @@ export const MachineValueViewer = memo((props: Props) => {
             </div>
           )}
 
-          <SmallMemoryViewer stack={state.stack} />
+          <SmallMemoryViewer memory={state.stack ?? []} />
         </div>
 
         <div className="flex justify-end">
