@@ -1,8 +1,9 @@
+import { Icon } from "@iconify/react"
 import cn from "classnames"
 import { memo, useMemo } from "react"
 
+import { SmallMemoryViewer } from "@/blocks/machine/components/SmallMemoryViewer"
 import { MachineState } from "@/types/MachineState"
-import { findLastNonZeroIndex } from "@/utils/findLastNonZero"
 
 import { ErrorIndicator } from "./ErrorIndicator"
 
@@ -15,12 +16,12 @@ export const MachineValueViewer = memo((props: Props) => {
   const { id, state } = props
   const { registers } = state
 
-  const lastStackValue = useMemo(() => {
-    return findLastNonZeroIndex(state.stack ?? [])
+  const isMemoryEnabled = useMemo(() => {
+    return state.stack.some((x) => x !== 0)
   }, [state.stack])
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-[6px]">
       {state.error && (
         <div className="text-1 text-orange-11 px-1 mx-1">
           <ErrorIndicator error={state.error} />
@@ -35,59 +36,52 @@ export const MachineValueViewer = memo((props: Props) => {
         </div>
       ) : null}
 
-      {registers && (
-        <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
-          <div>
-            <span>PC</span>{" "}
-            <strong>{registers.pc.toString().padStart(2, "0")}</strong>
-          </div>
-
-          <div>
-            <span>SP</span> <strong>{registers.sp}</strong>
-          </div>
-
-          <div>
-            <span>FP</span> <strong>{registers.fp}</strong>
-          </div>
-
-          <div>
-            <span>ID</span> <strong>{id}</strong>
-          </div>
-
-          {state.inboxSize > 0 && (
-            <div className={cn(state.inboxSize > 50 && "text-orange-11")}>
-              <span>IB</span> <strong>{state.inboxSize}</strong>
-            </div>
-          )}
-
-          {state.outboxSize > 0 && (
-            <div>
-              <span>OB</span> <strong>{state.outboxSize}</strong>
-            </div>
-          )}
-        </div>
-      )}
-
-      {state.stack && (
-        <div className="px-1 flex flex-wrap max-w-[300px]">
-          {state.stack.map((u, i) => {
-            const unset = i > lastStackValue
-            if (unset) return null
-
-            return (
-              <div
-                className={cn(
-                  "text-1 text-crimson-11 bg-stone-800 mx-1",
-                  u === 0 && "text-gray-8",
-                )}
-                key={i}
-              >
-                {u.toString().padStart(2, "0")}
+      <div className="flex justify-between items-end">
+        <div className="flex flex-col gap-y-1">
+          {registers && (
+            <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
+              <div>
+                <span>PC</span>{" "}
+                <strong>{registers.pc.toString().padStart(2, "0")}</strong>
               </div>
-            )
-          })}
+
+              <div>
+                <span>SP</span> <strong>{registers.sp}</strong>
+              </div>
+
+              <div>
+                <span>FP</span> <strong>{registers.fp}</strong>
+              </div>
+
+              <div>
+                <span>ID</span> <strong>{id}</strong>
+              </div>
+
+              {state.inboxSize > 0 && (
+                <div className={cn(state.inboxSize > 50 && "text-orange-11")}>
+                  <span>IB</span> <strong>{state.inboxSize}</strong>
+                </div>
+              )}
+
+              {state.outboxSize > 0 && (
+                <div>
+                  <span>OB</span> <strong>{state.outboxSize}</strong>
+                </div>
+              )}
+            </div>
+          )}
+
+          <SmallMemoryViewer stack={state.stack} />
         </div>
-      )}
+
+        <div className="flex justify-end">
+          {isMemoryEnabled && (
+            <div className="text-2 nodrag cursor-pointer text-gray-10 hover:text-purple-11">
+              <Icon icon="material-symbols:memory-alt-outline" />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 })
