@@ -6,6 +6,7 @@ use crate::{ParseError, RuntimeError};
 #[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone, Tsify)]
 #[snafu(visibility(pub))]
 #[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum SequencerError {
     #[snafu(display("cannot parse the code"))]
     CannotParse { id: u16, error: ParseError },

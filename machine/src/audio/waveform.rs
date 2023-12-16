@@ -5,6 +5,7 @@ use tsify::Tsify;
 /// Types of waveforms the oscillator can produce.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Hash, Tsify)]
 #[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Waveform {
     Sine,
     Cosine,

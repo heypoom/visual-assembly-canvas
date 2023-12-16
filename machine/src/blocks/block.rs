@@ -21,6 +21,7 @@ pub struct Block {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs, Tsify)]
 #[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum BlockData {
     Machine {
         machine_id: u16,

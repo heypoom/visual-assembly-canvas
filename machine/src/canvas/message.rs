@@ -21,6 +21,7 @@ pub struct Message {
 /// Messages that can be sent between nodes and machines.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
 #[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Action {
     /// Send information to the specified node.
     Data { body: Vec<u16> },

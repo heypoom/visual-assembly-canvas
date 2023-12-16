@@ -10,6 +10,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::blocks::pixel::PixelMode::{Append, Command, Replace};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize, Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum PixelMode {
     /// Replaces the content of the block with the given byte.
     Replace,

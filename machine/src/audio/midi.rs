@@ -11,6 +11,7 @@ pub enum MidiInputEvent {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum MidiOutputFormat {
     /// Sends raw MIDI bytes. Can include SysEx messages.
     Raw,

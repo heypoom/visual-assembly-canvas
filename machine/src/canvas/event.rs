@@ -8,6 +8,7 @@ use crate::audio::synth::SynthTrigger;
 /// This event can be considered a side effect that will be executed by the host.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Tsify)]
 #[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Event {
     /// Print texts to screen.
     Print {

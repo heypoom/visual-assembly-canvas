@@ -4,6 +4,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 /// The machine status models the possible states of a machine.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Copy, Clone, Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum MachineStatus {
     /// Current program does not parse.
     Invalid,
