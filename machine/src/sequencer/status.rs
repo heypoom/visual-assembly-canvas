@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 /// The machine status models the possible states of a machine.
-#[wasm_bindgen]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Copy, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Copy, Clone, Tsify)]
 pub enum MachineStatus {
     /// Current program does not parse.
     Invalid,

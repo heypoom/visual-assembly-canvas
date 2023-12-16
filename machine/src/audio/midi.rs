@@ -1,16 +1,15 @@
 use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-#[wasm_bindgen]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Tsify)]
 pub enum MidiInputEvent {
     NoteOn,
     NoteOff,
     ControlChange,
 }
 
-#[wasm_bindgen]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Tsify)]
 pub enum MidiOutputFormat {
     /// Sends raw MIDI bytes. Can include SysEx messages.
     Raw,
