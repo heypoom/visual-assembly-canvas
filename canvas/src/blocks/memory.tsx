@@ -19,7 +19,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
   const count = Math.max(columns * 6, values.length)
   const overGridLimit = count > gridLimit
 
-  const [isHex, setHex] = useState(false)
+  const [isHex, setHex] = useState(true)
 
   const [isBatch, setBatch] = useState(overGridLimit)
   const [batchInput, setBatchInput] = useState("")
