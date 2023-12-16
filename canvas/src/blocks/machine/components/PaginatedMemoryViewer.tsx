@@ -50,7 +50,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
         memory={memory}
         begin={memStart}
         onHover={highlightAddr}
-        center
+        full
       />
 
       <div className="flex text-1 justify-between px-2 items-center">
