@@ -8,7 +8,11 @@ import {
   $memoryPageConfig,
   $memoryPages,
   DEFAULT_PAGE_SIZE,
+  gotoDefaultPage,
+  nextMemPage,
   pageToOffset,
+  prevMemPage,
+  setMemPage,
 } from "@/store/memory"
 import { MachineState } from "@/types/MachineState"
 
@@ -88,18 +92,38 @@ export const MachineValueViewer = memo((props: Props) => {
       </div>
 
       <div className="flex text-1 justify-between px-2 items-center">
-        <div>
+        <button
+          onClick={() => prevMemPage(id)}
+          className="nodrag hover:text-green-11 cursor-pointer"
+        >
           <Icon icon="material-symbols:arrow-circle-left-outline-rounded" />
-        </div>
+        </button>
 
         <div>
-          0x{memStart.toString(16).toUpperCase()} - 0x
-          {memEnd.toString(16).toUpperCase()}
+          <span
+            onClick={() => setMemPage(id, 0)}
+            className="hover:text-gray-11 nodrag cursor-pointer"
+          >
+            0x{memStart.toString(16).padStart(4, "0").toUpperCase()}
+          </span>
+
+          <span> - </span>
+
+          <span
+            onClick={() => gotoDefaultPage(id)}
+            className="hover:text-gray-11 nodrag cursor-pointer"
+          >
+            0x
+            {memEnd.toString(16).padStart(4, "0").toUpperCase()}
+          </span>
         </div>
 
-        <div>
+        <button
+          onClick={() => nextMemPage(id)}
+          className="nodrag hover:text-green-11 cursor-pointer"
+        >
           <Icon icon="material-symbols:arrow-circle-right-outline-rounded" />
-        </div>
+        </button>
       </div>
     </div>
   )

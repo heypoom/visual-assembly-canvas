@@ -18,13 +18,7 @@ export const SmallMemoryViewer = memo((props: Props) => {
   const [end, setEnd] = useState<number | null>(null)
   const [selecting, setSelecting] = useState(false)
 
-  const lastStackValueIndex = useMemo(() => {
-    return findLastNonZeroIndex(memory ?? [])
-  }, [memory])
-
-  const isMemoryEnabled = lastStackValueIndex > -1
-
-  if (!memory?.length || !isMemoryEnabled) return null
+  if (!memory?.length) return null
 
   const startDrag = (i: number) => {
     aborted.current = false
@@ -49,7 +43,7 @@ export const SmallMemoryViewer = memo((props: Props) => {
         // const unset = i > lastStackValueIndex
         // if (unset) return null
 
-        const value = u.toString().padStart(2, "0")
+        const value = u.toString(16).padStart(2, "0").toUpperCase()
 
         const selected =
           start !== null && end !== null && i >= start && i <= end
