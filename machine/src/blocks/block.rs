@@ -19,6 +19,7 @@ pub struct Block {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs)]
+#[serde(tag = "type")]
 pub enum BlockData {
     Machine {
         machine_id: u16,

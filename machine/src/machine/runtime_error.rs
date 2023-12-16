@@ -3,6 +3,7 @@ use snafu::prelude::*;
 
 #[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
+#[serde(tag = "type")]
 pub enum RuntimeError {
     #[snafu(display("stack underflow. pointer {top} is below {min}"))]
     StackUnderflow {

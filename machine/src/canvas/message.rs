@@ -19,6 +19,7 @@ pub struct Message {
 
 /// Messages that can be sent between nodes and machines.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum Action {
     /// Send information to the specified node.
     Data { body: Vec<u16> },

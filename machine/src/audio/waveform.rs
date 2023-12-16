@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 /// Types of waveforms the oscillator can produce.
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Hash)]
+#[serde(tag = "type")]
 pub enum Waveform {
     Sine,
     Cosine,

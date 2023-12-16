@@ -9,6 +9,7 @@ pub enum SynthConfig {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum SynthTrigger {
     Attack {
         /// Frequency of the note.

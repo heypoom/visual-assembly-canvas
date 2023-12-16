@@ -5,6 +5,7 @@ use crate::{Message, SequencerError};
 
 #[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
+#[serde(tag = "type")]
 pub enum CanvasError {
     #[snafu(display("Cannot connect port {:?} to itself", port))]
     CannotWireToItself { port: Port },

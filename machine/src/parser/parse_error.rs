@@ -3,6 +3,7 @@ use snafu::prelude::*;
 
 #[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
+#[serde(tag = "type")]
 pub enum ParseError {
     #[snafu(display("string is invalid"))]
     InvalidString,
