@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react"
 import { useStore } from "@nanostores/react"
+import cn from "classnames"
 import { useState } from "react"
 
 import { MemoryViewer } from "@/blocks/machine/components/MemoryViewer"
@@ -50,7 +51,10 @@ export const PaginatedMemoryViewer = (props: Props) => {
       <div className="flex text-1 justify-between px-2 items-center">
         <button
           onClick={() => prevMemPage(id)}
-          className="nodrag hover:text-green-11 cursor-pointer"
+          className={cn(
+            "nodrag hover:text-green-11 cursor-pointer",
+            memStart === 0 && "invisible",
+          )}
         >
           <Icon icon="material-symbols:arrow-circle-left-outline-rounded" />
         </button>
