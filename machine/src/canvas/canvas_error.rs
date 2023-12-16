@@ -4,7 +4,7 @@ use tsify::Tsify;
 use crate::canvas::wire::Port;
 use crate::{Message, SequencerError};
 
-#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone, Tsify)]
+#[derive(Tsify, Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
 #[serde(tag = "type")]
 pub enum CanvasError {
