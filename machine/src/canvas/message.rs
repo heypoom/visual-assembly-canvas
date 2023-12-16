@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
 use crate::audio::waveform::Waveform;
 use crate::blocks::pixel::PixelMode;
@@ -18,7 +19,7 @@ pub struct Message {
 }
 
 /// Messages that can be sent between nodes and machines.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
 #[serde(tag = "type")]
 pub enum Action {
     /// Send information to the specified node.

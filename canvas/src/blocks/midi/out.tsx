@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react"
-import { MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
+import { Event, MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
 import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks"

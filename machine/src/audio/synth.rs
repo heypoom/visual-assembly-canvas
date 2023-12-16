@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum SynthConfig {
@@ -8,7 +9,7 @@ pub enum SynthConfig {
     Noise,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Tsify)]
 #[serde(tag = "type")]
 pub enum SynthTrigger {
     Attack {

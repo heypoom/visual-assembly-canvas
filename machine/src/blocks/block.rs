@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::{Event, Message};
 use crate::audio::waveform::Waveform;
 use strum_macros::{EnumIs};
+use tsify::Tsify;
 use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
 use crate::audio::synth::SynthConfig;
 use crate::blocks::pixel::PixelMode;
@@ -18,7 +19,7 @@ pub struct Block {
     pub events: Vec<Event>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs, Tsify)]
 #[serde(tag = "type")]
 pub enum BlockData {
     Machine {
