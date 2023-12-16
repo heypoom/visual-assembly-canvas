@@ -52,7 +52,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
         <button
           onClick={() => prevMemPage(id)}
           className={cn(
-            "nodrag hover:text-green-11 cursor-pointer",
+            "nodrag text-gray-11 hover:text-crimson-11 cursor-pointer",
             memStart === 0 && "invisible",
           )}
         >
@@ -60,10 +60,10 @@ export const PaginatedMemoryViewer = (props: Props) => {
         </button>
 
         {highlightedAddr === null ? (
-          <div>
+          <div className="text-[10px] text-gray-11">
             <span
               onClick={() => setMemPage(id, 0)}
-              className="hover:text-gray-11 nodrag cursor-pointer"
+              className="hover:text-gray-12 nodrag cursor-pointer"
             >
               {show(memStart)}
             </span>
@@ -72,18 +72,20 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
             <span
               onClick={() => gotoDefaultPage(id)}
-              className="hover:text-gray-11 nodrag cursor-pointer"
+              className="hover:text-gray-12 nodrag cursor-pointer"
             >
               {show(memEnd)}
             </span>
           </div>
         ) : (
-          <div>{show(highlightedAddr)}</div>
+          <div className="text-[10px] text-crimson-12">
+            {show(highlightedAddr)}
+          </div>
         )}
 
         <button
           onClick={() => nextMemPage(id)}
-          className="nodrag hover:text-green-11 cursor-pointer"
+          className="nodrag text-gray-11 hover:text-crimson-11 cursor-pointer"
         >
           <Icon icon="material-symbols:arrow-circle-right-outline-rounded" />
         </button>
