@@ -45,7 +45,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
     `${hex ? "0x" : ""}${n.toString(base).padStart(pad, "0").toUpperCase()}`
 
   return (
-    <div className="flex flex-col gap-y-1">
+    <div className="flex flex-col gap-y-1 w-fit">
       <MemoryViewer memory={memory} begin={memStart} onHover={highlightAddr} />
 
       <div className="flex text-1 justify-between px-2 items-center">

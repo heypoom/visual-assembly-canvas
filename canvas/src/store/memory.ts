@@ -5,10 +5,11 @@ import { updateMemoryViewer } from "@/store/results"
 export const DEFAULT_PAGE_OFFSET = 0x4100
 export const DEFAULT_PAGE_SIZE = 64
 
-type MemoryPageConfig = { [id: number]: { page: number; size?: number } }
+export type MemoryPageConfig = { page: number; size?: number }
+export type MemoryPageConfigMap = { [id: number]: MemoryPageConfig }
 
 /// Stores the current page index, in addition to page size.
-export const $memoryPageConfig = map<MemoryPageConfig>({})
+export const $memoryPageConfig = map<MemoryPageConfigMap>({})
 
 // Stores the current memory page values.
 export const $memoryPages = map<Record<number, number[]>>({})
@@ -27,14 +28,17 @@ const getPage = (id: number) => {
   return page ?? DEFAULT_PAGE
 }
 
-export const setMemPage = (id: number, page: number) => {
+export const setMemConfig = (id: number, config: Partial<MemoryPageConfig>) => {
   $memoryPageConfig.setKey(id, {
     ...$memoryPageConfig.get()[id],
-    page,
+    ...config,
   })
 
   updateMemoryViewer(id)
 }
+
+export const setMemPage = (id: number, page: number) =>
+  setMemConfig(id, { page })
 
 export const nextMemPage = (id: number) =>
   setMemPage(id, Math.min(getPage(id) + 1, 1000))

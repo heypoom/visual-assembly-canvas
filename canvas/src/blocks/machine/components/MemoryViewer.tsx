@@ -86,7 +86,7 @@ export const MemoryViewer = memo((props: Props) => {
           const selected =
             start !== null && end !== null && i >= start && i <= end
 
-          const inner = (
+          return (
             <div
               key={i}
               onMouseDown={() => startDrag(i)}
@@ -116,8 +116,6 @@ export const MemoryViewer = memo((props: Props) => {
               {value}
             </div>
           )
-
-          return inner
         })}
       </div>
     </div>
