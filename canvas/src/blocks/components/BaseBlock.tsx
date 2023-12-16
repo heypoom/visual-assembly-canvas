@@ -58,7 +58,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
           style={props.style}
           className={cn(
             "flex flex-col relative gap-y-2",
-            "border-2 rounded-2 group-hover:border-lime-9",
+            "border-2 rounded-2 group-hover:border-gray-11",
             isSource && "border-crimson-9",
             isSink && "border-cyan-9",
             node.selected && "!border-yellow-11",
