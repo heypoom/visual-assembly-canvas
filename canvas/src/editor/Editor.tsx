@@ -3,13 +3,13 @@ import { memo, useMemo } from "react"
 
 import { engine } from "@/engine"
 import { setSource } from "@/store/blocks"
-import { MachineProps } from "@/types/blocks"
+import { BlockFieldOf } from "@/types/Node"
 
 import { getExtensions } from "./extensions"
 import { addLineHighlight } from "./highlight"
 import { cmTheme } from "./theme"
 
-type Props = MachineProps
+type Props = BlockFieldOf<"Machine">
 
 function onCreate(id: number, view: EditorView) {
   engine.highlighters.set(id, (lineNo) => {

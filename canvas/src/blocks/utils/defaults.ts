@@ -1,9 +1,9 @@
-import {BaseBlockPropsOf, BlockTypeMap, BlockTypes} from "@/types/Node"
+import { BaseBlockFieldOf, BlockTypes } from "@/types/Node"
 
 export const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
 
 export type DefaultPropsMap = {
-  [T in BlockTypes]: Partial<BaseBlockPropsOf<T>>
+  [T in BlockTypes]: Partial<BaseBlockFieldOf<T>>
 }
 
 export const defaultProps: DefaultPropsMap = {
@@ -12,8 +12,8 @@ export const defaultProps: DefaultPropsMap = {
   Clock: { time: 0, freq: 0, ping: false },
   Pixel: { pixels: [], mode: "Append" },
   Tap: { signal: [1] },
-  Osc: { waveform: {type: 'Sine'} },
-  Synth: { config: 'Basic' },
+  Osc: { waveform: { type: "Sine" } },
+  Synth: { config: "Basic" },
   MidiIn: { on: "NoteOn", port: 0, channels: [] },
   MidiOut: { format: "Note", channel: 1, port: 0 },
   Memory: { values: [], auto_reset: false },

@@ -1,7 +1,6 @@
 import { useStore } from "@nanostores/react"
-import { MidiInputEvent as _MidiInputEvent } from "machine-wasm"
+import { MidiInputEvent } from "machine-wasm"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks"
 import { engine } from "@/engine"
@@ -14,19 +13,18 @@ import {
 import { updateNodeData } from "@/store/blocks"
 import { $midi } from "@/store/midi"
 import { $status } from "@/store/status"
-import { MidiInProps } from "@/types/blocks"
-import { MidiInputEvent } from "@/types/enums"
+import { BlockPropsOf } from "@/types/Node"
 import { RadixSelect } from "@/ui"
 
 import { MidiTransportForm } from "./transport"
 
-const events = Object.keys(_MidiInputEvent).filter(
-  (key) => !isNaN(Number(_MidiInputEvent[key as MidiInputEvent])),
-) as MidiInputEvent[]
-
+const events: MidiInputEvent[] = ["NoteOn", "NoteOff", "ControlChange"]
 const eventOptions = events.map((value) => ({ value, label: value }))
 
-export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
+type MidiInProps = BlockPropsOf<"MidiIn">
+type MidiInData = MidiInProps["data"]
+
+export const MidiInBlock = (props: MidiInProps) => {
   const { id, on, port, channels } = props.data
 
   const midi = useStore($midi)
@@ -35,19 +33,22 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
 
   const [last, setLast] = useState<[number, number, number] | null>(null)
 
-  function update(input: Partial<MidiInProps>) {
+  function update(input: Partial<MidiInData>) {
     updateNodeData(id, input)
 
     if (typeof input.on === "string") {
-      engine.send(id, { SetMidiInputEvent: { event: input.on } })
+      engine.send(id, { type: "SetMidiInputEvent", event: input.on })
     }
 
     if (typeof input.port === "number") {
-      engine.send(id, { SetMidiPort: { port: input.port } })
+      engine.send(id, { type: "SetMidiPort", port: input.port })
     }
 
     if ("channels" in input) {
-      engine.send(id, { SetMidiChannels: { channels: input.channels ?? [] } })
+      engine.send(id, {
+        type: "SetMidiChannels",
+        channels: input.channels ?? [],
+      })
     }
   }
 
@@ -68,7 +69,7 @@ export const MidiInBlock = (props: NodeProps<MidiInProps>) => {
       }
 
       setLast([note, value, channel])
-      engine.send(id, { Midi: { event: on, value, note, channel, port } })
+      engine.send(id, { type: "Midi", event: on, value, note, channel, port })
 
       if (!status.running) engine.stepSlow()
     },

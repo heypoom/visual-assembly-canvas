@@ -7,24 +7,27 @@ import { PaletteKey } from "@/blocks"
 export type BlockTypes = Block["type"]
 
 export type Block =
-  | Exclude<BlockData, { type: "Machine" | "Pixel" }>
+  | Exclude<BlockData, { type: "Machine" | "Pixel" | "Tap" }>
   | (Extract<BlockData, { type: "Machine" }> & { source: string })
+  | (Extract<BlockData, { type: "Tap" }> & { signal: number[] })
   | (Extract<BlockData, { type: "Pixel" }> & {
       columns?: number
       palette?: PaletteKey
     })
 
-export type BaseBlockPropsOf<K extends BlockTypes> = Omit<
+export type BaseBlockFieldOf<K extends BlockTypes> = Omit<
   Extract<Block, { type: K }>,
   "type"
 >
 
-export type BlockPropsOf<K extends BlockTypes> = BaseBlockPropsOf<K> & {
+export type BlockFieldOf<K extends BlockTypes> = BaseBlockFieldOf<K> & {
   id: number
 }
 
+export type BlockPropsOf<K extends BlockTypes> = NodeProps<BlockFieldOf<K>>
+
 export type BlockTypeMap = {
-  [K in BlockTypes]: BlockPropsOf<K>
+  [K in BlockTypes]: BlockFieldOf<K>
 }
 
 export type BlockValues = BlockTypeMap[BlockTypes]

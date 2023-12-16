@@ -1,13 +1,13 @@
-import { SynthEffect } from "@/types/effects"
+import { Effect } from "machine-wasm"
 
 import { audioManager } from "./manager"
 
-export function processSynthEffect(id: number, effect: SynthEffect) {
-  const { triggers } = effect.Synth
+export function processSynthEffect(id: number, effect: Effect.Synth) {
+  const { triggers } = effect
 
   for (const trigger of triggers) {
-    if ("AttackRelease" in trigger) {
-      audioManager.attackRelease(id, trigger.AttackRelease)
+    if (trigger.type === "AttackRelease") {
+      audioManager.attackRelease(id, trigger)
     }
   }
 }

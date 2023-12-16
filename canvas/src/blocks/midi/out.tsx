@@ -1,44 +1,48 @@
 import { useStore } from "@nanostores/react"
-import { Event, MidiOutputFormat as _MidiOutputFormat } from "machine-wasm"
-import { NodeProps } from "reactflow"
+import { MidiOutputFormat } from "machine-wasm"
 
 import { BaseBlock } from "@/blocks"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import { $lastMidiEvent, $midi } from "@/store/midi"
-import { MidiOutProps } from "@/types/blocks"
-import { MidiOutputFormat } from "@/types/enums"
+import { BlockPropsOf } from "@/types/Node"
 import { RadixSelect } from "@/ui"
 
 import { MidiTransportForm } from "./transport"
 
-const formats = Object.keys(_MidiOutputFormat).filter(
-  (key) => !isNaN(Number(_MidiOutputFormat[key as MidiOutputFormat])),
-)
+const formats: MidiOutputFormat[] = [
+  "Raw",
+  "Note",
+  "ControlChange",
+  "Launchpad",
+]
 
 const formatOptions = formats.map((value) => ({ value, label: value }))
 
-export const MidiOutBlock = (props: NodeProps<MidiOutProps>) => {
+type MidiOutProps = BlockPropsOf<"MidiOut">
+type MidiOutData = MidiOutProps["data"]
+
+export const MidiOutBlock = (props: MidiOutProps) => {
   const { id, format, port, channel } = props.data
 
   const lastEvents = useStore($lastMidiEvent)
   const midi = useStore($midi)
 
-  const last = lastEvents[id]?.Midi
+  const last = lastEvents[id]
 
-  function update(input: Partial<MidiOutProps>) {
+  function update(input: Partial<MidiOutData>) {
     updateNodeData(id, input)
 
     if (typeof input.format === "string") {
-      engine.send(id, { SetMidiOutputFormat: { format: input.format } })
+      engine.send(id, { type: "SetMidiOutputFormat", format: input.format })
     }
 
     if (input.port !== undefined) {
-      engine.send(id, { SetMidiPort: { port: input.port } })
+      engine.send(id, { type: "SetMidiPort", port: input.port })
     }
 
     if (input.channel !== undefined) {
-      engine.send(id, { SetMidiChannels: { channels: [input.channel] } })
+      engine.send(id, { type: "SetMidiChannels", channels: [input.channel] })
     }
   }
 

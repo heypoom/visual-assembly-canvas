@@ -1,3 +1,5 @@
+import { CanvasError, MachineStatus } from "machine-wasm"
+
 export interface MachineState {
   error: CanvasError | null
   logs: string[]
@@ -9,10 +11,3 @@ export interface MachineState {
 }
 
 export type MachineStates = Record<number, MachineState>
-
-export type ExtractKeys<T> = T extends { [K in keyof T]: unknown }
-  ? keyof T
-  : never
-
-export type CanvasErrorKeys = ExtractKeys<CanvasError>
-

@@ -2,15 +2,16 @@ import { useStore } from "@nanostores/react"
 import { Flex, TextField } from "@radix-ui/themes"
 import { Port } from "machine-wasm"
 import { memo, useState } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks/components"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import { $status } from "@/store/status"
-import { TapProps } from "@/types/blocks"
+import { BlockPropsOf } from "@/types/Node"
 
-export const TapBlock = memo((props: NodeProps<TapProps>) => {
+type TapProps = BlockPropsOf<"Tap">
+
+export const TapBlock = memo((props: TapProps) => {
   const { id, signal } = props.data
 
   const status = useStore($status)

@@ -1,7 +1,6 @@
 import { TextField } from "@radix-ui/themes"
 import { PixelMode } from "machine-wasm"
 import { useEffect, useRef } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock, getPixelColor, PaletteKey, palettes } from "@/blocks"
 import { engine } from "@/engine"
@@ -21,8 +20,9 @@ const paletteOptions = Object.keys(palettes).map((value) => ({
 const BLOCK_SIZE = 22
 
 type PixelProps = BlockPropsOf<"Pixel">
+type PixelData = PixelProps["data"]
 
-export const PixelBlock = (props: NodeProps<PixelProps>) => {
+export const PixelBlock = (props: PixelProps) => {
   const { id } = props.data
   const { data } = props
   const { columns = 9, palette = "base", mode = "Append" } = data
@@ -32,12 +32,12 @@ export const PixelBlock = (props: NodeProps<PixelProps>) => {
   const pixels =
     data.pixels?.length > 0 ? data.pixels : [...Array(columns * 5)].fill(0)
 
-  function update(input: Partial<PixelProps>) {
+  function update(input: Partial<PixelData>) {
     updateNodeData(id, input)
 
     // Update the behaviour of pixel block.
     if (typeof input.mode === "string") {
-      engine.send(id, { SetPixelMode: { mode: input.mode } })
+      engine.send(id, { type: "SetPixelMode", mode: input.mode })
     }
   }
 

@@ -1,7 +1,6 @@
 import { useStore } from "@nanostores/react"
 import cn from "classnames"
 import { memo } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks/components"
 import { MachineEditor } from "@/editor"
@@ -12,7 +11,7 @@ import { MachineValueViewer } from "./components/MachineValueViewer"
 
 type MachineProps = BlockPropsOf<"Machine">
 
-export const MachineBlock = memo((props: NodeProps<MachineProps>) => {
+export const MachineBlock = memo((props: MachineProps) => {
   const { data } = props
   const { id } = data
 
