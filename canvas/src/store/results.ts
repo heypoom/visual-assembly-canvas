@@ -1,6 +1,12 @@
 import { action, map } from "nanostores"
 
-import { CanvasEngine } from "@/engine"
+import { CanvasEngine, engine } from "@/engine"
+import {
+  $memoryPageConfig,
+  $memoryPages,
+  DEFAULT_PAGE_SIZE,
+  pageToOffset,
+} from "@/store/memory"
 import { InspectionState, MachineEvent } from "@/types/MachineEvent"
 import { CanvasError, MachineState, MachineStates } from "@/types/MachineState"
 
@@ -61,7 +67,21 @@ export const syncMachineState = action(
         // Preserve logs between steps.
         logs: [...(curr?.logs ?? []), ...next.logs],
       })
+
+      updateMemoryViewer(id)
     }
+  },
+)
+
+export const updateMemoryViewer = action(
+  $memoryPages,
+  "update memory viewer",
+  (store, id: number) => {
+    const { page, size = DEFAULT_PAGE_SIZE } = $memoryPageConfig.get()[id] ?? {}
+    const memOffset = pageToOffset(page, size)
+
+    const mem = engine.ctx?.read_mem(id, memOffset, size) as number[]
+    if (mem) store.setKey(id, mem)
   },
 )
 

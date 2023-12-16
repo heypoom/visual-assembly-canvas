@@ -1,8 +1,15 @@
 import { Icon } from "@iconify/react"
+import { useStore } from "@nanostores/react"
 import cn from "classnames"
 import { memo, useMemo } from "react"
 
 import { SmallMemoryViewer } from "@/blocks/machine/components/SmallMemoryViewer"
+import {
+  $memoryPageConfig,
+  $memoryPages,
+  DEFAULT_PAGE_SIZE,
+  pageToOffset,
+} from "@/store/memory"
 import { MachineState } from "@/types/MachineState"
 
 import { ErrorIndicator } from "./ErrorIndicator"
@@ -16,9 +23,16 @@ export const MachineValueViewer = memo((props: Props) => {
   const { id, state } = props
   const { registers } = state
 
-  // const isMemoryEnabled = useMemo(() => {
-  //   return state.stack?.some((x) => x !== 0)
-  // }, [state.stack])
+  const pageConfigs = useStore($memoryPageConfig)
+  const pageConfig = pageConfigs[id] ?? { page: null }
+
+  const pages = useStore($memoryPages)
+  const memory = pages[id]
+
+  const memStart = pageToOffset(pageConfig.page)
+
+  const memEnd =
+    pageToOffset(pageConfig.page) + (pageConfig.size ?? DEFAULT_PAGE_SIZE)
 
   return (
     <div className="space-y-[6px]">
@@ -70,7 +84,7 @@ export const MachineValueViewer = memo((props: Props) => {
           </div>
         )}
 
-        <SmallMemoryViewer memory={[]} />
+        <SmallMemoryViewer memory={memory} />
       </div>
 
       <div className="flex text-1 justify-between px-2 items-center">
@@ -78,7 +92,10 @@ export const MachineValueViewer = memo((props: Props) => {
           <Icon icon="material-symbols:arrow-circle-left-outline-rounded" />
         </div>
 
-        <div>0x1000 - 0x1064</div>
+        <div>
+          0x{memStart.toString(16).toUpperCase()} - 0x
+          {memEnd.toString(16).toUpperCase()}
+        </div>
 
         <div>
           <Icon icon="material-symbols:arrow-circle-right-outline-rounded" />

@@ -46,8 +46,8 @@ export const SmallMemoryViewer = memo((props: Props) => {
       }}
     >
       {memory.map((u, i) => {
-        const unset = i > lastStackValueIndex
-        if (unset) return null
+        // const unset = i > lastStackValueIndex
+        // if (unset) return null
 
         const value = u.toString().padStart(2, "0")
 
