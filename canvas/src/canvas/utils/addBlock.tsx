@@ -17,7 +17,7 @@ export function addBlock<T extends BlockTypes>(type: T, options?: Options<T>) {
   if (type === "Machine") {
     id = engine.ctx?.add_machine()
   } else {
-    id = engine.ctx?.add_block({ [type]: props })
+    id = engine.ctx?.add_block({ type, ...props })
   }
 
   if (typeof id !== "number") return

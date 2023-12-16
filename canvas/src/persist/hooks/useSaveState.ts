@@ -65,7 +65,7 @@ export function useSaveState(): SaveStateContext {
         } else {
           const props = { ...defaultProps[type], ...nodeProps }
 
-          engine.ctx?.add_block_with_id(id, { [type]: props })
+          engine.ctx?.add_block_with_id(id, { type, ...props })
         }
 
         setupBlock(block)
