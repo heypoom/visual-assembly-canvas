@@ -1,22 +1,10 @@
-import { Icon } from "@iconify/react"
-import { useStore } from "@nanostores/react"
 import cn from "classnames"
-import { memo, useMemo } from "react"
+import { memo } from "react"
 
-import { SmallMemoryViewer } from "@/blocks/machine/components/SmallMemoryViewer"
-import {
-  $memoryPageConfig,
-  $memoryPages,
-  DEFAULT_PAGE_SIZE,
-  gotoDefaultPage,
-  nextMemPage,
-  pageToOffset,
-  prevMemPage,
-  setMemPage,
-} from "@/store/memory"
 import { MachineState } from "@/types/MachineState"
 
 import { ErrorIndicator } from "./ErrorIndicator"
+import { PaginatedMemoryViewer } from "./PaginatedMemoryViewer"
 
 interface Props {
   id: number
@@ -26,17 +14,6 @@ interface Props {
 export const MachineValueViewer = memo((props: Props) => {
   const { id, state } = props
   const { registers } = state
-
-  const pageConfigs = useStore($memoryPageConfig)
-  const pageConfig = pageConfigs[id] ?? { page: null }
-
-  const pages = useStore($memoryPages)
-  const memory = pages[id]
-
-  const memStart = pageToOffset(pageConfig.page)
-
-  const memEnd =
-    pageToOffset(pageConfig.page) + (pageConfig.size ?? DEFAULT_PAGE_SIZE)
 
   return (
     <div className="space-y-[6px]">
@@ -87,44 +64,9 @@ export const MachineValueViewer = memo((props: Props) => {
             )}
           </div>
         )}
-
-        <SmallMemoryViewer memory={memory} />
       </div>
 
-      <div className="flex text-1 justify-between px-2 items-center">
-        <button
-          onClick={() => prevMemPage(id)}
-          className="nodrag hover:text-green-11 cursor-pointer"
-        >
-          <Icon icon="material-symbols:arrow-circle-left-outline-rounded" />
-        </button>
-
-        <div>
-          <span
-            onClick={() => setMemPage(id, 0)}
-            className="hover:text-gray-11 nodrag cursor-pointer"
-          >
-            0x{memStart.toString(16).padStart(4, "0").toUpperCase()}
-          </span>
-
-          <span> - </span>
-
-          <span
-            onClick={() => gotoDefaultPage(id)}
-            className="hover:text-gray-11 nodrag cursor-pointer"
-          >
-            0x
-            {memEnd.toString(16).padStart(4, "0").toUpperCase()}
-          </span>
-        </div>
-
-        <button
-          onClick={() => nextMemPage(id)}
-          className="nodrag hover:text-green-11 cursor-pointer"
-        >
-          <Icon icon="material-symbols:arrow-circle-right-outline-rounded" />
-        </button>
-      </div>
+      <PaginatedMemoryViewer id={id} />
     </div>
   )
 })
