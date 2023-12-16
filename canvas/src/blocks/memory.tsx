@@ -92,6 +92,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
     <BaseBlock
       node={props}
       targets={1}
+      sources={1}
       className="border-green-9 font-mono px-4 py-3"
       settings={Settings}
     >
@@ -103,7 +104,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
       {!isBatch && !overGridLimit && (
         <div
-          className="grid items-center justify-center gap-x-1 w-full"
+          className="grid items-center justify-center w-full gap-y-[2px]"
           style={{
             gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
           }}
@@ -112,33 +113,32 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
             const value = values[index]
 
             return (
-              <div key={index} className="w-8">
-                <input
-                  value={!value ? "" : value.toString(base)}
-                  placeholder="0"
-                  className={cn(
-                    "w-8 text-center bg-transparent outline-gray-3 outline-1 text-1 uppercase",
-                    value === 0 && "placeholder-gray-6",
-                    value === undefined && "placeholder-gray-4",
-                    value > 0 && "text-green-11",
-                  )}
-                  onChange={(e) => {
-                    const n = parseInt(e.target.value, base)
-                    if (isNaN(n)) return set(index, 0)
+              <input
+                key={index}
+                value={!value ? "" : value.toString(base).padStart(4, "0")}
+                placeholder="0000"
+                className={cn(
+                  "w-8 text-center bg-transparent outline-gray-3 outline-1 text-[10px] uppercase",
+                  value === 0 && "placeholder-gray-6",
+                  value === undefined && "placeholder-gray-4",
+                  value > 0 && "text-green-11",
+                )}
+                onChange={(e) => {
+                  const n = parseInt(e.target.value, base)
+                  if (isNaN(n)) return set(index, 0)
 
-                    set(index, n)
-                  }}
-                  onBlur={() => {
-                    if (value === undefined || value === null) return
+                  set(index, n)
+                }}
+                onBlur={() => {
+                  if (value === undefined || value === null) return
 
-                    engine.send(id, {
-                      Write: { address: index, data: [value] },
-                    })
+                  engine.send(id, {
+                    Write: { address: index, data: [value] },
+                  })
 
-                    engine.ctx?.force_tick_block(id)
-                  }}
-                />
-              </div>
+                  engine.ctx?.force_tick_block(id)
+                }}
+              />
             )
           })}
         </div>
