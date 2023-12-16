@@ -1,5 +1,5 @@
 import cn from "classnames"
-import { useMemo, useRef, useState } from "react"
+import { memo, useMemo, useRef, useState } from "react"
 
 import { findLastNonZeroIndex } from "@/utils/findLastNonZero"
 
@@ -7,9 +7,9 @@ interface Props {
   memory: number[]
 }
 
-const HOLD_MS = 200
+const HOLD_MS = 100
 
-export const SmallMemoryViewer = (props: Props) => {
+export const SmallMemoryViewer = memo((props: Props) => {
   const { memory } = props
 
   const aborted = useRef(false)
@@ -18,11 +18,11 @@ export const SmallMemoryViewer = (props: Props) => {
   const [end, setEnd] = useState<number | null>(null)
   const [selecting, setSelecting] = useState(false)
 
-  const lastStackValue = useMemo(() => {
+  const lastStackValueIndex = useMemo(() => {
     return findLastNonZeroIndex(memory ?? [])
   }, [memory])
 
-  const isMemoryEnabled = lastStackValue > -1
+  const isMemoryEnabled = lastStackValueIndex > -1
 
   if (!memory?.length || !isMemoryEnabled) return null
 
@@ -46,13 +46,10 @@ export const SmallMemoryViewer = (props: Props) => {
       }}
     >
       {memory.map((u, i) => {
-        const unset = i > lastStackValue
+        const unset = i > lastStackValueIndex
         if (unset) return null
 
         const value = u.toString().padStart(2, "0")
-
-        const isStart = i === start
-        const isEnd = i === end
 
         const selected =
           start !== null && end !== null && i >= start && i <= end
@@ -62,7 +59,11 @@ export const SmallMemoryViewer = (props: Props) => {
             <div
               onMouseDown={() => startDrag(i)}
               onMouseOver={() => {
-                if (selecting) setEnd(i)
+                if (selecting && start !== null) {
+                  if (i > start) {
+                    setEnd(i)
+                  }
+                }
               }}
               onMouseUp={() => {
                 setSelecting(false)
@@ -70,13 +71,9 @@ export const SmallMemoryViewer = (props: Props) => {
               }}
               className={cn(
                 "text-1 text-crimson-11 bg-stone-800 px-1",
-                "hover:text-green-11",
-                isStart && "rounded-l-1",
-                isEnd && "rounded-r-1",
-                (isStart || selected || isEnd) &&
-                  "text-yellow-11 hover:text-yellow-12",
-                selected && "bg-yellow-5",
                 u === 0 && "text-gray-8",
+                selected && "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
+                !selected && "hover:text-crimson-12",
               )}
             >
               {value}
@@ -86,4 +83,4 @@ export const SmallMemoryViewer = (props: Props) => {
       })}
     </div>
   )
-}
+})
