@@ -12,7 +12,7 @@ pub enum SynthConfig {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Tsify)]
 #[serde(tag = "type")]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
 pub enum SynthTrigger {
     Attack {
         /// Frequency of the note.
