@@ -46,12 +46,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-y-1">
-      <MemoryViewer
-        memory={memory}
-        begin={memStart}
-        onHover={highlightAddr}
-        full
-      />
+      <MemoryViewer memory={memory} begin={memStart} onHover={highlightAddr} />
 
       <div className="flex text-1 justify-between px-2 items-center">
         <button
