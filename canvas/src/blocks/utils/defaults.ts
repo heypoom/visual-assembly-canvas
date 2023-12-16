@@ -3,11 +3,11 @@ import { BaseBlockFieldOf, BlockTypes } from "@/types/Node"
 export const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
 
 export type DefaultPropsMap = {
-  [T in BlockTypes]: Partial<BaseBlockFieldOf<T>>
+  [T in BlockTypes]: BaseBlockFieldOf<T>
 }
 
 export const defaultProps: DefaultPropsMap = {
-  Machine: { source: DEFAULT_SOURCE },
+  Machine: { source: DEFAULT_SOURCE, machine_id: -1 },
   Plot: { values: [], size: 250 },
   Clock: { time: 0, freq: 0, ping: false },
   Pixel: { pixels: [], mode: "Append" },

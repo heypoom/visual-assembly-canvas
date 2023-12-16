@@ -1,4 +1,10 @@
-import setup, { Action, Controller, Effect, MachineStatus } from "machine-wasm"
+import setup, {
+  Action,
+  CanvasError,
+  Controller,
+  Effect,
+  MachineStatus,
+} from "machine-wasm"
 
 import { isBlock as is, isBlock } from "@/blocks"
 import { midiManager } from "@/services/midi"
