@@ -119,8 +119,8 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
                 placeholder="0000"
                 className={cn(
                   "w-8 text-center bg-transparent outline-gray-3 outline-1 text-[10px] uppercase",
-                  value === 0 && "placeholder-gray-6",
-                  value === undefined && "placeholder-gray-4",
+                  value === 0 && "placeholder-gray-8",
+                  value === undefined && "placeholder-gray-5",
                   value > 0 && "text-green-11",
                 )}
                 onChange={(e) => {
