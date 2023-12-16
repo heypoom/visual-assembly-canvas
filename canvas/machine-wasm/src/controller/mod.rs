@@ -1,6 +1,6 @@
 use machine::blocks::BlockData;
 use machine::canvas::wire::{Port, Wire};
-use machine::canvas::{Canvas, CanvasError};
+pub use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};
 use machine::{Event, MEMORY_SIZE, REG_COUNT};
 use machine::status::MachineStatus;

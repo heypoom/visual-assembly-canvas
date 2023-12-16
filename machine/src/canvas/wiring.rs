@@ -4,7 +4,7 @@ use crate::canvas::canvas::Errorable;
 use crate::canvas::CanvasError::CannotFindWire;
 use crate::canvas::wire::{Port, Wire};
 use crate::{Action, Message};
-use super::error::{BlockNotFoundSnafu, CannotWireToItselfSnafu};
+use super::canvas_error::{BlockNotFoundSnafu, CannotWireToItselfSnafu};
 
 impl Canvas {
     pub fn connect(&mut self, source: Port, target: Port) -> Result<u16, CanvasError> {

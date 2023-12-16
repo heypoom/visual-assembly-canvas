@@ -6,9 +6,11 @@ import { NodeProps } from "reactflow"
 import { BaseBlock } from "@/blocks/components"
 import { MachineEditor } from "@/editor"
 import { $output } from "@/store/results"
-import { MachineProps } from "@/types/blocks"
+import { BlockPropsOf } from "@/types/Node"
 
 import { MachineValueViewer } from "./components/MachineValueViewer"
+
+type MachineProps = BlockPropsOf<"Machine">
 
 export const MachineBlock = memo((props: NodeProps<MachineProps>) => {
   const { data } = props

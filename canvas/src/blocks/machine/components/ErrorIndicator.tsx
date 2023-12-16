@@ -1,4 +1,3 @@
-import { CanvasError, canvasErrors, runErrors } from "@/types/MachineState"
 
 const EMPTY_PROGRAM = "EmptyProgram"
 

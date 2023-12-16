@@ -3,6 +3,7 @@ use tsify::Tsify;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum MidiInputEvent {
     NoteOn,
     NoteOff,
