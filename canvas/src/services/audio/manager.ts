@@ -32,7 +32,6 @@ export class AudioManager {
     if (this.synths.has(id)) return
 
     const createSynth = synthMap[key as SynthConfig]
-
     this.synths.set(id, createSynth())
   }
 

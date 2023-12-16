@@ -21,7 +21,7 @@ export const TapBlock = memo((props: TapProps) => {
     try {
       engine.ctx?.send_message({
         sender: new Port(id, 0),
-        action: { Data: { body: signal } },
+        action: { type: "Data", body: signal },
       })
     } catch (err) {
       console.warn("cannot send tap:", err)
