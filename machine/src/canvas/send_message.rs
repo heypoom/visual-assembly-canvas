@@ -83,11 +83,27 @@ impl Canvas {
         Ok(())
     }
 
-    // TODO: improve bi-directional connection resolution.
-    fn resolve_port(&self, port: Port) -> Vec<u16> {
-        self.wires.iter()
-            .filter(|w| w.source == port || w.target == port)
+    /// Given the sender's port, resolve the target block ids.
+    /// TODO: improve bi-directional connection resolution.
+    fn resolve_port(&self, sender: Port) -> Vec<u16> {
+        let targets: Vec<u16> = self.wires.iter()
+            .filter(|w| w.source == sender)
             .map(|w| w.target.block)
-            .collect()
+            .collect();
+
+        if !targets.is_empty() {
+            return targets;
+        }
+
+        let sources: Vec<u16> = self.wires.iter()
+            .filter(|w| w.target == sender)
+            .map(|w| w.source.block)
+            .collect();
+
+        if !sources.is_empty() {
+            return sources;
+        }
+
+        vec![]
     }
 }
