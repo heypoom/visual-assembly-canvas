@@ -12,6 +12,8 @@ export interface ViewerConfig {
 interface Props {
   memory: number[]
   begin?: number
+  center?: boolean
+
   config?: ViewerConfig
 
   onHover?: (address: number | null) => void
@@ -20,7 +22,7 @@ interface Props {
 const HOLD_MS = 100
 
 export const MemoryViewer = memo((props: Props) => {
-  const { memory, begin = 0, config } = props
+  const { memory, begin = 0, config, center } = props
 
   const {
     columns = 8,
@@ -71,7 +73,7 @@ export const MemoryViewer = memo((props: Props) => {
       )}
 
       <div
-        className="px-1 grid nodrag w-full"
+        className={cn("px-1 grid nodrag", center && "w-full")}
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
         onMouseLeave={() => {
           if (selecting) setSelecting(false)
@@ -108,6 +110,7 @@ export const MemoryViewer = memo((props: Props) => {
                 !selected && u === 0 && "text-gray-8",
                 selected && "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
                 !selected && "hover:text-crimson-12",
+                center && "text-center",
               )}
             >
               {value}
