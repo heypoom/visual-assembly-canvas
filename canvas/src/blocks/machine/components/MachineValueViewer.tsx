@@ -16,9 +16,9 @@ export const MachineValueViewer = memo((props: Props) => {
   const { id, state } = props
   const { registers } = state
 
-  const isMemoryEnabled = useMemo(() => {
-    return state.stack?.some((x) => x !== 0)
-  }, [state.stack])
+  // const isMemoryEnabled = useMemo(() => {
+  //   return state.stack?.some((x) => x !== 0)
+  // }, [state.stack])
 
   return (
     <div className="space-y-[6px]">
@@ -36,50 +36,52 @@ export const MachineValueViewer = memo((props: Props) => {
         </div>
       ) : null}
 
-      <div className="flex justify-between items-end">
-        <div className="flex flex-col gap-y-1">
-          {registers && (
-            <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
-              <div>
-                <span>PC</span>{" "}
-                <strong>{registers.pc.toString().padStart(2, "0")}</strong>
-              </div>
-
-              <div>
-                <span>SP</span> <strong>{registers.sp}</strong>
-              </div>
-
-              <div>
-                <span>FP</span> <strong>{registers.fp}</strong>
-              </div>
-
-              <div>
-                <span>ID</span> <strong>{id}</strong>
-              </div>
-
-              {state.inboxSize > 0 && (
-                <div className={cn(state.inboxSize > 50 && "text-orange-11")}>
-                  <span>IB</span> <strong>{state.inboxSize}</strong>
-                </div>
-              )}
-
-              {state.outboxSize > 0 && (
-                <div>
-                  <span>OB</span> <strong>{state.outboxSize}</strong>
-                </div>
-              )}
+      <div className="flex flex-col gap-y-1">
+        {registers && (
+          <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
+            <div>
+              <span>PC</span>{" "}
+              <strong>{registers.pc.toString().padStart(2, "0")}</strong>
             </div>
-          )}
 
-          <SmallMemoryViewer memory={state.stack ?? []} />
+            <div>
+              <span>SP</span> <strong>{registers.sp}</strong>
+            </div>
+
+            <div>
+              <span>FP</span> <strong>{registers.fp}</strong>
+            </div>
+
+            <div>
+              <span>ID</span> <strong>{id}</strong>
+            </div>
+
+            {state.inboxSize > 0 && (
+              <div className={cn(state.inboxSize > 50 && "text-orange-11")}>
+                <span>IB</span> <strong>{state.inboxSize}</strong>
+              </div>
+            )}
+
+            {state.outboxSize > 0 && (
+              <div>
+                <span>OB</span> <strong>{state.outboxSize}</strong>
+              </div>
+            )}
+          </div>
+        )}
+
+        <SmallMemoryViewer memory={[]} />
+      </div>
+
+      <div className="flex text-1 justify-between px-2 items-center">
+        <div>
+          <Icon icon="material-symbols:arrow-circle-left-outline-rounded" />
         </div>
 
-        <div className="flex justify-end">
-          {isMemoryEnabled && (
-            <div className="text-2 nodrag cursor-pointer text-gray-10 hover:text-purple-11">
-              <Icon icon="material-symbols:memory-alt-outline" />
-            </div>
-          )}
+        <div>0x1000 - 0x1064</div>
+
+        <div>
+          <Icon icon="material-symbols:arrow-circle-right-outline-rounded" />
         </div>
       </div>
     </div>

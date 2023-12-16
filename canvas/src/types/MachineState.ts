@@ -2,7 +2,6 @@ import { Port } from "machine-wasm"
 
 export interface MachineState {
   error: CanvasError | null
-  stack: number[] | null
   logs: string[]
   registers: { pc: number; sp: number; fp: number }
 

@@ -13,7 +13,6 @@ const getLogs = (events: MachineEvent[]): string[] =>
 
 const toState = (result: InspectionState): MachineState => ({
   error: null,
-  stack: result.stack ?? [],
   logs: getLogs(result.events) ?? [],
   registers: result.registers,
 

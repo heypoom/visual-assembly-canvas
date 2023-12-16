@@ -26,7 +26,6 @@ pub struct InspectedRegister {
 /// Machine state returned by the inspection function.
 #[derive(Serialize, Deserialize)]
 pub struct InspectedMachine {
-    pub stack: Vec<u16>,
     pub events: Vec<Event>,
     pub registers: InspectedRegister,
 
@@ -144,7 +143,6 @@ impl Controller {
 
         let state = InspectedMachine {
             events: m.events.clone(),
-            stack: m.mem.read_stack(100),
             registers: InspectedRegister {
                 pc: m.reg.get(PC),
                 sp: m.reg.get(SP),
