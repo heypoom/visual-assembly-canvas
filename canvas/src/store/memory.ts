@@ -3,7 +3,7 @@ import { map } from "nanostores"
 import { updateMemoryViewer } from "@/store/results"
 
 export const DEFAULT_PAGE_OFFSET = 0x4100
-export const DEFAULT_PAGE_SIZE = 50
+export const DEFAULT_PAGE_SIZE = 100
 
 type MemoryPageConfig = { [id: number]: { page: number; size?: number } }
 

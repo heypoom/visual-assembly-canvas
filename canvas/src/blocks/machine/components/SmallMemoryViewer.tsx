@@ -34,7 +34,7 @@ export const SmallMemoryViewer = memo((props: Props) => {
 
   return (
     <div
-      className="px-1 flex flex-wrap max-w-[300px] nodrag"
+      className="px-1 flex flex-wrap max-w-[480px] nodrag"
       onMouseLeave={() => {
         if (selecting) setSelecting(false)
       }}

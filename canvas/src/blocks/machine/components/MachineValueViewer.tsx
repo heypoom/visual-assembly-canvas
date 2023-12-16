@@ -54,7 +54,7 @@ export const MachineValueViewer = memo((props: Props) => {
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-y-1">
+      <div className="flex flex-col gap-y-1 relative">
         {registers && (
           <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
             <div>
