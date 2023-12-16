@@ -1,10 +1,4 @@
-import setup, {
-  Action,
-  CanvasError,
-  Controller,
-  Effect,
-  MachineStatus,
-} from "machine-wasm"
+import setup, { Action, Controller, Effect, MachineStatus } from "machine-wasm"
 
 import { isBlock as is, isBlock } from "@/blocks"
 import { midiManager } from "@/services/midi"
@@ -31,7 +25,11 @@ type HighlightMaps = Map<number, Map<number, number>>
 type HaltReason = "cycle" | "halted"
 
 export class CanvasEngine {
-  public ctx: Controller | null = null
+  private _ctx: Controller | null = null
+
+  get ctx(): Controller {
+    return this._ctx!
+  }
 
   /** What is the limit on number of cycles? This prevents crashes. */
   public maxCycle = 500000
@@ -57,7 +55,7 @@ export class CanvasEngine {
   private continuous = false
 
   public setInstructionsPerTick(cycles: number) {
-    this.ctx?.set_machine_clock_speed(cycles)
+    this.ctx.set_machine_clock_speed(cycles)
     $clock.setKey("instructionsPerTick", cycles)
   }
 
@@ -70,7 +68,7 @@ export class CanvasEngine {
     await setup()
 
     // Create the canvas controller instance from WebAssembly.
-    this.ctx = Controller.create()
+    this._ctx = Controller.create()
   }
 
   public load(
@@ -89,7 +87,7 @@ export class CanvasEngine {
     this.sources.set(id, source)
 
     try {
-      this.ctx?.load(id, source)
+      this.ctx.load(id, source)
       this.setSyntaxError(id, null)
       this.highlightMaps.set(id, getSourceHighlightMap(source))
       this.invalidate()
@@ -110,13 +108,13 @@ export class CanvasEngine {
   }
 
   public inspect(id: number): InspectionState {
-    return this.ctx?.inspect_machine(id)
+    return this.ctx.inspect_machine(id)
   }
 
   private prepare = () => {
     if (this.ready) return
 
-    this.ctx?.ready()
+    this.ctx.ready()
     this.ready = true
 
     clearPreviousRun(this)
@@ -125,7 +123,7 @@ export class CanvasEngine {
   private get isHalted(): boolean {
     if (this.continuous) return false
 
-    return this.ctx?.is_halted() ?? false
+    return this.ctx.is_halted() ?? false
   }
 
   get nodes() {
@@ -151,7 +149,7 @@ export class CanvasEngine {
 
     // Disable the watchdog if we have interactors, e.g., tap blocks.
     // Watchdog must be enabled if we are in real-time mode, otherwise the browser could hang.
-    this.ctx?.set_await_watchdog(!this.continuous)
+    this.ctx.set_await_watchdog(!this.continuous)
 
     // Prepare for the next run.
     this.prepare()
@@ -175,7 +173,7 @@ export class CanvasEngine {
     if (this.cycle >= this.maxCycle) this.haltReason = "cycle"
 
     // Reset the watchdog.
-    this.ctx?.set_await_watchdog(true)
+    this.ctx.set_await_watchdog(true)
 
     // Report if our program did not halt properly.
     if (!this.continuous) this.reportHang()
@@ -241,7 +239,7 @@ export class CanvasEngine {
   }
 
   get statuses(): Map<number, MachineStatus> {
-    return this.ctx?.statuses()
+    return this.ctx.statuses()
   }
 
   set halted(state: boolean) {
@@ -282,7 +280,7 @@ export class CanvasEngine {
 
   private step(count = this.clock.canvasBatchedTicks) {
     try {
-      this.ctx?.step(count)
+      this.ctx.step(count)
     } catch (error) {
       this.detectCanvasError(error)
     }
@@ -290,7 +288,7 @@ export class CanvasEngine {
 
   // TODO(Perf): consume different types of effects separately?
   private consumeSideEffects(): Map<number, Effect[]> {
-    return this.ctx?.consume_block_side_effects()
+    return this.ctx.consume_block_side_effects()
   }
 
   public performSideEffects() {
@@ -302,12 +300,12 @@ export class CanvasEngine {
   // TODO(Perf): we can optimize this by only syncing the blocks that have changed.
   //             currently, we pull every data from the engine.
   public syncBlocks() {
-    const blocks = this.ctx?.get_blocks()
+    const blocks = this.ctx.get_blocks()
     blocks.forEach(syncBlockData)
   }
 
   private updateBlock(id: number) {
-    syncBlockData(this.ctx?.get_block(id))
+    syncBlockData(this.ctx.get_block(id))
   }
 
   private detectCanvasError(error: unknown) {
@@ -353,7 +351,7 @@ export class CanvasEngine {
     this.invalidate()
 
     // Reset blocks and update UI
-    this.ctx?.reset_blocks()
+    this.ctx.reset_blocks()
     this.syncBlocks()
 
     // Reset machines and update UI
@@ -372,7 +370,7 @@ export class CanvasEngine {
     }
 
     // Remove the block.
-    this.ctx?.remove_block(id)
+    this.ctx.remove_block(id)
 
     // Teardown the code editor state.
     this.sources.delete(id)
@@ -380,12 +378,12 @@ export class CanvasEngine {
   }
 
   public resetBlock(id: number) {
-    this.ctx?.reset_block(id)
+    this.ctx.reset_block(id)
     this.updateBlock(id)
   }
 
   public send(id: number, action: Action) {
-    this.ctx?.send_message_to_block(id, action)
+    this.ctx.send_message_to_block(id, action)
   }
 }
 

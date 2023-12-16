@@ -5,7 +5,8 @@ use crate::audio::waveform::Waveform;
 use crate::blocks::pixel::PixelMode;
 use crate::canvas::wire::Port;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Message {
     /// Action sent to the machine.
     pub action: Action,

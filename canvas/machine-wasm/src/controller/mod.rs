@@ -2,10 +2,10 @@ use machine::blocks::BlockData;
 use machine::canvas::wire::{Port, Wire};
 pub use machine::canvas::{Canvas, CanvasError};
 use machine::Register::{FP, PC, SP};
-use machine::{Event, MEMORY_SIZE, REG_COUNT};
+use machine::{Action, Event, Message};
 use machine::status::MachineStatus;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::{from_value, to_value};
+use serde_wasm_bindgen::{to_value};
 use wasm_bindgen::prelude::*;
 
 const NULL: JsValue = JsValue::NULL;
@@ -78,12 +78,12 @@ impl Controller {
         Ok(to_value(&self.canvas.wires)?)
     }
 
-    pub fn add_block(&mut self, data: JsValue) -> Result<u16, JsValue> {
-        return_raw(self.canvas.add_block(from_value(data)?))
+    pub fn add_block(&mut self, data: BlockData) -> Result<u16, JsValue> {
+        return_raw(self.canvas.add_block(data))
     }
 
-    pub fn add_block_with_id(&mut self, id: u16, data: JsValue) -> Return {
-        returns(self.canvas.add_block_with_id(id, from_value(data)?))
+    pub fn add_block_with_id(&mut self, id: u16, data: BlockData) -> Return {
+        returns(self.canvas.add_block_with_id(id, data))
     }
 
     pub fn add_machine(&mut self) -> Result<u16, JsValue> {
@@ -194,19 +194,19 @@ impl Controller {
         self.canvas.machine_cycle_per_tick = cycle_per_tick;
     }
 
-    pub fn send_message(&mut self, message: JsValue) -> Return {
-        returns(self.canvas.send_message_to_port(from_value(message)?))
+    pub fn send_message(&mut self, message: Message) -> Return {
+        returns(self.canvas.send_message_to_port(message))
     }
 
-    pub fn send_message_to_block(&mut self, block_id: u16, action: JsValue) -> Return {
+    pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Return {
         returns(
             self.canvas
-                .send_message_to_block(block_id, from_value(action)?),
+                .send_message_to_block(block_id, action),
         )
     }
 
-    pub fn update_block(&mut self, id: u16, data: JsValue) -> Return {
-        returns(self.canvas.update_block(id, from_value(data)?))
+    pub fn update_block(&mut self, id: u16, data: BlockData) -> Return {
+        returns(self.canvas.update_block(id, data))
     }
 
     pub fn reset_blocks(&mut self) -> Return {
@@ -247,23 +247,6 @@ impl Controller {
         }
 
         Ok(to_value(&canvas)?)
-    }
-
-    pub fn load_canvas_state(&mut self, state: JsValue) -> Return {
-        self.canvas = from_value(state)?;
-
-        // Ensure that the memory and registers are the correct size.
-        for m in self.canvas.seq.machines.iter_mut() {
-            if m.mem.buffer.len() < MEMORY_SIZE as usize {
-                m.mem.buffer = vec![0; MEMORY_SIZE as usize];
-            }
-
-            if m.reg.buffer.len() < REG_COUNT {
-                m.reg.buffer = vec![0; REG_COUNT];
-            }
-        }
-
-        Ok(true.into())
     }
 
     pub fn force_tick_block(&mut self, id: u16) -> Return {

@@ -2,7 +2,7 @@ import { TextField } from "@radix-ui/themes"
 import { PixelMode } from "machine-wasm"
 import { useEffect, useRef } from "react"
 
-import { BaseBlock, getPixelColor, PaletteKey, palettes } from "@/blocks"
+import { BaseBlock, getPixelColor, PaletteKey, paletteOptions } from "@/blocks"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import { BlockPropsOf } from "@/types/Node"
@@ -11,11 +11,6 @@ import { RadixSelect } from "@/ui"
 const modes: PixelMode[] = ["Append", "Replace", "Command"]
 
 const modeOptions = modes.map((value) => ({ value, label: value }))
-
-const paletteOptions = Object.keys(palettes).map((value) => ({
-  value,
-  label: value,
-}))
 
 const BLOCK_SIZE = 22
 
