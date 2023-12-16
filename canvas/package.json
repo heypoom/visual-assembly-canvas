@@ -17,6 +17,8 @@
     "@codemirror/autocomplete": "^6.11.1",
     "@codemirror/commands": "^6.3.2",
     "@codemirror/language": "^6.9.3",
+    "@codemirror/state": "^6.3.3",
+    "@codemirror/view": "^6.22.3",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/modifiers": "^7.0.0",
     "@iconify/react": "^4.1.1",

@@ -121,7 +121,7 @@ export function SlashCommand() {
                 return
               }
 
-              const position = flow.project(cursor)
+              const position = flow.screenToFlowPosition(cursor)
 
               const ok = run(command, { input, position })
               if (ok) hide()
