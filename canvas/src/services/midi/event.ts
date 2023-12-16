@@ -1,20 +1,18 @@
 import { chunk } from "lodash"
+import { Effect } from "machine-wasm"
 
 import { $lastMidiEvent } from "@/store/midi"
-import { MidiEffect } from "@/types/effects"
 
 import { launchpad, midiManager } from "./index"
 
-export async function processMidiEvent(id: number, effect: MidiEffect) {
+export async function processMidiEvent(id: number, effect: Effect.Midi) {
   try {
     if (!effect) return
-
-    const midi = effect.Midi
-    if (!midi) return
+    if (effect.type !== "Midi") return
 
     $lastMidiEvent.setKey(id, effect)
 
-    const { format, data, port, channel } = midi
+    const { format, data, port, channel } = effect
 
     const output = midiManager.outputs[port]
     if (!output) return

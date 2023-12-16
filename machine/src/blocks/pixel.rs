@@ -5,11 +5,12 @@ use crate::blocks::BlockData::Pixel;
 use crate::canvas::virtual_io::{read_from_address, write_to_address};
 
 use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 use wasm_bindgen::prelude::wasm_bindgen;
 use crate::blocks::pixel::PixelMode::{Append, Command, Replace};
 
-#[wasm_bindgen]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize, Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum PixelMode {
     /// Replaces the content of the block with the given byte.
     Replace,

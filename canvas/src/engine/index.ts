@@ -1,4 +1,10 @@
-import setup, { Controller } from "machine-wasm"
+import setup, {
+  Action,
+  CanvasError,
+  Controller,
+  Effect,
+  MachineStatus,
+} from "machine-wasm"
 
 import { isBlock as is, isBlock } from "@/blocks"
 import { midiManager } from "@/services/midi"
@@ -12,22 +18,10 @@ import {
   syncMachineState,
 } from "@/store/results"
 import { $status } from "@/store/status"
-import { Action } from "@/types/actions"
-import { Effect } from "@/types/effects"
 import { InspectionState } from "@/types/MachineEvent"
-import {
-  CanvasError,
-  canvasErrors,
-  MachineError,
-  MachineStatus,
-} from "@/types/MachineState"
 
 import { processEffects } from "./effects"
 import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
-
-const machineError = (cause: MachineError): CanvasError => ({
-  MachineError: { cause },
-})
 
 export type HighlighterFn = (lineNo: number) => void
 
@@ -216,7 +210,7 @@ export class CanvasEngine {
       if (!this.isHalted) {
         this.statuses.forEach((status, id) => {
           const error = this.getHaltError(id, status)
-          if (error) setError(id, machineError(error))
+          if (error) setError(id, error)
         })
       }
     }, 10)
@@ -227,13 +221,21 @@ export class CanvasEngine {
   }
 
   /** Returns an error that explains why the machine halted. */
-  getHaltError(id: number, status: MachineStatus): MachineError | undefined {
-    if (status === "Awaiting") return { MessageNeverReceived: { id } }
+  getHaltError(
+    id: number,
+    status: MachineStatus,
+  ): CanvasError.MachineError | undefined {
+    if (status === "Awaiting") {
+      return {
+        type: "MachineError",
+        cause: { type: "MessageNeverReceived", id },
+      }
+    }
 
-    if (status === "Running") {
-      switch (this.haltReason) {
-        case "cycle":
-          return { ExecutionCycleExceeded: { id } }
+    if (status === "Running" && this.haltReason === "cycle") {
+      return {
+        type: "MachineError",
+        cause: { type: "ExecutionCycleExceeded", id },
       }
     }
   }
@@ -313,18 +315,14 @@ export class CanvasEngine {
 
     console.warn("canvas error:", e)
 
-    if (canvasErrors.disconnectedPort(e)) {
-      const id = e.DisconnectedPort.port?.block
+    if (e.type === "DisconnectedPort") {
+      const id = e.port?.block
       setError(id, e)
       return
     }
 
-    if (canvasErrors.machineError(e)) {
-      const { cause } = e.MachineError
-
-      const inner = Object.values(cause)[0]
-      if (typeof inner?.id === "number") setError(inner.id, e)
-
+    if (e.type === "MachineError") {
+      if ("id" in e.cause) setError(e.cause.id, e)
       return
     }
 

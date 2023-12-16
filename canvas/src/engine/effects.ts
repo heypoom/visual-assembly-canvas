@@ -1,15 +1,16 @@
+import { Effect } from "machine-wasm"
+
 import { processSynthEffect } from "@/services/audio"
 import { processMidiEvent } from "@/services/midi"
-import { Effect } from "@/types/effects"
 
 export function processEffects(effects: Effect[], block: number) {
   for (const effect of effects) {
-    if ("Midi" in effect) {
+    if (effect.type === "Midi") {
       processMidiEvent(block, effect).then()
       continue
     }
 
-    if ("Synth" in effect) {
+    if (effect.type === "Synth") {
       processSynthEffect(block, effect)
       continue
     }

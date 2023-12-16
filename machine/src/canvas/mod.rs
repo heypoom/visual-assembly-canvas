@@ -1,6 +1,6 @@
 pub mod canvas;
 pub mod wire;
-pub mod error;
+pub mod canvas_error;
 pub mod vec_helper;
 pub mod event;
 pub mod message;
@@ -13,4 +13,4 @@ mod routing;
 mod execution;
 
 pub use canvas::Canvas;
-pub use error::*;
+pub use canvas_error::*;

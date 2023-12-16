@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, Tsify)]
+#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum SynthConfig {
     Basic,
     FM,
@@ -8,7 +10,9 @@ pub enum SynthConfig {
     Noise,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Tsify)]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
 pub enum SynthTrigger {
     Attack {
         /// Frequency of the note.

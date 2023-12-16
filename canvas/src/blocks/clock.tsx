@@ -1,13 +1,14 @@
 import { Checkbox, TextField } from "@radix-ui/themes"
 import { memo, useState } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
-import { ClockProps } from "@/types/blocks"
+import { BlockPropsOf } from "@/types/Node"
 
-export const ClockBlock = memo((props: NodeProps<ClockProps>) => {
+type ClockProps = BlockPropsOf<"Clock">
+
+export const ClockBlock = memo((props: ClockProps) => {
   const { id, freq = 0, ping = false } = props.data
 
   const [rateInput, setRateInput] = useState(freq.toString())
@@ -37,7 +38,7 @@ export const ClockBlock = memo((props: NodeProps<ClockProps>) => {
 
             if (valid) {
               updateNodeData(id, { freq })
-              engine.send(id, { SetClockFreq: { freq } })
+              engine.send(id, { type: "SetClockFreq", freq })
               engine.ctx?.force_tick_block(id)
             }
           }}
@@ -55,7 +56,7 @@ export const ClockBlock = memo((props: NodeProps<ClockProps>) => {
             if (ping === "indeterminate") return
 
             updateNodeData(id, { ping })
-            engine.send(id, { SetClockPing: { ping } })
+            engine.send(id, { type: "SetClockPing", ping })
             engine.ctx?.force_tick_block(id)
           }}
         />

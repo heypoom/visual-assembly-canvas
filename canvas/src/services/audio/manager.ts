@@ -1,3 +1,4 @@
+import { SynthConfig, SynthTrigger } from "machine-wasm"
 import {
   AMSynth,
   FMSynth,
@@ -9,9 +10,7 @@ import {
 } from "tone"
 import type { Instrument } from "tone/build/esm/instrument/Instrument"
 
-import { AttackReleaseConfig, SynthConfig, SynthType } from "@/types/synth"
-
-const synthMap: Record<SynthType, () => Instrument<any>> = {
+const synthMap: Record<SynthConfig, () => Instrument<any>> = {
   Basic: () => new PolySynth(Synth).toDestination(),
   FM: () => new PolySynth(FMSynth).toDestination(),
   AM: () => new PolySynth(AMSynth).toDestination(),
@@ -29,16 +28,15 @@ export class AudioManager {
     await start()
   }
 
-  add(id: number, config: string | SynthConfig) {
+  add(id: number, key: string | SynthConfig) {
     if (this.synths.has(id)) return
 
-    const key = typeof config === "string" ? config : Object.keys(config)[0]
-    const createSynth = synthMap[key as SynthType]
+    const createSynth = synthMap[key as SynthConfig]
 
     this.synths.set(id, createSynth())
   }
 
-  attackRelease(id: number, config: AttackReleaseConfig) {
+  attackRelease(id: number, config: SynthTrigger.AttackRelease) {
     const synth = this.synths.get(id)
 
     if (!synth) return
@@ -50,5 +48,10 @@ export class AudioManager {
 
 export const audioManager = new AudioManager()
 
-// @ts-ignore
+declare global {
+  interface Window {
+    audioManager: AudioManager
+  }
+}
+
 window.audioManager = audioManager

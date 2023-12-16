@@ -1,10 +1,10 @@
-import { CanvasError, canvasErrors, runErrors } from "@/types/MachineState"
-
-const EMPTY_PROGRAM = "EmptyProgram"
+import { CanvasError } from "machine-wasm"
 
 export const ErrorIndicator = ({ error }: { error: CanvasError }) => {
-  if (canvasErrors.disconnectedPort(error)) {
-    const port = error.DisconnectedPort.port?.port
+  const { type } = error
+
+  if (type === "DisconnectedPort") {
+    const { port } = error.port
 
     return (
       <pre>
@@ -14,18 +14,15 @@ export const ErrorIndicator = ({ error }: { error: CanvasError }) => {
     )
   }
 
-  if (canvasErrors.machineError(error)) {
-    const cause = error.MachineError.cause
+  if (type === "MachineError") {
+    const { cause } = error
+    const reason = cause.type
 
-    if (runErrors.executionCycleExceeded(cause)) {
+    if (reason === "ExecutionCycleExceeded") {
       return <pre>Your program exceeds the execution cycle quota.</pre>
     }
 
-    if (runErrors.executionTimeExceeded(cause)) {
-      return <pre>Your program exceeds the runtime quota.</pre>
-    }
-
-    if (runErrors.messageNeverReceived(cause)) {
+    if (reason === "MessageNeverReceived") {
       return (
         <pre className="text-purple-11">
           Machine is waiting for a message which never arrives.
@@ -33,28 +30,27 @@ export const ErrorIndicator = ({ error }: { error: CanvasError }) => {
       )
     }
 
-    if (runErrors.executionFailed(cause)) {
+    if (reason === "ExecutionFailed") {
       return (
         <pre>
-          Your program produced an error:{" "}
+          Your program produced a runtime error:{" "}
           <strong>
-            <code>{JSON.stringify(cause.ExecutionFailed.error, null, 2)}</code>
+            <code>{JSON.stringify(cause.error, null, 2)}</code>
           </strong>
         </pre>
       )
     }
 
-    if (runErrors.cannotParse(cause)) {
-      const reason = cause.CannotParse.error
-
+    if (reason === "CannotParse") {
       // The user has not written any program yet.
-      if (reason === EMPTY_PROGRAM) return null
+      // We do not consider this as an error.
+      if (cause.error.type === "EmptyProgram") return null
 
       return (
         <pre>
           Syntax is incorrect:{" "}
           <strong>
-            <code>{JSON.stringify(cause.CannotParse.error, null, 2)}</code>
+            <code>{JSON.stringify(cause.error, null, 2)}</code>
           </strong>
         </pre>
       )

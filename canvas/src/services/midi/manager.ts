@@ -1,4 +1,5 @@
 import { debounce } from "lodash"
+import { MidiInputEvent } from "machine-wasm"
 import {
   ControlChangeMessageEvent,
   Input,
@@ -9,7 +10,6 @@ import {
 } from "webmidi"
 
 import { $midi } from "@/store/midi"
-import { MidiInputEvent } from "@/types/enums"
 import { FirstArg, UnionToIntersection } from "@/types/helper"
 
 import { launchpad, launchpadNames } from "./launchpad"

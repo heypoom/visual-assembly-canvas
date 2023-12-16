@@ -1,9 +1,12 @@
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
+use tsify::Tsify;
 use crate::{ParseError, RuntimeError};
 
-#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone, Tsify)]
 #[snafu(visibility(pub))]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
 pub enum SequencerError {
     #[snafu(display("cannot parse the code"))]
     CannotParse { id: u16, error: ParseError },
@@ -19,5 +22,7 @@ pub enum SequencerError {
 
     #[snafu(display("program expects a message but they are never received"))]
     MessageNeverReceived { id: u16 },
+
+    ExecutionCycleExceeded { id: u16 },
 }
 

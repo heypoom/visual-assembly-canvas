@@ -1,13 +1,14 @@
 import { cyanP3 } from "@radix-ui/colors"
 import { useEffect, useRef } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks"
-import { PlotterProps } from "@/types/blocks"
+import { BlockPropsOf } from "@/types/Node"
 
 import { rescale } from "./utils/rescale"
 
-export const PlotterBlock = (props: NodeProps<PlotterProps>) => {
+type PlotProps = BlockPropsOf<"Plot">
+
+export const PlotterBlock = (props: PlotProps) => {
   const { values, size } = props.data
 
   const scaleY = 2

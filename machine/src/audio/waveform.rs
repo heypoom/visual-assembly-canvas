@@ -1,8 +1,11 @@
 use std::f32::consts::PI;
 use serde::{Deserialize, Serialize};
+use tsify::Tsify;
 
 /// Types of waveforms the oscillator can produce.
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, Hash, Tsify)]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
 pub enum Waveform {
     Sine,
     Cosine,

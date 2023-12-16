@@ -1,4 +1,6 @@
-import { MachineState, MachineStatus } from "./MachineState"
+import { MachineStatus } from "machine-wasm"
+
+import { MachineState } from "./MachineState"
 
 export type MachineEvent = { Print: { text: string } }
 

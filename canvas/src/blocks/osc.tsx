@@ -1,61 +1,54 @@
 import { TextField } from "@radix-ui/themes"
+import { Waveform } from "machine-wasm"
 import { useState } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks/components"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
-import { OscProps } from "@/types/blocks"
-import { Waveform, WaveformKey } from "@/types/waveform"
+import { BlockPropsOf } from "@/types/Node"
 import { RadixSelect } from "@/ui"
 
-const waveforms: Record<WaveformKey, Waveform> = {
-  Sine: { Sine: null },
-  Cosine: { Cosine: null },
-  Tangent: { Tangent: null },
-  Square: { Square: { duty_cycle: 200 } },
-  Sawtooth: { Sawtooth: null },
-  Triangle: { Triangle: null },
-  Noise: { Noise: null },
-}
+export type WaveformKey = Waveform["type"]
 
-const waveformOptions = Object.keys(waveforms).map((value) => ({
+const waveforms: WaveformKey[] = [
+  "Sine",
+  "Cosine",
+  "Tangent",
+  "Square",
+  "Sawtooth",
+  "Triangle",
+]
+
+const waveformOptions = waveforms.map((value) => ({
   value,
   label: value,
 }))
 
-export const OscBlock = (props: NodeProps<OscProps>) => {
+type OscProps = BlockPropsOf<"Osc">
+
+export const OscBlock = (props: OscProps) => {
   const { id, waveform } = props.data
+  const wave = waveform.type
 
   const [cycleText, setCycleText] = useState("")
   const [cycleError, setCycleError] = useState(false)
 
-  const wave = (
-    typeof waveform === "object"
-      ? Object.keys(waveform)?.[0]
-      : typeof waveform === "string"
-      ? waveform
-      : "Sine"
-  ) as WaveformKey
-
   function setWaveform(waveform: Waveform) {
     updateNodeData(id, { waveform })
-    engine.send(id, { SetWaveform: { waveform } })
+    engine.send(id, { type: "SetWaveform", waveform })
   }
 
   function handleWaveChange(key: string) {
-    let w = waveforms[key as WaveformKey]
+    let w = { type: key } as Waveform
 
     // Update duty cycle
-    if ("Square" in w) {
+    if (w.type === "Square") {
       if (cycleText) {
         const cycle = parseInt(cycleText)
 
-        if (!isNaN(cycle)) {
-          w = { ...w, Square: { duty_cycle: cycle } }
-        }
+        if (!isNaN(cycle)) w = { ...w, duty_cycle: cycle }
       } else {
-        setCycleText(w.Square.duty_cycle.toString())
+        setCycleText(w.duty_cycle.toString())
       }
     }
 
@@ -67,7 +60,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
 
     if (wave === "Square") {
       argsText = `c = ${
-        cycleText || ("Square" in waveform && waveform?.Square?.duty_cycle)
+        cycleText || (waveform.type === "Square" && waveform.duty_cycle)
       }`
     }
 
@@ -106,7 +99,7 @@ export const OscBlock = (props: NodeProps<OscProps>) => {
               setCycleError(!valid)
 
               if (valid) {
-                setWaveform({ Square: { duty_cycle: cycle } })
+                setWaveform({ type: "Square", duty_cycle: cycle })
               }
             }}
             {...(cycleError && { color: "tomato" })}

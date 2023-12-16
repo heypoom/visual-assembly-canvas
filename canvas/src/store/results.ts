@@ -1,3 +1,4 @@
+import { CanvasError } from "machine-wasm"
 import { action, map } from "nanostores"
 
 import { CanvasEngine, engine } from "@/engine"
@@ -8,7 +9,7 @@ import {
   pageToOffset,
 } from "@/store/memory"
 import { InspectionState, MachineEvent } from "@/types/MachineEvent"
-import { CanvasError, MachineState, MachineStates } from "@/types/MachineState"
+import { MachineState, MachineStates } from "@/types/MachineState"
 
 import { $nodes } from "./nodes"
 
@@ -109,9 +110,14 @@ export const clearPreviousRun = action(
 
 const isCycleError = (error: CanvasError | null) => {
   if (!error) return false
-  if (!("MachineError" in error)) return false
 
-  const { cause } = error.MachineError
+  const { type } = error
+  if (type !== "MachineError") return false
 
-  return "ExecutionCycleExceeded" in cause || "HangingAwaits" in cause
+  const { cause } = error
+
+  return (
+    cause.type === "ExecutionCycleExceeded" ||
+    cause.type === "MessageNeverReceived"
+  )
 }

@@ -1,18 +1,19 @@
 import cn from "classnames"
 import { useEffect, useState } from "react"
-import { NodeProps } from "reactflow"
 
 import { BaseBlock } from "@/blocks/components"
 import { engine } from "@/engine"
 import { updateNode, updateNodeData } from "@/store/blocks"
-import { MemoryProps } from "@/types/blocks"
+import { BlockPropsOf } from "@/types/Node"
 
 import { isBlock } from "./utils/is"
 
 const columns = 8
 const gridLimit = 1000
 
-export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
+type MemoryProps = BlockPropsOf<"Memory">
+
+export const MemoryBlock = (props: MemoryProps) => {
   const { id, auto_reset } = props.data
 
   const values = [...props.data.values, 0]
@@ -38,7 +39,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
 
   function toggleReset() {
     updateNodeData(id, { auto_reset: !auto_reset })
-    engine.send(id, { SetAutoReset: { auto_reset: !auto_reset } })
+    engine.send(id, { type: "SetAutoReset", auto_reset: !auto_reset })
     engine.ctx?.force_tick_block(id)
   }
 
@@ -61,7 +62,7 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
     if (values.length === 0) return
 
     updateNodeData(id, { values })
-    engine.send(id, { Override: { data: values } })
+    engine.send(id, { type: "Override", data: values })
     engine.ctx?.force_tick_block(id)
     engine.syncBlocks()
   }
@@ -133,7 +134,9 @@ export const MemoryBlock = (props: NodeProps<MemoryProps>) => {
                   if (value === undefined || value === null) return
 
                   engine.send(id, {
-                    Write: { address: index, data: [value] },
+                    type: "Write",
+                    address: index,
+                    data: [value],
                   })
 
                   engine.ctx?.force_tick_block(id)

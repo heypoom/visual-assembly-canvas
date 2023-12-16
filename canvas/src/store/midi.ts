@@ -1,6 +1,6 @@
+import { Effect } from "machine-wasm"
 import { map } from "nanostores"
 
-import { MidiEffect } from "@/types/effects"
 import { MidiState } from "@/types/midi"
 
 const defaultMidiState: MidiState = {
@@ -10,5 +10,4 @@ const defaultMidiState: MidiState = {
 }
 
 export const $midi = map(defaultMidiState)
-
-export const $lastMidiEvent = map<Record<number, MidiEffect | null>>({})
+export const $lastMidiEvent = map<Record<number, Effect.Midi | null>>({})

@@ -20,3 +20,4 @@ pub use parser::*;
 pub use binary::*;
 pub use sequencer::*;
 pub use test_helper::*;
+pub use canvas::*;

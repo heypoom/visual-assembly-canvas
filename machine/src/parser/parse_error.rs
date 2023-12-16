@@ -1,8 +1,11 @@
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
+use tsify::Tsify;
 
-#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone, Tsify)]
 #[snafu(visibility(pub))]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
 pub enum ParseError {
     #[snafu(display("string is invalid"))]
     InvalidString,

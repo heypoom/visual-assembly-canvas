@@ -1,10 +1,13 @@
 use serde::{Deserialize, Serialize};
 use snafu::prelude::*;
+use tsify::Tsify;
 use crate::canvas::wire::Port;
 use crate::{Message, SequencerError};
 
-#[derive(Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Tsify, Debug, Snafu, Serialize, Deserialize, PartialEq, Clone)]
 #[snafu(visibility(pub))]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
 pub enum CanvasError {
     #[snafu(display("Cannot connect port {:?} to itself", port))]
     CannotWireToItself { port: Port },

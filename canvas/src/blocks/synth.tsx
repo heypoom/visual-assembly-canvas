@@ -1,11 +1,10 @@
-import { NodeProps } from "reactflow"
-
 import { BaseBlock } from "@/blocks"
-import { SynthProps } from "@/types/blocks"
+import { BlockPropsOf } from "@/types/Node"
 
-export const SynthBlock = (props: NodeProps<SynthProps>) => {
+type SynthProps = BlockPropsOf<"Synth">
+
+export const SynthBlock = (props: SynthProps) => {
   const { config } = props.data ?? {}
-  const name = typeof config === "string" ? config : Object.keys(config)?.[0]
 
   return (
     <BaseBlock
@@ -14,7 +13,7 @@ export const SynthBlock = (props: NodeProps<SynthProps>) => {
       targets={1}
       className="px-4 py-2 font-mono"
     >
-      {name} Synth
+      {config} Synth
     </BaseBlock>
   )
 }
