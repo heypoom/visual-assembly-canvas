@@ -8,11 +8,6 @@ impl Canvas {
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         for message in &messages {
             match &message.action {
-                Action::SetWaveform { waveform: wf } => {
-                    if let Osc { waveform } = &mut self.mut_block(id)?.data {
-                        *waveform = *wf;
-                    };
-                }
                 Action::Data { body } => {
                     let mut waveform = Waveform::Sine;
 

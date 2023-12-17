@@ -37,9 +37,7 @@ export const ClockBlock = memo((props: ClockProps) => {
             setCycleError(!valid)
 
             if (valid) {
-              updateNodeData(id, { freq })
-              engine.send(id, { type: "SetClockFreq", freq })
-              engine.ctx?.force_tick_block(id)
+              engine.updateBlockData(id, "Clock", { freq })
             }
           }}
           {...(cycleError && { color: "tomato" })}
@@ -55,9 +53,7 @@ export const ClockBlock = memo((props: ClockProps) => {
           onCheckedChange={(ping) => {
             if (ping === "indeterminate") return
 
-            updateNodeData(id, { ping })
-            engine.send(id, { type: "SetClockPing", ping })
-            engine.ctx?.force_tick_block(id)
+            engine.updateBlockData(id, "Clock", { ping })
           }}
         />
       </div>

@@ -77,12 +77,6 @@ impl Canvas {
                     };
                 }
 
-                Action::SetPixelMode { mode: m } => {
-                    if let Pixel { mode, .. } = &mut self.mut_block(id)?.data {
-                        *mode = m;
-                    };
-                }
-
                 Action::Reset => {
                     if let Pixel { pixels, .. } = &mut self.mut_block(id)?.data {
                         pixels.clear()

@@ -38,20 +38,6 @@ impl Canvas {
                     })
                 }
 
-                Action::SetMidiOutputFormat { format: fmt } => {
-                    *format = fmt;
-                }
-
-                Action::SetMidiPort { port: p } => {
-                    *port = p;
-                }
-
-                Action::SetMidiChannels { channels } => {
-                    if let Some(chan) = channels.first() {
-                        *channel = *chan;
-                    }
-                }
-
                 Action::Write { address, data } => {
                     // MIDI channels and ports cannot be over 255.
                     if *channel > 255 || *port > 255 { continue; }

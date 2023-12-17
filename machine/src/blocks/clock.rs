@@ -17,14 +17,6 @@ impl Canvas {
 
         for message in &messages {
             match &message.action {
-                Action::SetClockFreq { freq: f, } => {
-                    *freq = *f;
-                }
-
-                Action::SetClockPing { ping: p, } => {
-                    *ping = *p;
-                }
-
                 Action::Reset => {
                     *time = 0;
                 }

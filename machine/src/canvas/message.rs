@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use tsify::Tsify;
-use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
-use crate::audio::waveform::Waveform;
-use crate::blocks::pixel::PixelMode;
+use crate::audio::midi::{MidiInputEvent};
 use crate::canvas::wire::Port;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
@@ -44,31 +42,4 @@ pub enum Action {
 
     /// Notify the block that a MIDI message has been received.
     Midi { event: MidiInputEvent, note: u8, value: u8, channel: u8, port: u8 },
-
-    /// Set the MIDI port
-    SetMidiPort { port: u16 },
-
-    /// Set the MIDI channels.
-    SetMidiChannels { channels: Vec<u16> },
-
-    /// Select the MIDI input event for the block to subscribe to.
-    SetMidiInputEvent { event: MidiInputEvent },
-
-    /// Set the MIDI output format.
-    SetMidiOutputFormat { format: MidiOutputFormat },
-
-    /// Set the waveform of the oscillator.
-    SetWaveform { waveform: Waveform },
-
-    /// Set the pixel mode of the pixel block.
-    SetPixelMode { mode: PixelMode },
-
-    /// Should the block reset via the reset command?
-    SetAutoReset { auto_reset: bool },
-
-    /// Set the clock's frequency
-    SetClockFreq { freq: u16 },
-
-    /// Set whether we should send a ping instead of the time.
-    SetClockPing { ping: bool },
 }

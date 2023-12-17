@@ -51,12 +51,6 @@ impl Canvas {
                     };
                 }
 
-                Action::SetAutoReset { auto_reset: value } => {
-                    let Memory { auto_reset, .. } = &mut self.mut_block(id)?.data else { continue; };
-
-                    *auto_reset = value;
-                }
-
                 _ => {}
             }
         }
