@@ -18,16 +18,10 @@ export const ValueViewBlock = memo((props: Props) => {
   const valueMap = useStore($remoteValues)
   const values = valueMap[id] ?? []
 
-  const update = (config: Partial<Data>) => {
-    const data = { ...props.data, ...config }
-
-    engine.ctx.update_block(id, { type: "ValueView", ...data })
-    updateNodeData(id, data)
-  }
+  const update = (config: Partial<Data>) =>
+    engine.updateBlockData(id, "ValueView", config)
 
   const Settings = () => <div className="text-1 font-mono">foo</div>
-
-  window.vvUpdater = update
 
   const hx = (n: number) => n.toString(16).padStart(4, "0").toUpperCase()
 

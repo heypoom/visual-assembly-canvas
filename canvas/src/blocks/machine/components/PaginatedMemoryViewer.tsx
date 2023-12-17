@@ -2,8 +2,10 @@ import { Icon } from "@iconify/react"
 import { useStore } from "@nanostores/react"
 import cn from "classnames"
 import { useState } from "react"
+import { useReactFlow } from "reactflow"
 
 import { MemoryViewer } from "@/blocks/machine/components/MemoryViewer"
+import { engine } from "@/engine"
 import {
   $memoryPageConfig,
   $memoryPages,
@@ -14,6 +16,9 @@ import {
   prevMemPage,
   setMemPage,
 } from "@/store/memory"
+import { $nodes } from "@/store/nodes"
+import { updateValueViewers } from "@/store/remote-values"
+import { updateMemoryViewer } from "@/store/results"
 
 interface Props {
   id: number
@@ -44,11 +49,33 @@ export const PaginatedMemoryViewer = (props: Props) => {
   const show = (n: number) =>
     `${hex ? "0x" : ""}${n.toString(base).padStart(pad, "0").toUpperCase()}`
 
+  function onConfirm(start: number, end: number) {
+    const viewer = $nodes
+      .get()
+      .find((n) => n.selected && n.type === "ValueView")
+
+    // Update remote value viewer if it is selected
+    if (viewer) {
+      engine.updateBlockData(viewer.data.id, "ValueView", {
+        target: id,
+        size: end - start + 1,
+        offset: start,
+      })
+
+      updateValueViewers()
+    }
+  }
+
   if (!memory || memory.length === 0) return null
 
   return (
     <div className="flex flex-col gap-y-1 w-fit">
-      <MemoryViewer memory={memory} begin={memStart} onHover={highlightAddr} />
+      <MemoryViewer
+        memory={memory}
+        begin={memStart}
+        onHover={highlightAddr}
+        onConfirm={onConfirm}
+      />
 
       <div className="flex text-1 justify-between px-2 items-center">
         <button

@@ -17,6 +17,7 @@ interface Props {
   config?: ViewerConfig
 
   onHover?: (address: number | null) => void
+  onConfirm?: (start: number, end: number) => void
 }
 
 const HOLD_MS = 100
@@ -57,6 +58,14 @@ export const MemoryViewer = memo((props: Props) => {
 
   const show = (n: number) => n.toString(base).padStart(pad, "0").toUpperCase()
 
+  function confirm() {
+    setSelecting(false)
+
+    if (props.onConfirm && start !== null && end !== null) {
+      props.onConfirm(start, end)
+    }
+  }
+
   return (
     <div className="flex text-[10px]">
       {showAddress && (
@@ -76,7 +85,7 @@ export const MemoryViewer = memo((props: Props) => {
         className={cn("px-1 grid nodrag", full && "w-full")}
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
         onMouseLeave={() => {
-          if (selecting) setSelecting(false)
+          if (selecting) confirm()
           if (props.onHover) props.onHover(null)
         }}
       >
@@ -102,7 +111,7 @@ export const MemoryViewer = memo((props: Props) => {
                 }
               }}
               onMouseUp={() => {
-                setSelecting(false)
+                confirm()
                 aborted.current = true
               }}
               className={cn(

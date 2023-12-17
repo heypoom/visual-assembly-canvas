@@ -1,5 +1,6 @@
 import setup, {
   Action,
+  BlockData,
   CanvasError,
   Controller,
   Effect,
@@ -8,7 +9,7 @@ import setup, {
 
 import { isBlock as is, isBlock } from "@/blocks"
 import { midiManager } from "@/services/midi"
-import { syncBlockData } from "@/store/blocks"
+import { syncBlockData, updateNodeData } from "@/store/blocks"
 import { $clock } from "@/store/clock"
 import { $nodes } from "@/store/nodes"
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/store/results"
 import { $status } from "@/store/status"
 import { InspectionState } from "@/types/MachineEvent"
+import { BaseBlockFieldOf, BlockFieldOf, BlockTypes } from "@/types/Node"
 
 import { processEffects } from "./effects"
 import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
@@ -390,6 +392,22 @@ export class CanvasEngine {
 
   public send(id: number, action: Action) {
     this.ctx.send_message_to_block(id, action)
+  }
+
+  public updateBlockData<T extends BlockTypes>(
+    id: number,
+    type: T,
+    config: Partial<BaseBlockFieldOf<T>>,
+  ) {
+    const node = this.nodes.find((n) => n.data.id === id)
+    if (!node) return
+
+    const data = { ...node.data, ...config } as BaseBlockFieldOf<T>
+
+    updateNodeData(id, data)
+
+    engine.ctx.update_block(id, { ...data, type } as BlockData)
+    engine.ctx.force_tick_block(id)
   }
 }
 
