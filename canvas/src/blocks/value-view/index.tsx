@@ -3,12 +3,34 @@ import cn from "classnames"
 import { memo } from "react"
 
 import { BaseBlock } from "@/blocks"
+import { Settings } from "@/blocks/components/Settings"
+import { createSchema } from "@/blocks/types/schema"
 import { bitsToList } from "@/blocks/value-view/utils/bits-to-list"
 import { $remoteValues } from "@/store/remote-values"
 import { BlockPropsOf } from "@/types/Node"
 
 type Props = BlockPropsOf<"ValueView">
 // type Data = Props["data"]
+
+const schema = createSchema({
+  type: "ValueView",
+  fields: [
+    { key: "size", type: "number", min: 1 },
+    { key: "offset", type: "number", min: 0 },
+    {
+      key: "visual",
+      type: "select",
+      options: [
+        { key: "Int", title: "Number" },
+        { key: "Bytes", title: "Byte View" },
+        { key: "Switches", title: "Switch" },
+        { key: "ColorGrid", title: "Color Grid" },
+        { key: "String", title: "String" },
+      ],
+    },
+    { key: "target", type: "number", min: 0 },
+  ],
+})
 
 export const ValueViewBlock = memo((props: Props) => {
   const { id, target, offset, size, visual } = props.data
@@ -17,8 +39,6 @@ export const ValueViewBlock = memo((props: Props) => {
 
   // const update = (config: Partial<Data>) =>
   //   engine.setBlock(id, "ValueView", config)
-
-  const Settings = () => <div className="text-1 font-mono">foo</div>
 
   const hx = (n: number) => n.toString(16).padStart(4, "0").toUpperCase()
 
@@ -63,7 +83,11 @@ export const ValueViewBlock = memo((props: Props) => {
   }
 
   return (
-    <BaseBlock node={props} settings={Settings} className="relative font-mono">
+    <BaseBlock
+      node={props}
+      settings={() => <Settings schema={schema} />}
+      className="relative font-mono"
+    >
       {display()}
 
       <div className="text-[8px] text-gray-8 absolute font-mono bottom-[-16px] flex min-w-[100px]">
