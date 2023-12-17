@@ -41,12 +41,21 @@ export const ValueViewBlock = memo((props: Props) => {
   const display = () => {
     const { type } = visual
 
+    if (values.length === 0) {
+      return (
+        <div className="px-4 py-2 font-mono text-gray-9">missing value</div>
+      )
+    }
+
     switch (type) {
       case "Int": {
         return (
           <div className="grid grid-cols-8 font-mono gap-x-2 px-2 py-1 text-2">
             {values.map((v, i) => (
-              <div key={i} className={cn(v === 0 && "text-gray-7")}>
+              <div
+                key={i}
+                className={cn("text-center", v === 0 && "text-gray-7")}
+              >
                 {v}
               </div>
             ))}
@@ -82,12 +91,19 @@ export const ValueViewBlock = memo((props: Props) => {
 
   const handleUpdate = () => updateValueViewers()
 
+  const renderSettings = () => (
+    <Settings
+      id={id}
+      schema={schema}
+      onUpdate={handleUpdate}
+      className="px-3 pb-2"
+    />
+  )
+
   return (
     <BaseBlock
       node={props}
-      settings={() => (
-        <Settings id={id} schema={schema} onUpdate={handleUpdate} />
-      )}
+      settings={renderSettings}
       className="relative font-mono"
     >
       {display()}

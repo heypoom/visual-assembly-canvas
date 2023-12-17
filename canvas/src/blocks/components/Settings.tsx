@@ -1,5 +1,6 @@
 import { useStore } from "@nanostores/react"
-import { TextField } from "@radix-ui/themes"
+import { Checkbox, TextField } from "@radix-ui/themes"
+import cn from "classnames"
 import { ReactNode, useMemo } from "react"
 
 import { BlockKeys, Field, SchemaOf } from "@/blocks/types/schema"
@@ -11,6 +12,7 @@ import { RadixSelect } from "@/ui"
 type Props<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {
   id: number
   schema: SchemaOf<T, F>
+  className?: string
   onUpdate?: () => void
 }
 
@@ -20,7 +22,7 @@ export const Settings = <
 >(
   props: Props<T, F>,
 ) => {
-  const { id, schema } = props
+  const { id, schema, className } = props
 
   const nodes = useStore($nodes)
   const node = useMemo(() => nodes.find((n) => n.data.id === id), [id, nodes])
@@ -30,10 +32,12 @@ export const Settings = <
     props.onUpdate?.()
   }
 
+  const set = (key: string, value: unknown) => update({ [key]: value } as never)
+
   if (!node) return null
 
   return (
-    <div className="flex flex-col px-2 text-1 font-mono pb-2 gap-y-2">
+    <div className={cn("flex flex-col text-1 font-mono gap-y-2", className)}>
       {schema.fields.map((field) => {
         const { type } = field
         const data = node.data as BlockFieldOf<T>
@@ -59,7 +63,7 @@ export const Settings = <
                   if (n < min) return
                   if (n > max) return
 
-                  update({ [key]: n } as never)
+                  set(key, n)
                 }}
               />
             </FieldGroup>
@@ -79,23 +83,34 @@ export const Settings = <
           if ("type" in vt) val = vt.type
 
           const onChange = (next: string) => {
-            if (typeof value === "string") {
-              update({ [key]: next } as never)
-            }
+            if (typeof value === "string") set(key, next)
 
             if ("type" in vt) {
-              const option = field.options.find((o) => o.key === next)
+              const opt = field.options.find((o) => o.key === next)
 
-              // TODO: handle enums with additional fields
-              update({
-                [key]: { type: next, ...option?.defaults },
-              } as never)
+              set(key, { type: next, ...opt?.defaults })
             }
           }
 
           return (
             <FieldGroup key={key} name={name}>
               <RadixSelect onChange={onChange} options={options} value={val} />
+            </FieldGroup>
+          )
+        }
+
+        if (type === "checkbox") {
+          return (
+            <FieldGroup key={key} name={name}>
+              <Checkbox
+                color="crimson"
+                checked={value as boolean}
+                onCheckedChange={(next) => {
+                  if (next === "indeterminate") return
+
+                  set(key, next)
+                }}
+              />
             </FieldGroup>
           )
         }
@@ -115,8 +130,8 @@ export const Settings = <
 }
 
 const FieldGroup = (props: { name: string; children: ReactNode }) => (
-  <div className="grid grid-cols-2">
-    <div className="flex items-center">{props.name}</div>
+  <div className="grid grid-cols-2 gap-x-3">
+    <div className="flex items-center capitalize">{props.name}</div>
 
     {props.children}
   </div>
