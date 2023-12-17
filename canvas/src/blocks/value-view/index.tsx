@@ -48,7 +48,7 @@ export const ValueViewBlock = memo((props: Props) => {
     switch (type) {
       case "Int": {
         return (
-          <div className="flex font-mono gap-x-2 px-2 py-1">
+          <div className="grid grid-cols-8 font-mono gap-x-2 px-2 py-1">
             {values.map((v, i) => (
               <div key={i}>{v}</div>
             ))}
