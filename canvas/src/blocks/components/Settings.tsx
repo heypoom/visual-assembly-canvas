@@ -12,12 +12,12 @@ import { RadixSelect } from "@/ui"
 export interface SettingsConfig {
   className?: string
   onUpdate?: () => void
+  children?: ReactNode
 }
 
 type Props<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {
   id: number
   schema: SchemaOf<T, F>
-  children?: ReactNode
 } & SettingsConfig
 
 export const Settings = <
@@ -52,8 +52,6 @@ export const Settings = <
 
         const set = (key: string, value: unknown) => {
           const v = into ? into(value) : value
-          console.log(`set ${key} to`, v)
-
           if (into && v === undefined) return
 
           update({ [key]: v } as never)

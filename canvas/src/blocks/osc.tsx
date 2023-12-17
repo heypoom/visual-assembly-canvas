@@ -1,7 +1,7 @@
 import { TextField } from "@radix-ui/themes"
 import { useState } from "react"
 
-import { BaseBlock, createSchema, FieldGroup, Settings } from "@/blocks"
+import { BaseBlock, createSchema, FieldGroup } from "@/blocks"
 import { engine } from "@/engine"
 import { BlockPropsOf } from "@/types/Node"
 
@@ -40,31 +40,32 @@ export const OscBlock = (props: OscProps) => {
     })
   }
 
-  const settings = () => (
-    <Settings id={id} schema={schema}>
-      {wave === "Square" && (
-        <FieldGroup name="Duty Cycle">
-          <TextField.Input
-            className="max-w-[70px]"
-            size="1"
-            type="number"
-            min={0}
-            max={255}
-            value={cycleText}
-            onChange={(k) => setDutyCycle(k.target.value)}
-            {...(cycleError && { color: "tomato" })}
-          />
-        </FieldGroup>
-      )}
-    </Settings>
-  )
+  const settings = () => {
+    if (wave !== "Square") return null
+
+    return (
+      <FieldGroup name="Duty Cycle">
+        <TextField.Input
+          className="max-w-[70px]"
+          size="1"
+          type="number"
+          min={0}
+          max={255}
+          value={cycleText}
+          onChange={(k) => setDutyCycle(k.target.value)}
+          {...(cycleError && { color: "tomato" })}
+        />
+      </FieldGroup>
+    )
+  }
 
   return (
     <BaseBlock
       node={props}
       targets={1}
       sources={1}
-      renderSettings={settings}
+      schema={schema}
+      settingsConfig={{ children: settings() }}
       className="px-4 py-2 font-mono text-center"
     >
       {getOscLog()}
