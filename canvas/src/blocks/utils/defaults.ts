@@ -17,4 +17,12 @@ export const defaultProps: DefaultPropsMap = {
   MidiIn: { on: "NoteOn", port: 0, channels: [] },
   MidiOut: { format: "Note", channel: 1, port: 0 },
   Memory: { values: [], auto_reset: false },
+
+  ValueView: {
+    target: 0,
+    size: 0,
+    offset: 0,
+    visual: { type: "Int" },
+    values: [],
+  },
 }

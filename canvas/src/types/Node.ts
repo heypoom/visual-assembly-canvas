@@ -36,5 +36,5 @@ export type BlockNode = Node<BlockFieldOf<BlockTypes>, BlockTypes>
 export type TNode<T extends BlockTypes> = Node<BlockFieldOf<T>, T>
 
 export type BlockComponentMap = {
-  [N in BlockTypes]: (props: NodeProps<BlockTypeMap[N]>) => ReactNode
+  [T in BlockTypes]: (props: BlockPropsOf<T>) => ReactNode
 }

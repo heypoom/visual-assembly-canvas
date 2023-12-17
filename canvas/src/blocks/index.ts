@@ -1,3 +1,4 @@
+import { ValueViewBlock } from "@/blocks/value-view"
 import { BlockComponentMap } from "@/types/Node"
 
 import { ClockBlock } from "./clock"
@@ -21,6 +22,7 @@ export const nodeTypes: BlockComponentMap = {
   MidiOut: MidiOutBlock,
   Synth: SynthBlock,
   Memory: MemoryBlock,
+  ValueView: ValueViewBlock,
 }
 
 export * from "./components/BaseBlock"

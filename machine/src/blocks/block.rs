@@ -7,6 +7,7 @@ use tsify::Tsify;
 use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
 use crate::audio::synth::SynthConfig;
 use crate::blocks::pixel::PixelMode;
+use crate::blocks::value_view::ValueVisualType;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {
@@ -94,6 +95,24 @@ pub enum BlockData {
         /// Should the memory block be reset automatically?
         auto_reset: bool,
     },
+
+    /// Remote value viewer. Used for visualizing and inspecting values.
+    ValueView {
+        /// Identifier of the target machine or block.
+        target: u16,
+
+        /// The starting memory address.
+        offset: u16,
+
+        /// How many values to use?
+        size: u16,
+
+        /// How should we visualize this value?
+        visual: ValueVisualType,
+
+        /// Data stored in the value viewer.
+        values: Vec<u16>
+    }
 }
 
 impl Block {

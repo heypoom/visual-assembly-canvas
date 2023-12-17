@@ -8,5 +8,6 @@ pub mod midi_in;
 pub mod midi_out;
 pub mod pixel;
 pub mod synth;
+mod value_view;
 
 pub use block::*;
