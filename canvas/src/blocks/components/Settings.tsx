@@ -14,6 +14,7 @@ type Props<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {
   schema: SchemaOf<T, F>
   className?: string
   onUpdate?: () => void
+  children?: ReactNode
 }
 
 export const Settings = <
@@ -73,7 +74,7 @@ export const Settings = <
         if (type === "select") {
           const options = field.options.map((f) => ({
             value: f.key as string,
-            label: f.title,
+            label: f.title ?? (f.key as string),
           }))
 
           const vt = value as { type: string }
@@ -125,11 +126,13 @@ export const Settings = <
 
         return null
       })}
+
+      {props.children}
     </div>
   )
 }
 
-const FieldGroup = (props: { name: string; children: ReactNode }) => (
+export const FieldGroup = (props: { name: string; children: ReactNode }) => (
   <div className="grid grid-cols-2 gap-x-3">
     <div className="flex items-center capitalize">{props.name}</div>
 

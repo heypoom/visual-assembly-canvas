@@ -14,7 +14,7 @@ type CheckboxField = { type: "checkbox" }
 
 type SelectField<T extends BlockTypes, K extends BlockKeys<T>> = {
   type: "select"
-  options: { key: BlockValue<T, K>; title: string; defaults?: object }[]
+  options: { key: BlockValue<T, K>; title?: string; defaults?: object }[]
 }
 
 export type Field<T extends BlockTypes, K extends BlockKeys<T>> = {

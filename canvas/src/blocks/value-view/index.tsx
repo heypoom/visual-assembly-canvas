@@ -24,7 +24,7 @@ const schema = createSchema({
         { key: "Bytes", title: "Byte View" },
         { key: "Switches", title: "Switch", defaults: { bits: [] } },
         { key: "ColorGrid", title: "Binary Grid" },
-        { key: "String", title: "String" },
+        { key: "String" },
       ],
     },
     { key: "target", type: "number", min: 0 },
