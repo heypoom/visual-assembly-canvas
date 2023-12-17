@@ -16,6 +16,7 @@ export const isBlock = {
   midiIn: isBlockType("MidiIn"),
   midiOut: isBlockType("MidiOut"),
   memory: isBlockType("Memory"),
+  valueView: isBlockType("ValueView"),
   producer: (n: BlockNode) =>
     isBlock.clock(n) || isBlock.midiIn(n) || isBlock.tap(n),
 }

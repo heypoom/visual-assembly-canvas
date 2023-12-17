@@ -23,6 +23,5 @@ export const defaultProps: DefaultPropsMap = {
     size: 0,
     offset: 0,
     visual: { type: "Int" },
-    values: [],
   },
 }

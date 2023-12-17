@@ -27,3 +27,4 @@ pub enum ValueVisualType {
     /// Visualize the bytes as memory region grids.
     Bytes,
 }
+

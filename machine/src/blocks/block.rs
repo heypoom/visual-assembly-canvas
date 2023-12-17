@@ -109,9 +109,6 @@ pub enum BlockData {
 
         /// How should we visualize this value?
         visual: ValueVisualType,
-
-        /// Data stored in the value viewer.
-        values: Vec<u16>
     }
 }
 

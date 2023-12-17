@@ -1,6 +1,7 @@
 import { CanvasError } from "machine-wasm"
 import { action, map } from "nanostores"
 
+import { isBlock, isBlockType } from "@/blocks"
 import { CanvasEngine, engine } from "@/engine"
 import {
   $memoryPageConfig,
@@ -8,6 +9,7 @@ import {
   DEFAULT_PAGE_SIZE,
   pageToOffset,
 } from "@/store/memory"
+import { updateValueViewers } from "@/store/remote-values"
 import { InspectionState, MachineEvent } from "@/types/MachineEvent"
 import { MachineState, MachineStates } from "@/types/MachineState"
 
@@ -47,7 +49,7 @@ export const syncMachineState = action(
     const nodes = $nodes.get()
 
     for (const node of nodes) {
-      if (node.type !== "Machine") continue
+      if (!isBlock.machine(node)) continue
 
       const { id } = node.data
 
@@ -71,6 +73,10 @@ export const syncMachineState = action(
 
       updateMemoryViewer(id)
     }
+
+    // After we've synchronized the machine states,
+    // we update the value viewers as well.
+    updateValueViewers()
   },
 )
 
