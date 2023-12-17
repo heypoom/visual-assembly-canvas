@@ -1,5 +1,4 @@
 import { BlockData } from "machine-wasm"
-import { useMemo } from "react"
 import { useReactFlow } from "reactflow"
 
 import { defaultProps } from "@/blocks"
@@ -102,5 +101,5 @@ export function useSaveState(): SaveStateContext {
     engine.ctx?.clear()
   }
 
-  return useMemo(() => ({ serialize, restore, clear }), [])
+  return { serialize, restore, clear }
 }

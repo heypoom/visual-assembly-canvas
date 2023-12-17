@@ -41,12 +41,12 @@ export function SlashCommand() {
   const destroy = useCallback(() => {
     window.removeEventListener("mousemove", onMouseMove)
     listening.current = false
-  }, [])
+  }, [onMouseMove])
 
   const register = useCallback(() => {
     window.addEventListener("mousemove", onMouseMove)
     listening.current = true
-  }, [])
+  }, [onMouseMove])
 
   useEffect(() => {
     if (listening.current) return
@@ -56,7 +56,7 @@ export function SlashCommand() {
     return () => {
       destroy()
     }
-  }, [active])
+  }, [active, destroy, register])
 
   const command = useMemo(() => matches[selected], [matches, selected])
   const argsValid = useMemo(() => isArgsValid(input, command), [input, command])
