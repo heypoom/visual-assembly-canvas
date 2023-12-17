@@ -68,6 +68,7 @@ export const MidiInBlock = memo((props: MidiInProps) => {
       onReset={reset}
       schema={schema}
       className="px-4 py-2 font-mono text-crimson-11"
+      settingsConfig={{ className: "max-w-[230px]" }}
     >
       {last ? (
         <div className="text-1">
@@ -86,6 +87,7 @@ const createSettings = (inputs: string[]) =>
     fields: [
       {
         key: "on",
+        title: "Event",
         type: "select",
         options: [
           { key: "NoteOn", title: "Note On" },
