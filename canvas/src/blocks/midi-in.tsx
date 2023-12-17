@@ -1,8 +1,9 @@
 import { useStore } from "@nanostores/react"
-import { MidiInputEvent } from "machine-wasm"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { BaseBlock } from "@/blocks"
+import { Settings } from "@/blocks/components/Settings"
+import { BaseBlock } from "@/blocks/index"
+import { createSchema } from "@/blocks/types/schema"
 import { engine } from "@/engine"
 import {
   isControlChangeEvent,
@@ -13,17 +14,10 @@ import {
 import { $midi } from "@/store/midi"
 import { $status } from "@/store/status"
 import { BlockPropsOf } from "@/types/Node"
-import { RadixSelect } from "@/ui"
-
-import { MidiTransportForm } from "./transport"
-
-const events: MidiInputEvent[] = ["NoteOn", "NoteOff", "ControlChange"]
-const eventOptions = events.map((value) => ({ value, label: value }))
 
 type MidiInProps = BlockPropsOf<"MidiIn">
-type MidiInData = MidiInProps["data"]
 
-export const MidiInBlock = (props: MidiInProps) => {
+export const MidiInBlock = memo((props: MidiInProps) => {
   const { id, on, port, channels } = props.data
 
   const midi = useStore($midi)
@@ -32,8 +26,7 @@ export const MidiInBlock = (props: MidiInProps) => {
 
   const [last, setLast] = useState<[number, number, number] | null>(null)
 
-  const update = (input: Partial<MidiInData>) =>
-    engine.setBlock(id, "MidiIn", input)
+  const schema = useMemo(() => createSettings(midi.inputs), [midi.inputs])
 
   const handle = useCallback(
     (e: MidiEvent) => {
@@ -70,39 +63,12 @@ export const MidiInBlock = (props: MidiInProps) => {
 
   const reset = () => setLast(null)
 
-  const MidiSettings = () => (
-    <div className="max-w-[200px] space-y-3">
-      <div
-        className="grid items-center gap-4 w-full text-gray-11"
-        style={{
-          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)",
-        }}
-      >
-        <p className="text-[10px]">Event</p>
-
-        <RadixSelect
-          value={on}
-          onChange={(v) => update({ on: v as MidiInputEvent })}
-          options={eventOptions}
-        />
-      </div>
-
-      <MidiTransportForm
-        port={port}
-        channels={channels}
-        ports={midi.inputs}
-        mode="in"
-        onChange={update}
-      />
-    </div>
-  )
-
   return (
     <BaseBlock
       node={props}
       sources={1}
       onReset={reset}
-      settings={MidiSettings}
+      settings={() => <Settings id={id} schema={schema} />}
       className="px-4 py-2 font-mono text-crimson-11"
     >
       {last ? (
@@ -114,4 +80,43 @@ export const MidiInBlock = (props: MidiInProps) => {
       )}
     </BaseBlock>
   )
-}
+})
+
+const createSettings = (inputs: string[]) =>
+  createSchema({
+    type: "MidiIn",
+    fields: [
+      {
+        key: "on",
+        type: "select",
+        options: [
+          { key: "NoteOn", title: "Note On" },
+          { key: "NoteOff", title: "Note Off" },
+          { key: "ControlChange", title: "Control Change" },
+        ],
+      },
+      {
+        key: "port",
+        type: "select",
+        from: (v) => (v as number).toString(),
+        into: (v) => parseInt(v as string),
+
+        // @ts-expect-error - to fix later, incompatible with key inference
+        options: inputs.map((port, id) => ({
+          key: id.toString(),
+          title: port,
+        })),
+      },
+      {
+        key: "channels",
+        type: "text",
+
+        from: (v) => (v as number[]).join(""),
+        into: (v) =>
+          (v as string)
+            .split(" ")
+            .map(Number)
+            .filter((x: number) => !isNaN(x) && x > 0 && x < 128),
+      },
+    ],
+  })
