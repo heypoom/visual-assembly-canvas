@@ -67,14 +67,12 @@ export const ValueViewBlock = memo((props: Props) => {
     return <div className="px-2 py-1 text-red-11">unknown visual: {type}</div>
   }
 
-  const handleUpdate = () => updateValueViewers()
-
   return (
     <BaseBlock
       node={props}
       className="relative font-mono"
       schema={schema}
-      settingsConfig={{ onUpdate: handleUpdate, className: "px-3 pb-2" }}
+      settingsConfig={{ onUpdate: updateValueViewers, className: "px-3 pb-2" }}
     >
       {display()}
 

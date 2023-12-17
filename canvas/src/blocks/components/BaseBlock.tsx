@@ -41,7 +41,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
   function renderSettings() {
     if (props.schema) {
       return (
-        <Settings id={id} schema={props.schema} {...props.settingsConfig} />
+        <Settings node={node} schema={props.schema} {...props.settingsConfig} />
       )
     }
 

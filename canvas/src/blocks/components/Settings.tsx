@@ -1,11 +1,10 @@
-import { useStore } from "@nanostores/react"
 import { Checkbox, TextField } from "@radix-ui/themes"
 import cn from "classnames"
-import { ReactNode, useMemo } from "react"
+import { ReactNode, useState } from "react"
+import { NodeProps } from "reactflow"
 
 import { BlockKeys, Field, SchemaOf } from "@/blocks"
 import { engine } from "@/engine"
-import { $nodes } from "@/store/nodes"
 import { BlockFieldOf, BlockTypes } from "@/types/Node"
 import { RadixSelect } from "@/ui"
 
@@ -16,9 +15,11 @@ export interface SettingsConfig {
 }
 
 type Props<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {
-  id: number
+  node: NodeProps
   schema: SchemaOf<T, F>
 } & SettingsConfig
+
+type Inputs = Record<string, string>
 
 export const Settings = <
   T extends BlockTypes,
@@ -26,17 +27,15 @@ export const Settings = <
 >(
   props: Props<T, F>,
 ) => {
-  const { id, schema, className } = props
+  const { node, schema, className } = props
+  const { id } = node.data
 
-  const nodes = useStore($nodes)
-  const node = useMemo(() => nodes.find((n) => n.data.id === id), [id, nodes])
+  const [inputs, setInputs] = useState<Inputs>({})
 
   const update = (data: Partial<BlockFieldOf<T>>) => {
     engine.setBlock(id, schema.type, data)
     props.onUpdate?.()
   }
-
-  if (!node) return null
 
   return (
     <div className={cn("flex flex-col text-1 font-mono gap-y-2", className)}>
@@ -47,10 +46,15 @@ export const Settings = <
         const key = field.key as string
         const name = field.title ?? key ?? "setting"
 
+        const input = inputs[key]
+
         let value = data[field.key] as unknown
         if (from) value = from(value)
 
-        const set = (key: string, value: unknown) => {
+        const setText = (key: string, value: string) =>
+          setInputs((inputs) => ({ ...inputs, [key]: value }))
+
+        const updateKey = (key: string, value: unknown) => {
           const v = into ? into(value) : value
           if (into && v === undefined) return
 
@@ -60,6 +64,15 @@ export const Settings = <
         if (type === "number") {
           const { min = 0, max = 1000000 } = field
 
+          const updateNumber = () => {
+            const n = parseInt(input)
+            if (isNaN(n)) return
+            if (n < min) return
+            if (n > max) return
+
+            updateKey(key, n)
+          }
+
           return (
             <FieldGroup key={key} name={name}>
               <TextField.Input
@@ -67,15 +80,10 @@ export const Settings = <
                 min={min}
                 max={max}
                 size="1"
-                value={value?.toString()}
-                onChange={(e) => {
-                  const n = parseInt(e.target.value)
-                  if (isNaN(n)) return
-                  if (n < min) return
-                  if (n > max) return
-
-                  set(key, n)
-                }}
+                value={input ?? value}
+                onChange={(e) => setText(key, e.target.value)}
+                onBlur={updateNumber}
+                onKeyDown={(e) => e.key === "Enter" && updateNumber()}
               />
             </FieldGroup>
           )
@@ -98,11 +106,11 @@ export const Settings = <
 
           const onChange = (next: string) => {
             if (typeof value === "string") {
-              set(key, next)
+              updateKey(key, next)
             } else if (vt && vt.type) {
               const opt = field.options.find((o) => o.key === next)
 
-              set(key, { type: next, ...opt?.defaults })
+              updateKey(key, { type: next, ...opt?.defaults })
             }
           }
 
@@ -123,7 +131,7 @@ export const Settings = <
                 onCheckedChange={(next) => {
                   if (next === "indeterminate") return
 
-                  set(key, next)
+                  updateKey(key, next)
                 }}
               />
             </FieldGroup>
@@ -136,8 +144,10 @@ export const Settings = <
               <TextField.Input
                 size="1"
                 className="nodrag"
-                value={value as string}
-                onChange={(e) => set(key, e.target.value)}
+                value={input ?? value}
+                onChange={(e) => setText(key, e.target.value)}
+                onBlur={() => updateKey(key, input)}
+                onKeyDown={(e) => e.key === "Enter" && updateKey(key, input)}
               />
             </FieldGroup>
           )
