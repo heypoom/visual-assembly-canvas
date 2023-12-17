@@ -57,7 +57,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
       engine.setBlock(viewer.data.id, "ValueView", {
         target: id,
         size: end - start + 1,
-        offset: start,
+        offset: memStart + start,
       })
 
       updateValueViewers()
