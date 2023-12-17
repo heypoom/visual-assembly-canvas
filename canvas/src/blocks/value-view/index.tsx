@@ -1,6 +1,10 @@
 import { useStore } from "@nanostores/react"
+import cn from "classnames"
+import { divide } from "lodash"
+import { memo } from "react"
 
 import { BaseBlock } from "@/blocks"
+import { bitsToList } from "@/blocks/value-view/utils/bits-to-list"
 import { engine } from "@/engine"
 import { updateNodeData } from "@/store/blocks"
 import { $remoteValues } from "@/store/remote-values"
@@ -9,7 +13,7 @@ import { BlockPropsOf } from "@/types/Node"
 type Props = BlockPropsOf<"ValueView">
 type Data = Props["data"]
 
-export const ValueViewBlock = (props: Props) => {
+export const ValueViewBlock = memo((props: Props) => {
   const { id, target, offset, size, visual } = props.data
   const valueMap = useStore($remoteValues)
   const values = valueMap[id] ?? []
@@ -21,15 +25,59 @@ export const ValueViewBlock = (props: Props) => {
     updateNodeData(id, data)
   }
 
+  const Settings = () => <div className="text-1 font-mono">foo</div>
+
   window.vvUpdater = update
 
-  return (
-    <BaseBlock node={props} className="px-4 py-3">
-      <code>{values.join(", ")}</code>
+  const hx = (n: number) => n.toString(16).padStart(4, "0").toUpperCase()
 
-      <code className="text-1 text-gray-8">
-        o={offset}, s={size}, t={target}
-      </code>
+  const display = () => {
+    const { type } = visual
+
+    switch (type) {
+      case "Int": {
+        return (
+          <div className="flex font-mono gap-x-2 px-2 py-1">
+            {values.map((v, i) => (
+              <div key={i}>{v}</div>
+            ))}
+          </div>
+        )
+      }
+
+      case "ColorGrid": {
+        const groups = bitsToList(values)
+
+        return (
+          <div className="flex flex-col">
+            {groups.map((group, i) => (
+              <div key={i} className="grid grid-cols-8">
+                {group.map((bit, j) => (
+                  <div
+                    key={j}
+                    className={cn(
+                      "px-2 py-2",
+                      bit ? "bg-gray-12" : "transparent",
+                    )}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        )
+      }
+    }
+
+    return <div className="px-2 py-1 text-red-11">unknown visual: {type}</div>
+  }
+
+  return (
+    <BaseBlock node={props} settings={Settings} className="relative font-mono">
+      {display()}
+
+      <div className="text-[8px] text-gray-8 absolute font-mono bottom-[-16px] flex min-w-[100px]">
+        o=0x{hx(offset)} s={size} t={target}
+      </div>
     </BaseBlock>
   )
-}
+})
