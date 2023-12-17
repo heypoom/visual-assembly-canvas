@@ -55,6 +55,7 @@ export const Settings = <
                 value={value?.toString()}
                 onChange={(e) => {
                   const n = parseInt(e.target.value)
+                  if (isNaN(n)) return
                   if (n < min) return
                   if (n > max) return
 
