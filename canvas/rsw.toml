@@ -1,4 +1,4 @@
-name = "machin"
+name = "machine"
 version = "0.1.0"
 
 # default is 50 milliseconds
@@ -12,3 +12,8 @@ using = "wasm-pack"
 [[crates]]
 name = "machine-wasm"
 link = true
+target = "web"
+out-dir = "pkg"
+
+[crates.watch]
+profile = "release"

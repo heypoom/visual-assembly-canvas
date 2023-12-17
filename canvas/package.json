@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"rsw watch\" \"vite\"",
+    "dev": "concurrently 'rsw watch' 'vite'",
     "build": "source ./ci-setup.sh && rsw build && tsc && vite build",
+    "watch:rs": "cd machine-wasm && cargo watch --workdir .. --watch ../machine/src --watch machine-wasm/src -s 'wasm-pack build machine-wasm --out-dir pkg-release --target web --release'",
     "rsw": "rsw",
     "lint": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0 .",
     "lint:fix": "eslint --fix --ext ts,tsx --report-unused-disable-directives --max-warnings 0 .",
