@@ -1,4 +1,5 @@
 import { useStore } from "@nanostores/react"
+import { useMemo } from "react"
 
 import { BaseBlock } from "@/blocks"
 import { Settings } from "@/blocks/components/Settings"
@@ -12,24 +13,8 @@ import { MidiTransportForm } from "./transport"
 type MidiOutProps = BlockPropsOf<"MidiOut">
 type MidiOutData = MidiOutProps["data"]
 
-const schema = createSchema({
-  type: "MidiOut",
-  fields: [
-    {
-      key: "format",
-      type: "select",
-      options: [
-        { key: "Note" },
-        { key: "ControlChange", title: "Control Change" },
-        { key: "Raw" },
-        { key: "Launchpad" },
-      ],
-    },
-  ],
-})
-
 export const MidiOutBlock = (props: MidiOutProps) => {
-  const { id, format, port, channel } = props.data
+  const { id, format, channel } = props.data
 
   const lastEvents = useStore($lastMidiEvent)
   const midi = useStore($midi)
@@ -38,6 +23,36 @@ export const MidiOutBlock = (props: MidiOutProps) => {
 
   const update = (input: Partial<MidiOutData>) =>
     engine.setBlock(id, "MidiOut", input)
+
+  const schema = useMemo(() => {
+    return createSchema({
+      type: "MidiOut",
+      fields: [
+        {
+          key: "format",
+          type: "select",
+          options: [
+            { key: "Note" },
+            { key: "ControlChange", title: "Control Change" },
+            { key: "Raw" },
+            { key: "Launchpad" },
+          ],
+        },
+        {
+          key: "port",
+          type: "select",
+          from: (v) => (v as number).toString(),
+          into: (v) => parseInt(v as string),
+
+          // @ts-expect-error - to fix later, incompatible with key inference
+          options: midi.outputs.map((port, id) => ({
+            key: id.toString(),
+            title: port,
+          })),
+        },
+      ],
+    })
+  }, [midi.outputs])
 
   function getLog() {
     if (!last) return `${format}()`
@@ -53,16 +68,12 @@ export const MidiOutBlock = (props: MidiOutProps) => {
   const settings = () => (
     <Settings id={id} schema={schema}>
       <MidiTransportForm
-        port={port}
         channels={[channel]}
-        ports={midi.outputs}
         mode="out"
         onChange={(data) => {
           if ("channels" in data) {
             return update({ channel: data.channels?.[0] ?? 0 })
           }
-
-          update(data)
         }}
       />
     </Settings>

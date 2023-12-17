@@ -20,6 +20,9 @@ type SelectField<T extends BlockTypes, K extends BlockKeys<T>> = {
 export type Field<T extends BlockTypes, K extends BlockKeys<T>> = {
   key: K
   title?: string
+
+  from?: (v: unknown) => unknown
+  into?: (v: unknown) => unknown
 } & (TextField | NumberField | SelectField<T, K> | CheckboxField)
 
 export type SchemaOf<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {

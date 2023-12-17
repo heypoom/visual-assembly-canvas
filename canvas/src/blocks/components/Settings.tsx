@@ -33,19 +33,26 @@ export const Settings = <
     props.onUpdate?.()
   }
 
-  const set = (key: string, value: unknown) => update({ [key]: value } as never)
-
   if (!node) return null
 
   return (
     <div className={cn("flex flex-col text-1 font-mono gap-y-2", className)}>
       {schema.fields.map((field) => {
-        const { type } = field
+        const { type, from, into } = field
         const data = node.data as BlockFieldOf<T>
 
         const key = field.key as string
-        const value = data[field.key]
         const name = field.title ?? key ?? "setting"
+
+        let value = data[field.key] as unknown
+        if (from) value = from(value)
+
+        const set = (key: string, value: unknown) => {
+          const v = into ? into(value) : value
+          console.log(`set ${key} to`, v)
+
+          update({ [key]: v } as never)
+        }
 
         if (type === "number") {
           const { min = 0, max = 1000000 } = field
