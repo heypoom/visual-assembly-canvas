@@ -1,11 +1,11 @@
 use machine::blocks::BlockData;
 use machine::canvas::wire::{Port, Wire};
 pub use machine::canvas::{Canvas, CanvasError};
+use machine::status::MachineStatus;
 use machine::Register::{FP, PC, SP};
 use machine::{Action, Event, Message};
-use machine::status::MachineStatus;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::{to_value};
+use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 
 const NULL: JsValue = JsValue::NULL;
@@ -31,7 +31,7 @@ pub struct InspectedMachine {
 
     pub inbox_size: usize,
     pub outbox_size: usize,
-    pub status: MachineStatus
+    pub status: MachineStatus,
 }
 
 type Return = Result<JsValue, JsValue>;
@@ -150,7 +150,7 @@ impl Controller {
             },
             inbox_size: m.inbox.len(),
             outbox_size: m.outbox.len(),
-            status
+            status,
         };
 
         Ok(to_value(&state)?)
@@ -199,10 +199,7 @@ impl Controller {
     }
 
     pub fn send_message_to_block(&mut self, block_id: u16, action: Action) -> Return {
-        returns(
-            self.canvas
-                .send_message_to_block(block_id, action),
-        )
+        returns(self.canvas.send_message_to_block(block_id, action))
     }
 
     pub fn update_block(&mut self, id: u16, data: BlockData) -> Return {
