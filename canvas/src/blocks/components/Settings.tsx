@@ -124,16 +124,18 @@ export const Settings = <
         if (type === "checkbox") {
           return (
             <FieldGroup key={key} name={name}>
-              <Checkbox
-                size="1"
-                color="crimson"
-                checked={value as boolean}
-                onCheckedChange={(next) => {
-                  if (next === "indeterminate") return
+              <div className="flex items-center">
+                <Checkbox
+                  size="1"
+                  color="crimson"
+                  checked={value as boolean}
+                  onCheckedChange={(next) => {
+                    if (next === "indeterminate") return
 
-                  updateKey(key, next)
-                }}
-              />
+                    updateKey(key, next)
+                  }}
+                />
+              </div>
             </FieldGroup>
           )
         }
