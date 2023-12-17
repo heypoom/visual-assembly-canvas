@@ -51,6 +51,8 @@ export const Settings = <
           const v = into ? into(value) : value
           console.log(`set ${key} to`, v)
 
+          if (into && v === undefined) return
+
           update({ [key]: v } as never)
         }
 
