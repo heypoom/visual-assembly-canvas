@@ -37,7 +37,7 @@ export function MidiTransportForm(props: Props) {
     form.setValue("port", props.port.toString())
   }, [form, props.port])
 
-  const trigger = (e: any) => {
+  const trigger = (e: { target: { name: string; value: string } }) => {
     switch (e.target.name) {
       case "port": {
         let port = parseInt(e.target.value)

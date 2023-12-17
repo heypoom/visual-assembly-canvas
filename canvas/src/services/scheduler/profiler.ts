@@ -19,6 +19,8 @@ const ranges: Record<string, [number, number]> = {
   highlight: [0.1, 0.8],
 }
 
+type Fn = (...args: unknown[]) => unknown
+
 export class Profiler {
   ready = false
   enabled = false
@@ -71,7 +73,7 @@ export class Profiler {
     this.logs.get(key)?.enq(value)
   }
 
-  public spy = <T extends (...args: any[]) => any>(key: string, fn: T): T => {
+  public spy = <T extends Fn>(key: string, fn: T): T => {
     if (!this.enabled) return fn
 
     const spy = (...args: Parameters<T>) => {
@@ -200,6 +202,3 @@ export class Profiler {
 }
 
 export const profiler = new Profiler()
-
-// @ts-ignore
-window.profiler = profiler

@@ -8,9 +8,10 @@ import {
   start,
   Synth,
 } from "tone"
-import type { Instrument } from "tone/build/esm/instrument/Instrument"
 
-const synthMap: Record<SynthConfig, () => Instrument<any>> = {
+type Ins = PolySynth | NoiseSynth
+
+const synthMap: Record<SynthConfig, () => Ins> = {
   Basic: () => new PolySynth(Synth).toDestination(),
   FM: () => new PolySynth(FMSynth).toDestination(),
   AM: () => new PolySynth(AMSynth).toDestination(),
@@ -20,7 +21,7 @@ const synthMap: Record<SynthConfig, () => Instrument<any>> = {
 export class AudioManager {
   isReady = false
 
-  synths: Map<number, Instrument<any>> = new Map()
+  synths: Map<number, Ins> = new Map()
 
   async ready() {
     if (this.isReady) return

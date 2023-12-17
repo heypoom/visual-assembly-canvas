@@ -1,7 +1,7 @@
 import { CanvasError } from "machine-wasm"
 import { action, map } from "nanostores"
 
-import { isBlock, isBlockType } from "@/blocks"
+import { isBlock } from "@/blocks"
 import { CanvasEngine, engine } from "@/engine"
 import {
   $memoryPageConfig,

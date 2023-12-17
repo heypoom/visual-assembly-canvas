@@ -1,3 +1,5 @@
 declare module "*.grammar" {
-  export const parser: any
+  import { LRParser } from "@codemirror/language"
+
+  export const parser: LRParser
 }

@@ -3,7 +3,6 @@ import { memo, useState } from "react"
 
 import { BaseBlock } from "@/blocks"
 import { engine } from "@/engine"
-import { updateNodeData } from "@/store/blocks"
 import { BlockPropsOf } from "@/types/Node"
 
 type ClockProps = BlockPropsOf<"Clock">
@@ -37,7 +36,7 @@ export const ClockBlock = memo((props: ClockProps) => {
             setCycleError(!valid)
 
             if (valid) {
-              engine.updateBlockData(id, "Clock", { freq })
+              engine.setBlock(id, "Clock", { freq })
             }
           }}
           {...(cycleError && { color: "tomato" })}
@@ -53,7 +52,7 @@ export const ClockBlock = memo((props: ClockProps) => {
           onCheckedChange={(ping) => {
             if (ping === "indeterminate") return
 
-            engine.updateBlockData(id, "Clock", { ping })
+            engine.setBlock(id, "Clock", { ping })
           }}
         />
       </div>

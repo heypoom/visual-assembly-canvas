@@ -4,7 +4,6 @@ import { useState } from "react"
 
 import { BaseBlock } from "@/blocks/components"
 import { engine } from "@/engine"
-import { updateNodeData } from "@/store/blocks"
 import { BlockPropsOf } from "@/types/Node"
 import { RadixSelect } from "@/ui"
 
@@ -33,10 +32,8 @@ export const OscBlock = (props: OscProps) => {
   const [cycleText, setCycleText] = useState("")
   const [cycleError, setCycleError] = useState(false)
 
-  function setWaveform(waveform: Waveform) {
-    updateNodeData(id, { waveform })
-    engine.send(id, { type: "SetWaveform", waveform })
-  }
+  const setWaveform = (waveform: Waveform) =>
+    engine.setBlock(id, "Osc", { waveform })
 
   function handleWaveChange(key: string) {
     let w = { type: key } as Waveform

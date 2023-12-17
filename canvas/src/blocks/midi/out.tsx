@@ -3,7 +3,6 @@ import { MidiOutputFormat } from "machine-wasm"
 
 import { BaseBlock } from "@/blocks"
 import { engine } from "@/engine"
-import { updateNodeData } from "@/store/blocks"
 import { $lastMidiEvent, $midi } from "@/store/midi"
 import { BlockPropsOf } from "@/types/Node"
 import { RadixSelect } from "@/ui"
@@ -30,21 +29,8 @@ export const MidiOutBlock = (props: MidiOutProps) => {
 
   const last = lastEvents[id]
 
-  function update(input: Partial<MidiOutData>) {
-    updateNodeData(id, input)
-
-    if (typeof input.format === "string") {
-      engine.send(id, { type: "SetMidiOutputFormat", format: input.format })
-    }
-
-    if (input.port !== undefined) {
-      engine.send(id, { type: "SetMidiPort", port: input.port })
-    }
-
-    if (input.channel !== undefined) {
-      engine.send(id, { type: "SetMidiChannels", channels: [input.channel] })
-    }
-  }
+  const update = (input: Partial<MidiOutData>) =>
+    engine.setBlock(id, "MidiOut", input)
 
   function getLog() {
     if (!last) return `${format}()`

@@ -319,7 +319,7 @@ export function useCommandRunner() {
 
   const run = useMemo(() => {
     return createCommandRunner({ saveState })
-  }, [])
+  }, [saveState])
 
   return { run }
 }

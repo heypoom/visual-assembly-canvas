@@ -12,20 +12,22 @@ interface Props {
   disabled?: boolean | undefined
 }
 
-export const RadixSelect = React.forwardRef((props: Props, ref) => {
-  const { options } = props
+export const RadixSelect = React.forwardRef<HTMLButtonElement, Props>(
+  (props, ref) => {
+    const { options } = props
 
-  return (
-    <Select.Root size="1" onValueChange={props.onChange} value={props.value}>
-      <Select.Trigger ref={ref as any} />
+    return (
+      <Select.Root size="1" onValueChange={props.onChange} value={props.value}>
+        <Select.Trigger ref={ref} />
 
-      <Select.Content>
-        {options.map((option) => (
-          <Select.Item value={option.value} key={option.value}>
-            {option.label}
-          </Select.Item>
-        ))}
-      </Select.Content>
-    </Select.Root>
-  )
-})
+        <Select.Content>
+          {options.map((option) => (
+            <Select.Item value={option.value} key={option.value}>
+              {option.label}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+    )
+  },
+)

@@ -10,7 +10,6 @@ import {
   MidiEvent,
   midiManager,
 } from "@/services/midi"
-import { updateNodeData } from "@/store/blocks"
 import { $midi } from "@/store/midi"
 import { $status } from "@/store/status"
 import { BlockPropsOf } from "@/types/Node"
@@ -33,24 +32,8 @@ export const MidiInBlock = (props: MidiInProps) => {
 
   const [last, setLast] = useState<[number, number, number] | null>(null)
 
-  function update(input: Partial<MidiInData>) {
-    updateNodeData(id, input)
-
-    if (typeof input.on === "string") {
-      engine.send(id, { type: "SetMidiInputEvent", event: input.on })
-    }
-
-    if (typeof input.port === "number") {
-      engine.send(id, { type: "SetMidiPort", port: input.port })
-    }
-
-    if ("channels" in input) {
-      engine.send(id, {
-        type: "SetMidiChannels",
-        channels: input.channels ?? [],
-      })
-    }
-  }
+  const update = (input: Partial<MidiInData>) =>
+    engine.setBlock(id, "MidiIn", input)
 
   const handle = useCallback(
     (e: MidiEvent) => {
@@ -83,7 +66,7 @@ export const MidiInBlock = (props: MidiInProps) => {
     midiManager.on(id, { type: on, handle, channels, port }).then()
 
     key.current = currKey
-  }, [id, on, port, channels])
+  }, [id, on, port, channels, handle])
 
   const reset = () => setLast(null)
 

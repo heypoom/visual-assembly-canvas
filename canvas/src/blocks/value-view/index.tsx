@@ -1,25 +1,22 @@
 import { useStore } from "@nanostores/react"
 import cn from "classnames"
-import { divide } from "lodash"
 import { memo } from "react"
 
 import { BaseBlock } from "@/blocks"
 import { bitsToList } from "@/blocks/value-view/utils/bits-to-list"
-import { engine } from "@/engine"
-import { updateNodeData } from "@/store/blocks"
 import { $remoteValues } from "@/store/remote-values"
 import { BlockPropsOf } from "@/types/Node"
 
 type Props = BlockPropsOf<"ValueView">
-type Data = Props["data"]
+// type Data = Props["data"]
 
 export const ValueViewBlock = memo((props: Props) => {
   const { id, target, offset, size, visual } = props.data
   const valueMap = useStore($remoteValues)
   const values = valueMap[id] ?? []
 
-  const update = (config: Partial<Data>) =>
-    engine.updateBlockData(id, "ValueView", config)
+  // const update = (config: Partial<Data>) =>
+  //   engine.setBlock(id, "ValueView", config)
 
   const Settings = () => <div className="text-1 font-mono">foo</div>
 

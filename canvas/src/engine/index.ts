@@ -20,7 +20,7 @@ import {
 } from "@/store/results"
 import { $status } from "@/store/status"
 import { InspectionState } from "@/types/MachineEvent"
-import { BaseBlockFieldOf, BlockFieldOf, BlockTypes } from "@/types/Node"
+import { BaseBlockFieldOf, BlockTypes } from "@/types/Node"
 
 import { processEffects } from "./effects"
 import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
@@ -394,7 +394,7 @@ export class CanvasEngine {
     this.ctx.send_message_to_block(id, action)
   }
 
-  public updateBlockData<T extends BlockTypes>(
+  public setBlock<T extends BlockTypes>(
     id: number,
     type: T,
     config: Partial<BaseBlockFieldOf<T>>,
@@ -414,6 +414,10 @@ export class CanvasEngine {
 export const engine = new CanvasEngine()
 await engine.setup()
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+declare global {
+  interface Window {
+    engine: CanvasEngine
+  }
+}
+
 window.engine = engine

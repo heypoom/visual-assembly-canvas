@@ -28,15 +28,12 @@ export function useAutoSave(config: PersistConfig = {}) {
       driver.save(serialize)
     }, AUTO_SAVE_INTERVAL)
 
-    // @ts-ignore
-    window.persist = { driver, serialize, restore, clear }
-
     restored.current = true
 
     return () => {
       clearInterval(saveTimer.current)
     }
-  }, [])
+  }, [driver, restore, serialize])
 
   return { serialize, restore, clear }
 }

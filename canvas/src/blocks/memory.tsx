@@ -37,10 +37,8 @@ export const MemoryBlock = (props: MemoryProps) => {
     })
   }
 
-  function toggleReset() {
-    updateNodeData(id, { auto_reset: !auto_reset })
-    engine.send(id, { type: "SetAutoReset", auto_reset: !auto_reset })
-    engine.ctx?.force_tick_block(id)
+  const toggleReset = () => {
+    engine.setBlock(id, "Memory", { auto_reset: !auto_reset })
   }
 
   useEffect(() => {
@@ -49,7 +47,7 @@ export const MemoryBlock = (props: MemoryProps) => {
 
       setBatchInput(data)
     }
-  }, [isBatch, isHex, props.data.values])
+  }, [base, isBatch, isHex, props.data.values])
 
   function updateBatch() {
     if (!isBatch) return
@@ -88,6 +86,18 @@ export const MemoryBlock = (props: MemoryProps) => {
       </div>
     </div>
   )
+
+  const write = (value: number, index: number) => {
+    if (value === undefined || value === null) return
+
+    engine.send(id, {
+      type: "Write",
+      address: index,
+      data: [value],
+    })
+
+    engine.ctx?.force_tick_block(id)
+  }
 
   return (
     <BaseBlock
@@ -130,17 +140,7 @@ export const MemoryBlock = (props: MemoryProps) => {
 
                   set(index, n)
                 }}
-                onBlur={() => {
-                  if (value === undefined || value === null) return
-
-                  engine.send(id, {
-                    type: "Write",
-                    address: index,
-                    data: [value],
-                  })
-
-                  engine.ctx?.force_tick_block(id)
-                }}
+                onBlur={() => write(value, index)}
               />
             )
           })}

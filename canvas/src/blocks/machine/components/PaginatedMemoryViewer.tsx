@@ -2,7 +2,6 @@ import { Icon } from "@iconify/react"
 import { useStore } from "@nanostores/react"
 import cn from "classnames"
 import { useState } from "react"
-import { useReactFlow } from "reactflow"
 
 import { MemoryViewer } from "@/blocks/machine/components/MemoryViewer"
 import { engine } from "@/engine"
@@ -18,7 +17,6 @@ import {
 } from "@/store/memory"
 import { $nodes } from "@/store/nodes"
 import { updateValueViewers } from "@/store/remote-values"
-import { updateMemoryViewer } from "@/store/results"
 
 interface Props {
   id: number
@@ -56,7 +54,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
     // Update remote value viewer if it is selected
     if (viewer) {
-      engine.updateBlockData(viewer.data.id, "ValueView", {
+      engine.setBlock(viewer.data.id, "ValueView", {
         target: id,
         size: end - start + 1,
         offset: start,

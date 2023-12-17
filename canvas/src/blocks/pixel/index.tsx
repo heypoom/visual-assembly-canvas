@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react"
 
 import { BaseBlock, getPixelColor, PaletteKey, paletteOptions } from "@/blocks"
 import { engine } from "@/engine"
-import { updateNodeData } from "@/store/blocks"
 import { BlockPropsOf } from "@/types/Node"
 import { RadixSelect } from "@/ui"
 
@@ -27,14 +26,8 @@ export const PixelBlock = (props: PixelProps) => {
   const pixels =
     data.pixels?.length > 0 ? data.pixels : [...Array(columns * 5)].fill(0)
 
-  function update(input: Partial<PixelData>) {
-    updateNodeData(id, input)
-
-    // Update the behaviour of pixel block.
-    if (typeof input.mode === "string") {
-      engine.send(id, { type: "SetPixelMode", mode: input.mode })
-    }
-  }
+  const update = (input: Partial<PixelData>) =>
+    engine.setBlock(id, "Pixel", input)
 
   const rows = Math.round(pixels.length / columns)
   const isDrawable = !!pixels && columns > 1
