@@ -80,13 +80,16 @@ export const Settings = <
           const vt = value as { type: string }
 
           let val = ""
-          if (typeof value === "string") val = value
-          if ("type" in vt) val = vt.type
+
+          if (value) {
+            if (typeof value === "string") val = value
+            else if (vt && vt.type) val = vt.type
+          }
 
           const onChange = (next: string) => {
-            if (typeof value === "string") set(key, next)
-
-            if ("type" in vt) {
+            if (typeof value === "string") {
+              set(key, next)
+            } else if (vt && vt.type) {
               const opt = field.options.find((o) => o.key === next)
 
               set(key, { type: next, ...opt?.defaults })

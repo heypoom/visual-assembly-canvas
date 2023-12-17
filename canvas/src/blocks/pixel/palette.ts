@@ -6,11 +6,6 @@ export const palettes = {
   ],
 } satisfies Record<string, string[]>
 
-export const paletteOptions = Object.keys(palettes).map((value) => ({
-  value,
-  label: value,
-}))
-
 export type PaletteKey = keyof typeof palettes
 
 export const getPixelColor = (pixel: number, palette: PaletteKey): string =>

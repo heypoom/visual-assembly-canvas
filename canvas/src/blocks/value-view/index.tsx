@@ -91,7 +91,7 @@ export const ValueViewBlock = memo((props: Props) => {
 
   const handleUpdate = () => updateValueViewers()
 
-  const renderSettings = () => (
+  const settings = () => (
     <Settings
       id={id}
       schema={schema}
@@ -101,11 +101,7 @@ export const ValueViewBlock = memo((props: Props) => {
   )
 
   return (
-    <BaseBlock
-      node={props}
-      settings={renderSettings}
-      className="relative font-mono"
-    >
+    <BaseBlock node={props} settings={settings} className="relative font-mono">
       {display()}
 
       <div className="text-[8px] text-gray-8 absolute font-mono bottom-[-16px] flex min-w-[100px]">

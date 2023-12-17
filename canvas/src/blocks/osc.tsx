@@ -60,7 +60,7 @@ export const OscBlock = (props: OscProps) => {
     })
   }
 
-  const renderSettings = () => (
+  const settings = () => (
     <Settings id={id} schema={schema}>
       {wave === "Square" && (
         <FieldGroup name="Duty Cycle">
@@ -84,7 +84,7 @@ export const OscBlock = (props: OscProps) => {
       node={props}
       targets={1}
       sources={1}
-      settings={renderSettings}
+      settings={settings}
       className="px-4 py-2 font-mono text-center"
     >
       {getOscLog()}
