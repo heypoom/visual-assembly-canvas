@@ -40,7 +40,7 @@ export const syncBlockData = (block: { id: number; data: BlockTypeMap }) => {
   updateNode(block.id, (node) => {
     const type = node.type
 
-    if (type) node.data = { ...node.data, ...block.data[type] }
+    if (type) node.data = { ...node.data, ...block.data }
   })
 }
 
