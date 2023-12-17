@@ -1,9 +1,7 @@
 import { useStore } from "@nanostores/react"
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
-import { Settings } from "@/blocks/components/Settings"
-import { BaseBlock } from "@/blocks/index"
-import { createSchema } from "@/blocks/types/schema"
+import { BaseBlock, createSchema } from "@/blocks"
 import { engine } from "@/engine"
 import {
   isControlChangeEvent,
@@ -68,7 +66,7 @@ export const MidiInBlock = memo((props: MidiInProps) => {
       node={props}
       sources={1}
       onReset={reset}
-      settings={() => <Settings id={id} schema={schema} />}
+      schema={schema}
       className="px-4 py-2 font-mono text-crimson-11"
     >
       {last ? (

@@ -2,34 +2,12 @@ import { useStore } from "@nanostores/react"
 import cn from "classnames"
 import { memo } from "react"
 
-import { BaseBlock } from "@/blocks"
-import { Settings } from "@/blocks/components/Settings"
-import { createSchema } from "@/blocks/types/schema"
+import { BaseBlock, createSchema } from "@/blocks"
 import { bitsToList } from "@/blocks/value-view/utils/bits-to-list"
 import { $remoteValues, updateValueViewers } from "@/store/remote-values"
 import { BlockPropsOf } from "@/types/Node"
 
 type Props = BlockPropsOf<"ValueView">
-
-const schema = createSchema({
-  type: "ValueView",
-  fields: [
-    { key: "size", type: "number", min: 1 },
-    { key: "offset", type: "number", min: 0 },
-    {
-      key: "visual",
-      type: "select",
-      options: [
-        { key: "Int", title: "Number" },
-        { key: "Bytes", title: "Byte View" },
-        { key: "Switches", title: "Switch", defaults: { bits: [] } },
-        { key: "ColorGrid", title: "Binary Grid" },
-        { key: "String" },
-      ],
-    },
-    { key: "target", type: "number", min: 0 },
-  ],
-})
 
 export const ValueViewBlock = memo((props: Props) => {
   const { id, target, offset, size, visual } = props.data
@@ -91,17 +69,13 @@ export const ValueViewBlock = memo((props: Props) => {
 
   const handleUpdate = () => updateValueViewers()
 
-  const settings = () => (
-    <Settings
-      id={id}
-      schema={schema}
-      onUpdate={handleUpdate}
-      className="px-3 pb-2"
-    />
-  )
-
   return (
-    <BaseBlock node={props} settings={settings} className="relative font-mono">
+    <BaseBlock
+      node={props}
+      className="relative font-mono"
+      schema={schema}
+      settingsConfig={{ onUpdate: handleUpdate, className: "px-3 pb-2" }}
+    >
       {display()}
 
       <div className="text-[8px] text-gray-8 absolute font-mono bottom-[-16px] flex min-w-[100px]">
@@ -109,4 +83,24 @@ export const ValueViewBlock = memo((props: Props) => {
       </div>
     </BaseBlock>
   )
+})
+
+const schema = createSchema({
+  type: "ValueView",
+  fields: [
+    { key: "size", type: "number", min: 1 },
+    { key: "offset", type: "number", min: 0 },
+    {
+      key: "visual",
+      type: "select",
+      options: [
+        { key: "Int", title: "Number" },
+        { key: "Bytes", title: "Byte View" },
+        { key: "Switches", title: "Switch", defaults: { bits: [] } },
+        { key: "ColorGrid", title: "Binary Grid" },
+        { key: "String" },
+      ],
+    },
+    { key: "target", type: "number", min: 0 },
+  ],
 })

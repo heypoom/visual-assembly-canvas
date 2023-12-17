@@ -3,19 +3,22 @@ import { Checkbox, TextField } from "@radix-ui/themes"
 import cn from "classnames"
 import { ReactNode, useMemo } from "react"
 
-import { BlockKeys, Field, SchemaOf } from "@/blocks/types/schema"
+import { BlockKeys, Field, SchemaOf } from "@/blocks"
 import { engine } from "@/engine"
 import { $nodes } from "@/store/nodes"
 import { BlockFieldOf, BlockTypes } from "@/types/Node"
 import { RadixSelect } from "@/ui"
 
+export interface SettingsConfig {
+  className?: string
+  onUpdate?: () => void
+}
+
 type Props<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {
   id: number
   schema: SchemaOf<T, F>
-  className?: string
-  onUpdate?: () => void
   children?: ReactNode
-}
+} & SettingsConfig
 
 export const Settings = <
   T extends BlockTypes,

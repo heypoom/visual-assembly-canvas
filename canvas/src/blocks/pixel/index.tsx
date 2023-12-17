@@ -1,34 +1,13 @@
 import { useEffect, useRef } from "react"
 
-import { BaseBlock, getPixelColor } from "@/blocks"
-import { Settings } from "@/blocks/components/Settings"
-import { createSchema } from "@/blocks/types/schema"
+import { BaseBlock, createSchema, getPixelColor } from "@/blocks"
 import { BlockPropsOf } from "@/types/Node"
 
 const BLOCK_SIZE = 22
 
-const schema = createSchema({
-  type: "Pixel",
-  fields: [
-    {
-      key: "columns",
-      type: "number",
-      min: 2,
-      max: 16,
-    },
-    {
-      key: "mode",
-      type: "select",
-      title: "Behaviour",
-      options: [{ key: "Replace" }, { key: "Append" }],
-    },
-  ],
-})
-
 type PixelProps = BlockPropsOf<"Pixel">
 
 export const PixelBlock = (props: PixelProps) => {
-  const { id } = props.data
   const { data } = props
   const { columns = 9, palette = "base" } = data
 
@@ -69,12 +48,13 @@ export const PixelBlock = (props: PixelProps) => {
     }
   }, [pixels, columns, palette])
 
-  const settings = () => (
-    <Settings id={id} schema={schema} className="px-3 pb-3" />
-  )
-
   return (
-    <BaseBlock node={props} targets={1} settings={settings}>
+    <BaseBlock
+      node={props}
+      targets={1}
+      schema={schema}
+      settingsConfig={{ className: "px-3 pb-3" }}
+    >
       {isDrawable ? (
         <div
           className="w-full"
@@ -94,3 +74,21 @@ export const PixelBlock = (props: PixelProps) => {
     </BaseBlock>
   )
 }
+
+const schema = createSchema({
+  type: "Pixel",
+  fields: [
+    {
+      key: "columns",
+      type: "number",
+      min: 2,
+      max: 16,
+    },
+    {
+      key: "mode",
+      type: "select",
+      title: "Behaviour",
+      options: [{ key: "Replace" }, { key: "Append" }],
+    },
+  ],
+})

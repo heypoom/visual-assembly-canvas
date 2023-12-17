@@ -2,8 +2,10 @@ import cn from "classnames"
 import { CSSProperties, ReactNode, useReducer } from "react"
 import { NodeProps } from "reactflow"
 
+import { SchemaOf } from "@/blocks"
 import { BlockHandle } from "@/blocks/components/BlockHandle"
 import { RightClickMenu } from "@/blocks/components/RightClickMenu"
+import { Settings, SettingsConfig } from "@/blocks/components/Settings"
 
 interface BaseBlockProps {
   node: NodeProps
@@ -11,21 +13,21 @@ interface BaseBlockProps {
   sources?: number
   targets?: number
   children?: ReactNode
-  settings?: () => ReactNode
+
   style?: CSSProperties
   onReset?: () => void
+
+  /* eslint-disable-next-line */
+  schema?: SchemaOf<any, any>
+
+  settingsConfig?: SettingsConfig
+  renderSettings?: () => ReactNode
 }
 
 export const BaseBlock = (props: BaseBlockProps) => {
-  const {
-    node,
-    className,
-    sources = 0,
-    targets = 0,
-    settings: Settings,
-    children,
-  } = props
+  const { node, className, sources = 0, targets = 0, children } = props
 
+  const { id } = props.node.data
   const [showSettings, toggleSettings] = useReducer((n) => !n, false)
 
   const isSource = sources > 0 && targets === 0
@@ -35,6 +37,20 @@ export const BaseBlock = (props: BaseBlockProps) => {
     isSink && "!bg-cyan-9",
     isSource && "!bg-crimson-9",
   )
+
+  function renderSettings() {
+    if (props.schema) {
+      return (
+        <Settings id={id} schema={props.schema} {...props.settingsConfig} />
+      )
+    }
+
+    if (props.renderSettings) {
+      return renderSettings()
+    }
+
+    return null
+  }
 
   return (
     <div className="group">
@@ -49,11 +65,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
         />
       ))}
 
-      <RightClickMenu
-        id={node.data.id}
-        show={showSettings}
-        toggle={toggleSettings}
-      >
+      <RightClickMenu id={id} show={showSettings} toggle={toggleSettings}>
         <div
           style={props.style}
           className={cn(
@@ -66,7 +78,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
           )}
         >
           {children}
-          {showSettings && Settings && Settings()}
+          {showSettings && renderSettings()}
         </div>
       </RightClickMenu>
 

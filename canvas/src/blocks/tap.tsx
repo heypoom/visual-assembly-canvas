@@ -2,9 +2,7 @@ import { useStore } from "@nanostores/react"
 import { Port } from "machine-wasm"
 import { memo } from "react"
 
-import { BaseBlock } from "@/blocks/components"
-import { Settings } from "@/blocks/components/Settings"
-import { createSchema } from "@/blocks/types/schema"
+import { BaseBlock, createSchema } from "@/blocks"
 import { engine } from "@/engine"
 import { $status } from "@/store/status"
 import { BlockPropsOf } from "@/types/Node"
@@ -30,20 +28,16 @@ export const TapBlock = memo((props: TapProps) => {
     if (!status.running) engine.stepSlow(1)
   }
 
-  const settings = () => (
-    <Settings
-      id={id}
-      schema={schema}
-      className="absolute w-[160px] bg-gray-2 top-[46px] px-3 py-1 rounded-2 border-2 border-gray-8"
-    />
-  )
-
   return (
     <BaseBlock
       node={props}
       sources={1}
       className="rounded-1 px-5 py-2 bg-gray-5 border-2 border-gray-8 items-center justify-center gap-y-3"
-      settings={settings}
+      schema={schema}
+      settingsConfig={{
+        className:
+          "absolute w-[160px] bg-gray-2 top-[46px] px-3 py-1 rounded-2 border-2 border-gray-8",
+      }}
     >
       <button
         className="w-5 h-5 rounded-[100%] bg-crimson-9 hover:bg-cyan-11 border-2 border-gray-12 active:bg-cyan-9 focus:bg-cyan-11 outline-gray-12 focus:outline-cyan-12"

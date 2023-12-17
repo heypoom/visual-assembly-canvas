@@ -1,3 +1,5 @@
+import "./blocks/types/schema"
+
 import { DndContext } from "@dnd-kit/core"
 import { ReactFlowProvider } from "reactflow"
 

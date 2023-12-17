@@ -1,29 +1,9 @@
 import { TextField } from "@radix-ui/themes"
 import { useState } from "react"
 
-import { BaseBlock } from "@/blocks/components"
-import { FieldGroup, Settings } from "@/blocks/components/Settings"
-import { createSchema } from "@/blocks/types/schema"
+import { BaseBlock, createSchema, FieldGroup, Settings } from "@/blocks"
 import { engine } from "@/engine"
 import { BlockPropsOf } from "@/types/Node"
-
-const schema = createSchema({
-  type: "Osc",
-  fields: [
-    {
-      key: "waveform",
-      type: "select",
-      options: [
-        { key: "Sine" },
-        { key: "Cosine" },
-        { key: "Tangent" },
-        { key: "Square", defaults: { duty_cycle: 50 } },
-        { key: "Sawtooth" },
-        { key: "Triangle" },
-      ],
-    },
-  ],
-})
 
 type OscProps = BlockPropsOf<"Osc">
 
@@ -84,10 +64,28 @@ export const OscBlock = (props: OscProps) => {
       node={props}
       targets={1}
       sources={1}
-      settings={settings}
+      renderSettings={settings}
       className="px-4 py-2 font-mono text-center"
     >
       {getOscLog()}
     </BaseBlock>
   )
 }
+
+const schema = createSchema({
+  type: "Osc",
+  fields: [
+    {
+      key: "waveform",
+      type: "select",
+      options: [
+        { key: "Sine" },
+        { key: "Cosine" },
+        { key: "Tangent" },
+        { key: "Square", defaults: { duty_cycle: 50 } },
+        { key: "Sawtooth" },
+        { key: "Triangle" },
+      ],
+    },
+  ],
+})

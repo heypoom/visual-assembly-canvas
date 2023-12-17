@@ -105,7 +105,7 @@ export const MemoryBlock = (props: MemoryProps) => {
       targets={1}
       sources={1}
       className="border-green-9 font-mono px-4 py-3"
-      settings={settings}
+      renderSettings={settings}
     >
       {overGridLimit && !isBatch && (
         <p className="text-1 text-tomato-11">

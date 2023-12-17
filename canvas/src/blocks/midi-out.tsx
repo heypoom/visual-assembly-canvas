@@ -1,9 +1,7 @@
 import { useStore } from "@nanostores/react"
 import { useMemo } from "react"
 
-import { Settings } from "@/blocks/components/Settings"
-import { BaseBlock } from "@/blocks/index"
-import { createSchema } from "@/blocks/types/schema"
+import { BaseBlock, createSchema } from "@/blocks"
 import { $lastMidiEvent, $midi } from "@/store/midi"
 import { BlockPropsOf } from "@/types/Node"
 
@@ -33,7 +31,7 @@ export const MidiOutBlock = (props: MidiOutProps) => {
     <BaseBlock
       node={props}
       targets={1}
-      settings={() => <Settings id={id} schema={schema} />}
+      schema={schema}
       className="px-4 py-2 text-1 text-cyan-11 font-mono"
     >
       {getLog()}

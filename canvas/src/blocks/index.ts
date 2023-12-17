@@ -27,7 +27,9 @@ export const nodeTypes: BlockComponentMap = {
 }
 
 export * from "./components/BaseBlock"
+export * from "./components/Settings"
 export * from "./pixel/palette"
+export * from "./types/schema"
 export * from "./utils/defaults"
 export * from "./utils/is"
 export { setupBlock } from "./utils/setupBlock"
