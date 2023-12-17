@@ -13,11 +13,12 @@ type NumberField = { type: "number"; min?: number; max?: number }
 
 type SelectField<T extends BlockTypes, K extends BlockKeys<T>> = {
   type: "select"
-  options: { key: BlockValue<T, K>; title: string }[]
+  options: { key: BlockValue<T, K>; title: string; defaults?: object }[]
 }
 
 export type Field<T extends BlockTypes, K extends BlockKeys<T>> = {
   key: K
+  title?: string
 } & (TextField | NumberField | SelectField<T, K>)
 
 export type SchemaOf<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {

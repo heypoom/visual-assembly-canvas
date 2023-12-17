@@ -6,11 +6,10 @@ import { BaseBlock } from "@/blocks"
 import { Settings } from "@/blocks/components/Settings"
 import { createSchema } from "@/blocks/types/schema"
 import { bitsToList } from "@/blocks/value-view/utils/bits-to-list"
-import { $remoteValues } from "@/store/remote-values"
+import { $remoteValues, updateValueViewers } from "@/store/remote-values"
 import { BlockPropsOf } from "@/types/Node"
 
 type Props = BlockPropsOf<"ValueView">
-// type Data = Props["data"]
 
 const schema = createSchema({
   type: "ValueView",
@@ -23,8 +22,8 @@ const schema = createSchema({
       options: [
         { key: "Int", title: "Number" },
         { key: "Bytes", title: "Byte View" },
-        { key: "Switches", title: "Switch" },
-        { key: "ColorGrid", title: "Color Grid" },
+        { key: "Switches", title: "Switch", defaults: { bits: [] } },
+        { key: "ColorGrid", title: "Binary Grid" },
         { key: "String", title: "String" },
       ],
     },
@@ -36,9 +35,6 @@ export const ValueViewBlock = memo((props: Props) => {
   const { id, target, offset, size, visual } = props.data
   const valueMap = useStore($remoteValues)
   const values = valueMap[id] ?? []
-
-  // const update = (config: Partial<Data>) =>
-  //   engine.setBlock(id, "ValueView", config)
 
   const hx = (n: number) => n.toString(16).padStart(4, "0").toUpperCase()
 
@@ -84,10 +80,14 @@ export const ValueViewBlock = memo((props: Props) => {
     return <div className="px-2 py-1 text-red-11">unknown visual: {type}</div>
   }
 
+  const handleUpdate = () => updateValueViewers()
+
   return (
     <BaseBlock
       node={props}
-      settings={() => <Settings schema={schema} />}
+      settings={() => (
+        <Settings id={id} schema={schema} onUpdate={handleUpdate} />
+      )}
       className="relative font-mono"
     >
       {display()}
