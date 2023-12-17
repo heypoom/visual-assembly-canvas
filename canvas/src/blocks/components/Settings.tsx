@@ -114,6 +114,7 @@ export const Settings = <
           return (
             <FieldGroup key={key} name={name}>
               <Checkbox
+                size="1"
                 color="crimson"
                 checked={value as boolean}
                 onCheckedChange={(next) => {
@@ -129,7 +130,12 @@ export const Settings = <
         if (type === "text") {
           return (
             <FieldGroup key={key} name={name}>
-              {type}
+              <TextField.Input
+                size="1"
+                className="nodrag"
+                value={value as string}
+                onChange={(e) => set(key, e.target.value)}
+              />
             </FieldGroup>
           )
         }

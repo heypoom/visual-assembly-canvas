@@ -4,25 +4,18 @@ import { useMemo } from "react"
 import { BaseBlock } from "@/blocks"
 import { Settings } from "@/blocks/components/Settings"
 import { createSchema } from "@/blocks/types/schema"
-import { engine } from "@/engine"
 import { $lastMidiEvent, $midi } from "@/store/midi"
 import { BlockPropsOf } from "@/types/Node"
 
-import { MidiTransportForm } from "./transport"
-
 type MidiOutProps = BlockPropsOf<"MidiOut">
-type MidiOutData = MidiOutProps["data"]
 
 export const MidiOutBlock = (props: MidiOutProps) => {
-  const { id, format, channel } = props.data
+  const { id, format } = props.data
 
   const lastEvents = useStore($lastMidiEvent)
   const midi = useStore($midi)
 
   const last = lastEvents[id]
-
-  const update = (input: Partial<MidiOutData>) =>
-    engine.setBlock(id, "MidiOut", input)
 
   const schema = useMemo(() => {
     return createSchema({
@@ -50,6 +43,12 @@ export const MidiOutBlock = (props: MidiOutProps) => {
             title: port,
           })),
         },
+        {
+          key: "channel",
+          type: "number",
+          min: 0,
+          max: 127,
+        },
       ],
     })
   }, [midi.outputs])
@@ -65,19 +64,7 @@ export const MidiOutBlock = (props: MidiOutProps) => {
     return `${last.format}(${last.data.join(", ")})`
   }
 
-  const settings = () => (
-    <Settings id={id} schema={schema}>
-      <MidiTransportForm
-        channels={[channel]}
-        mode="out"
-        onChange={(data) => {
-          if ("channels" in data) {
-            return update({ channel: data.channels?.[0] ?? 0 })
-          }
-        }}
-      />
-    </Settings>
-  )
+  const settings = () => <Settings id={id} schema={schema}></Settings>
 
   return (
     <BaseBlock
