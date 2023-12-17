@@ -1,25 +1,32 @@
 import { useStore } from "@nanostores/react"
-import { MidiOutputFormat } from "machine-wasm"
 
 import { BaseBlock } from "@/blocks"
+import { Settings } from "@/blocks/components/Settings"
+import { createSchema } from "@/blocks/types/schema"
 import { engine } from "@/engine"
 import { $lastMidiEvent, $midi } from "@/store/midi"
 import { BlockPropsOf } from "@/types/Node"
-import { RadixSelect } from "@/ui"
 
 import { MidiTransportForm } from "./transport"
 
-const formats: MidiOutputFormat[] = [
-  "Raw",
-  "Note",
-  "ControlChange",
-  "Launchpad",
-]
-
-const formatOptions = formats.map((value) => ({ value, label: value }))
-
 type MidiOutProps = BlockPropsOf<"MidiOut">
 type MidiOutData = MidiOutProps["data"]
+
+const schema = createSchema({
+  type: "MidiOut",
+  fields: [
+    {
+      key: "format",
+      type: "select",
+      options: [
+        { key: "Note" },
+        { key: "ControlChange", title: "Control Change" },
+        { key: "Raw" },
+        { key: "Launchpad" },
+      ],
+    },
+  ],
+})
 
 export const MidiOutBlock = (props: MidiOutProps) => {
   const { id, format, port, channel } = props.data
@@ -43,21 +50,8 @@ export const MidiOutBlock = (props: MidiOutProps) => {
     return `${last.format}(${last.data.join(", ")})`
   }
 
-  const Settings = () => (
-    <section className="flex flex-col space-y-4 w-full max-w-[200px]">
-      <div
-        className="grid items-center gap-4 w-full text-gray-11"
-        style={{ gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)" }}
-      >
-        <p className="text-[10px]">Format</p>
-
-        <RadixSelect
-          value={format}
-          onChange={(v) => update({ format: v as MidiOutputFormat })}
-          options={formatOptions}
-        />
-      </div>
-
+  const settings = () => (
+    <Settings id={id} schema={schema}>
       <MidiTransportForm
         port={port}
         channels={[channel]}
@@ -71,14 +65,14 @@ export const MidiOutBlock = (props: MidiOutProps) => {
           update(data)
         }}
       />
-    </section>
+    </Settings>
   )
 
   return (
     <BaseBlock
       node={props}
       targets={1}
-      settings={Settings}
+      settings={settings}
       className="px-4 py-2 text-1 text-cyan-11 font-mono"
     >
       {getLog()}

@@ -2,6 +2,7 @@ import { TextField } from "@radix-ui/themes"
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 
+import { FieldGroup } from "@/blocks/components/Settings"
 import { RadixSelect } from "@/ui"
 
 interface Form {
@@ -67,30 +68,29 @@ export function MidiTransportForm(props: Props) {
   const isOut = props.mode === "out"
 
   return (
-    <div
-      className="grid w-full text-[10px] items-center gap-y-2 gap-x-4 text-gray-11"
-      style={{ gridTemplateColumns: "minmax(0, 1fr) minmax(0, 2fr)" }}
-    >
-      <div>Port</div>
+    <>
+      <FieldGroup name="Port">
+        <Controller
+          name="port"
+          control={control}
+          rules={{ onChange: trigger }}
+          render={({ field }) => (
+            <RadixSelect options={portOptions} {...field} />
+          )}
+        />
+      </FieldGroup>
 
-      <Controller
-        name="port"
-        control={control}
-        rules={{ onChange: trigger }}
-        render={({ field }) => <RadixSelect options={portOptions} {...field} />}
-      />
-
-      <div>Channels</div>
-
-      <TextField.Input
-        size="1"
-        placeholder="0 1 2"
-        {...register("channels", {
-          onChange: trigger,
-          ...(isOut && { min: 0, max: 127 }),
-        })}
-        {...(isOut && { type: "number" })}
-      />
-    </div>
+      <FieldGroup name="Channels">
+        <TextField.Input
+          size="1"
+          placeholder="0 1 2"
+          {...register("channels", {
+            onChange: trigger,
+            ...(isOut && { min: 0, max: 127 }),
+          })}
+          {...(isOut && { type: "number" })}
+        />
+      </FieldGroup>
+    </>
   )
 }

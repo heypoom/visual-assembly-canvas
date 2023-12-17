@@ -65,7 +65,7 @@ export const MemoryBlock = (props: MemoryProps) => {
     engine.syncBlocks()
   }
 
-  const Settings = () => (
+  const settings = () => (
     <div className="px-2 flex justify-center items-center text-center gap-x-2 gap-y-0">
       <div className="text-1 text-gray-6" onClick={() => setHex((s) => !s)}>
         {isHex ? "hex" : "dec"}
@@ -105,7 +105,7 @@ export const MemoryBlock = (props: MemoryProps) => {
       targets={1}
       sources={1}
       className="border-green-9 font-mono px-4 py-3"
-      settings={Settings}
+      settings={settings}
     >
       {overGridLimit && !isBatch && (
         <p className="text-1 text-tomato-11">
