@@ -2,7 +2,7 @@ import { BaseBlockFieldOf, BlockTypes } from "@/types/Node"
 
 export type BlockKeys<T extends BlockTypes> = keyof BaseBlockFieldOf<T>
 
-type BlockValue<
+export type BlockValue<
   T extends BlockTypes,
   K extends BlockKeys<T>,
   F = BaseBlockFieldOf<T>[K],
@@ -10,16 +10,17 @@ type BlockValue<
 
 type TextField = { type: "text" }
 type NumberField = { type: "number"; min?: number; max?: number }
+type CheckboxField = { type: "checkbox" }
 
 type SelectField<T extends BlockTypes, K extends BlockKeys<T>> = {
   type: "select"
-  options: { key: BlockValue<T, K>; title: string; defaults?: object }[]
+  options: { key: BlockValue<T, K>; title?: string; defaults?: object }[]
 }
 
 export type Field<T extends BlockTypes, K extends BlockKeys<T>> = {
   key: K
   title?: string
-} & (TextField | NumberField | SelectField<T, K>)
+} & (TextField | NumberField | SelectField<T, K> | CheckboxField)
 
 export type SchemaOf<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {
   type: T

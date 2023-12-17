@@ -1,27 +1,29 @@
 import { TextField } from "@radix-ui/themes"
-import { Waveform } from "machine-wasm"
 import { useState } from "react"
 
 import { BaseBlock } from "@/blocks/components"
+import { FieldGroup, Settings } from "@/blocks/components/Settings"
+import { createSchema } from "@/blocks/types/schema"
 import { engine } from "@/engine"
 import { BlockPropsOf } from "@/types/Node"
-import { RadixSelect } from "@/ui"
 
-export type WaveformKey = Waveform["type"]
-
-const waveforms: WaveformKey[] = [
-  "Sine",
-  "Cosine",
-  "Tangent",
-  "Square",
-  "Sawtooth",
-  "Triangle",
-]
-
-const waveformOptions = waveforms.map((value) => ({
-  value,
-  label: value,
-}))
+const schema = createSchema({
+  type: "Osc",
+  fields: [
+    {
+      key: "waveform",
+      type: "select",
+      options: [
+        { key: "Sine" },
+        { key: "Cosine" },
+        { key: "Tangent" },
+        { key: "Square", defaults: { duty_cycle: 50 } },
+        { key: "Sawtooth" },
+        { key: "Triangle" },
+      ],
+    },
+  ],
+})
 
 type OscProps = BlockPropsOf<"Osc">
 
@@ -31,26 +33,6 @@ export const OscBlock = (props: OscProps) => {
 
   const [cycleText, setCycleText] = useState("")
   const [cycleError, setCycleError] = useState(false)
-
-  const setWaveform = (waveform: Waveform) =>
-    engine.setBlock(id, "Osc", { waveform })
-
-  function handleWaveChange(key: string) {
-    let w = { type: key } as Waveform
-
-    // Update duty cycle
-    if (w.type === "Square") {
-      if (cycleText) {
-        const cycle = parseInt(cycleText)
-
-        if (!isNaN(cycle)) w = { ...w, duty_cycle: cycle }
-      } else {
-        setCycleText(w.duty_cycle.toString())
-      }
-    }
-
-    setWaveform(w)
-  }
 
   function getOscLog() {
     let argsText = ""
@@ -64,22 +46,24 @@ export const OscBlock = (props: OscProps) => {
     return `${wave?.toLowerCase()}(${argsText})`
   }
 
-  const Settings = () => (
-    <section className="flex flex-col space-y-2 w-full">
-      <div className="flex items-center gap-4 w-full">
-        <p className="text-1">Fn</p>
+  function setDutyCycle(input: string) {
+    setCycleText(input)
 
-        <RadixSelect
-          value={wave.toString()}
-          onChange={handleWaveChange}
-          options={waveformOptions}
-        />
-      </div>
+    const cycle = parseInt(input)
+    const valid = !isNaN(cycle) && cycle >= 0 && cycle <= 255
+    setCycleError(!valid)
 
+    if (!valid) return
+
+    engine.setBlock(id, "Osc", {
+      waveform: { type: "Square", duty_cycle: cycle },
+    })
+  }
+
+  const settings = () => (
+    <Settings id={id} schema={schema}>
       {wave === "Square" && (
-        <div className="flex items-center gap-4 w-full">
-          <p className="text-1">Cycle</p>
-
+        <FieldGroup name="Duty Cycle">
           <TextField.Input
             className="max-w-[70px]"
             size="1"
@@ -87,23 +71,12 @@ export const OscBlock = (props: OscProps) => {
             min={0}
             max={255}
             value={cycleText}
-            onChange={(k) => {
-              const str = k.target.value
-              setCycleText(str)
-
-              const cycle = parseInt(str)
-              const valid = !isNaN(cycle) && cycle >= 0 && cycle <= 255
-              setCycleError(!valid)
-
-              if (valid) {
-                setWaveform({ type: "Square", duty_cycle: cycle })
-              }
-            }}
+            onChange={(k) => setDutyCycle(k.target.value)}
             {...(cycleError && { color: "tomato" })}
           />
-        </div>
+        </FieldGroup>
       )}
-    </section>
+    </Settings>
   )
 
   return (
@@ -111,7 +84,7 @@ export const OscBlock = (props: OscProps) => {
       node={props}
       targets={1}
       sources={1}
-      settings={Settings}
+      settings={settings}
       className="px-4 py-2 font-mono text-center"
     >
       {getOscLog()}
