@@ -18,6 +18,7 @@ interface Props {
 
   onHover?: (address: number | null) => void
   onConfirm?: (start: number, end: number) => void
+  onDrag?: (transfer: DataTransfer, start: number, end: number) => void
 }
 
 const HOLD_MS = 100
@@ -38,6 +39,8 @@ export const MemoryViewer = memo((props: Props) => {
   const [start, setStart] = useState<number | null>(null)
   const [end, setEnd] = useState<number | null>(null)
   const [selecting, setSelecting] = useState(false)
+
+  const [canDragOut, setCanDragOut] = useState(false)
 
   if (!memory?.length) return null
 
@@ -85,9 +88,17 @@ export const MemoryViewer = memo((props: Props) => {
         className={cn("px-1 grid nodrag", full && "w-full")}
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
         onMouseLeave={() => {
+          setCanDragOut(false)
           if (selecting) confirm()
-          if (props.onHover) props.onHover(null)
+          props.onHover?.(null)
         }}
+        draggable={canDragOut}
+        onDragStart={(event) => {
+          if (start !== null && end !== null) {
+            props.onDrag?.(event.dataTransfer, start, end)
+          }
+        }}
+        onDragEnd={() => setCanDragOut(false)}
       >
         {memory.map((u, i) => {
           const value = show(u)
@@ -98,7 +109,15 @@ export const MemoryViewer = memo((props: Props) => {
           return (
             <div
               key={i}
-              onMouseDown={() => startDrag(i)}
+              onMouseDown={(e) => {
+                if (e.metaKey && selected) {
+                  setCanDragOut(true)
+                  return
+                }
+
+                setCanDragOut(false)
+                startDrag(i)
+              }}
               onMouseOver={() => {
                 if (props.onHover) {
                   props.onHover(begin + i)
@@ -120,6 +139,7 @@ export const MemoryViewer = memo((props: Props) => {
                 selected && "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
                 !selected && "hover:text-crimson-12",
                 full && "text-center",
+                canDragOut && !selected && "opacity-0 bg-transparent",
               )}
             >
               {value}

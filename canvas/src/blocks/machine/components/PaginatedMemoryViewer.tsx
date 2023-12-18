@@ -17,6 +17,7 @@ import {
 } from "@/store/memory"
 import { $nodes } from "@/store/nodes"
 import { updateValueViewers } from "@/store/remote-values"
+import { createDragAction } from "@/types/drag-action"
 
 interface Props {
   id: number
@@ -64,6 +65,18 @@ export const PaginatedMemoryViewer = (props: Props) => {
     }
   }
 
+  function onDrag(transfer: DataTransfer, start: number, end: number) {
+    const action = createDragAction({
+      type: "CreateValueView",
+      size: end - start + 1,
+      offset: memStart + start,
+      target: id,
+    })
+
+    transfer.setData("application/reactflow", action)
+    transfer.effectAllowed = "move"
+  }
+
   if (!memory || memory.length === 0) return null
 
   return (
@@ -73,6 +86,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
         begin={memStart}
         onHover={highlightAddr}
         onConfirm={onConfirm}
+        onDrag={onDrag}
       />
 
       <div className="flex text-1 justify-between px-2 items-center">

@@ -27,8 +27,15 @@ export const ValueViewBlock = memo((props: Props) => {
 
     switch (type) {
       case "Int": {
+        const cols = Math.min(values.length, 8)
+
         return (
-          <div className="grid grid-cols-8 font-mono gap-x-2 px-2 py-1 text-2">
+          <div
+            className="grid font-mono gap-x-2 px-2 py-1 text-2"
+            style={{
+              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+            }}
+          >
             {values.map((v, i) => (
               <div
                 key={i}
@@ -42,19 +49,22 @@ export const ValueViewBlock = memo((props: Props) => {
       }
 
       case "ColorGrid": {
+        const size = "20px"
         const groups = bitsToList(values)
 
         return (
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             {groups.map((group, i) => (
-              <div key={i} className="grid grid-cols-8">
+              <div
+                key={i}
+                className="grid"
+                style={{ gridTemplateColumns: `repeat(8, minmax(0, ${size}))` }}
+              >
                 {group.map((bit, j) => (
                   <div
                     key={j}
-                    className={cn(
-                      "px-2 py-2",
-                      bit ? "bg-gray-12" : "transparent",
-                    )}
+                    style={{ width: size, height: size }}
+                    className={cn(bit ? "bg-gray-12" : "transparent")}
                   />
                 ))}
               </div>
