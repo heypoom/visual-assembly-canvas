@@ -58,7 +58,7 @@ export const Canvas = () => {
         onInit={(f) => (flow.current = f)}
         onDragOver={(event) => {
           event.preventDefault()
-          event.dataTransfer.dropEffect = "move"
+          event.dataTransfer.dropEffect = "copy"
         }}
         onDrop={onDrop}
         fitView

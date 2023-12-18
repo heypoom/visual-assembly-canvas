@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react"
 import { useStore } from "@nanostores/react"
 import cn from "classnames"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import { MemoryViewer } from "@/blocks/machine/components/MemoryViewer"
 import { engine } from "@/engine"
@@ -33,6 +33,8 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
   const pages = useStore($memoryPages)
   const memory = pages[id]
+
+  const containerRef = useRef<HTMLDivElement>()
 
   const memStart = pageToOffset(pageConfig.page)
 
@@ -73,21 +75,24 @@ export const PaginatedMemoryViewer = (props: Props) => {
       target: id,
     })
 
+    transfer.setDragImage(containerRef.current!, 0, 0)
     transfer.setData("application/reactflow", action)
-    transfer.effectAllowed = "move"
+    transfer.effectAllowed = "copy"
   }
 
   if (!memory || memory.length === 0) return null
 
   return (
     <div className="flex flex-col gap-y-1 w-fit">
-      <MemoryViewer
-        memory={memory}
-        begin={memStart}
-        onHover={highlightAddr}
-        onConfirm={onConfirm}
-        onDrag={onDrag}
-      />
+      <div ref={(r) => (containerRef.current = r!)}>
+        <MemoryViewer
+          memory={memory}
+          begin={memStart}
+          onHover={highlightAddr}
+          onConfirm={onConfirm}
+          onDrag={onDrag}
+        />
+      </div>
 
       <div className="flex text-1 justify-between px-2 items-center">
         <button

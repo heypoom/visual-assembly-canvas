@@ -140,6 +140,9 @@ export const MemoryViewer = memo((props: Props) => {
                 !selected && "hover:text-crimson-12",
                 full && "text-center",
                 canDragOut && !selected && "opacity-0 bg-transparent",
+                canDragOut &&
+                  selected &&
+                  "bg-yellow-4 text-yellow-10 hover:text-yellow-10",
               )}
             >
               {value}
