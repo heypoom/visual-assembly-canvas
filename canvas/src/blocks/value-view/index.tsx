@@ -102,19 +102,20 @@ export const ValueViewBlock = memo((props: Props) => {
 const schema = createSchema({
   type: "ValueView",
   fields: [
-    { key: "size", type: "number", min: 1 },
-    { key: "offset", type: "number", min: 0 },
     {
       key: "visual",
       type: "select",
       options: [
         { key: "Int", title: "Number" },
-        { key: "Bytes", title: "Byte View" },
+        { key: "Bytes", title: "Hex" },
         { key: "Switches", title: "Switch", defaults: { bits: [] } },
         { key: "ColorGrid", title: "Binary Grid" },
         { key: "String" },
       ],
     },
+
+    { key: "size", type: "number", min: 1 },
+    { key: "offset", type: "number", min: 0 },
     { key: "target", type: "number", min: 0 },
   ],
 })

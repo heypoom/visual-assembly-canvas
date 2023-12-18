@@ -165,7 +165,7 @@ export const Settings = <
 
 export const FieldGroup = (props: { name: string; children: ReactNode }) => (
   <div className="grid grid-cols-2 gap-x-3">
-    <div className="flex items-center capitalize">{props.name}</div>
+    <div className="flex items-center capitalize text-1">{props.name}</div>
 
     {props.children}
   </div>
