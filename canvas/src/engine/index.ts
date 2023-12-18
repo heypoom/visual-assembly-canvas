@@ -12,11 +12,13 @@ import { midiManager } from "@/services/midi"
 import { syncBlockData, updateNodeData } from "@/store/blocks"
 import { $clock } from "@/store/clock"
 import { $nodes } from "@/store/nodes"
+import { updateValueViewers } from "@/store/remote-values"
 import {
   $output,
   clearPreviousRun,
   setError,
   syncMachineState,
+  updateMemoryViewer,
 } from "@/store/results"
 import { $status } from "@/store/status"
 import { InspectionState } from "@/types/MachineEvent"
@@ -408,6 +410,15 @@ export class CanvasEngine {
 
     engine.ctx.update_block(id, { ...data, type } as BlockData)
     engine.ctx.force_tick_block(id)
+  }
+
+  public setMachineMemory(id: number, address: number, data: number[]) {
+    // Set memory
+    this.ctx.set_mem(id, address, data)
+
+    // Refresh memory and value viewers
+    updateMemoryViewer(id)
+    updateValueViewers()
   }
 }
 

@@ -263,6 +263,15 @@ impl Controller {
     pub fn add_wire_with_id(&mut self, id: u16, source: Port, target: Port) {
         self.canvas.wires.push(Wire { id, source, target });
     }
+
+    pub fn set_mem(&mut self, id: u16, address: u16, data: Vec<u16>) -> Return {
+        let Some(m) = self.canvas.seq.get_mut(id) else {
+            return Ok(false.into());
+        };
+
+        m.mem.write(address, &data);
+        Ok(true.into())
+    }
 }
 
 #[cfg(test)]

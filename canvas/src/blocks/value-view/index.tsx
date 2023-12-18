@@ -3,9 +3,12 @@ import cn from "classnames"
 import { memo } from "react"
 
 import { BaseBlock, createSchema } from "@/blocks"
-import { bitsToList } from "@/blocks/value-view/utils/bits-to-list"
+import { engine } from "@/engine"
 import { $remoteValues, updateValueViewers } from "@/store/remote-values"
 import { BlockPropsOf } from "@/types/Node"
+
+import { bitsToList } from "./utils/bits-to-list"
+import { flipBit } from "./utils/flip-bit"
 
 type Props = BlockPropsOf<"ValueView">
 
@@ -59,7 +62,7 @@ export const ValueViewBlock = memo((props: Props) => {
         const groups = bitsToList(values)
 
         return (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-start">
             {groups.map((group, i) => (
               <div
                 key={i}
@@ -70,7 +73,16 @@ export const ValueViewBlock = memo((props: Props) => {
                   <div
                     key={j}
                     style={{ width: size, height: size }}
-                    className={cn(bit ? "bg-gray-12" : "transparent")}
+                    className={cn(
+                      "cursor-pointer",
+                      bit ? "bg-gray-12" : "transparent",
+                    )}
+                    onClick={() => {
+                      const value = values[i]
+                      const next = flipBit(value, j)
+
+                      engine.setMachineMemory(target, offset + i, [next])
+                    }}
                   />
                 ))}
               </div>
