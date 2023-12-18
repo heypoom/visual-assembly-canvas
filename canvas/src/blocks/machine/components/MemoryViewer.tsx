@@ -1,5 +1,6 @@
 import cn from "classnames"
 import { memo, useRef, useState } from "react"
+import { useKeyPress, useKeyPressEvent } from "react-use"
 
 export interface ViewerConfig {
   hex?: boolean
@@ -41,6 +42,14 @@ export const MemoryViewer = memo((props: Props) => {
   const [selecting, setSelecting] = useState(false)
 
   const [canDragOut, setCanDragOut] = useState(false)
+
+  const altOn = () => {
+    if (start && end && !selecting) setCanDragOut(true)
+  }
+
+  const altOff = () => setCanDragOut(false)
+
+  useKeyPressEvent("Alt", altOn, altOff)
 
   if (!memory?.length) return null
 
@@ -86,7 +95,12 @@ export const MemoryViewer = memo((props: Props) => {
 
       <div
         className={cn("px-1 grid nodrag", full && "w-full")}
-        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+        style={{
+          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+          ...(canDragOut && start && end && !selecting
+            ? { filter: "drop-shadow(0 0 10px rgba(78, 18, 47, 1))" }
+            : { filter: "drop-shadow(0 0 10px rgba(67, 52, 0, 1))" }),
+        }}
         onMouseLeave={() => {
           setCanDragOut(false)
           if (selecting) confirm()
@@ -110,7 +124,7 @@ export const MemoryViewer = memo((props: Props) => {
             <div
               key={i}
               onMouseDown={(e) => {
-                if (e.metaKey && selected) {
+                if (e.altKey && selected) {
                   setCanDragOut(true)
                   return
                 }
@@ -134,7 +148,7 @@ export const MemoryViewer = memo((props: Props) => {
                 aborted.current = true
               }}
               className={cn(
-                "select-none text-crimson-11 bg-stone-800 px-1",
+                "select-none text-crimson-11 bg-stone-800 px-1 cursor-pointer",
                 !selected && u === 0 && "text-gray-8",
                 selected && "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
                 !selected && "hover:text-crimson-12",
@@ -142,7 +156,7 @@ export const MemoryViewer = memo((props: Props) => {
                 canDragOut && !selected && "opacity-0 bg-transparent",
                 canDragOut &&
                   selected &&
-                  "bg-yellow-4 text-yellow-10 hover:text-yellow-10",
+                  "bg-crimson-4 text-crimson-10 hover:text-crimson-10",
               )}
             >
               {value}
