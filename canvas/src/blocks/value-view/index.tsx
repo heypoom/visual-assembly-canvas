@@ -75,7 +75,9 @@ export const ValueViewBlock = memo((props: Props) => {
                     style={{ width: size, height: size }}
                     className={cn(
                       "cursor-pointer",
-                      bit ? "bg-gray-12" : "transparent",
+                      bit
+                        ? "bg-gray-12 hover:bg-gray-11"
+                        : "bg-transparent hover:bg-gray-4",
                     )}
                     onClick={() => {
                       const value = values[i]
