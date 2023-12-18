@@ -1,5 +1,5 @@
 import cn from "classnames"
-import { memo, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef, useState } from "react"
 import { useKeyPressEvent } from "react-use"
 
 import { MemoryRegion } from "@/store/remote-values"
@@ -51,6 +51,13 @@ export const MemoryViewer = memo((props: Props) => {
   const altDown = () => start && end && !selecting && setCanDragOut(true)
   const altUp = () => setCanDragOut(false)
   useKeyPressEvent("Alt", altDown, altUp)
+
+  const deselect = () => {
+    setStart(null)
+    setEnd(null)
+  }
+
+  useEffect(deselect, [begin])
 
   // Compute the active memory regions.
   const regions = useMemo(() => {
@@ -148,10 +155,7 @@ export const MemoryViewer = memo((props: Props) => {
           setCanDragOut(false)
 
           // deselect on success
-          if (e.dataTransfer.dropEffect === "copy") {
-            setStart(null)
-            setEnd(null)
-          }
+          if (e.dataTransfer.dropEffect === "copy") deselect()
         }}
       >
         {memory.map((u, i) => {
