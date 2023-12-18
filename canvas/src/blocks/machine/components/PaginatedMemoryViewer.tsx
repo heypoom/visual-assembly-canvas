@@ -140,7 +140,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
                 onChange={(e) => setOffsetInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && updatePageByOffset()}
                 className="w-[36px] bg-transparent text-gray-12 outline-gray-5"
-                placeholder="0x0000"
+                placeholder={show(memStart)}
                 autoFocus
               />
             ) : (
