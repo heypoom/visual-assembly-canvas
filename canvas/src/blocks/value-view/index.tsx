@@ -80,7 +80,13 @@ export const ValueViewBlock = memo((props: Props) => {
       }
 
       case "String": {
-        const text = values.map((x) => String.fromCharCode(x)).join("")
+        // do not read after null terminator (\0)
+        const end = values.findIndex((x) => x === 0)
+
+        const text = values
+          .slice(0, end)
+          .map((x) => String.fromCharCode(x))
+          .join("")
 
         return <div className="px-3 py-1">{text}</div>
       }
