@@ -1,6 +1,8 @@
 import cn from "classnames"
-import { memo, useRef, useState } from "react"
-import { useKeyPress, useKeyPressEvent } from "react-use"
+import { memo, useMemo, useRef, useState } from "react"
+import { useKeyPressEvent } from "react-use"
+
+import { MemoryRegion } from "@/store/remote-values"
 
 export interface ViewerConfig {
   hex?: boolean
@@ -20,6 +22,9 @@ interface Props {
   onHover?: (address: number | null) => void
   onConfirm?: (start: number, end: number) => void
   onDrag?: (transfer: DataTransfer, start: number, end: number) => void
+
+  /** Currently visualized memory regions. May overlap! */
+  regions?: MemoryRegion[]
 }
 
 const HOLD_MS = 100
@@ -43,13 +48,20 @@ export const MemoryViewer = memo((props: Props) => {
 
   const [canDragOut, setCanDragOut] = useState(false)
 
-  const altOn = () => {
-    if (start && end && !selecting) setCanDragOut(true)
-  }
+  const altDown = () => start && end && !selecting && setCanDragOut(true)
+  const altUp = () => setCanDragOut(false)
+  useKeyPressEvent("Alt", altDown, altUp)
 
-  const altOff = () => setCanDragOut(false)
+  // Compute the active memory regions.
+  const regions = useMemo(() => {
+    const end = begin + memory.length
 
-  useKeyPressEvent("Alt", altOn, altOff)
+    return (
+      props.regions?.filter((r) => {
+        return r.offset >= begin && r.offset + r.size <= end
+      }) ?? []
+    )
+  }, [begin, memory.length, props.regions])
 
   if (!memory?.length) return null
 
@@ -78,6 +90,24 @@ export const MemoryViewer = memo((props: Props) => {
     }
   }
 
+  const hasSelection = start && end && !selecting
+
+  const glowStyle = () => {
+    if (regions.length > 0) {
+      if (!hasSelection) {
+        return { filter: "drop-shadow(0 0 8px rgba(0, 69, 88, 0.7))" }
+      }
+
+      return {}
+    }
+
+    if (canDragOut && hasSelection) {
+      return { filter: "drop-shadow(0 0 10px rgba(78, 18, 47, 1))" }
+    }
+
+    return { filter: "drop-shadow(0 0 10px rgba(67, 52, 0, 1))" }
+  }
+
   return (
     <div className="flex text-[10px]">
       {showAddress && (
@@ -97,9 +127,7 @@ export const MemoryViewer = memo((props: Props) => {
         className={cn("px-1 grid nodrag", full && "w-full")}
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-          ...(canDragOut && start && end && !selecting
-            ? { filter: "drop-shadow(0 0 10px rgba(78, 18, 47, 1))" }
-            : { filter: "drop-shadow(0 0 10px rgba(67, 52, 0, 1))" }),
+          ...glowStyle(),
         }}
         onMouseLeave={() => {
           setCanDragOut(false)
@@ -112,13 +140,27 @@ export const MemoryViewer = memo((props: Props) => {
             props.onDrag?.(event.dataTransfer, start, end)
           }
         }}
-        onDragEnd={() => setCanDragOut(false)}
+        onDragEnd={(e) => {
+          setCanDragOut(false)
+
+          // deselect on success
+          if (e.dataTransfer.dropEffect === "copy") {
+            setStart(null)
+            setEnd(null)
+          }
+        }}
       >
         {memory.map((u, i) => {
           const value = show(u)
 
           const selected =
             start !== null && end !== null && i >= start && i <= end
+
+          const highlighted = regions.find((r) => {
+            const offset = r.offset - begin
+
+            return i >= offset && i < offset + r.size
+          })
 
           return (
             <div
@@ -149,7 +191,7 @@ export const MemoryViewer = memo((props: Props) => {
               }}
               className={cn(
                 "select-none text-crimson-11 bg-stone-800 px-1 cursor-pointer",
-                !selected && u === 0 && "text-gray-8",
+                !selected && !highlighted && u === 0 && "text-gray-8",
                 selected && "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
                 !selected && "hover:text-crimson-12",
                 full && "text-center",
@@ -157,6 +199,9 @@ export const MemoryViewer = memo((props: Props) => {
                 canDragOut &&
                   selected &&
                   "bg-crimson-4 text-crimson-10 hover:text-crimson-10",
+                !selected &&
+                  highlighted &&
+                  "bg-cyan-5 text-cyan-11 hover:text-cyan-12",
               )}
             >
               {value}

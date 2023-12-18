@@ -1,4 +1,4 @@
-import { map } from "nanostores"
+import { computed, map } from "nanostores"
 
 import { isBlock } from "@/blocks"
 import { engine } from "@/engine"
@@ -19,3 +19,21 @@ export function updateValueViewers() {
     $remoteValues.setKey(id, buf)
   }
 }
+
+export type MemoryRegion = { id: number; offset: number; size: number }
+type RegionMap = Record<number, MemoryRegion[]>
+
+export const $memoryRegions = computed($nodes, (nodes) => {
+  const viewers: RegionMap = {}
+
+  for (const node of nodes) {
+    if (!isBlock.valueView(node)) continue
+
+    const { id, target, size, offset } = node.data
+
+    if (!viewers[target]) viewers[target] = []
+    viewers[target].push({ id, size, offset })
+  }
+
+  return viewers
+})

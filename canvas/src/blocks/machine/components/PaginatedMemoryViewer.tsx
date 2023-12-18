@@ -16,7 +16,7 @@ import {
   setMemPage,
 } from "@/store/memory"
 import { $nodes } from "@/store/nodes"
-import { updateValueViewers } from "@/store/remote-values"
+import { $memoryRegions, updateValueViewers } from "@/store/remote-values"
 import { createDragAction } from "@/types/drag-action"
 
 interface Props {
@@ -33,6 +33,9 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
   const pages = useStore($memoryPages)
   const memory = pages[id]
+
+  const regionMaps = useStore($memoryRegions)
+  const regions = regionMaps[id] ?? []
 
   const containerRef = useRef<HTMLDivElement>()
 
@@ -91,6 +94,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
           onHover={highlightAddr}
           onConfirm={onConfirm}
           onDrag={onDrag}
+          regions={regions}
         />
       </div>
 
