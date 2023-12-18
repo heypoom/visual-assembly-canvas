@@ -414,7 +414,7 @@ export class CanvasEngine {
 
   public setMachineMemory(id: number, address: number, data: number[]) {
     // Set memory
-    this.ctx.set_mem(id, address, data)
+    this.ctx.set_mem(id, address, new Uint16Array(data))
 
     // Refresh memory and value viewers
     updateMemoryViewer(id)
