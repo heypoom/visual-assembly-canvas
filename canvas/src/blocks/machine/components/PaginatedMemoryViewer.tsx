@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react"
 import { useStore } from "@nanostores/react"
 import cn from "classnames"
-import { useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { MemoryViewer } from "@/blocks/machine/components/MemoryViewer"
 import { engine } from "@/engine"
@@ -11,6 +11,7 @@ import {
   DEFAULT_PAGE_SIZE,
   gotoDefaultPage,
   nextMemPage,
+  offsetToPage,
   pageToOffset,
   prevMemPage,
   setMemPage,
@@ -28,6 +29,9 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
   const [highlightedAddr, highlightAddr] = useState<number | null>(null)
 
+  const [isEditOffset, setEditOffset] = useState(false)
+  const [offsetInput, setOffsetInput] = useState("")
+
   const pageConfigs = useStore($memoryPageConfig)
   const pageConfig = pageConfigs[id] ?? { page: null }
 
@@ -38,7 +42,6 @@ export const PaginatedMemoryViewer = (props: Props) => {
   const regions = regionMaps[id] ?? []
 
   const containerRef = useRef<HTMLDivElement>()
-
   const memStart = pageToOffset(pageConfig.page)
 
   const memEnd =
@@ -50,8 +53,17 @@ export const PaginatedMemoryViewer = (props: Props) => {
   const base = hex ? 16 : 10
   const pad = hex ? minDigits : minDigits + 1
 
-  const show = (n: number) =>
-    `${hex ? "0x" : ""}${n.toString(base).padStart(pad, "0").toUpperCase()}`
+  const show = useCallback(
+    (n: number) =>
+      `${hex ? "0x" : ""}${n.toString(base).padStart(pad, "0").toUpperCase()}`,
+    [base, hex, pad],
+  )
+
+  useEffect(() => {
+    if (isEditOffset) {
+      setOffsetInput(show(memStart))
+    }
+  }, [isEditOffset, memStart, show])
 
   function onConfirm(start: number, end: number) {
     const viewer = $nodes
@@ -83,6 +95,17 @@ export const PaginatedMemoryViewer = (props: Props) => {
     transfer.effectAllowed = "copy"
   }
 
+  function updatePageByOffset() {
+    setEditOffset(false)
+
+    const offset = parseInt(offsetInput, base)
+    if (isNaN(offset)) return
+
+    const page = offsetToPage(offset, pageConfig?.size)
+
+    setMemPage(id, page)
+  }
+
   if (!memory || memory.length === 0) return null
 
   return (
@@ -110,22 +133,33 @@ export const PaginatedMemoryViewer = (props: Props) => {
         </button>
 
         {highlightedAddr === null ? (
-          <div className="text-[10px] text-gray-11">
-            <span
-              onClick={() => setMemPage(id, 0)}
-              className="hover:text-gray-12 nodrag cursor-pointer"
-            >
-              {show(memStart)}
-            </span>
+          <div className="flex text-[10px] text-gray-11 gap-x-1">
+            {isEditOffset ? (
+              <input
+                value={offsetInput}
+                onChange={(e) => setOffsetInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && updatePageByOffset()}
+                className="w-[36px] bg-transparent text-gray-12 outline-gray-5"
+                placeholder="0x0000"
+                autoFocus
+              />
+            ) : (
+              <div
+                onClick={() => setEditOffset(true)}
+                className="hover:text-gray-12 nodrag cursor-pointer"
+              >
+                {show(memStart)}
+              </div>
+            )}
 
-            <span> - </span>
+            <div> - </div>
 
-            <span
+            <div
               onClick={() => gotoDefaultPage(id)}
               className="hover:text-gray-12 nodrag cursor-pointer"
             >
               {show(memEnd)}
-            </span>
+            </div>
           </div>
         ) : (
           <div className="text-[10px] text-crimson-12">
