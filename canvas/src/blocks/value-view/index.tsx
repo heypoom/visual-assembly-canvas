@@ -26,8 +26,14 @@ export const ValueViewBlock = memo((props: Props) => {
     }
 
     switch (type) {
+      case "Bytes":
       case "Int": {
         const cols = Math.min(values.length, 8)
+
+        const isHex = type === "Bytes"
+
+        const show = (value: number) =>
+          isHex ? value?.toString(16).padStart(4, "0").toUpperCase() : value
 
         return (
           <div
@@ -41,7 +47,7 @@ export const ValueViewBlock = memo((props: Props) => {
                 key={i}
                 className={cn("text-center", v === 0 && "text-gray-7")}
               >
-                {v}
+                {show(v)}
               </div>
             ))}
           </div>
