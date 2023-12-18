@@ -78,9 +78,15 @@ export const ValueViewBlock = memo((props: Props) => {
           </div>
         )
       }
+
+      case "String": {
+        const text = values.map((x) => String.fromCharCode(x)).join("")
+
+        return <div className="px-3 py-1">{text}</div>
+      }
     }
 
-    return <div className="px-2 py-1 text-red-11">unknown visual: {type}</div>
+    return <div className="px-3 py-1 text-red-11">unknown visual: {type}</div>
   }
 
   return (
