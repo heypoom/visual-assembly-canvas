@@ -200,8 +200,10 @@ export const MemoryViewer = memo((props: Props) => {
               className={cn(
                 "select-none text-crimson-11 bg-stone-800 px-1 cursor-pointer",
                 !selected && !highlighted && u === 0 && "text-gray-8",
-                selected && "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
-                !selected && "hover:text-crimson-12",
+                !canDragOut &&
+                  selected &&
+                  "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
+                !canDragOut && !selected && "hover:text-crimson-12",
                 full && "text-center",
                 canDragOut && !selected && "opacity-0 bg-transparent",
                 canDragOut &&
