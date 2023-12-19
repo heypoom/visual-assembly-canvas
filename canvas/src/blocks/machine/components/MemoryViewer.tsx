@@ -2,6 +2,7 @@ import cn from "classnames"
 import { memo, useEffect, useMemo, useRef, useState } from "react"
 import { useKeyPressEvent } from "react-use"
 
+import { getRegionClassName } from "@/blocks/value-view/utils/region-colors"
 import { MemoryRegion } from "@/store/remote-values"
 
 export interface ViewerConfig {
@@ -102,7 +103,8 @@ export const MemoryViewer = memo((props: Props) => {
   const glowStyle = () => {
     if (regions.length > 0) {
       if (!hasSelection) {
-        return { filter: "drop-shadow(0 0 8px rgba(0, 69, 88, 0.7))" }
+        return {}
+        // return { filter: "drop-shadow(0 0 8px rgba(0, 69, 88, 0.7))" }
       }
 
       return {}
@@ -204,14 +206,15 @@ export const MemoryViewer = memo((props: Props) => {
                   selected &&
                   "bg-yellow-5 text-yellow-11 hover:text-yellow-12",
                 !canDragOut && !selected && "hover:text-crimson-12",
-                full && "text-center",
-                canDragOut && !selected && "opacity-0 bg-transparent",
                 canDragOut &&
                   selected &&
                   "bg-crimson-4 text-crimson-10 hover:text-crimson-10",
+                full && "text-center",
+                canDragOut && !selected && "opacity-0 bg-transparent",
+
                 !selected &&
                   highlighted &&
-                  "bg-cyan-5 text-cyan-11 hover:text-cyan-12",
+                  getRegionClassName(highlighted.color ?? highlighted.id),
               )}
             >
               {value}

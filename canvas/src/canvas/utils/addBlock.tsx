@@ -1,6 +1,6 @@
 import { BlockData } from "machine-wasm"
 
-import { defaultProps } from "@/blocks"
+import { getDefaultProps } from "@/blocks"
 import { setupBlock } from "@/blocks"
 import { addCanvasNode } from "@/canvas"
 import { engine } from "@/engine"
@@ -12,7 +12,10 @@ interface Options<T extends BlockTypes> {
 }
 
 export function addBlock<T extends BlockTypes>(type: T, options?: Options<T>) {
-  const props: BaseBlockFieldOf<T> = { ...defaultProps[type], ...options?.data }
+  const props: BaseBlockFieldOf<T> = {
+    ...getDefaultProps(type),
+    ...options?.data,
+  }
 
   let id: number | undefined
 

@@ -16,7 +16,6 @@ import {
   prevMemPage,
   setMemPage,
 } from "@/store/memory"
-import { $nodes } from "@/store/nodes"
 import {
   $memoryRegions,
   $selectingRegionViewerId,

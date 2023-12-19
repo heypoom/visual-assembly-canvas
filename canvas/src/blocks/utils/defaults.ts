@@ -1,3 +1,5 @@
+import { isBlockPropsType } from "@/blocks"
+import { getRandomRegionColor } from "@/blocks/value-view/utils/region-colors"
 import { BaseBlockFieldOf, BlockTypes } from "@/types/Node"
 
 export const DEFAULT_SOURCE = "push 0xAA\n\n\n\n"
@@ -23,5 +25,16 @@ export const defaultProps: DefaultPropsMap = {
     size: 0,
     offset: 0,
     visual: { type: "Int" },
+    color: 0,
   },
+}
+
+export const getDefaultProps = <T extends BlockTypes>(type: T) => {
+  const props = defaultProps[type]
+
+  if (isBlockPropsType(type, "ValueView", props)) {
+    props.color = getRandomRegionColor()
+  }
+
+  return props
 }

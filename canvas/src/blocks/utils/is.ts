@@ -1,4 +1,4 @@
-import { BlockNode, BlockTypes, TNode } from "@/types/Node"
+import { BaseBlockFieldOf, BlockNode, BlockTypes, TNode } from "@/types/Node"
 
 export const isBlockType =
   <T extends BlockTypes>(key: T) =>
@@ -19,4 +19,12 @@ export const isBlock = {
   valueView: isBlockType("ValueView"),
   producer: (n: BlockNode) =>
     isBlock.clock(n) || isBlock.midiIn(n) || isBlock.tap(n),
+}
+
+export const isBlockPropsType = <T extends BlockTypes>(
+  src: BlockTypes,
+  dst: T,
+  _props: BaseBlockFieldOf<BlockTypes>,
+): _props is BaseBlockFieldOf<T> => {
+  return src === dst
 }

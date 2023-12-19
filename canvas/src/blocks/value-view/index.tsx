@@ -6,6 +6,7 @@ import { memo } from "react"
 
 import { BaseBlock, createSchema } from "@/blocks"
 import { ValueRenderer } from "@/blocks/value-view/components/ValueRenderer"
+import { regionPalettes } from "@/blocks/value-view/utils/region-colors"
 import {
   $remoteValues,
   $selectingRegionViewerId,
@@ -85,5 +86,6 @@ const schema = createSchema({
     { key: "size", type: "number", min: 1 },
     { key: "offset", type: "number", min: 0 },
     { key: "target", type: "number", min: 0 },
+    { key: "color", type: "number", min: 0, max: regionPalettes.length },
   ],
 })

@@ -1,3 +1,4 @@
+import { BlockData } from "machine-wasm"
 import { atom, computed, map } from "nanostores"
 
 import { isBlock } from "@/blocks"
@@ -20,7 +21,11 @@ export function updateValueViewers() {
   }
 }
 
-export type MemoryRegion = { id: number; offset: number; size: number }
+export type MemoryRegion = Pick<
+  BlockData.ValueView,
+  "offset" | "size" | "color"
+> & { id: number }
+
 type RegionMap = Record<number, MemoryRegion[]>
 
 export const $memoryRegions = computed($nodes, (nodes) => {
@@ -29,10 +34,10 @@ export const $memoryRegions = computed($nodes, (nodes) => {
   for (const node of nodes) {
     if (!isBlock.valueView(node)) continue
 
-    const { id, target, size, offset } = node.data
+    const { id, target, size, offset, color } = node.data
 
     if (!viewers[target]) viewers[target] = []
-    viewers[target].push({ id, size, offset })
+    viewers[target].push({ id, size, offset, color })
   }
 
   return viewers

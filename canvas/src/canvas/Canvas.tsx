@@ -5,6 +5,7 @@ import { DragEvent, useRef } from "react"
 import ReactFlow, { ReactFlowInstance } from "reactflow"
 
 import { nodeTypes } from "@/blocks"
+import { getRandomRegionColor } from "@/blocks/value-view/utils/region-colors"
 import { addBlock } from "@/canvas/utils/addBlock"
 import {
   onConnect,
@@ -35,10 +36,11 @@ export const Canvas = () => {
       })
 
       const { size, offset, target } = action
+      const color = getRandomRegionColor()
 
       addBlock("ValueView", {
         position,
-        data: { visual: { type: "Int" }, size, offset, target },
+        data: { visual: { type: "Int" }, size, offset, target, color },
       })
 
       updateValueViewers()

@@ -109,6 +109,9 @@ pub enum BlockData {
 
         /// How should we visualize this value?
         visual: ValueVisualType,
+
+        /// Color of the memory region.
+        color: u16,
     }
 }
 
