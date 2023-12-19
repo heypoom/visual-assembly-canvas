@@ -28,7 +28,9 @@ export const ValueRenderer = memo((props: ValueRendererProps) => {
       const isHex = type === "Bytes"
 
       const show = (value: number) =>
-        isHex ? value?.toString(16).padStart(4, "0").toUpperCase() : value
+        isHex
+          ? value?.toString(16).padStart(4, "0").toUpperCase()
+          : value.toString(10).padStart(3, "0")
 
       return (
         <div
