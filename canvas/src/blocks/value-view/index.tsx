@@ -6,7 +6,10 @@ import { memo } from "react"
 
 import { BaseBlock, createSchema } from "@/blocks"
 import { ValueRenderer } from "@/blocks/value-view/components/ValueRenderer"
-import { regionPalettes } from "@/blocks/value-view/utils/region-colors"
+import {
+  getRegionClassName,
+  regionPalettes,
+} from "@/blocks/value-view/utils/region-colors"
 import {
   $remoteValues,
   $selectingRegionViewerId,
@@ -45,12 +48,15 @@ export const ValueViewBlock = memo((props: Props) => {
     )
   }
 
+  const palette = getRegionClassName(props.data.color)
+
   return (
     <BaseBlock
       node={props}
       className={cn(
         "relative font-mono",
         id === selectingViewerId && "!border-cyan-10",
+        palette.viewer,
       )}
       schema={schema}
       settingsConfig={{

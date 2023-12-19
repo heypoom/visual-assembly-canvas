@@ -214,7 +214,8 @@ export const MemoryViewer = memo((props: Props) => {
 
                 !selected &&
                   highlighted &&
-                  getRegionClassName(highlighted.color ?? highlighted.id),
+                  getRegionClassName(highlighted.color ?? highlighted.id)
+                    ?.highlight,
               )}
             >
               {value}
