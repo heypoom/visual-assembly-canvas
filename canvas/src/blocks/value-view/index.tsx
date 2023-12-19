@@ -1,9 +1,16 @@
+import { Icon } from "@iconify/react"
 import { useStore } from "@nanostores/react"
+import { Tooltip } from "@radix-ui/themes"
+import cn from "classnames"
 import { memo } from "react"
 
 import { BaseBlock, createSchema } from "@/blocks"
 import { ValueRenderer } from "@/blocks/value-view/components/ValueRenderer"
-import { $remoteValues, updateValueViewers } from "@/store/remote-values"
+import {
+  $remoteValues,
+  $selectingRegionViewerId,
+  updateValueViewers,
+} from "@/store/remote-values"
 import { BlockPropsOf } from "@/types/Node"
 
 type Props = BlockPropsOf<"ValueView">
@@ -16,12 +23,40 @@ export const ValueViewBlock = memo((props: Props) => {
   const valueMap = useStore($remoteValues)
   const values = valueMap[id] ?? []
 
+  const selectingViewerId = useStore($selectingRegionViewerId)
+
+  const footer = () => {
+    return (
+      <div className="flex items-center justify-end w-full">
+        <Tooltip content="select row regions">
+          <Icon
+            icon="material-symbols:select-all"
+            className={cn(
+              "text-2 text-white cursor-pointer hover:text-pink-9",
+              selectingViewerId === id && "text-pink-11",
+            )}
+            onClick={() => {
+              $selectingRegionViewerId.set(selectingViewerId === id ? null : id)
+            }}
+          />
+        </Tooltip>
+      </div>
+    )
+  }
+
   return (
     <BaseBlock
       node={props}
-      className="relative font-mono"
+      className={cn(
+        "relative font-mono",
+        id === selectingViewerId && "!border-pink-10",
+      )}
       schema={schema}
-      settingsConfig={{ onUpdate: updateValueViewers, className: "px-3 pb-2" }}
+      settingsConfig={{
+        onUpdate: updateValueViewers,
+        className: "px-3 pb-2",
+        footer,
+      }}
     >
       <ValueRenderer {...{ values, visual, target, offset }} />
 

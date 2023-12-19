@@ -17,7 +17,11 @@ import {
   setMemPage,
 } from "@/store/memory"
 import { $nodes } from "@/store/nodes"
-import { $memoryRegions, updateValueViewers } from "@/store/remote-values"
+import {
+  $memoryRegions,
+  $selectingRegionViewerId,
+  updateValueViewers,
+} from "@/store/remote-values"
 import { createDragAction } from "@/types/drag-action"
 
 interface Props {
@@ -66,20 +70,18 @@ export const PaginatedMemoryViewer = (props: Props) => {
   }, [isEditOffset, memStart, show])
 
   function onConfirm(start: number, end: number) {
-    const viewer = $nodes
-      .get()
-      .find((n) => n.selected && n.type === "ValueView")
+    const viewerId = $selectingRegionViewerId.get()
 
     // Update remote value viewer if it is selected
     // TODO: re-implement this by adding selection states (similar to Google Sheets)
-    if (viewer) {
-      // engine.setBlock(viewer.data.id, "ValueView", {
-      //   target: id,
-      //   size: end - start + 1,
-      //   offset: memStart + start,
-      // })
-      //
-      // updateValueViewers()
+    if (viewerId !== null) {
+      engine.setBlock(viewerId, "ValueView", {
+        target: id,
+        size: end - start + 1,
+        offset: memStart + start,
+      })
+
+      updateValueViewers()
     }
   }
 

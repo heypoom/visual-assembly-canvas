@@ -12,6 +12,7 @@ export interface SettingsConfig {
   className?: string
   onUpdate?: () => void
   children?: ReactNode
+  footer?: () => ReactNode
 }
 
 type Props<T extends BlockTypes, F extends Field<T, BlockKeys<T>>> = {
@@ -27,7 +28,7 @@ export const Settings = <
 >(
   props: Props<T, F>,
 ) => {
-  const { node, schema, className } = props
+  const { node, schema, className, footer: Footer } = props
   const { id } = node.data
 
   const [inputs, setInputs] = useState<Inputs>({})
@@ -159,6 +160,8 @@ export const Settings = <
       })}
 
       {props.children}
+
+      {Footer && <Footer />}
     </div>
   )
 }

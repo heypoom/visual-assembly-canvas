@@ -1,4 +1,4 @@
-import { computed, map } from "nanostores"
+import { atom, computed, map } from "nanostores"
 
 import { isBlock } from "@/blocks"
 import { engine } from "@/engine"
@@ -37,3 +37,6 @@ export const $memoryRegions = computed($nodes, (nodes) => {
 
   return viewers
 })
+
+// Which memory viewer block is in the region selection mode?
+export const $selectingRegionViewerId = atom<number | null>(null)

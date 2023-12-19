@@ -65,7 +65,7 @@ export const OscBlock = (props: OscProps) => {
       targets={1}
       sources={1}
       schema={schema}
-      settingsConfig={{ children: settings() }}
+      settingsConfig={{ footer: settings }}
       className="px-4 py-2 font-mono text-center"
     >
       {getOscLog()}
