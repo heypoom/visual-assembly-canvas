@@ -52,6 +52,8 @@ export const BaseBlock = (props: BaseBlockProps) => {
     return null
   }
 
+  const isSelected = node.selected
+
   return (
     <div className="group">
       {[...Array(targets)].map((_, i) => (
@@ -71,9 +73,9 @@ export const BaseBlock = (props: BaseBlockProps) => {
           className={cn(
             "flex flex-col relative gap-y-2",
             "border-2 rounded-2 group-hover:border-gray-11",
-            isSource && "border-crimson-9",
-            isSink && "border-cyan-9",
-            node.selected && "!border-yellow-11",
+            isSource && !isSelected && "border-crimson-9",
+            isSink && !isSelected && "border-cyan-9",
+            isSelected && "border-yellow-10 group-hover:border-yellow-11",
             className,
           )}
         >

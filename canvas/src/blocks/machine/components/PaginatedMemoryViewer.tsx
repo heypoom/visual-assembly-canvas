@@ -81,7 +81,10 @@ export const PaginatedMemoryViewer = (props: Props) => {
       })
 
       updateValueViewers()
+      return true
     }
+
+    return false
   }
 
   function onDrag(transfer: DataTransfer, start: number, end: number) {

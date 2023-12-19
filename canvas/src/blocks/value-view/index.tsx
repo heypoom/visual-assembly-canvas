@@ -32,18 +32,19 @@ export const ValueViewBlock = memo((props: Props) => {
   const footer = () => {
     return (
       <div className="flex items-center justify-end w-full">
-        <Tooltip content="select row regions">
-          <Icon
-            icon="material-symbols:select-all"
-            className={cn(
-              "text-2 text-white cursor-pointer hover:text-cyan-9",
-              selectingViewerId === id && "text-cyan-11",
-            )}
-            onClick={() => {
-              $selectingRegionViewerId.set(selectingViewerId === id ? null : id)
-            }}
-          />
-        </Tooltip>
+        <button
+          className={cn(
+            "text-2 text-white cursor-pointer hover:text-cyan-9 active:text-cyan-12 outline-gray-5",
+            selectingViewerId === id && "text-cyan-10",
+          )}
+          onClick={() => {
+            $selectingRegionViewerId.set(selectingViewerId === id ? null : id)
+          }}
+        >
+          <Tooltip content="select row regions">
+            <Icon icon="material-symbols:select-all" />
+          </Tooltip>
+        </button>
       </div>
     )
   }

@@ -21,7 +21,7 @@ interface Props {
   config?: ViewerConfig
 
   onHover?: (address: number | null) => void
-  onConfirm?: (start: number, end: number) => void
+  onConfirm?: (start: number, end: number) => boolean
   onDrag?: (transfer: DataTransfer, start: number, end: number) => void
 
   /** Currently visualized memory regions. May overlap! */
@@ -94,7 +94,7 @@ export const MemoryViewer = memo((props: Props) => {
     setSelecting(false)
 
     if (props.onConfirm && start !== null && end !== null) {
-      props.onConfirm(start, end)
+      if (props.onConfirm(start, end)) deselect()
     }
   }
 
