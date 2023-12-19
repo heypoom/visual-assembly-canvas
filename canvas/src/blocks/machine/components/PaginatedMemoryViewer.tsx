@@ -16,6 +16,7 @@ import {
   prevMemPage,
   setMemPage,
 } from "@/store/memory"
+import { $nodes } from "@/store/nodes"
 import {
   $memoryRegions,
   $selectingRegionViewerId,
@@ -71,9 +72,18 @@ export const PaginatedMemoryViewer = (props: Props) => {
   function onConfirm(start: number, end: number) {
     const viewerId = $selectingRegionViewerId.get()
 
-    // Update remote value viewer if it is selected
-    // TODO: re-implement this by adding selection states (similar to Google Sheets)
+    // Select the value viewer.
     if (viewerId !== null) {
+      const viewer = $nodes
+        .get()
+        .find((n) => n.data.id === viewerId && n.type === "ValueView")
+
+      // Deselect the viewer if it no longer exists.
+      if (!viewer) {
+        $selectingRegionViewerId.set(null)
+        return false
+      }
+
       engine.setBlock(viewerId, "ValueView", {
         target: id,
         size: end - start + 1,
