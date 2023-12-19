@@ -87,7 +87,8 @@ export const ValueRenderer = memo((props: ValueRendererProps) => {
 
     case "String": {
       // do not read after null terminator (\0)
-      const end = values.findIndex((x) => x === 0)
+      let end = values.findIndex((x) => x === 0)
+      if (end === -1) end = values.length
 
       const text = values
         .slice(0, end)
