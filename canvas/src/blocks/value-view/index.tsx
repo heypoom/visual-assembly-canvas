@@ -32,8 +32,8 @@ export const ValueViewBlock = memo((props: Props) => {
           <Icon
             icon="material-symbols:select-all"
             className={cn(
-              "text-2 text-white cursor-pointer hover:text-pink-9",
-              selectingViewerId === id && "text-pink-11",
+              "text-2 text-white cursor-pointer hover:text-cyan-9",
+              selectingViewerId === id && "text-cyan-11",
             )}
             onClick={() => {
               $selectingRegionViewerId.set(selectingViewerId === id ? null : id)
@@ -49,7 +49,7 @@ export const ValueViewBlock = memo((props: Props) => {
       node={props}
       className={cn(
         "relative font-mono",
-        id === selectingViewerId && "!border-pink-10",
+        id === selectingViewerId && "!border-cyan-10",
       )}
       schema={schema}
       settingsConfig={{
