@@ -71,14 +71,15 @@ export const PaginatedMemoryViewer = (props: Props) => {
       .find((n) => n.selected && n.type === "ValueView")
 
     // Update remote value viewer if it is selected
+    // TODO: re-implement this by adding selection states (similar to Google Sheets)
     if (viewer) {
-      engine.setBlock(viewer.data.id, "ValueView", {
-        target: id,
-        size: end - start + 1,
-        offset: memStart + start,
-      })
-
-      updateValueViewers()
+      // engine.setBlock(viewer.data.id, "ValueView", {
+      //   target: id,
+      //   size: end - start + 1,
+      //   offset: memStart + start,
+      // })
+      //
+      // updateValueViewers()
     }
   }
 
