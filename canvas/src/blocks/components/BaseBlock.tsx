@@ -46,7 +46,7 @@ export const BaseBlock = (props: BaseBlockProps) => {
     }
 
     if (props.renderSettings) {
-      return renderSettings()
+      return props.renderSettings()
     }
 
     return null

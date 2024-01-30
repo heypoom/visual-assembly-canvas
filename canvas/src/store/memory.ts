@@ -47,3 +47,4 @@ export const prevMemPage = (id: number) =>
   setMemPage(id, Math.max(getPage(id) - 1, 0))
 
 export const gotoDefaultPage = (id: number) => setMemPage(id, DEFAULT_PAGE)
+
