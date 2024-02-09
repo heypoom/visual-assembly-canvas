@@ -1,23 +1,21 @@
-import "./blocks/types/schema"
+import { createRouter, RouterProvider } from "@tanstack/react-router"
+import { StrictMode } from "react"
 
-import { DndContext } from "@dnd-kit/core"
-import { ReactFlowProvider } from "reactflow"
+import { routeTree } from "./routeTree.gen"
 
-import { Canvas } from "./canvas/Canvas"
-import { SlashCommand } from "./canvas/components/SlashCommand"
-import { Toolbar } from "./toolbar/Toolbar"
+const router = createRouter({ routeTree })
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router
+  }
+}
 
 function App() {
   return (
-    <DndContext>
-      <ReactFlowProvider>
-        <div className="relative bg-stone">
-          <Toolbar />
-          <Canvas />
-          <SlashCommand />
-        </div>
-      </ReactFlowProvider>
-    </DndContext>
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
   )
 }
 
