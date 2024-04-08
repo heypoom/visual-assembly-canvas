@@ -55,6 +55,6 @@ export async function processMidiEvent(id: number, effect: Effect.Midi) {
       }
     }
   } catch (error) {
-    consle.warn("midi error:", error)
+    console.warn("midi error:", error)
   }
 }
