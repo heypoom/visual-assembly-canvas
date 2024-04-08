@@ -56,7 +56,9 @@ export const ValueViewBlock = memo((props: Props) => {
       node={props}
       className={cn(
         "relative font-mono",
-        id === selectingViewerId && "!border-cyan-10",
+        selectingViewerId !== null &&
+          id === selectingViewerId &&
+          "!border-cyan-10",
         palette.viewer,
       )}
       schema={schema}

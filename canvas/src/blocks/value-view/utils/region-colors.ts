@@ -35,7 +35,7 @@ export const regionPalettes: RegionPalette[] = [
     viewer: "border-purple-10 text-purple-11",
   },
   {
-    highlight: "bg-blue-6 text-blue-10 hover:text-blue-12",
+    highlight: "bg-blue-6 !text-blue-10 hover:text-blue-12",
     viewer: "border-blue-10 text-blue-11",
   },
   {
