@@ -106,8 +106,25 @@ impl Sequencer {
 
             // Manage state transitions of the machine.
             match status {
-                Halted | Invalid | Loaded | Sleeping | Errored => continue,
-                Ready => { self.statuses.insert(id, Running); }
+                Halted | Invalid | Loaded | Errored => continue,
+
+                Sleeping => {
+                    if machine.remaining_sleep_ticks > 0 {
+                        machine.remaining_sleep_ticks -= 1;
+
+                        if machine.remaining_sleep_ticks == 0 {
+                            self.statuses.insert(id, Running);
+                            machine.sleeping = false;
+                        }
+                    }
+
+                    continue
+                }
+
+                Ready => {
+                    self.statuses.insert(id, Running);
+                }
+
                 _ => {}
             }
 

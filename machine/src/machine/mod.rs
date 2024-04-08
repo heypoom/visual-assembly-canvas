@@ -44,6 +44,9 @@ pub struct Machine {
 
     /// Is the machine sleeping?
     pub sleeping: bool,
+
+    /// How many tick remains until we resume execution?
+    pub remaining_sleep_ticks: u16,
 }
 
 impl Machine {
@@ -60,8 +63,10 @@ impl Machine {
             outbox: vec![],
 
             is_debug: false,
-            sleeping: false,
             expected_receives: 0,
+
+            sleeping: false,
+            remaining_sleep_ticks: 0,
         }
     }
 
