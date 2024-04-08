@@ -13,7 +13,7 @@ mod sleep_tests {
             .into();
 
         m.run().expect("cannot run the test program");
-
+        assert_eq!(m.sleeping, true);
         assert_eq!(m.mem.read_stack(2), [0xFF, 0xAB]);
         assert_eq!(m.events[0], Event::Sleep {duration: SleepDuration::Tick(10)});
         assert_eq!(m.events[1], Event::Sleep {duration: SleepDuration::Ms(200)});

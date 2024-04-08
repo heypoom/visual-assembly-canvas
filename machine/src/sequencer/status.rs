@@ -22,6 +22,9 @@ pub enum MachineStatus {
     /// Machine is awaiting a message.
     Awaiting,
 
+    /// Machine is sleeping for a pre-determined duration. zzzzzz!
+    Sleeping,
+
     /// Machine has reached the end of execution.
     Halted,
 

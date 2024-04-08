@@ -41,6 +41,9 @@ pub struct Machine {
 
     /// How many messages does the machine expect to receive?
     pub expected_receives: u16,
+
+    /// Is the machine sleeping?
+    pub sleeping: bool,
 }
 
 impl Machine {
@@ -57,6 +60,7 @@ impl Machine {
             outbox: vec![],
 
             is_debug: false,
+            sleeping: false,
             expected_receives: 0,
         }
     }
@@ -90,6 +94,7 @@ impl Machine {
         self.reg.reset();
         self.mem.reset_stacks();
         self.expected_receives = 0;
+        self.sleeping = false;
     }
 }
 

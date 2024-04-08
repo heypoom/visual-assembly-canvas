@@ -246,8 +246,15 @@ impl Execute for Machine {
             Op::RightShift => s.apply_two(|a, b| Ok(a >> b))?,
 
             // Pause the execution of the thread
-            Op::Sleep(tick) => self.events.push(Event::Sleep {duration: SleepDuration::Tick(tick)}),
-            Op::SleepMs(ms) => self.events.push(Event::Sleep {duration: SleepDuration::Ms(ms)}),
+            Op::Sleep(tick) => {
+                self.sleeping = true;
+                self.events.push(Event::Sleep {duration: SleepDuration::Tick(tick)})
+            },
+
+            Op::SleepMs(ms) => {
+                self.sleeping = true;
+                self.events.push(Event::Sleep {duration: SleepDuration::Ms(ms)})
+            },
         };
 
         // Advance or jump the program counter.

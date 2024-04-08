@@ -272,6 +272,10 @@ impl Controller {
         m.mem.write(address, &data);
         Ok(true.into())
     }
+
+    pub fn wake(&mut self, machine_id: u16) {
+        self.canvas.seq.wake(machine_id);
+    }
 }
 
 #[cfg(test)]

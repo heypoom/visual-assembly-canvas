@@ -10,7 +10,7 @@ use status::MachineStatus::{Awaiting, Halted, Running};
 
 pub use seq_error::SequencerError::*;
 pub use seq_error::SequencerError;
-use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready};
+use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready, Sleeping};
 
 type Errorable = Result<(), SequencerError>;
 type Statuses = HashMap<u16, MachineStatus>;
@@ -106,7 +106,7 @@ impl Sequencer {
 
             // Manage state transitions of the machine.
             match status {
-                Halted | Invalid | Loaded | Errored => continue,
+                Halted | Invalid | Loaded | Sleeping | Errored => continue,
                 Ready => { self.statuses.insert(id, Running); }
                 _ => {}
             }
@@ -160,6 +160,12 @@ impl Sequencer {
                     break;
                 }
 
+                // Sleep the machine.
+                if machine.sleeping {
+                    self.statuses.insert(id, Sleeping);
+                    break;
+                }
+
                 // Halt the machine if we reached the end of the program.
                 if machine.should_halt() {
                     self.statuses.insert(id, Halted);
@@ -169,6 +175,17 @@ impl Sequencer {
         }
 
         Ok(())
+    }
+
+    /// Wake the machine up from sleep.
+    pub fn wake(&mut self, machine_id: u16) {
+        // Resume the machine's execution state.
+        self.statuses.insert(machine_id, Running);
+
+        // Reset the machine's sleeping flag.
+        if let Some(machine) = self.get_mut(machine_id) {
+            machine.sleeping = false;
+        }
     }
 
     pub fn is_halted(&self) -> bool {

@@ -4,6 +4,14 @@ use tsify::Tsify;
 use crate::audio::midi::{MidiOutputFormat};
 use crate::audio::synth::SynthTrigger;
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Tsify)]
+#[serde(tag = "type", content = "value")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
+pub enum SleepDuration {
+    Ms(u16),
+    Tick(u16),
+}
+
 /// Events that can be sent by blocks and machines.
 /// This event can be considered a side effect that will be executed by the host.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Tsify)]
@@ -32,13 +40,5 @@ pub enum Event {
     Sleep {
         duration: SleepDuration,
     },
-}
-
-#[derive(Tsify, Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(tag = "type", rename_all = "camelCase")]
-#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
-pub enum SleepDuration {
-    Ms(u16),
-    Tick(u16),
 }
 

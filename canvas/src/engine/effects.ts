@@ -2,6 +2,7 @@ import { Effect } from "machine-wasm"
 
 import { processSynthEffect } from "@/services/audio"
 import { processMidiEvent } from "@/services/midi"
+import { processSleepEffect } from "@/services/sleep"
 
 export function processEffects(effects: Effect[], block: number) {
   for (const effect of effects) {
@@ -13,7 +14,7 @@ export function processEffects(effects: Effect[], block: number) {
         processSynthEffect(block, effect)
         break
       case "Sleep":
-        console.log("[SLEEP]", effect.duration)
+        processSleepEffect(block, effect)
         break
       default:
         console.warn("unknown effect:", effect)
