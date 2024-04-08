@@ -21,6 +21,7 @@ export const MachineBlock = memo((props: MachineProps) => {
 
   const errored = state.status === "Invalid"
   const awaiting = state.status === "Awaiting"
+  const sleeping = state.status === "Sleeping"
   const halted = state.status === "Halted"
   const backpressuring = state.inboxSize > 50
   const sending = state.outboxSize >= 1
@@ -34,6 +35,7 @@ export const MachineBlock = memo((props: MachineProps) => {
     halted && "border-gray-9",
     backpressuring && "!border-orange-9",
     sending && "border-crimson-11",
+    sleeping && "!border-gray-8",
   )
 
   return (
