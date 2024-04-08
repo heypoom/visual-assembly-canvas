@@ -202,6 +202,7 @@ impl Sequencer {
         // Reset the machine's sleeping flag.
         if let Some(machine) = self.get_mut(machine_id) {
             machine.sleeping = false;
+            machine.remaining_sleep_ticks = 0;
         }
     }
 

@@ -100,6 +100,7 @@ impl Machine {
         self.mem.reset_stacks();
         self.expected_receives = 0;
         self.sleeping = false;
+        self.remaining_sleep_ticks = 0;
     }
 }
 

@@ -9,6 +9,7 @@ import setup, {
 
 import { isBlock as is, isBlock } from "@/blocks"
 import { midiManager } from "@/services/midi"
+import { sleepTimers } from "@/services/sleep"
 import { syncBlockData, updateNodeData } from "@/store/blocks"
 import { $clock } from "@/store/clock"
 import { $nodes } from "@/store/nodes"
@@ -184,6 +185,10 @@ export class CanvasEngine {
 
     // Reset the watchdog.
     this.ctx.set_await_watchdog(true)
+
+    // Reset pending sleep timers.
+    sleepTimers.forEach(clearInterval)
+    sleepTimers.clear()
 
     // Report if our program did not halt properly.
     if (!this.continuous) this.reportHang()
