@@ -120,6 +120,12 @@ pub enum Op {
     /// Bitwise Right Shift (>>)
     RightShift,
 
+    /// Pause the execution for X ticks
+    Sleep(u16),
+
+    /// Pause the execution for X milliseconds
+    SleepMs(u16),
+
     /// Halt the program.
     Halt,
 

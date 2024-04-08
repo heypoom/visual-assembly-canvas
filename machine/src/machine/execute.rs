@@ -1,6 +1,7 @@
 use std::ops::Not;
 use snafu::ensure;
 use crate::{Event, RuntimeError};
+use crate::event::SleepDuration;
 use crate::machine::{Decode, Machine};
 use crate::register::Register::PC;
 use crate::op::Op;
@@ -243,6 +244,10 @@ impl Execute for Machine {
             Op::Not => s.apply(|a| Ok(a.not()))?,
             Op::LeftShift => s.apply_two(|a, b| Ok(a << b))?,
             Op::RightShift => s.apply_two(|a, b| Ok(a >> b))?,
+
+            // Pause the execution of the thread
+            Op::Sleep(tick) => self.events.push(Event::Sleep {duration: SleepDuration::Tick(tick)}),
+            Op::SleepMs(ms) => self.events.push(Event::Sleep {duration: SleepDuration::Ms(ms)}),
         };
 
         // Advance or jump the program counter.

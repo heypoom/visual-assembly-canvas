@@ -27,5 +27,18 @@ pub enum Event {
     Synth {
         triggers: Vec<SynthTrigger>,
     },
+
+    /// Pause the execution at the host device
+    Sleep {
+        duration: SleepDuration,
+    },
+}
+
+#[derive(Tsify, Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
+pub enum SleepDuration {
+    Ms(u16),
+    Tick(u16),
 }
 

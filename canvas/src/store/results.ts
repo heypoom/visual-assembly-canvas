@@ -1,8 +1,9 @@
-import { CanvasError } from "machine-wasm"
+import { CanvasError, Effect } from "machine-wasm"
 import { action, map } from "nanostores"
 
 import { isBlock } from "@/blocks"
 import { CanvasEngine, engine } from "@/engine"
+import { processEffects } from "@/engine/effects"
 import {
   $memoryPageConfig,
   $memoryPages,
@@ -58,6 +59,8 @@ export const syncMachineState = action(
 
       const curr = output[id]
       const next = toState({ ...inspected, events })
+
+      processEffects(events as Effect[], id)
 
       // Preserve parse errors between steps, but discard cycle errors.
       const error =

@@ -5,16 +5,18 @@ import { processMidiEvent } from "@/services/midi"
 
 export function processEffects(effects: Effect[], block: number) {
   for (const effect of effects) {
-    if (effect.type === "Midi") {
-      processMidiEvent(block, effect).then()
-      continue
+    switch (effect.type) {
+      case "Midi":
+        processMidiEvent(block, effect).then()
+        break
+      case "Synth":
+        processSynthEffect(block, effect)
+        break
+      case "Sleep":
+        console.log("[SLEEP]", effect.duration)
+        break
+      default:
+        console.warn("unknown effect:", effect)
     }
-
-    if (effect.type === "Synth") {
-      processSynthEffect(block, effect)
-      continue
-    }
-
-    console.warn("unknown effect:", effect)
   }
 }
