@@ -24,7 +24,7 @@ pub struct Block {
 #[tsify(into_wasm_abi, from_wasm_abi, namespace)]
 pub enum BlockDataByType {
     /// Built-in blocks.
-    Internal {
+    BuiltIn {
         data: InternalBlockData,
     },
     /// External blocks.
@@ -133,7 +133,7 @@ pub enum InternalBlockData {
 }
 
 impl Block {
-    pub fn new(id: u16, data: InternalBlockData) -> Block {
+    pub fn new(id: u16, data: BlockDataByType) -> Block {
         Block { id, data, inbox: VecDeque::new(), outbox: vec![], events: vec![] }
     }
 

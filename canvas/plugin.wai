@@ -1,0 +1,30 @@
+record out-message {
+  outlet: option<u64>,
+  data: list<u8>,
+}
+
+record effect {
+   type: string,
+   data: list<u8>,
+}
+
+// Define the result structure for processing messages
+record object-message-process-result {
+  out-messages: list<out-message>,
+  out-effects: list<effect>,
+  public-state: option<list<u8>>,
+}
+
+// Define the plugin interface (a "world" or "interface" in WIT)
+interface plugin {
+  init-module: func();
+  create-object: func(id: u64);
+  destroy-object: func(id: u64);
+  process-object-messages: func(object-id: u64, messages: list<message>) -> object-message-process-result;
+}
+
+// Define the host interface that plugins might call (if any)
+// world host {
+//   import plugin; // The host imports the plugin interface
+//   // Define functions the host exports for plugins to call (e.g., logging)
+// }

@@ -203,7 +203,7 @@ impl Controller {
     }
 
     pub fn update_block(&mut self, id: u16, data: InternalBlockData) -> Return {
-        returns(self.canvas.update_block(id, data))
+        returns(self.canvas.update_built_in(id, data))
     }
 
     pub fn reset_blocks(&mut self) -> Return {
