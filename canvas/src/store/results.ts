@@ -59,7 +59,7 @@ export const syncMachineState = (manager: CanvasEngine) => {
     const error =
       curr?.error && !isCycleError(curr.error) ? curr.error : next.error
 
-    store.setKey(id, {
+    $output.setKey(id, {
       ...next,
       error,
 

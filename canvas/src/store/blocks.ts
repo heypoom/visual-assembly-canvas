@@ -19,7 +19,7 @@ export const updateNode = (id: number, update: Updater) => {
     update(node)
   })
 
-  nodes.set(next)
+  $nodes.set(next)
 }
 
 export const updateNodeData = <K extends BlockValues>(
