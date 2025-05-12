@@ -36,7 +36,11 @@ export const MachineEditor = memo((props: Props) => {
       onChange={(s) => setSource(id, s)}
       onCreateEditor={(view) => onCreate(id, view)}
       onBlur={() => engine.load(id, source, { invalidate: false })}
-      basicSetup={{ lineNumbers: false, foldGutter: false }}
+      basicSetup={{
+        lineNumbers: false,
+        foldGutter: false,
+        defaultKeymap: false,
+      }}
     />
   )
 })

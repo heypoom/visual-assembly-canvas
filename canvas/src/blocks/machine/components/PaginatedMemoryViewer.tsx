@@ -45,7 +45,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
   const regionMaps = useStore($memoryRegions)
   const regions = regionMaps[id] ?? []
 
-  const containerRef = useRef<HTMLDivElement>()
+  const containerRef = useRef<HTMLDivElement>(undefined)
   const memStart = pageToOffset(pageConfig.page)
 
   const memEnd =
@@ -125,7 +125,11 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-y-1 w-fit">
-      <div ref={(r) => (containerRef.current = r!)}>
+      <div
+        ref={(r) => {
+          containerRef.current = r!
+        }}
+      >
         <MemoryViewer
           memory={memory}
           begin={memStart}

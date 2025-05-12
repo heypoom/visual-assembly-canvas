@@ -14,7 +14,7 @@ export function useAutoSave(config: PersistConfig = {}) {
   const { serialize, restore, clear } = useSaveState()
 
   const restored = useRef(false)
-  const saveTimer = useRef<Timer>()
+  const saveTimer = useRef<Timer>(undefined)
 
   useEffect(() => {
     // This operation must be done exactly once.

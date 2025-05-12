@@ -45,7 +45,7 @@ export const OscBlock = (props: OscProps) => {
 
     return (
       <FieldGroup name="Duty Cycle">
-        <TextField.Input
+        <TextField.Root
           className="max-w-[70px]"
           size="1"
           type="number"

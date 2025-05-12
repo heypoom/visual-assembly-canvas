@@ -11,7 +11,7 @@ export const PixelBlock = (props: PixelProps) => {
   const { data } = props
   const { columns = 9, palette = "base" } = data
 
-  const canvasRef = useRef<HTMLCanvasElement | null>()
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const pixels =
     data.pixels?.length > 0 ? data.pixels : [...Array(columns * 5)].fill(0)
@@ -61,7 +61,9 @@ export const PixelBlock = (props: PixelProps) => {
           style={{ height: `${height}px`, maxWidth: `${width}px` }}
         >
           <canvas
-            ref={(r) => (canvasRef.current = r)}
+            ref={(r) => {
+              canvasRef.current = r
+            }}
             className="h-[180px] w-full"
             style={{ height, minWidth: width }}
           />

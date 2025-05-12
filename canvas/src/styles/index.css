@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer theme, base, radix-themes, components, utilities;
+
+@import "tailwindcss";
+@import "@radix-ui/themes/styles.css" layer(radix-themes);
+@import "radix-themes-tw/theme.css";
 
 .cm-line {
   padding: 0 !important;

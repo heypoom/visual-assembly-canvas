@@ -1,5 +1,5 @@
 import { CanvasError, Effect } from "machine-wasm"
-import { action, map } from "nanostores"
+import { map } from "nanostores"
 
 import { isBlock } from "@/blocks"
 import { CanvasEngine, engine } from "@/engine"
@@ -31,91 +31,75 @@ const toState = (result: InspectionState): MachineState => ({
   status: result.status,
 })
 
-export const setError = action(
-  $output,
-  "set error",
-  (store, id: number, error: CanvasError) => {
-    const output = store.get()
-    console.log(`[${id}] error =`, error)
+export const setError = (id: number, error: CanvasError) => {
+  const output = $output.get()
+  console.log(`[${id}] error =`, error)
 
-    store.setKey(id, { ...output[id], error })
-  },
-)
+  $output.setKey(id, { ...output[id], error })
+}
 
-export const syncMachineState = action(
-  $output,
-  "sync machine state",
-  (store, manager: CanvasEngine) => {
-    const output = store.get()
-    const nodes = $nodes.get()
+export const syncMachineState = (manager: CanvasEngine) => {
+  const output = $output.get()
+  const nodes = $nodes.get()
 
-    for (const node of nodes) {
-      if (!isBlock.machine(node)) continue
+  for (const node of nodes) {
+    if (!isBlock.machine(node)) continue
 
-      const { id } = node.data
+    const { id } = node.data
 
-      const events = manager.ctx?.consume_machine_side_effects(id)
-      const inspected = manager.inspect(id)
+    const events = manager.ctx?.consume_machine_side_effects(id)
+    const inspected = manager.inspect(id)
 
-      const curr = output[id]
-      const next = toState({ ...inspected, events })
+    const curr = output[id]
+    const next = toState({ ...inspected, events })
 
-      processEffects(events as Effect[], id)
+    processEffects(events as Effect[], id)
 
-      // Preserve parse errors between steps, but discard cycle errors.
-      const error =
-        curr?.error && !isCycleError(curr.error) ? curr.error : next.error
+    // Preserve parse errors between steps, but discard cycle errors.
+    const error =
+      curr?.error && !isCycleError(curr.error) ? curr.error : next.error
 
-      store.setKey(id, {
-        ...next,
-        error,
+    $output.setKey(id, {
+      ...next,
+      error,
 
-        // Preserve logs between steps.
-        logs: [...(curr?.logs ?? []), ...next.logs],
-      })
-
-      updateMemoryViewer(id)
-    }
-
-    // After we've synchronized the machine states,
-    // we update the value viewers as well.
-    updateValueViewers()
-  },
-)
-
-export const updateMemoryViewer = action(
-  $memoryPages,
-  "update memory viewer",
-  (store, id: number) => {
-    const { page, size = DEFAULT_PAGE_SIZE } = $memoryPageConfig.get()[id] ?? {}
-    const memOffset = pageToOffset(page, size)
-
-    const mem = engine.ctx?.read_mem(id, memOffset, size) as number[]
-    if (mem) store.setKey(id, mem)
-  },
-)
-
-export const clearPreviousRun = action(
-  $output,
-  "clear previous run",
-  (store, manager: CanvasEngine) => {
-    const curr = store.get()
-
-    manager.statuses.forEach((status, id) => {
-      // Do not clear if the machine is still invalid.
-      if (status === "Invalid" || status === "Errored") return
-
-      const state = curr[id]
-      const { error } = state ?? {}
-
-      store.setKey(id, {
-        ...state,
-        logs: [],
-        error: isCycleError(error) ? error : null,
-      })
+      // Preserve logs between steps.
+      logs: [...(curr?.logs ?? []), ...next.logs],
     })
-  },
-)
+
+    updateMemoryViewer(id)
+  }
+
+  // After we've synchronized the machine states,
+  // we update the value viewers as well.
+  updateValueViewers()
+}
+
+export const updateMemoryViewer = (id: number) => {
+  const { page, size = DEFAULT_PAGE_SIZE } = $memoryPageConfig.get()[id] ?? {}
+  const memOffset = pageToOffset(page, size)
+
+  const mem = engine.ctx?.read_mem(id, memOffset, size) as number[]
+  if (mem) $memoryPages.setKey(id, mem)
+}
+
+export const clearPreviousRun = (manager: CanvasEngine) => {
+  const curr = $output.get()
+
+  manager.statuses.forEach((status, id) => {
+    // Do not clear if the machine is still invalid.
+    if (status === "Invalid" || status === "Errored") return
+
+    const state = curr[id]
+    const { error } = state ?? {}
+
+    $output.setKey(id, {
+      ...state,
+      logs: [],
+      error: isCycleError(error) ? error : null,
+    })
+  })
+}
 
 const isCycleError = (error: CanvasError | null) => {
   if (!error) return false
