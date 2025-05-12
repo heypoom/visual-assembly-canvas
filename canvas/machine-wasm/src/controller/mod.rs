@@ -1,4 +1,4 @@
-use machine::blocks::BlockData;
+use machine::blocks::InternalBlockData;
 use machine::canvas::wire::{Port, Wire};
 pub use machine::canvas::{Canvas, CanvasError};
 use machine::status::MachineStatus;
@@ -68,7 +68,7 @@ impl Controller {
     }
 
     pub fn get_blocks_data(&self) -> Return {
-        let blocks_data: Vec<BlockData> =
+        let blocks_data: Vec<InternalBlockData> =
             self.canvas.blocks.iter().map(|b| b.data.clone()).collect();
 
         Ok(to_value(&blocks_data)?)
@@ -78,11 +78,11 @@ impl Controller {
         Ok(to_value(&self.canvas.wires)?)
     }
 
-    pub fn add_block(&mut self, data: BlockData) -> Result<u16, JsValue> {
+    pub fn add_block(&mut self, data: InternalBlockData) -> Result<u16, JsValue> {
         return_raw(self.canvas.add_block(data))
     }
 
-    pub fn add_block_with_id(&mut self, id: u16, data: BlockData) -> Return {
+    pub fn add_block_with_id(&mut self, id: u16, data: InternalBlockData) -> Return {
         returns(self.canvas.add_block_with_id(id, data))
     }
 
@@ -202,7 +202,7 @@ impl Controller {
         returns(self.canvas.send_message_to_block(block_id, action))
     }
 
-    pub fn update_block(&mut self, id: u16, data: BlockData) -> Return {
+    pub fn update_block(&mut self, id: u16, data: InternalBlockData) -> Return {
         returns(self.canvas.update_block(id, data))
     }
 

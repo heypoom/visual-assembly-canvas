@@ -3,7 +3,7 @@ use crate::canvas::canvas::Errorable;
 use crate::{Action, Event, Message};
 use crate::audio::synth::note_to_freq;
 use crate::audio::synth::SynthTrigger::AttackRelease;
-use crate::blocks::BlockData::Synth;
+use crate::blocks::InternalBlockData::Synth;
 
 impl Canvas {
     pub fn tick_synth_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {

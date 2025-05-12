@@ -2,7 +2,7 @@ use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::canvas::CanvasError::{MissingMessageRecipient};
 use crate::{Action, Message};
-use crate::blocks::BlockData::Machine;
+use crate::blocks::InternalBlockData::Machine;
 use crate::canvas::wire::{port, Port};
 
 impl Canvas {

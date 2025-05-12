@@ -12,18 +12,34 @@ use crate::blocks::value_view::ValueVisualType;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {
     pub id: u16,
-
-    pub data: BlockData,
+    pub data: BlockDataByType,
 
     pub inbox: VecDeque<Message>,
     pub outbox: Vec<Message>,
     pub events: Vec<Event>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, EnumIs, Tsify)]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
+pub enum BlockDataByType {
+    /// Built-in blocks.
+    Internal {
+        data: InternalBlockData,
+    },
+    /// External blocks.
+    External {
+        id: String,
+
+        /// Data is stored in the MessagePack value format.
+        data: rmpv::Value
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs, Tsify)]
 #[serde(tag = "type")]
 #[tsify(into_wasm_abi, from_wasm_abi, namespace)]
-pub enum BlockData {
+pub enum InternalBlockData {
     Machine {
         machine_id: u16,
     },
@@ -116,7 +132,7 @@ pub enum BlockData {
 }
 
 impl Block {
-    pub fn new(id: u16, data: BlockData) -> Block {
+    pub fn new(id: u16, data: InternalBlockData) -> Block {
         Block { id, data, inbox: VecDeque::new(), outbox: vec![], events: vec![] }
     }
 

@@ -1,21 +1,21 @@
 use snafu::ensure;
 use crate::Action;
-use crate::blocks::{Block, BlockData};
+use crate::blocks::{Block, InternalBlockData};
 use crate::canvas::{Canvas, CanvasError};
-use crate::blocks::BlockData::{Machine, Memory};
+use crate::blocks::InternalBlockData::{Machine, Memory};
 use crate::canvas::canvas::Errorable;
 use crate::canvas::CanvasError::{BlockNotFound};
 use crate::canvas::{BlockIdInUseSnafu, MachineNotFoundSnafu};
 
 impl Canvas {
-    pub fn add_block(&mut self, data: BlockData) -> Result<u16, CanvasError> {
+    pub fn add_block(&mut self, data: InternalBlockData) -> Result<u16, CanvasError> {
         let id = self.block_id();
         self.add_block_with_id(id, data)?;
 
         Ok(id)
     }
 
-    pub fn add_block_with_id(&mut self, id: u16, data: BlockData) -> Errorable {
+    pub fn add_block_with_id(&mut self, id: u16, data: InternalBlockData) -> Errorable {
         // Prevent duplicate block ids from being added.
         ensure!(!self.blocks.iter().any(|b| b.id == id), BlockIdInUseSnafu {id});
 
@@ -73,7 +73,7 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn update_block(&mut self, id: u16, data: BlockData) -> Errorable {
+    pub fn update_block(&mut self, id: u16, data: InternalBlockData) -> Errorable {
         self.mut_block(id)?.data = data;
         Ok(())
     }

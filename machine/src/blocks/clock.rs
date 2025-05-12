@@ -1,4 +1,4 @@
-use crate::blocks::BlockData::Clock;
+use crate::blocks::InternalBlockData::Clock;
 use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Message};

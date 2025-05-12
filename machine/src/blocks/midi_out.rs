@@ -1,4 +1,4 @@
-use crate::blocks::BlockData::MidiOut;
+use crate::blocks::InternalBlockData::MidiOut;
 use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Event, Message};

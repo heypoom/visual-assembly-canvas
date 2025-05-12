@@ -1,7 +1,7 @@
 use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Message};
-use crate::blocks::BlockData::MidiIn;
+use crate::blocks::InternalBlockData::MidiIn;
 
 impl Canvas {
     pub fn tick_midi_in_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {

@@ -1,7 +1,7 @@
 use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Message};
-use crate::blocks::BlockData::Pixel;
+use crate::blocks::InternalBlockData::Pixel;
 use crate::canvas::virtual_io::{read_from_address, write_to_address};
 
 use serde::{Deserialize, Serialize};
