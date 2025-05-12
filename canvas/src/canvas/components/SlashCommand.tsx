@@ -24,7 +24,7 @@ export function SlashCommand() {
 
   const matches = useMemo(() => getMatchedCommands(input), [input])
 
-  useHotkeys("/", () => {
+  useHotkeys("slash", () => {
     setActive((active) => !active)
   })
 
