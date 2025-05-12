@@ -32,7 +32,8 @@ pub enum BlockDataByType {
         id: String,
 
         /// Data is stored in the MessagePack value format.
-        data: rmpv::Value
+        #[serde(with = "serde_bytes")]
+        data: Vec<u8>
     }
 }
 
