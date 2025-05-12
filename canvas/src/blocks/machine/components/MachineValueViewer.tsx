@@ -24,7 +24,7 @@ export const MachineValueViewer = memo((props: Props) => {
       )}
 
       {state.logs?.length ? (
-        <div className="text-cyan-11 text-1 font-medium px-1 bg-stone-800 mx-1">
+        <div className="text-cyan-11 text-1 font-medium px-1 mx-1">
           {state.logs.map((log, i) => (
             <div key={i}>&gt; {log}</div>
           ))}
@@ -33,7 +33,7 @@ export const MachineValueViewer = memo((props: Props) => {
 
       <div className="flex flex-col gap-y-1 relative">
         {registers && (
-          <div className="text-green-11 text-1 px-1 bg-stone-800 mx-1 flex gap-x-2">
+          <div className="text-green-11 text-1 px-1 mx-1 flex gap-x-2">
             <div>
               <span>PC</span>{" "}
               <strong>{registers.pc.toString().padStart(2, "0")}</strong>
