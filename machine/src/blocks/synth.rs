@@ -3,6 +3,7 @@ use crate::canvas::canvas::Errorable;
 use crate::{Action, Event, Message};
 use crate::audio::synth::note_to_freq;
 use crate::audio::synth::SynthTrigger::AttackRelease;
+use crate::blocks::BlockDataByType::BuiltIn;
 use crate::blocks::InternalBlockData::Synth;
 
 impl Canvas {
@@ -25,7 +26,7 @@ impl Canvas {
 
                     let block = self.mut_block(id)?;
 
-                    if let Synth { .. } = &block.data {
+                    if let BuiltIn {data: Synth { .. }} = &block.data {
                         block.events.push(Event::Synth {
                             triggers,
                         })
@@ -35,7 +36,7 @@ impl Canvas {
                 Action::Write { address, data } => {
                     let block = self.mut_block(id)?;
 
-                    let Synth { .. } = block.data else { continue; };
+                    let BuiltIn {data: Synth { .. }} = block.data else { continue; };
 
                     let mut triggers = vec![];
                     let duration = *address + 1;

@@ -1,3 +1,4 @@
+use crate::blocks::BlockDataByType::BuiltIn;
 use crate::blocks::InternalBlockData::{Clock, Memory, MidiIn, MidiOut, Osc, Pixel, Plot, Synth};
 use crate::canvas::Canvas;
 
@@ -6,7 +7,12 @@ impl Canvas {
         let block = self.mut_block(id)?;
         let messages = block.consume_messages();
 
-        match &block.data {
+        // TODO: handle externals?
+        let BuiltIn {data} = &block.data else {
+            return Ok(());
+        };
+
+        match data {
             Pixel { .. } => self.tick_pixel_block(id, messages)?,
             Plot { .. } => self.tick_plotter_block(id, messages)?,
             Osc { .. } => self.tick_osc_block(id, messages)?,

@@ -3,30 +3,13 @@ use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
 use crate::{Action, Event, Message};
 use crate::audio::midi::MidiOutputFormat;
-
-struct ObjectMessageProcessResult {
-    /// Messages to send to the outlets.
-    pub out_messages: Vec<Message>,
-
-    /// Side effects to send to the host platform to perform.
-    pub out_effects: Vec<Event>,
-    
-    /// Public state of the object.
-    pub state: Vec<u8>
-}
-
-trait Plugin {
-    fn init_module() -> ();
-    fn create_object(id: u64);
-    fn destroy_object(id: u64);
-    fn process_object_messages(object_id: u64, messages: Vec<Message>) -> ObjectMessageProcessResult;
-}
+use crate::blocks::BlockDataByType::BuiltIn;
 
 impl Canvas {
     pub fn tick_midi_out_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
 
-        let MidiOut { format, channel, port } = &mut block.data else {
+        let BuiltIn {data: MidiOut { format, channel, port }} = &mut block.data else {
             return Ok(());
         };
 

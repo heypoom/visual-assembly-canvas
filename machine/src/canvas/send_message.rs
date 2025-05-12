@@ -3,6 +3,7 @@ use crate::canvas::canvas::Errorable;
 use crate::canvas::CanvasError::{MissingMessageRecipient};
 use crate::{Action, Message};
 use crate::blocks::InternalBlockData::Machine;
+use crate::blocks::BlockDataByType::BuiltIn;
 use crate::canvas::wire::{port, Port};
 
 impl Canvas {
@@ -60,7 +61,7 @@ impl Canvas {
         if let Ok(block) = self.mut_block(recipient_id) {
             match block.data {
                 // Send the message directly to the machine.
-                Machine { machine_id } => {
+                BuiltIn {data: Machine { machine_id }} => {
                     if let Some(m) = self.seq.get_mut(machine_id) {
                         m.inbox.push_back(message);
 

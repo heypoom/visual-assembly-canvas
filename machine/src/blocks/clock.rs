@@ -5,7 +5,7 @@ use crate::{Action, Message};
 
 impl Canvas {
     pub fn tick_clock_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let Clock { time, freq, ping } = &mut self.mut_block(id)?.data else { return Ok(()); };
+        let Clock { time, freq, ping } = &mut self.mut_built_in_data_by_id(id)? else { return Ok(()); };
 
         // increment the time, or wrap around to 0.
         *time = (*time).checked_add(1).unwrap_or(0);
@@ -35,8 +35,8 @@ impl Canvas {
         }
 
         // Send data to sinks
-        if let Clock { time, .. } = self.get_block(id)?.data {
-            self.send_data_to_sinks(id, vec![time])?;
+        if let Clock { time, .. } = self.built_in_data_by_id(id)? {
+            self.send_data_to_sinks(id, vec![*time])?;
         }
 
         Ok(())

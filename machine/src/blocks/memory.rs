@@ -11,18 +11,18 @@ impl Canvas {
         for message in messages {
             match message.action {
                 Action::Data { body } => {
-                    let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
+                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else { continue; };
                     values.extend(body)
                 }
 
                 Action::Override { data } => {
-                    let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
+                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else { continue; };
                     values.clear();
                     values.extend(data);
                 }
 
                 Action::Write { address, data } => {
-                    let Memory { values, .. } = &mut self.mut_block(id)?.data else { continue; };
+                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else { continue; };
 
                     // HACK: this is a special address that requests data from the block.
                     //       our mapped port can only handle up to 0x200 addresses.
@@ -39,14 +39,14 @@ impl Canvas {
                 }
 
                 Action::Read { address, count } => {
-                    if let Memory { values, .. } = &self.get_block(id)?.data {
+                    if let Memory { values, .. } = self.mut_built_in_data_by_id(id)? {
                         let action = read_from_address(address, count, &values);
                         self.send_direct_message(id, message.sender.block, action)?;
                     };
                 }
 
                 Action::Reset => {
-                    if let Memory { values, .. } = &mut self.mut_block(id)?.data {
+                    if let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? {
                         values.clear()
                     };
                 }

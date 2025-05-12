@@ -11,7 +11,7 @@ impl Canvas {
                 Action::Data { body } => {
                     let mut waveform = Waveform::Sine;
 
-                    if let Osc { waveform: wf } = &self.get_block(id)?.data {
+                    if let Osc { waveform: wf } = self.mut_built_in_data_by_id(id)? {
                         waveform = wf.clone();
                     }
 

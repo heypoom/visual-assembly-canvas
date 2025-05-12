@@ -8,7 +8,7 @@ impl Canvas {
         for message in messages {
             match message.action {
                 Action::Midi { event, value, note, channel: ch, port: p } => {
-                    if let MidiIn { on, channels, port, .. } = &self.get_block(id)?.data {
+                    if let MidiIn { on, channels, port, .. } = self.mut_built_in_data_by_id(id)? {
                         if *on != event || *port != (p as u16) { continue; }
 
                         // Enable channel filtering if channels are defined.

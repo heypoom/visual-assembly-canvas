@@ -27,6 +27,7 @@ pub enum BlockDataByType {
     BuiltIn {
         data: InternalBlockData,
     },
+    
     /// External blocks.
     External {
         id: String,

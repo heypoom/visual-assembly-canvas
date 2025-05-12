@@ -58,15 +58,22 @@ impl Canvas {
         self.blocks.iter().find(|b| b.id == id).ok_or(BlockNotFound { id })
     }
 
-    pub fn built_in_by_id(&self, id: u16) -> Result<&InternalBlockData, CanvasError> {
+    pub fn mut_block(&mut self, id: u16) -> Result<&mut Block, CanvasError> {
+        self.blocks.iter_mut().find(|b| b.id == id).ok_or(BlockNotFound { id })
+    }
+
+    pub fn built_in_data_by_id(&self, id: u16) -> Result<&InternalBlockData, CanvasError> {
         match self.get_block(id) {
-            Ok(Block {data: BlockDataByType::BuiltIn {data}, .. }) => Ok(data),
+            Ok(Block {data: BuiltIn {data}, .. }) => Ok(data),
             _ => Err(BlockNotFound { id })
         }
     }
 
-    pub fn mut_block(&mut self, id: u16) -> Result<&mut Block, CanvasError> {
-        self.blocks.iter_mut().find(|b| b.id == id).ok_or(BlockNotFound { id })
+    pub fn mut_built_in_data_by_id(&mut self, id: u16) -> Result<&mut InternalBlockData, CanvasError> {
+        match self.mut_block(id) {
+            Ok(Block {data: BuiltIn {data}, .. }) => Ok(data),
+            _ => Err(BlockNotFound { id })
+        }
     }
 
     pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
@@ -84,9 +91,9 @@ impl Canvas {
     }
 
     pub fn update_built_in(&mut self, id: u16, next_data: InternalBlockData) -> Errorable {
-        if (self.get_block(id)?.data.is_built_in()) {
+        if self.get_block(id)?.data.is_built_in() {
             let block = self.mut_block(id)?;
-            block.data = BlockDataByType::BuiltIn {data: next_data};
+            block.data = BuiltIn {data: next_data};
         }
 
         Ok(())
@@ -98,7 +105,7 @@ impl Canvas {
         let ids: Vec<_> = self.blocks.iter().filter(|b| {
             match b.data {
                 // TODO: move machine block to externals.
-                BlockDataByType::BuiltIn { data: Machine { .. } } => false,
+                BuiltIn { data: Machine { .. } } => false,
                 _ => true,
             }
         }).map(|b| b.id).collect();
@@ -106,7 +113,7 @@ impl Canvas {
         for id in ids {
             // Do not reset if the block is not auto-reset.
             // This means the memory block is storing persistent data.
-            if let Memory { auto_reset, .. } = self.built_in_by_id(id)? {
+            if let Memory { auto_reset, .. } = self.built_in_data_by_id(id)? {
                 if !auto_reset { continue; }
             }
 
