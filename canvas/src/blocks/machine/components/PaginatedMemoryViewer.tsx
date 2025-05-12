@@ -45,7 +45,7 @@ export const PaginatedMemoryViewer = (props: Props) => {
   const regionMaps = useStore($memoryRegions)
   const regions = regionMaps[id] ?? []
 
-  const containerRef = useRef<HTMLDivElement>()
+  const containerRef = useRef<HTMLDivElement>(undefined)
   const memStart = pageToOffset(pageConfig.page)
 
   const memEnd =

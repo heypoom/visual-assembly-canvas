@@ -20,7 +20,7 @@ export const Canvas = () => {
   const nodes = useStore($nodes)
   const edges = useStore($edges)
 
-  const flow = useRef<ReactFlowInstance>()
+  const flow = useRef<ReactFlowInstance>(undefined)
 
   const onDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
