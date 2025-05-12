@@ -76,7 +76,7 @@ export const Settings = <
 
           return (
             <FieldGroup key={key} name={name}>
-              <TextField.Input
+              <TextField.Root
                 type="number"
                 min={min}
                 max={max}
@@ -144,7 +144,7 @@ export const Settings = <
         if (type === "text") {
           return (
             <FieldGroup key={key} name={name}>
-              <TextField.Input
+              <TextField.Root
                 size="1"
                 className="nodrag"
                 value={input ?? value}

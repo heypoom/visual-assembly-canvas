@@ -125,7 +125,11 @@ export const PaginatedMemoryViewer = (props: Props) => {
 
   return (
     <div className="flex flex-col gap-y-1 w-fit">
-      <div ref={(r) => (containerRef.current = r!)}>
+      <div
+        ref={(r) => {
+          containerRef.current = r!
+        }}
+      >
         <MemoryViewer
           memory={memory}
           begin={memStart}

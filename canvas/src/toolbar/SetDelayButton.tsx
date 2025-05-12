@@ -33,7 +33,7 @@ export const SetDelayButton = () => {
         <Dialog.Title>Set the delay duration</Dialog.Title>
 
         <Flex direction="column" gap="3">
-          <TextField.Input
+          <TextField.Root
             value={delay}
             placeholder="40"
             min="0"

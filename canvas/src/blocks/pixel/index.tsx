@@ -61,7 +61,9 @@ export const PixelBlock = (props: PixelProps) => {
           style={{ height: `${height}px`, maxWidth: `${width}px` }}
         >
           <canvas
-            ref={(r) => (canvasRef.current = r)}
+            ref={(r) => {
+              canvasRef.current = r
+            }}
             className="h-[180px] w-full"
             style={{ height, minWidth: width }}
           />
