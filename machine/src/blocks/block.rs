@@ -1,29 +1,45 @@
-use std::collections::VecDeque;
-use serde::{Deserialize, Serialize};
-use crate::{Event, Message};
-use crate::audio::waveform::Waveform;
-use strum_macros::{EnumIs};
-use tsify::Tsify;
 use crate::audio::midi::{MidiInputEvent, MidiOutputFormat};
 use crate::audio::synth::SynthConfig;
+use crate::audio::waveform::Waveform;
 use crate::blocks::pixel::PixelMode;
 use crate::blocks::value_view::ValueVisualType;
+use crate::{Event, Message};
+use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
+use strum_macros::EnumIs;
+use tsify::Tsify;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Block {
     pub id: u16,
-
-    pub data: BlockData,
+    pub data: BlockDataByType,
 
     pub inbox: VecDeque<Message>,
     pub outbox: Vec<Message>,
     pub events: Vec<Event>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, EnumIs, Tsify)]
+#[serde(tag = "type")]
+#[tsify(into_wasm_abi, from_wasm_abi, namespace)]
+pub enum BlockDataByType {
+    /// Built-in blocks.
+    BuiltIn { data: InternalBlockData },
+
+    /// External blocks.
+    External {
+        id: String,
+
+        /// Data is stored in the MessagePack value format.
+        #[serde(with = "serde_bytes")]
+        data: Vec<u8>,
+    },
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumIs, Tsify)]
 #[serde(tag = "type")]
 #[tsify(into_wasm_abi, from_wasm_abi, namespace)]
-pub enum BlockData {
+pub enum InternalBlockData {
     Machine {
         machine_id: u16,
     },
@@ -112,12 +128,18 @@ pub enum BlockData {
 
         /// Color of the memory region.
         color: u16,
-    }
+    },
 }
 
 impl Block {
-    pub fn new(id: u16, data: BlockData) -> Block {
-        Block { id, data, inbox: VecDeque::new(), outbox: vec![], events: vec![] }
+    pub fn new(id: u16, data: BlockDataByType) -> Block {
+        Block {
+            id,
+            data,
+            inbox: VecDeque::new(),
+            outbox: vec![],
+            events: vec![],
+        }
     }
 
     pub fn consume_messages(&mut self) -> Vec<Message> {

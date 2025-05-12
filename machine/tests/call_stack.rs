@@ -23,7 +23,8 @@ mod call_stack_tests {
             Op::Return,
             Op::Call(2), // [start]
             Op::Call(2),
-        ].into();
+        ]
+        .into();
 
         m.run().expect("cannot run the test program");
 

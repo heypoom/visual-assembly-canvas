@@ -1,5 +1,5 @@
 mod sleep_tests {
-    use machine::{Machine, Op, Execute, Event};
+    use machine::{Event, Execute, Machine, Op};
 
     #[test]
     fn test_sleep_event() {
@@ -9,12 +9,12 @@ mod sleep_tests {
             Op::Push(0xAB),
             Op::SleepMs(200),
         ]
-            .into();
+        .into();
 
         m.run().expect("cannot run the test program");
         assert_eq!(m.sleeping, true);
         assert_eq!(m.mem.read_stack(2), [0xFF, 0xAB]);
         assert_eq!(m.events.len(), 1);
-        assert_eq!(m.events[0], Event::Sleep {ms: 200});
+        assert_eq!(m.events[0], Event::Sleep { ms: 200 });
     }
 }

@@ -1,8 +1,8 @@
-use crate::canvas::Canvas;
-use crate::canvas::canvas::Errorable;
-use crate::{Action, Message};
 use crate::audio::waveform::Waveform;
-use crate::blocks::BlockData::Osc;
+use crate::blocks::InternalBlockData::Osc;
+use crate::canvas::canvas::Errorable;
+use crate::canvas::Canvas;
+use crate::{Action, Message};
 
 impl Canvas {
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
@@ -11,7 +11,7 @@ impl Canvas {
                 Action::Data { body } => {
                     let mut waveform = Waveform::Sine;
 
-                    if let Osc { waveform: wf } = &self.get_block(id)?.data {
+                    if let Osc { waveform: wf } = self.mut_built_in_data_by_id(id)? {
                         waveform = wf.clone();
                     }
 

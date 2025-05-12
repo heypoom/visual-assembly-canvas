@@ -8,7 +8,9 @@ pub fn read_from_address(address: u16, count: u16, values: &Vec<u16>) -> Action 
 
         for i in 0..min {
             let index = address as usize + i;
-            if index >= values.len() { break; }
+            if index >= values.len() {
+                break;
+            }
 
             body.push(values[index]);
         }

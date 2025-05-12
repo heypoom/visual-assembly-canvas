@@ -1,9 +1,10 @@
 import { Draft, produce } from "immer"
 
 import { isBlock } from "@/blocks"
-import { BlockNode, BlockTypeMap, BlockValues } from "@/types/Node"
+import { BlockNode, BlockValues } from "@/types/Node"
 
 import { $nodes } from "./nodes"
+import { BlockDataByType } from "machine-wasm"
 
 type Updater = (node: Draft<BlockNode>) => void
 
@@ -31,11 +32,17 @@ export const updateNodeData = <K extends BlockValues>(
   })
 
 /** Sync the block data from the engine. */
-export const syncBlockData = (block: { id: number; data: BlockTypeMap }) => {
+export const syncBlockData = (block: { id: number; data: BlockDataByType }) => {
   updateNode(block.id, (node) => {
     const type = node.type
 
-    if (type) node.data = { ...node.data, ...block.data }
+    if (type) {
+      if (block.data.type === "BuiltIn") {
+        node.data = { ...node.data, ...block.data.data }
+      } else {
+        // TODO: handle external blocks
+      }
+    }
   })
 }
 

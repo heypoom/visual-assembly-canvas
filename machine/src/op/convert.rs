@@ -7,11 +7,17 @@ pub fn bytes_to_ops(bytes: Vec<u16>) -> Vec<Op> {
     let cycle = 0;
 
     loop {
-        if pc >= bytes.len() { break; }
-        if cycle > 300 { break; }
+        if pc >= bytes.len() {
+            break;
+        }
+        if cycle > 300 {
+            break;
+        }
 
         let op: Op = bytes[pc].into();
-        if op == Op::Eof { break; }
+        if op == Op::Eof {
+            break;
+        }
 
         let op = op.with_arg(|| {
             pc += 1;
@@ -19,7 +25,9 @@ pub fn bytes_to_ops(bytes: Vec<u16>) -> Vec<Op> {
         });
 
         pc += 1;
-        if op == Op::Noop { continue; }
+        if op == Op::Noop {
+            continue;
+        }
 
         ops.push(op);
     }

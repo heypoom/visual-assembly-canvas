@@ -1,10 +1,10 @@
 #[cfg(test)]
 mod canvas_tests {
-    use machine::blocks::BlockData::{Clock, Memory, Pixel, Plot};
-    use machine::canvas::{Canvas};
     use machine::blocks::pixel::PixelMode;
+    use machine::blocks::InternalBlockData::{Clock, Memory, Pixel, Plot};
     use machine::canvas::canvas_error::CanvasError;
-    use machine::canvas::wire::{port};
+    use machine::canvas::wire::port;
+    use machine::canvas::Canvas;
 
     type Errorable = Result<(), CanvasError>;
 
@@ -12,7 +12,10 @@ mod canvas_tests {
     fn test_add_wire_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(Pixel { pixels: vec![], mode: PixelMode::Replace })?;
+        let b = c.add_block(Pixel {
+            pixels: vec![],
+            mode: PixelMode::Replace,
+        })?;
 
         // connect machine block to pixel block.
         c.connect(port(a, 0), port(b, 0))?;
@@ -29,22 +32,31 @@ mod canvas_tests {
     fn test_machine_set_pixel_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(Pixel { pixels: vec![], mode: PixelMode::Replace })?;
+        let b = c.add_block(Pixel {
+            pixels: vec![],
+            mode: PixelMode::Replace,
+        })?;
         c.connect(port(a, 0), port(b, 0))?;
 
-        c.load_program(a, r"
+        c.load_program(
+            a,
+            r"
             push 0xAA
             push 0xBB
             push 0xCC
             send 0 3
-        ")?;
+        ",
+        )?;
 
         c.run()?;
 
-        assert_eq!(c.blocks[1].data, Pixel {
-            pixels: vec![0xCC, 0xBB, 0xAA],
-            mode: PixelMode::Replace,
-        });
+        assert_eq!(
+            c.blocks[1].data,
+            Pixel {
+                pixels: vec![0xCC, 0xBB, 0xAA],
+                mode: PixelMode::Replace,
+            }
+        );
 
         Ok(())
     }
@@ -59,10 +71,13 @@ mod canvas_tests {
         c.connect(port(0, 0), port(1, 0))?;
         c.connect(port(0, 0), port(2, 0))?;
 
-        c.load_program(0, r"
+        c.load_program(
+            0,
+            r"
             push 0xCC
             send 0 1
-        ")?;
+        ",
+        )?;
 
         c.load_program(1, "receive")?;
         c.load_program(2, "receive")?;
@@ -78,21 +93,33 @@ mod canvas_tests {
     fn test_plotter_drain() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(Plot { values: vec![], size: 5 })?;
+        c.add_block(Plot {
+            values: vec![],
+            size: 5,
+        })?;
 
-        c.load_program(0, r"
+        c.load_program(
+            0,
+            r"
             looper:
             push 2
             send 0 1
             jump looper
-        ")?;
+        ",
+        )?;
 
         c.connect(port(0, 0), port(1, 0))?;
         c.seq.ready();
 
         c.tick(32)?;
 
-        assert_eq!(c.blocks[1].data, Plot { values: vec![2, 2, 2, 2, 2], size: 5 });
+        assert_eq!(
+            c.blocks[1].data,
+            Plot {
+                values: vec![2, 2, 2, 2, 2],
+                size: 5
+            }
+        );
 
         Ok(())
     }
@@ -100,8 +127,15 @@ mod canvas_tests {
     #[test]
     fn test_clock_wraparound() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Clock { time: 250, freq: 1, ping: false })?;
-        c.add_block(Plot { values: vec![], size: 5 })?;
+        c.add_block(Clock {
+            time: 250,
+            freq: 1,
+            ping: false,
+        })?;
+        c.add_block(Plot {
+            values: vec![],
+            size: 5,
+        })?;
         c.connect(port(0, 0), port(1, 0))?;
 
         c.tick(1)?;
@@ -122,13 +156,26 @@ mod canvas_tests {
     #[test]
     fn test_clock_rate() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Clock { time: 250, freq: 8, ping: false })?;
-        c.add_block(Plot { values: vec![], size: 5 })?;
+        c.add_block(Clock {
+            time: 250,
+            freq: 8,
+            ping: false,
+        })?;
+        c.add_block(Plot {
+            values: vec![],
+            size: 5,
+        })?;
         c.connect(port(0, 0), port(1, 0))?;
 
         c.tick(50)?;
 
-        assert_eq!(c.blocks[1].data, Plot { values: vec![8, 16, 24, 32, 40], size: 5 });
+        assert_eq!(
+            c.blocks[1].data,
+            Plot {
+                values: vec![8, 16, 24, 32, 40],
+                size: 5
+            }
+        );
 
         Ok(())
     }
@@ -137,24 +184,33 @@ mod canvas_tests {
     fn test_mapped_store() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(Pixel { pixels: vec![], mode: PixelMode::Replace })?;
+        c.add_block(Pixel {
+            pixels: vec![],
+            mode: PixelMode::Replace,
+        })?;
         c.connect(port(0, 0), port(1, 0))?;
 
-        c.load_program(0, r"
+        c.load_program(
+            0,
+            r"
             push 69
             store 0x2000
 
             push 96
             store 0x2001
-        ")?;
+        ",
+        )?;
 
         c.seq.ready();
         c.tick(5)?;
 
-        assert_eq!(c.blocks[1].data, Pixel {
-            pixels: vec![69, 96, 0],
-            mode: PixelMode::Replace,
-        });
+        assert_eq!(
+            c.blocks[1].data,
+            Pixel {
+                pixels: vec![69, 96, 0],
+                mode: PixelMode::Replace,
+            }
+        );
 
         Ok(())
     }
@@ -163,13 +219,19 @@ mod canvas_tests {
     fn test_mapped_load() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(Memory { values: vec![20, 40], auto_reset: false })?;
+        c.add_block(Memory {
+            values: vec![20, 40],
+            auto_reset: false,
+        })?;
         c.connect(port(0, 0), port(1, 0))?;
 
-        c.load_program(0, r"
+        c.load_program(
+            0,
+            r"
             load 0x2000
             load 0x2001
-        ")?;
+        ",
+        )?;
 
         c.seq.ready();
         c.tick(3)?;

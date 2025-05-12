@@ -14,7 +14,9 @@ pub fn diff_slice<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<Patch<T>> {
         let from = a.get(index).map(|e| e.clone());
         let to = b.get(index).map(|e| e.clone());
 
-        if from == to { continue; }
+        if from == to {
+            continue;
+        }
 
         patches.push(Patch { index, from, to })
     }
@@ -29,12 +31,33 @@ mod diff_tests {
     #[test]
     fn diff_test() {
         let patches = diff_slice(&[0, 0, 1, 2, 0, 0, 0, 3, 4], &[0, 0, 1, 2, 0, 0, 0, 3, 8]);
-        assert_eq!(patches[0], Patch { index: 8, from: Some(4), to: Some(8) });
+        assert_eq!(
+            patches[0],
+            Patch {
+                index: 8,
+                from: Some(4),
+                to: Some(8)
+            }
+        );
 
         let patches = diff_slice(&[1], &[1, 2]);
-        assert_eq!(patches[0], Patch { index: 1, from: None, to: Some(2) });
+        assert_eq!(
+            patches[0],
+            Patch {
+                index: 1,
+                from: None,
+                to: Some(2)
+            }
+        );
 
         let patches = diff_slice(&[1, 2], &[1]);
-        assert_eq!(patches[0], Patch { index: 1, from: Some(2), to: None });
+        assert_eq!(
+            patches[0],
+            Patch {
+                index: 1,
+                from: Some(2),
+                to: None
+            }
+        );
     }
 }

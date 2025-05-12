@@ -1,5 +1,5 @@
-use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
+use crate::canvas::Canvas;
 use crate::Message;
 
 impl Canvas {
@@ -22,6 +22,9 @@ impl Canvas {
     }
 
     fn consume_messages(&mut self) -> Vec<Message> {
-        self.blocks.iter_mut().flat_map(|block| block.outbox.drain(..)).collect()
+        self.blocks
+            .iter_mut()
+            .flat_map(|block| block.outbox.drain(..))
+            .collect()
     }
 }

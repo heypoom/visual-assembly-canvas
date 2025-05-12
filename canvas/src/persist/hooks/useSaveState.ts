@@ -1,4 +1,4 @@
-import { BlockData } from "machine-wasm"
+import { InternalBlockData } from "machine-wasm"
 import { useReactFlow } from "reactflow"
 
 import { getDefaultProps } from "@/blocks"
@@ -65,7 +65,7 @@ export function useSaveState(): SaveStateContext {
           engine.ctx?.add_machine_with_id(id)
         } else {
           const props = { ...getDefaultProps(type), ...nodeProps }
-          const data = { type, ...props } as BlockData
+          const data = { type, ...props } as InternalBlockData
 
           engine.ctx?.add_block_with_id(id, data)
         }

@@ -1,4 +1,4 @@
-import { BlockData } from "machine-wasm"
+import { InternalBlockData } from "machine-wasm"
 
 import { getDefaultProps } from "@/blocks"
 import { setupBlock } from "@/blocks"
@@ -22,7 +22,7 @@ export function addBlock<T extends BlockTypes>(type: T, options?: Options<T>) {
   if (type === "Machine") {
     id = engine.ctx?.add_machine()
   } else {
-    id = engine.ctx?.add_block({ type, ...props } as BlockData)
+    id = engine.ctx?.add_block({ type, ...props } as InternalBlockData)
   }
 
   if (typeof id !== "number") return

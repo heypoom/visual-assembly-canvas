@@ -1,10 +1,10 @@
 pub mod diff;
 
-use diff::{Patch, diff_slice};
 use crate::blocks::Block;
-use crate::canvas::Canvas;
 use crate::canvas::wire::Wire;
+use crate::canvas::Canvas;
 use crate::{Event, Message};
+use diff::{diff_slice, Patch};
 
 /// Stores the diff patches for the canvas.
 #[derive(Debug, Clone)]
@@ -39,7 +39,10 @@ pub struct Rewind {
 
 impl Rewind {
     pub fn new() -> Rewind {
-        Rewind { snapshots: vec![], previous: None }
+        Rewind {
+            snapshots: vec![],
+            previous: None,
+        }
     }
 
     pub fn save(&mut self, canvas: &Canvas) {
@@ -96,7 +99,9 @@ impl Rewind {
         if !snap.memories.is_empty() {
             for mem in &snap.memories {
                 let id = mem.machine_id;
-                let Some(m) = dst.seq.get_mut(id) else { continue; };
+                let Some(m) = dst.seq.get_mut(id) else {
+                    continue;
+                };
 
                 for patch in &mem.memory {
                     if let Some(from) = patch.from {
@@ -119,7 +124,9 @@ impl Rewind {
         if !snap.memories.is_empty() {
             for mem in &snap.memories {
                 let id = mem.machine_id;
-                let Some(m) = dst.seq.get_mut(id) else { continue; };
+                let Some(m) = dst.seq.get_mut(id) else {
+                    continue;
+                };
 
                 for patch in &mem.memory {
                     if let Some(to) = patch.to {
@@ -154,11 +161,14 @@ mod rewind_tests {
         c.add_machine()?;
         r.save(&c);
 
-        c.load_program(0, r"
+        c.load_program(
+            0,
+            r"
             push 5
             push 10
             add
-        ")?;
+        ",
+        )?;
         r.save(&c);
 
         c.seq.ready();

@@ -1,9 +1,10 @@
-use crate::canvas::Canvas;
+use crate::blocks::BlockDataByType::BuiltIn;
+use crate::blocks::InternalBlockData::Machine;
 use crate::canvas::canvas::Errorable;
-use crate::canvas::CanvasError::{MissingMessageRecipient};
-use crate::{Action, Message};
-use crate::blocks::BlockData::Machine;
 use crate::canvas::wire::{port, Port};
+use crate::canvas::Canvas;
+use crate::canvas::CanvasError::MissingMessageRecipient;
+use crate::{Action, Message};
 
 impl Canvas {
     /// Sends the message to the destination port.
@@ -60,7 +61,9 @@ impl Canvas {
         if let Ok(block) = self.mut_block(recipient_id) {
             match block.data {
                 // Send the message directly to the machine.
-                Machine { machine_id } => {
+                BuiltIn {
+                    data: Machine { machine_id },
+                } => {
                     if let Some(m) = self.seq.get_mut(machine_id) {
                         m.inbox.push_back(message);
 
@@ -86,7 +89,9 @@ impl Canvas {
     /// Given the sender's port, resolve the target block ids.
     /// TODO: improve bi-directional connection resolution.
     fn resolve_port(&self, sender: Port) -> Vec<u16> {
-        let targets: Vec<u16> = self.wires.iter()
+        let targets: Vec<u16> = self
+            .wires
+            .iter()
             .filter(|w| w.source == sender)
             .map(|w| w.target.block)
             .collect();
@@ -95,7 +100,9 @@ impl Canvas {
             return targets;
         }
 
-        let sources: Vec<u16> = self.wires.iter()
+        let sources: Vec<u16> = self
+            .wires
+            .iter()
             .filter(|w| w.target == sender)
             .map(|w| w.source.block)
             .collect();

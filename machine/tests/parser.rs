@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod parser_tests {
-    use machine::{load_test_file, Op, ParseError, Parser};
     use machine::ParseError::{EmptyProgram, InvalidArgument, UndefinedSymbols};
+    use machine::{load_test_file, Op, ParseError, Parser};
 
     type Errorable = Result<(), ParseError>;
 
@@ -58,16 +58,23 @@ mod parser_tests {
     #[test]
     fn test_undefined_value() {
         let mut p = Parser::new("push ham_cheese");
-        assert_eq!(p.parse(), Err(InvalidArgument { errors: vec![UndefinedSymbols] }));
+        assert_eq!(
+            p.parse(),
+            Err(InvalidArgument {
+                errors: vec![UndefinedSymbols]
+            })
+        );
     }
 
     #[test]
     fn test_push_zero() -> Errorable {
         // Regression: the parser was not parsing instructions after the `push 0` instruction.
-        let mut p = Parser::new(r"
+        let mut p = Parser::new(
+            r"
             push 0
             receive
-        ");
+        ",
+        );
 
         p.parse()?;
         assert_eq!(p.ops, [Op::Push(0), Op::Receive]);

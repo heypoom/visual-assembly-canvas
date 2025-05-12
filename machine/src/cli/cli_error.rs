@@ -1,5 +1,5 @@
-use snafu::prelude::*;
 use crate::{ParseError, RuntimeError};
+use snafu::prelude::*;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub))]

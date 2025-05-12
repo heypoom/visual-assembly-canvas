@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod stack_operation_tests {
-    use machine::{Execute, Machine, Op};
     use machine::Op::Push;
+    use machine::{Execute, Machine, Op};
 
     #[test]
     fn test_stack_ops() {
@@ -46,7 +46,17 @@ mod stack_operation_tests {
         m.run().unwrap();
         assert_eq!(m.mem.read_stack(5), [1, 2, 3, 2, 0]);
 
-        let mut m: Machine = vec![Push(1), Push(2), Push(3), Push(4), Push(5), Push(6), Push(7), Op::Pick(2)].into();
+        let mut m: Machine = vec![
+            Push(1),
+            Push(2),
+            Push(3),
+            Push(4),
+            Push(5),
+            Push(6),
+            Push(7),
+            Op::Pick(2),
+        ]
+        .into();
         m.run().unwrap();
         assert_eq!(m.mem.read_stack(9), [1, 2, 3, 4, 5, 6, 7, 5, 0]);
 

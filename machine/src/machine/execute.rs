@@ -1,14 +1,17 @@
-use std::ops::Not;
-use snafu::ensure;
-use crate::{Event, RuntimeError};
-use crate::machine::{Decode, Machine};
-use crate::register::Register::PC;
-use crate::op::Op;
-use crate::mem::WithStringManager;
-use crate::machine::{Action, Actor};
 use crate::machine::virtual_mem::VirtualMemory;
+use crate::machine::{Action, Actor};
+use crate::machine::{Decode, Machine};
+use crate::mem::WithStringManager;
+use crate::op::Op;
+use crate::register::Register::PC;
 use crate::runtime_error::{IndexOutOfBoundsSnafu, NotEnoughValuesSnafu};
-use crate::RuntimeError::{CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow, MissingMessageBody, MissingReturnAddress, MissingValueToStore};
+use crate::RuntimeError::{
+    CallStackExceeded, CannotDivideByZero, CannotLoadFromMemory, IntegerOverflow, IntegerUnderflow,
+    MissingMessageBody, MissingReturnAddress, MissingValueToStore,
+};
+use crate::{Event, RuntimeError};
+use snafu::ensure;
+use std::ops::Not;
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -180,7 +183,7 @@ impl Execute for Machine {
 
             Op::Pick(i) => {
                 let len = s.len();
-                ensure!(len > i, IndexOutOfBoundsSnafu {len, index: i});
+                ensure!(len > i, IndexOutOfBoundsSnafu { len, index: i });
 
                 s.push(s.get(i).clone())?;
             }
@@ -189,7 +192,9 @@ impl Execute for Machine {
                 let mut bytes = vec![];
 
                 while let Ok(v) = s.pop() {
-                    if v == 0 { break; }
+                    if v == 0 {
+                        break;
+                    }
                     bytes.push(v);
                 }
 
@@ -248,12 +253,12 @@ impl Execute for Machine {
             Op::SleepTick(tick) => {
                 self.sleeping = true;
                 self.remaining_sleep_ticks = tick;
-            },
+            }
 
             Op::SleepMs(ms) => {
                 self.sleeping = true;
-                self.events.push(Event::Sleep {ms})
-            },
+                self.events.push(Event::Sleep { ms })
+            }
         };
 
         // Advance or jump the program counter.

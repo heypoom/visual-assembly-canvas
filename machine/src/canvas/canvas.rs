@@ -1,9 +1,9 @@
-use serde::{Deserialize, Serialize};
-use crate::{Sequencer};
+use super::canvas_error::CanvasError;
+use super::wire::Wire;
 use crate::audio::wavetable::Wavetable;
-use crate::blocks::{Block};
-use super::canvas_error::{CanvasError};
-use super::wire::{Wire};
+use crate::blocks::Block;
+use crate::Sequencer;
+use serde::{Deserialize, Serialize};
 
 pub type Errorable = Result<(), CanvasError>;
 

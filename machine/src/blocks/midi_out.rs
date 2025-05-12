@@ -1,14 +1,23 @@
-use crate::blocks::BlockData::MidiOut;
-use crate::canvas::Canvas;
-use crate::canvas::canvas::Errorable;
-use crate::{Action, Event, Message};
 use crate::audio::midi::MidiOutputFormat;
+use crate::blocks::BlockDataByType::BuiltIn;
+use crate::blocks::InternalBlockData::MidiOut;
+use crate::canvas::canvas::Errorable;
+use crate::canvas::Canvas;
+use crate::{Action, Event, Message};
 
 impl Canvas {
     pub fn tick_midi_out_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
         let block = self.mut_block(id)?;
 
-        let MidiOut { format, channel, port } = &mut block.data else {
+        let BuiltIn {
+            data:
+                MidiOut {
+                    format,
+                    channel,
+                    port,
+                },
+        } = &mut block.data
+        else {
             return Ok(());
         };
 
@@ -16,7 +25,9 @@ impl Canvas {
             match message.action {
                 Action::Data { body } => {
                     // MIDI channels and ports cannot be over 255.
-                    if *channel > 255 || *port > 255 { continue; }
+                    if *channel > 255 || *port > 255 {
+                        continue;
+                    }
 
                     let mut data: Vec<u8> = body.iter().map(|v| *v as u8).collect();
 
@@ -40,7 +51,9 @@ impl Canvas {
 
                 Action::Write { address, data } => {
                     // MIDI channels and ports cannot be over 255.
-                    if *channel > 255 || *port > 255 { continue; }
+                    if *channel > 255 || *port > 255 {
+                        continue;
+                    }
 
                     let batch_register = 0x80;
 
@@ -48,7 +61,9 @@ impl Canvas {
                         MidiOutputFormat::Note | MidiOutputFormat::ControlChange => {
                             // Writing below the batch register will send the data as a single note.
                             if address < batch_register {
-                                let [velocity] = data[..] else { continue; };
+                                let [velocity] = data[..] else {
+                                    continue;
+                                };
 
                                 block.events.push(Event::Midi {
                                     format: *format,
@@ -62,12 +77,16 @@ impl Canvas {
 
                             // Writing to the BATCH register will send the data as a batch.
                             if address == batch_register {
-                                if data.len() < 2 { continue; }
+                                if data.len() < 2 {
+                                    continue;
+                                }
 
                                 let mut out = vec![];
 
                                 for chunk in data.chunks(2) {
-                                    let [note, velocity] = chunk[..] else { break; };
+                                    let [note, velocity] = chunk[..] else {
+                                        break;
+                                    };
 
                                     out.push((note % 128) as u8);
                                     out.push((velocity % 128) as u8);

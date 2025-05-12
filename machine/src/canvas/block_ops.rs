@@ -1,44 +1,59 @@
-use snafu::ensure;
-use crate::Action;
-use crate::blocks::{Block, BlockData};
-use crate::canvas::{Canvas, CanvasError};
-use crate::blocks::BlockData::{Machine, Memory};
+use crate::blocks::BlockDataByType::BuiltIn;
+use crate::blocks::InternalBlockData::{Machine, Memory};
+use crate::blocks::{Block, BlockDataByType, InternalBlockData};
 use crate::canvas::canvas::Errorable;
-use crate::canvas::CanvasError::{BlockNotFound};
+use crate::canvas::CanvasError::BlockNotFound;
 use crate::canvas::{BlockIdInUseSnafu, MachineNotFoundSnafu};
+use crate::canvas::{Canvas, CanvasError};
+use crate::Action;
+use snafu::ensure;
 
 impl Canvas {
-    pub fn add_block(&mut self, data: BlockData) -> Result<u16, CanvasError> {
+    pub fn add_block(&mut self, data: BlockDataByType) -> Result<u16, CanvasError> {
         let id = self.block_id();
         self.add_block_with_id(id, data)?;
 
         Ok(id)
     }
 
-    pub fn add_block_with_id(&mut self, id: u16, data: BlockData) -> Errorable {
+    pub fn add_block_with_id(&mut self, id: u16, data: BlockDataByType) -> Errorable {
         // Prevent duplicate block ids from being added.
-        ensure!(!self.blocks.iter().any(|b| b.id == id), BlockIdInUseSnafu {id});
+        ensure!(
+            !self.blocks.iter().any(|b| b.id == id),
+            BlockIdInUseSnafu { id }
+        );
 
         // Validate block data before adding them.
         match data {
-            Machine { machine_id } => {
-                ensure!(self.seq.get(machine_id).is_some(), MachineNotFoundSnafu { id: machine_id });
+            BuiltIn {
+                data: Machine { machine_id },
+            } => {
+                ensure!(
+                    self.seq.get(machine_id).is_some(),
+                    MachineNotFoundSnafu { id: machine_id }
+                );
             }
             _ => {}
         }
 
         self.blocks.push(Block::new(id, data));
+
         Ok(())
     }
 
     pub fn remove_block(&mut self, id: u16) -> Errorable {
-        let block_idx = self.blocks.iter().position(|b| b.id == id).ok_or(BlockNotFound { id })?;
+        let block_idx = self
+            .blocks
+            .iter()
+            .position(|b| b.id == id)
+            .ok_or(BlockNotFound { id })?;
 
         // Teardown logic
         match self.blocks[block_idx].data {
-            // Remove the machine from the sequencer.
-            Machine { machine_id } => self.seq.remove(machine_id),
-
+            // TODO: move the Machine block to be externals.
+            BuiltIn {
+                data: Machine { machine_id },
+            } => self.seq.remove(machine_id),
             _ => {}
         }
 
@@ -46,17 +61,47 @@ impl Canvas {
         self.blocks.remove(block_idx);
 
         // Remove all wires connected to the block.
-        self.wires.retain(|w| w.source.block != id && w.target.block != id);
+        self.wires
+            .retain(|w| w.source.block != id && w.target.block != id);
 
         Ok(())
     }
 
     pub fn get_block(&self, id: u16) -> Result<&Block, CanvasError> {
-        self.blocks.iter().find(|b| b.id == id).ok_or(BlockNotFound { id })
+        self.blocks
+            .iter()
+            .find(|b| b.id == id)
+            .ok_or(BlockNotFound { id })
     }
 
     pub fn mut_block(&mut self, id: u16) -> Result<&mut Block, CanvasError> {
-        self.blocks.iter_mut().find(|b| b.id == id).ok_or(BlockNotFound { id })
+        self.blocks
+            .iter_mut()
+            .find(|b| b.id == id)
+            .ok_or(BlockNotFound { id })
+    }
+
+    pub fn built_in_data_by_id(&self, id: u16) -> Result<&InternalBlockData, CanvasError> {
+        match self.get_block(id) {
+            Ok(Block {
+                data: BuiltIn { data },
+                ..
+            }) => Ok(data),
+            _ => Err(BlockNotFound { id }),
+        }
+    }
+
+    pub fn mut_built_in_data_by_id(
+        &mut self,
+        id: u16,
+    ) -> Result<&mut InternalBlockData, CanvasError> {
+        match self.mut_block(id) {
+            Ok(Block {
+                data: BuiltIn { data },
+                ..
+            }) => Ok(data),
+            _ => Err(BlockNotFound { id }),
+        }
     }
 
     pub fn add_machine(&mut self) -> Result<u16, CanvasError> {
@@ -68,26 +113,50 @@ impl Canvas {
 
     pub fn add_machine_with_id(&mut self, id: u16) -> Errorable {
         self.seq.add(id);
-        self.add_block_with_id(id, Machine { machine_id: id })?;
+        self.add_block_with_id(
+            id,
+            BuiltIn {
+                data: Machine { machine_id: id },
+            },
+        )?;
 
         Ok(())
     }
 
-    pub fn update_block(&mut self, id: u16, data: BlockData) -> Errorable {
-        self.mut_block(id)?.data = data;
+    pub fn update_built_in(&mut self, id: u16, next_data: InternalBlockData) -> Errorable {
+        if self.get_block(id)?.data.is_built_in() {
+            let block = self.mut_block(id)?;
+            block.data = BuiltIn { data: next_data };
+        }
+
         Ok(())
     }
 
     pub fn reset_blocks(&mut self) -> Errorable {
         // Collect the ids of the blocks that we can reset.
-        // Machine block is handled separately, so we don't need to tick them.
-        let ids: Vec<_> = self.blocks.iter().filter(|b| !b.data.is_machine()).map(|b| b.id).collect();
+        // Machine blocks are handled separately, so we don't need to tick them.
+        let ids: Vec<_> = self
+            .blocks
+            .iter()
+            .filter(|b| {
+                match b.data {
+                    // TODO: move machine block to externals.
+                    BuiltIn {
+                        data: Machine { .. },
+                    } => false,
+                    _ => true,
+                }
+            })
+            .map(|b| b.id)
+            .collect();
 
         for id in ids {
             // Do not reset if the block is not auto-reset.
             // This means the memory block is storing persistent data.
-            if let Memory { auto_reset, .. } = self.get_block(id)?.data {
-                if !auto_reset { continue; }
+            if let Memory { auto_reset, .. } = self.built_in_data_by_id(id)? {
+                if !auto_reset {
+                    continue;
+                }
             }
 
             self.reset_block(id)?;

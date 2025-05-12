@@ -1,9 +1,9 @@
-use snafu::ensure;
-use crate::{Machine, CODE_START, DATA_START};
-use crate::cli::cli_error::{IncorrectMagicBytesSnafu};
+use super::compile::MAGIC_BYTES;
+use crate::cli::cli_error::IncorrectMagicBytesSnafu;
 use crate::cli::CLIError;
 use crate::cli::CLIError::IncorrectFileHeader;
-use super::compile::MAGIC_BYTES;
+use crate::{Machine, CODE_START, DATA_START};
+use snafu::ensure;
 
 pub fn load_from_binary(bytes: &[u16]) -> Result<Machine, CLIError> {
     // Verify magic bytes at the beginning of file.

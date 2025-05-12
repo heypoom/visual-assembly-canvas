@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use machine::{Execute, Machine as M, Op, RuntimeError};
     use machine::RuntimeError::{CannotDivideByZero, IntegerOverflow};
+    use machine::{Execute, Machine as M, Op, RuntimeError};
 
     type Errorable = Result<(), RuntimeError>;
 

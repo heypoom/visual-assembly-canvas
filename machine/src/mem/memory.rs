@@ -1,5 +1,8 @@
+use crate::{
+    compile_to_bytecode, Op, Symbols, CALL_STACK_END, CALL_STACK_START, CODE_START, DATA_START,
+    MEMORY_SIZE, STACK_END, STACK_START,
+};
 use serde::{Deserialize, Serialize};
-use crate::{compile_to_bytecode, Symbols, Op, CALL_STACK_START, CODE_START, MEMORY_SIZE, STACK_START, DATA_START, STACK_END, CALL_STACK_END};
 
 /**
  * Memory defines a fixed-size memory area for the program.
@@ -75,7 +78,6 @@ impl Memory {
         self.write(DATA_START, &symbols.bytes());
     }
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -24,7 +24,7 @@ pub enum SynthTrigger {
 
     Release {
         /// Time offset from start of frame, in seconds.
-        time: f32
+        time: f32,
     },
 
     AttackRelease {

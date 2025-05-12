@@ -1,4 +1,4 @@
-import { BlockData } from "machine-wasm"
+import { InternalBlockData } from "machine-wasm"
 import { atom, computed, map } from "nanostores"
 
 import { isBlock } from "@/blocks"
@@ -22,7 +22,7 @@ export function updateValueViewers() {
 }
 
 export type MemoryRegion = Pick<
-  BlockData.ValueView,
+  InternalBlockData.ValueView,
   "offset" | "size" | "color"
 > & { id: number }
 

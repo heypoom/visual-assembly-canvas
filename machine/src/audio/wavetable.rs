@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::audio::waveform::{generate_waveform, Waveform};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, Default)]
 pub struct Wavetable {
@@ -12,7 +12,10 @@ const MAX_RANGE: u16 = 255;
 
 impl Wavetable {
     pub fn new() -> Wavetable {
-        Wavetable { cache: HashMap::new(), square_duty: 0 }
+        Wavetable {
+            cache: HashMap::new(),
+            square_duty: 0,
+        }
     }
 
     pub fn get(&mut self, waveform: Waveform, time: u16) -> u16 {
@@ -29,7 +32,9 @@ impl Wavetable {
         }
 
         // if time is within the range of the wavetable, something is wrong!
-        if time <= MAX_RANGE { return 0; }
+        if time <= MAX_RANGE {
+            return 0;
+        }
 
         // fallback to generating the waveform if value is out of bounds.
         generate_waveform(waveform, time)
