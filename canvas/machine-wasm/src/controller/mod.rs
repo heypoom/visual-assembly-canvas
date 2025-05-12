@@ -1,9 +1,10 @@
-use machine::blocks::InternalBlockData;
+use machine::blocks::{BlockDataByType, InternalBlockData};
 use machine::canvas::wire::{Port, Wire};
 pub use machine::canvas::{Canvas, CanvasError};
 use machine::status::MachineStatus;
 use machine::Register::{FP, PC, SP};
 use machine::{Action, Event, Message};
+use machine::blocks::BlockDataByType::BuiltIn;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
@@ -68,7 +69,7 @@ impl Controller {
     }
 
     pub fn get_blocks_data(&self) -> Return {
-        let blocks_data: Vec<InternalBlockData> =
+        let blocks_data: Vec<BlockDataByType> =
             self.canvas.blocks.iter().map(|b| b.data.clone()).collect();
 
         Ok(to_value(&blocks_data)?)
@@ -79,11 +80,11 @@ impl Controller {
     }
 
     pub fn add_block(&mut self, data: InternalBlockData) -> Result<u16, JsValue> {
-        return_raw(self.canvas.add_block(data))
+        return_raw(self.canvas.add_block(BuiltIn {data}))
     }
 
     pub fn add_block_with_id(&mut self, id: u16, data: InternalBlockData) -> Return {
-        returns(self.canvas.add_block_with_id(id, data))
+        returns(self.canvas.add_block_with_id(id, BuiltIn {data}))
     }
 
     pub fn add_machine(&mut self) -> Result<u16, JsValue> {
@@ -255,7 +256,7 @@ impl Controller {
         returns(self.canvas.tick_block(id))
     }
 
-    /// Used to restore the counter states.
+    /// Used to restore the counter's state.
     pub fn recompute_id_counters(&mut self) {
         self.canvas.recompute_id_counters();
     }

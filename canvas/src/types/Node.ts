@@ -1,4 +1,4 @@
-import { BlockData } from "machine-wasm"
+import { InternalBlockData } from "machine-wasm"
 import type { ReactNode } from "react"
 import { Node, NodeProps } from "reactflow"
 
@@ -7,10 +7,10 @@ import { PaletteKey } from "@/blocks"
 export type BlockTypes = Block["type"]
 
 export type Block =
-  | Exclude<BlockData, { type: "Machine" | "Pixel" | "Tap" }>
-  | (Extract<BlockData, { type: "Machine" }> & { source: string })
-  | (Extract<BlockData, { type: "Tap" }> & { signal: number[] })
-  | (Extract<BlockData, { type: "Pixel" }> & {
+  | Exclude<InternalBlockData, { type: "Machine" | "Pixel" | "Tap" }>
+  | (Extract<InternalBlockData, { type: "Machine" }> & { source: string })
+  | (Extract<InternalBlockData, { type: "Tap" }> & { signal: number[] })
+  | (Extract<InternalBlockData, { type: "Pixel" }> & {
       columns?: number
       palette?: PaletteKey
     })
