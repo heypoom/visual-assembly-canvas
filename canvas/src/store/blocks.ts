@@ -1,7 +1,7 @@
 import { Draft, produce } from "immer"
 
 import { isBlock } from "@/blocks"
-import { BlockNode, BlockTypeMap, BlockValues } from "@/types/Node"
+import { BlockNode, BlockValues } from "@/types/Node"
 
 import { $nodes } from "./nodes"
 import { BlockDataByType } from "machine-wasm"

@@ -1,5 +1,5 @@
 import cn from "classnames"
-import type { BlockData } from "machine-wasm"
+import type { InternalBlockData } from "machine-wasm"
 import { memo } from "react"
 
 import { bitsToList } from "@/blocks/value-view/utils/bits-to-list"
@@ -7,7 +7,7 @@ import { flipBit } from "@/blocks/value-view/utils/flip-bit"
 import { engine } from "@/engine"
 
 type ValueRendererProps = Pick<
-  BlockData.ValueView,
+  InternalBlockData.ValueView,
   "visual" | "target" | "offset"
 > & { values: number[] }
 

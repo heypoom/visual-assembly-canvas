@@ -1,6 +1,6 @@
 import setup, {
   Action,
-  BlockData,
+  InternalBlockData,
   CanvasError,
   Controller,
   Effect,
@@ -413,7 +413,7 @@ export class CanvasEngine {
 
     updateNodeData(id, data)
 
-    engine.ctx.update_block(id, { ...data, type } as BlockData)
+    engine.ctx.update_block(id, { ...data, type } as InternalBlockData)
     engine.ctx.force_tick_block(id)
   }
 
