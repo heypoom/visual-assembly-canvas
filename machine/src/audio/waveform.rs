@@ -1,5 +1,5 @@
-use std::f32::consts::PI;
 use serde::{Deserialize, Serialize};
+use std::f32::consts::PI;
 use tsify::Tsify;
 
 /// Types of waveforms the oscillator can produce.
@@ -11,9 +11,7 @@ pub enum Waveform {
     Cosine,
     Tangent,
 
-    Square {
-        duty_cycle: u16,
-    },
+    Square { duty_cycle: u16 },
 
     Sawtooth,
     Triangle,

@@ -1,18 +1,21 @@
-pub mod token;
+pub mod parse_error;
 pub mod scanner;
 pub mod symbols;
-pub mod parse_error;
+pub mod token;
 
-pub use token::*;
+pub use parse_error::*;
 pub use scanner::*;
 pub use symbols::*;
-pub use parse_error::*;
+pub use token::*;
 
-use std::str::FromStr;
+use crate::ParseError::{
+    CannotPeekAtToken, InvalidArgToken, InvalidByteValue, InvalidIdentifier,
+    InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols,
+};
+use crate::{Op, DATA_START};
 use snafu::ensure;
+use std::str::FromStr;
 use TokenType as T;
-use crate::{DATA_START, Op};
-use crate::ParseError::{CannotPeekAtToken, InvalidArgToken, InvalidByteValue, InvalidIdentifier, InvalidLabelDescription, InvalidStringValue, UndefinedInstruction, UndefinedSymbols};
 
 type Errorable = Result<(), ParseError>;
 
@@ -125,13 +128,21 @@ impl Parser {
 
     fn save_label(&mut self, token: &Token) -> Errorable {
         // Do not process labels if the label is already scanned in the first pass.
-        if self.symbol_scanned { return Ok(()); }
+        if self.symbol_scanned {
+            return Ok(());
+        }
 
         let key = token.lexeme.clone();
-        let key = key.trim().strip_suffix(":").ok_or(InvalidLabelDescription)?;
+        let key = key
+            .trim()
+            .strip_suffix(":")
+            .ok_or(InvalidLabelDescription)?;
 
         // Raise an error if the label was defined before.
-        ensure!(!self.symbols.offsets.contains_key(key), DuplicateLabelDefinitionSnafu);
+        ensure!(
+            !self.symbols.offsets.contains_key(key),
+            DuplicateLabelDefinitionSnafu
+        );
 
         // Define labels based on the token.
         let offset = self.code_offset;
@@ -173,13 +184,18 @@ impl Parser {
 
     fn symbol(&mut self) -> Result<Option<String>, ParseError> {
         // Do not process if the symbol is already scanned in the first pass.
-        if self.symbol_scanned { return Ok(None); }
+        if self.symbol_scanned {
+            return Ok(None);
+        }
 
         self.advance();
         let key = self.identifier_name()?;
 
         // The same symbol is defined twice.
-        ensure!(!self.symbols.offsets.contains_key(&key), DuplicateSymbolDefinitionSnafu);
+        ensure!(
+            !self.symbols.offsets.contains_key(&key),
+            DuplicateSymbolDefinitionSnafu
+        );
 
         self.symbols.offsets.insert(key.clone(), self.data_offset);
 
@@ -195,7 +211,10 @@ impl Parser {
         };
 
         // The same string is defined twice.
-        ensure!(!self.symbols.strings.contains_key(&key), DuplicateStringDefinitionSnafu);
+        ensure!(
+            !self.symbols.strings.contains_key(&key),
+            DuplicateStringDefinitionSnafu
+        );
 
         let value = self.string_value()?;
         let len = value.len() as u16;
@@ -211,7 +230,9 @@ impl Parser {
             return Ok(());
         };
 
-        self.symbols.data.insert(key.clone(), vec![self.byte_value()?]);
+        self.symbols
+            .data
+            .insert(key.clone(), vec![self.byte_value()?]);
         self.data_offset += 1;
 
         Ok(())
@@ -224,7 +245,9 @@ impl Parser {
 
         let arity = op.arity() as u16;
 
-        if op == Op::Noop { return Ok(()); }
+        if op == Op::Noop {
+            return Ok(());
+        }
 
         self.ops.push(op);
         self.code_offset += arity + 1;
@@ -242,9 +265,11 @@ impl Parser {
             })
         };
 
-        let op = Op::from_str(op_str).map_err(|_| UndefinedInstruction { name: op_str.into() })?;
+        let op = Op::from_str(op_str).map_err(|_| UndefinedInstruction {
+            name: op_str.into(),
+        })?;
         let op = op.with_arg(arg_fn);
-        ensure!(errors.is_empty(), InvalidArgumentSnafu {errors});
+        ensure!(errors.is_empty(), InvalidArgumentSnafu { errors });
 
         Ok(op)
     }
@@ -257,14 +282,16 @@ impl Parser {
         match token.token_type {
             TokenType::Value(value) => Ok(value),
             TokenType::Identifier => self.op_arg(&token.clone()),
-            _ => Err(InvalidArgToken)
+            _ => Err(InvalidArgToken),
         }
     }
 
     /// Return the memory offset of the label.
     fn op_arg(&mut self, token: &Token) -> Result<u16, ParseError> {
         // Return a placeholder for the scanning phase.
-        if !self.symbol_scanned { return Ok(0x00); }
+        if !self.symbol_scanned {
+            return Ok(0x00);
+        }
 
         let key = token.lexeme.trim();
         let offset = self.symbols.offsets.get(key).ok_or(UndefinedSymbols)?;

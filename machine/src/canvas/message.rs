@@ -1,7 +1,7 @@
+use crate::audio::midi::MidiInputEvent;
+use crate::canvas::wire::Port;
 use serde::{Deserialize, Serialize};
 use tsify::Tsify;
-use crate::audio::midi::{MidiInputEvent};
-use crate::canvas::wire::Port;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
@@ -41,5 +41,11 @@ pub enum Action {
     Ping,
 
     /// Notify the block that a MIDI message has been received.
-    Midi { event: MidiInputEvent, note: u8, value: u8, channel: u8, port: u8 },
+    Midi {
+        event: MidiInputEvent,
+        note: u8,
+        value: u8,
+        channel: u8,
+        port: u8,
+    },
 }

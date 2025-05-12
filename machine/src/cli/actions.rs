@@ -1,10 +1,10 @@
-use std::fs;
 use crate::binary::bytes::{u16_vec_to_u8, u8_vec_to_u16};
-use crate::{Execute, Machine};
 use crate::cli::CLIError;
 use crate::cli::CLIError::{CannotParse, CannotReadFile, CannotWriteToFile, RunFailed};
 use crate::compile::compile_to_binary;
 use crate::run::load_from_binary;
+use crate::{Execute, Machine};
+use std::fs;
 
 type Errorable = Result<(), CLIError>;
 
@@ -41,7 +41,6 @@ pub fn run_from_source(path: &str, is_debug: bool) -> Errorable {
     m.is_debug = is_debug;
 
     m.run().map_err(|error| RunFailed { error })?;
-   
+
     Ok(())
 }
-

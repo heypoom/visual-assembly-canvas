@@ -1,13 +1,13 @@
-use crate::canvas::Canvas;
-use crate::canvas::canvas::Errorable;
-use crate::{Action, Message};
 use crate::blocks::InternalBlockData::Pixel;
+use crate::canvas::canvas::Errorable;
 use crate::canvas::virtual_io::{read_from_address, write_to_address};
+use crate::canvas::Canvas;
+use crate::{Action, Message};
 
+use crate::blocks::pixel::PixelMode::{Append, Command, Replace};
 use serde::{Deserialize, Serialize};
 use tsify::Tsify;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::blocks::pixel::PixelMode::{Append, Command, Replace};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize, Tsify)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
@@ -29,7 +29,9 @@ impl Canvas {
         for message in messages {
             match message.action {
                 Action::Data { body } => {
-                    let Pixel { pixels, mode } = self.mut_built_in_data_by_id(id)? else { continue; };
+                    let Pixel { pixels, mode } = self.mut_built_in_data_by_id(id)? else {
+                        continue;
+                    };
 
                     match mode {
                         Append => {
@@ -50,7 +52,9 @@ impl Canvas {
                 }
 
                 Action::Write { address, data } => {
-                    let Pixel { pixels, .. } = self.mut_built_in_data_by_id(id)? else { continue; };
+                    let Pixel { pixels, .. } = self.mut_built_in_data_by_id(id)? else {
+                        continue;
+                    };
 
                     if address == CLEAR_ADDRESS {
                         // Writing "0" to this address clears the block.

@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
+use crate::canvas::Canvas;
 use crate::canvas::CanvasError::MachineError;
 use crate::Event;
+use std::collections::HashMap;
 
 impl Canvas {
     pub fn tick(&mut self, count: u16) -> Errorable {
@@ -21,7 +21,9 @@ impl Canvas {
             if !self.seq.is_halted() {
                 self.seq
                     .step(self.machine_cycle_per_tick)
-                    .map_err(|cause| MachineError { cause: cause.clone() })?;
+                    .map_err(|cause| MachineError {
+                        cause: cause.clone(),
+                    })?;
             }
         }
 
@@ -33,7 +35,9 @@ impl Canvas {
         self.seq.ready();
 
         for _ in 1..1000 {
-            if self.seq.is_halted() { break; }
+            if self.seq.is_halted() {
+                break;
+            }
             self.tick(1)?;
         }
 
@@ -44,9 +48,11 @@ impl Canvas {
 
     /// Load the source program in Assembly to the machine.
     pub fn load_program(&mut self, id: u16, source: &str) -> Errorable {
-        self.seq.load(id, source).map_err(|cause| MachineError { cause })
+        self.seq
+            .load(id, source)
+            .map_err(|cause| MachineError { cause })
     }
-   
+
     /// Consume the side effect events in the frontend.
     pub fn consume_block_side_effects(&mut self) -> HashMap<u16, Vec<Event>> {
         let mut effects = HashMap::new();

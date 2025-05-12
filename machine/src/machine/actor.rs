@@ -1,5 +1,5 @@
-use crate::{Action, Machine, MEMORY_SIZE, Message, RuntimeError};
 use crate::canvas::wire::port;
+use crate::{Action, Machine, Message, RuntimeError, MEMORY_SIZE};
 
 type Errorable = Result<(), RuntimeError>;
 
@@ -14,7 +14,9 @@ pub trait Actor {
 impl Actor for Machine {
     fn send_message_to_port(&mut self, src_port: u16, action: Action) {
         // If the machine has no address, it cannot send messages.
-        let Some(sender) = self.id else { return; };
+        let Some(sender) = self.id else {
+            return;
+        };
 
         // Add the message to the mailbox.
         self.outbox.push(Message {
@@ -28,11 +30,15 @@ impl Actor for Machine {
         while self.expected_receives > 0 {
             // The machine expects a message,
             // but the message has yet to arrive in the mailbox at this time.
-            if self.inbox.is_empty() { break; }
+            if self.inbox.is_empty() {
+                break;
+            }
 
             // A new message arrived!
             // We can process them now.
-            let Some(message) = self.inbox.pop_back() else { break; };
+            let Some(message) = self.inbox.pop_back() else {
+                break;
+            };
             self.expected_receives -= 1;
 
             match message.action {
@@ -45,7 +51,9 @@ impl Actor for Machine {
                 Action::Write { address, data } => {
                     // Check if the data is within the bounds of the memory.
                     let last_address = address as usize + data.len();
-                    if last_address >= MEMORY_SIZE as usize { continue; }
+                    if last_address >= MEMORY_SIZE as usize {
+                        continue;
+                    }
 
                     for (i, byte) in data.iter().enumerate() {
                         self.mem.set(address + i as u16, *byte);

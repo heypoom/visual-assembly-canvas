@@ -4,17 +4,17 @@ pub mod execute;
 pub mod runtime_error;
 mod virtual_mem;
 
-use std::collections::VecDeque;
-use serde::{Deserialize, Serialize};
 use crate::mem::{Memory, StackManager};
-use crate::{CALL_STACK_END, CALL_STACK_START, Op, ParseError, Parser, Register::FP, Registers};
+use crate::{Op, ParseError, Parser, Register::FP, Registers, CALL_STACK_END, CALL_STACK_START};
+use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
 pub use self::actor::Actor;
 pub use self::decode::Decode;
-pub use crate::canvas::event::Event;
 pub use self::execute::Execute;
-pub use crate::canvas::message::{Action, Message};
 pub use self::runtime_error::RuntimeError;
+pub use crate::canvas::event::Event;
+pub use crate::canvas::message::{Action, Message};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Machine {

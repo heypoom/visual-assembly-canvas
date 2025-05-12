@@ -1,7 +1,10 @@
 #[cfg(test)]
 mod tests {
-    use machine::{compile_to_binary, load_from_binary, load_test_file, load_test_program, Execute, Machine, Op, WithStringManager};
     use machine::Event::Print;
+    use machine::{
+        compile_to_binary, load_from_binary, load_test_file, load_test_program, Execute, Machine,
+        Op, WithStringManager,
+    };
 
     #[test]
     fn test_print_hello_world() {
@@ -30,7 +33,8 @@ mod tests {
     fn test_print_hello_world_compiled() {
         let src = load_test_file("hello-world.asm");
         let bin = compile_to_binary(&src).expect("cannot compile the test program");
-        let mut m = load_from_binary(&bin).expect("cannot load test program from compiled bytecode");
+        let mut m =
+            load_from_binary(&bin).expect("cannot load test program from compiled bytecode");
 
         expect_hello_world(&mut m);
     }
@@ -39,10 +43,17 @@ mod tests {
     fn expect_hello_world(m: &mut Machine) {
         m.run().expect("cannot run the test program");
 
-        assert_eq!(m.events, [
-            Print { text: "Hello, world!".into() },
-            Print { text: "Sunshine!".into() },
-        ]);
+        assert_eq!(
+            m.events,
+            [
+                Print {
+                    text: "Hello, world!".into()
+                },
+                Print {
+                    text: "Sunshine!".into()
+                },
+            ]
+        );
 
         assert_eq!(m.mem.read_stack(1), [0], "stack should be empty");
     }

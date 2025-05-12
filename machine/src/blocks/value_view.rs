@@ -11,7 +11,7 @@ pub enum ValueVisualType {
     Switches {
         /// Which bits to visualize? (e.g. {1, 8, 14} shows 3 switches)
         /// If empty, shows all 16 bits as 16 switches (for u16)
-        bits: Vec<u16>
+        bits: Vec<u16>,
     },
 
     /// Visualize the byte(s) as a black-white colored grid.
@@ -27,4 +27,3 @@ pub enum ValueVisualType {
     /// Visualize the bytes as memory region grids.
     Bytes,
 }
-

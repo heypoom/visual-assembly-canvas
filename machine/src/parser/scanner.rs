@@ -1,7 +1,7 @@
-use snafu::ensure;
-use crate::{ParseError, ScannerReachedEndOfLineSnafu};
-use crate::ParseError::{InvalidDecimalDigit, InvalidHexDigit, PeekExceedsSourceLength};
 use super::token::*;
+use crate::ParseError::{InvalidDecimalDigit, InvalidHexDigit, PeekExceedsSourceLength};
+use crate::{ParseError, ScannerReachedEndOfLineSnafu};
+use snafu::ensure;
 
 type Errorable = Result<(), ParseError>;
 
@@ -43,15 +43,25 @@ impl Scanner {
     }
 
     fn peek(&self) -> Result<char, ParseError> {
-        if self.is_end() { return Ok('\0'); }
+        if self.is_end() {
+            return Ok('\0');
+        }
 
-        self.source.chars().nth(self.current).ok_or(PeekExceedsSourceLength)
+        self.source
+            .chars()
+            .nth(self.current)
+            .ok_or(PeekExceedsSourceLength)
     }
 
     fn peek_next(&self) -> Result<char, ParseError> {
-        if self.is_end() { return Ok('\0'); }
+        if self.is_end() {
+            return Ok('\0');
+        }
 
-        self.source.chars().nth(self.current + 1).ok_or(PeekExceedsSourceLength)
+        self.source
+            .chars()
+            .nth(self.current + 1)
+            .ok_or(PeekExceedsSourceLength)
     }
 
     fn is_end(&self) -> bool {
@@ -92,7 +102,9 @@ impl Scanner {
 
             // Data definition
             '.' => {
-                if self.in_instruction || self.in_definition { return Ok(()); }
+                if self.in_instruction || self.in_definition {
+                    return Ok(());
+                }
 
                 while is_identifier(self.peek()?) {
                     self.advance()?;
@@ -103,7 +115,7 @@ impl Scanner {
                 let token = match &*text {
                     ".string" => Some(TokenType::StringDefinition),
                     ".value" => Some(TokenType::ValueDefinition),
-                    _ => None
+                    _ => None,
                 };
 
                 if let Some(t) = token {
@@ -146,7 +158,9 @@ impl Scanner {
             _ => {}
         }
 
-        if self.is_end() { return Ok(()); }
+        if self.is_end() {
+            return Ok(());
+        }
 
         Ok(())
     }
@@ -157,7 +171,12 @@ impl Scanner {
         }
 
         let lexeme = self.peek_lexeme();
-        let number = lexeme.trim().parse::<u16>().map_err(|_| InvalidDecimalDigit { text: lexeme.trim().into() })?;
+        let number = lexeme
+            .trim()
+            .parse::<u16>()
+            .map_err(|_| InvalidDecimalDigit {
+                text: lexeme.trim().into(),
+            })?;
 
         self.add_token(TokenType::Value(number));
         Ok(())
@@ -171,8 +190,11 @@ impl Scanner {
         let text = self.peek_lexeme();
         let text = text.trim();
 
-        let hex_str = text.strip_prefix("0x").ok_or(InvalidHexDigit { text: text.into() })?;
-        let num = u16::from_str_radix(hex_str, 16).map_err(|_| InvalidHexDigit { text: text.into() })?;
+        let hex_str = text
+            .strip_prefix("0x")
+            .ok_or(InvalidHexDigit { text: text.into() })?;
+        let num =
+            u16::from_str_radix(hex_str, 16).map_err(|_| InvalidHexDigit { text: text.into() })?;
 
         self.add_token(TokenType::Value(num));
 
@@ -274,7 +296,10 @@ mod tests {
 
         assert_eq!(s.tokens[0].token_type, TokenType::StringDefinition);
         assert_eq!(s.tokens[1].token_type, TokenType::Identifier);
-        assert_eq!(s.tokens[2].token_type, TokenType::String("Hello, world!".into()));
+        assert_eq!(
+            s.tokens[2].token_type,
+            TokenType::String("Hello, world!".into())
+        );
     }
 
     #[test]

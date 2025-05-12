@@ -1,8 +1,8 @@
-use crate::canvas::Canvas;
-use crate::canvas::canvas::Errorable;
-use crate::{Action, Message};
 use crate::blocks::InternalBlockData::Memory;
+use crate::canvas::canvas::Errorable;
 use crate::canvas::virtual_io::{read_from_address, write_to_address};
+use crate::canvas::Canvas;
+use crate::{Action, Message};
 
 const REQUEST_DATA: u16 = 0x1EE;
 
@@ -11,18 +11,24 @@ impl Canvas {
         for message in messages {
             match message.action {
                 Action::Data { body } => {
-                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else { continue; };
+                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else {
+                        continue;
+                    };
                     values.extend(body)
                 }
 
                 Action::Override { data } => {
-                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else { continue; };
+                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else {
+                        continue;
+                    };
                     values.clear();
                     values.extend(data);
                 }
 
                 Action::Write { address, data } => {
-                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else { continue; };
+                    let Memory { values, .. } = &mut self.mut_built_in_data_by_id(id)? else {
+                        continue;
+                    };
 
                     // HACK: this is a special address that requests data from the block.
                     //       our mapped port can only handle up to 0x200 addresses.

@@ -8,7 +8,7 @@ impl Canvas {
         let messages = block.consume_messages();
 
         // TODO: handle externals?
-        let BuiltIn {data} = &block.data else {
+        let BuiltIn { data } = &block.data else {
             return Ok(());
         };
 

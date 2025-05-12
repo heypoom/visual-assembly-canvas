@@ -1,11 +1,13 @@
 use crate::blocks::InternalBlockData::Clock;
-use crate::canvas::Canvas;
 use crate::canvas::canvas::Errorable;
+use crate::canvas::Canvas;
 use crate::{Action, Message};
 
 impl Canvas {
     pub fn tick_clock_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
-        let Clock { time, freq, ping } = &mut self.mut_built_in_data_by_id(id)? else { return Ok(()); };
+        let Clock { time, freq, ping } = &mut self.mut_built_in_data_by_id(id)? else {
+            return Ok(());
+        };
 
         // increment the time, or wrap around to 0.
         *time = (*time).checked_add(1).unwrap_or(0);
@@ -26,7 +28,9 @@ impl Canvas {
         }
 
         // Do not send the clock signal in some ticks.
-        if *freq > 1 && (*time % *freq != 0) { return Ok(()); };
+        if *freq > 1 && (*time % *freq != 0) {
+            return Ok(());
+        };
 
         // Send a ping message instead.
         if *ping {

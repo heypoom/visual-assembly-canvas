@@ -1,10 +1,10 @@
-use crate::canvas::Canvas;
-use crate::canvas::canvas::Errorable;
-use crate::{Action, Event, Message};
 use crate::audio::synth::note_to_freq;
 use crate::audio::synth::SynthTrigger::AttackRelease;
 use crate::blocks::BlockDataByType::BuiltIn;
 use crate::blocks::InternalBlockData::Synth;
+use crate::canvas::canvas::Errorable;
+use crate::canvas::Canvas;
+use crate::{Action, Event, Message};
 
 impl Canvas {
     pub fn tick_synth_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {
@@ -15,7 +15,9 @@ impl Canvas {
                     let mut triggers = vec![];
 
                     for c in body.chunks(2) {
-                        let [note, time] = c else { continue; };
+                        let [note, time] = c else {
+                            continue;
+                        };
 
                         triggers.push(AttackRelease {
                             freq: note_to_freq(*note as u8),
@@ -26,17 +28,17 @@ impl Canvas {
 
                     let block = self.mut_block(id)?;
 
-                    if let BuiltIn {data: Synth { .. }} = &block.data {
-                        block.events.push(Event::Synth {
-                            triggers,
-                        })
+                    if let BuiltIn { data: Synth { .. } } = &block.data {
+                        block.events.push(Event::Synth { triggers })
                     }
                 }
 
                 Action::Write { address, data } => {
                     let block = self.mut_block(id)?;
 
-                    let BuiltIn {data: Synth { .. }} = block.data else { continue; };
+                    let BuiltIn { data: Synth { .. } } = block.data else {
+                        continue;
+                    };
 
                     let mut triggers = vec![];
                     let duration = *address + 1;

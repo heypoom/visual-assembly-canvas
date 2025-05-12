@@ -3,8 +3,8 @@ use snafu::prelude::*;
 use crate::mem::Memory;
 use crate::register::{Register, Register::SP, Registers};
 
-use crate::{RuntimeError, STACK_END, STACK_START};
 use crate::machine::runtime_error::{StackOverflowSnafu, StackUnderflowSnafu};
+use crate::{RuntimeError, STACK_END, STACK_START};
 
 #[derive(Debug)]
 pub struct StackManager<'a> {
@@ -26,7 +26,14 @@ pub struct StackManager<'a> {
 
 impl<'a> StackManager<'a> {
     pub fn new(mem: &'a mut Memory, reg: &'a mut Registers) -> StackManager<'a> {
-        StackManager { mem, reg, min: STACK_START, max: STACK_END, sp: SP, is_debug: false }
+        StackManager {
+            mem,
+            reg,
+            min: STACK_START,
+            max: STACK_END,
+            sp: SP,
+            is_debug: false,
+        }
     }
 
     pub fn top(&self) -> u16 {
@@ -39,7 +46,13 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn push(&mut self, val: u16) -> Result<(), RuntimeError> {
-        ensure!(self.top() < self.max, StackOverflowSnafu { top: self.top(), max: self.max });
+        ensure!(
+            self.top() < self.max,
+            StackOverflowSnafu {
+                top: self.top(),
+                max: self.max
+            }
+        );
 
         // Increment the stack pointer.
         self.reg.inc(self.sp);
@@ -59,7 +72,13 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn pop(&mut self) -> Result<u16, RuntimeError> {
-        ensure!(self.top() >= self.min, StackUnderflowSnafu { top: self.top(), min: self.min });
+        ensure!(
+            self.top() >= self.min,
+            StackUnderflowSnafu {
+                top: self.top(),
+                min: self.min
+            }
+        );
 
         let v = self.peek();
 
@@ -74,7 +93,9 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn apply<F>(&mut self, f: F) -> Result<(), RuntimeError>
-        where F: FnOnce(u16) -> Result<u16, RuntimeError> {
+    where
+        F: FnOnce(u16) -> Result<u16, RuntimeError>,
+    {
         let a = self.pop()?;
         let value = f(a)?;
         self.push(value)?;
@@ -83,7 +104,9 @@ impl<'a> StackManager<'a> {
     }
 
     pub fn apply_two<F>(&mut self, f: F) -> Result<(), RuntimeError>
-        where F: FnOnce(u16, u16) -> Result<u16, RuntimeError> {
+    where
+        F: FnOnce(u16, u16) -> Result<u16, RuntimeError>,
+    {
         let b = self.pop()?;
         let a = self.pop()?;
 

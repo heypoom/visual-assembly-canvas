@@ -1,17 +1,21 @@
-use snafu::ensure;
-use crate::canvas::{Canvas, CanvasError};
-use crate::canvas::canvas::Errorable;
-use crate::canvas::CanvasError::CannotFindWire;
-use crate::canvas::wire::{Port, Wire};
-use crate::{Action, Message};
 use super::canvas_error::{BlockNotFoundSnafu, CannotWireToItselfSnafu};
+use crate::canvas::canvas::Errorable;
+use crate::canvas::wire::{Port, Wire};
+use crate::canvas::CanvasError::CannotFindWire;
+use crate::canvas::{Canvas, CanvasError};
+use crate::{Action, Message};
+use snafu::ensure;
 
 impl Canvas {
     pub fn connect(&mut self, source: Port, target: Port) -> Result<u16, CanvasError> {
         ensure!(source != target, CannotWireToItselfSnafu { port: source });
 
         // Do not add duplicate wires.
-        if let Some(w) = self.wires.iter().find(|w| w.source == source && w.target == target) {
+        if let Some(w) = self
+            .wires
+            .iter()
+            .find(|w| w.source == source && w.target == target)
+        {
             return Ok(w.id);
         }
 
@@ -36,7 +40,11 @@ impl Canvas {
     }
 
     pub fn disconnect(&mut self, src: Port, dst: Port) -> Errorable {
-        let Some(wire_index) = self.wires.iter().position(|w| w.source == src && w.target == dst) else {
+        let Some(wire_index) = self
+            .wires
+            .iter()
+            .position(|w| w.source == src && w.target == dst)
+        else {
             return Err(CannotFindWire { src, dst });
         };
 
@@ -45,7 +53,9 @@ impl Canvas {
     }
 
     pub fn send_message_to_sinks(&mut self, id: u16, action: Action) -> Errorable {
-        let wires: Vec<Wire> = self.wires.iter()
+        let wires: Vec<Wire> = self
+            .wires
+            .iter()
             .filter(|w| w.source.block == id)
             .cloned()
             .collect();

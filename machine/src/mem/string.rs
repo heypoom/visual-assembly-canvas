@@ -1,6 +1,6 @@
 extern crate snafu;
 
-use crate::mem::{DATA_END, DATA_START, Memory};
+use crate::mem::{Memory, DATA_END, DATA_START};
 use crate::RuntimeError;
 use crate::RuntimeError::CannotReadStringFromBytes;
 
@@ -11,7 +11,10 @@ pub struct StringManager<'a> {
 
 impl<'a> StringManager<'a> {
     fn new(mem: &'a mut Memory) -> StringManager<'a> {
-        StringManager { mem, top: DATA_START }
+        StringManager {
+            mem,
+            top: DATA_START,
+        }
     }
 
     /// Add the given data to the data section.
@@ -28,7 +31,6 @@ impl<'a> StringManager<'a> {
         self.add_data(&str_to_u16(value))
     }
 
-
     /// Get the string at the given address.
     pub fn get_str_from_bytes(&self, v16: Vec<u16>) -> Result<String, RuntimeError> {
         // TODO: Properly decode high UTF-8 bytes such as emojis.
@@ -44,16 +46,20 @@ impl<'a> StringManager<'a> {
 
         for i in addr.. {
             // We've reached the end of the data section.
-            if i > DATA_END { break; }
+            if i > DATA_END {
+                break;
+            }
 
             // Read the value at the current address.
             let v = self.mem.get(i);
 
             // We've reached the null terminator.
-            if v == 0x00 { break; }
+            if v == 0x00 {
+                break;
+            }
 
             data.push(v);
-        };
+        }
 
         data
     }

@@ -1,8 +1,8 @@
-use crate::canvas::Canvas;
-use crate::canvas::canvas::Errorable;
-use crate::{Action, Message};
 use crate::audio::waveform::Waveform;
 use crate::blocks::InternalBlockData::Osc;
+use crate::canvas::canvas::Errorable;
+use crate::canvas::Canvas;
+use crate::{Action, Message};
 
 impl Canvas {
     pub fn tick_osc_block(&mut self, id: u16, messages: Vec<Message>) -> Errorable {

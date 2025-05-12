@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::str_to_u16;
+use std::collections::HashMap;
 
 /// Symbol table
 #[derive(Clone, Debug)]

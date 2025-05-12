@@ -1,16 +1,16 @@
-pub mod status;
 pub mod seq_error;
+pub mod status;
 
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
 use crate::{Actor, Event, Execute, Machine, Message, Parser};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 use status::MachineStatus;
 use status::MachineStatus::{Awaiting, Halted, Running};
 
-pub use seq_error::SequencerError::*;
-pub use seq_error::SequencerError;
 use crate::status::MachineStatus::{Errored, Invalid, Loaded, Ready, Sleeping};
+pub use seq_error::SequencerError;
+pub use seq_error::SequencerError::*;
 
 type Errorable = Result<(), SequencerError>;
 type Statuses = HashMap<u16, MachineStatus>;
@@ -83,10 +83,14 @@ impl Sequencer {
     /// Mark the machines as ready for execution.
     pub fn ready(&mut self) {
         for machine in &mut self.machines {
-            let Some(id) = machine.id else { continue; };
+            let Some(id) = machine.id else {
+                continue;
+            };
 
             // Do not reset the machine if it is invalid.
-            if self.statuses.get(&id) == Some(&Invalid) { continue; }
+            if self.statuses.get(&id) == Some(&Invalid) {
+                continue;
+            }
             machine.partial_reset();
 
             self.await_watchdog_counter = MAX_WAIT_CYCLES;
@@ -98,10 +102,14 @@ impl Sequencer {
     /// Messages must be routed before this method is called.
     pub fn step(&mut self, count: u16) -> Errorable {
         for machine in &mut self.machines {
-            let Some(id) = machine.id else { continue; };
+            let Some(id) = machine.id else {
+                continue;
+            };
             let statuses = self.statuses.clone();
 
-            let Some(status) = statuses.get(&id) else { continue; };
+            let Some(status) = statuses.get(&id) else {
+                continue;
+            };
             let status = status.clone();
 
             // Manage state transitions of the machine.
@@ -118,7 +126,7 @@ impl Sequencer {
                         }
                     }
 
-                    continue
+                    continue;
                 }
 
                 Ready => {
@@ -129,7 +137,9 @@ impl Sequencer {
             }
 
             // Before each instruction cycle, we collect and process the messages sequentially.
-            machine.receive_messages().map_err(|error| ReceiveFailed { error: error.into() })?;
+            machine.receive_messages().map_err(|error| ReceiveFailed {
+                error: error.into(),
+            })?;
 
             // If a message is received, we resume the machine's execution.
             // Otherwise, we suspend the machine's execution until subsequent cycles.
@@ -166,7 +176,10 @@ impl Sequencer {
                 // Execute the instruction.
                 machine.tick().map_err(|error| {
                     self.statuses.insert(id, Errored);
-                    ExecutionFailed { id, error: error.into() }
+                    ExecutionFailed {
+                        id,
+                        error: error.into(),
+                    }
                 })?;
 
                 // If the last instruction is a `receive`,
@@ -207,7 +220,9 @@ impl Sequencer {
     }
 
     pub fn is_halted(&self) -> bool {
-        self.statuses.values().all(|s| s == &Halted || s == &Invalid || s == &Errored)
+        self.statuses
+            .values()
+            .all(|s| s == &Halted || s == &Invalid || s == &Errored)
     }
 
     pub fn get_statuses(&self) -> Statuses {
@@ -224,12 +239,17 @@ impl Sequencer {
 
     /// Consume the messages.
     pub fn consume_messages(&mut self) -> Vec<Message> {
-        self.machines.iter_mut().flat_map(|machine| machine.outbox.drain(..)).collect()
+        self.machines
+            .iter_mut()
+            .flat_map(|machine| machine.outbox.drain(..))
+            .collect()
     }
 
     /// Consume the side effect events in the frontend.
     pub fn consume_side_effects(&mut self, id: u16) -> Vec<Event> {
-        let Some(machine) = self.get_mut(id) else { return vec![]; };
+        let Some(machine) = self.get_mut(id) else {
+            return vec![];
+        };
 
         machine.events.drain(..).collect()
     }
@@ -237,7 +257,8 @@ impl Sequencer {
 
 /// Are there no more active peers?
 pub fn peers_halted(statuses: Statuses, id: u16) -> bool {
-    let active = statuses.iter()
+    let active = statuses
+        .iter()
         .filter(|(m_id, status)| id != **m_id && (status == &&Running || status == &&Ready))
         .count();
 

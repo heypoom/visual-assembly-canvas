@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod machine_communication_tests {
-    use machine::MessageNeverReceived;
-    use machine::canvas::{Canvas, CanvasError, CanvasError::MachineError};
     use machine::canvas::wire::port;
+    use machine::canvas::{Canvas, CanvasError, CanvasError::MachineError};
     use machine::status::MachineStatus::{Halted, Running};
+    use machine::MessageNeverReceived;
 
     type Errorable = Result<(), CanvasError>;
 
@@ -31,8 +31,18 @@ mod machine_communication_tests {
         c.connect(port(1, 0), port(0, 0))?;
         c.run()?;
 
-        assert_eq!(c.seq.get_mut(0).expect("cannot get first machine").stack().peek(), 180);
-        assert_eq!(c.seq.statuses[&0], Halted, "machine must be halted after message is received");
+        assert_eq!(
+            c.seq
+                .get_mut(0)
+                .expect("cannot get first machine")
+                .stack()
+                .peek(),
+            180
+        );
+        assert_eq!(
+            c.seq.statuses[&0], Halted,
+            "machine must be halted after message is received"
+        );
 
         Ok(())
     }
@@ -57,7 +67,10 @@ mod machine_communication_tests {
 
         let m1 = c.seq.get_mut(0).expect("cannot get first machine");
         assert_eq!(m1.stack().peek(), 30);
-        assert_eq!(c.seq.statuses[&0], Halted, "machine must be halted after message is received");
+        assert_eq!(
+            c.seq.statuses[&0], Halted,
+            "machine must be halted after message is received"
+        );
 
         Ok(())
     }
@@ -79,11 +92,20 @@ mod machine_communication_tests {
         c.load_program(1, "receive")?;
         c.connect(port(0, 0), port(1, 0))?;
 
-        assert_ne!(c.run(), Err(MachineError { cause: MessageNeverReceived { id: 1 } }), "machine 1 should receive the message");
+        assert_ne!(
+            c.run(),
+            Err(MachineError {
+                cause: MessageNeverReceived { id: 1 }
+            }),
+            "machine 1 should receive the message"
+        );
 
         let m1 = c.seq.get_mut(1).expect("cannot get second machine");
         assert_eq!(m1.stack().peek(), 30);
-        assert_eq!(c.seq.statuses[&1], Halted, "machine must be halted after message is received");
+        assert_eq!(
+            c.seq.statuses[&1], Halted,
+            "machine must be halted after message is received"
+        );
 
         Ok(())
     }
@@ -120,7 +142,12 @@ mod machine_communication_tests {
         r.load_program(0, "receive")?;
         r.load_program(1, "push 5")?;
 
-        assert_eq!(r.run(), Err(MachineError { cause: MessageNeverReceived { id: 0 } }));
+        assert_eq!(
+            r.run(),
+            Err(MachineError {
+                cause: MessageNeverReceived { id: 0 }
+            })
+        );
 
         Ok(())
     }
@@ -130,7 +157,12 @@ mod machine_communication_tests {
         let mut c = Canvas::new();
         c.add_machine()?;
         c.load_program(0, "receive")?;
-        assert_eq!(c.run(), Err(MachineError { cause: MessageNeverReceived { id: 0 } }));
+        assert_eq!(
+            c.run(),
+            Err(MachineError {
+                cause: MessageNeverReceived { id: 0 }
+            })
+        );
 
         Ok(())
     }
@@ -143,7 +175,12 @@ mod machine_communication_tests {
 
         c.load_program(0, "receive")?;
         c.load_program(1, "receive")?;
-        assert_eq!(c.run(), Err(MachineError { cause: MessageNeverReceived { id: 1 } }));
+        assert_eq!(
+            c.run(),
+            Err(MachineError {
+                cause: MessageNeverReceived { id: 1 }
+            })
+        );
 
         Ok(())
     }
