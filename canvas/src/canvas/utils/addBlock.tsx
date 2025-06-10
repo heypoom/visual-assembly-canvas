@@ -5,6 +5,7 @@ import { setupBlock } from "@/blocks"
 import { addCanvasNode } from "@/canvas"
 import { engine } from "@/engine"
 import { BaseBlockFieldOf, BlockFieldOf, BlockTypes } from "@/types/Node"
+import { isExternalBlock } from "./isExternalBlock"
 
 interface Options<T extends BlockTypes> {
   position?: { x: number; y: number }
@@ -12,6 +13,8 @@ interface Options<T extends BlockTypes> {
 }
 
 export function addBlock<T extends BlockTypes>(type: T, options?: Options<T>) {
+  console.log("addBlock", type, options)
+
   const props: BaseBlockFieldOf<T> = {
     ...getDefaultProps(type),
     ...options?.data,
@@ -21,8 +24,13 @@ export function addBlock<T extends BlockTypes>(type: T, options?: Options<T>) {
 
   if (type === "Machine") {
     id = engine.ctx?.add_machine()
+  } else if (isExternalBlock(type)) {
+    id = engine.addExternalBlock(type, { ...props })
   } else {
-    id = engine.ctx?.add_block({ type, ...props } as InternalBlockData)
+    id = engine.ctx?.add_block({
+      type: "BuiltIn",
+      data: { type, ...props } as InternalBlockData,
+    })
   }
 
   if (typeof id !== "number") return

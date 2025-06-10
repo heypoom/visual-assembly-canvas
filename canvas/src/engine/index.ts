@@ -7,6 +7,8 @@ import setup, {
   MachineStatus,
 } from "machine-wasm"
 
+import { encode as encodeMsgpack } from "@msgpack/msgpack"
+
 import { isBlock as is, isBlock } from "@/blocks"
 import { midiManager } from "@/services/midi"
 import { sleepTimers } from "@/services/sleep"
@@ -27,6 +29,7 @@ import { BaseBlockFieldOf, BlockTypes } from "@/types/Node"
 
 import { processEffects } from "./effects"
 import { getSourceHighlightMap } from "./highlight/getHighlightedSourceLine"
+import { isExternalBlock } from "@/canvas/utils/isExternalBlock"
 
 export type HighlighterFn = (lineNo: number) => void
 
@@ -413,7 +416,15 @@ export class CanvasEngine {
 
     updateNodeData(id, data)
 
-    engine.ctx.update_block(id, { ...data, type } as InternalBlockData)
+    if (isExternalBlock(type)) {
+      engine.ctx.update_external_block(id, encodeMsgpack(data))
+    } else {
+      engine.ctx.update_built_in_block(id, {
+        ...data,
+        type,
+      } as InternalBlockData)
+    }
+
     engine.ctx.force_tick_block(id)
   }
 
@@ -424,6 +435,11 @@ export class CanvasEngine {
     // Refresh memory and value viewers
     updateMemoryViewer(id)
     updateValueViewers()
+  }
+
+  public addExternalBlock<T>(id: string, data: T) {
+    console.log("addExternalBlock", id, data)
+    return this.ctx.add_external_block(id, encodeMsgpack(data))
   }
 }
 

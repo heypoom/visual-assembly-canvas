@@ -11,6 +11,7 @@ import { PixelBlock } from "./pixel"
 import { PlotterBlock } from "./plotter"
 import { SynthBlock } from "./synth"
 import { TapBlock } from "./tap"
+import { P5Block } from "./p5"
 
 export const nodeTypes: BlockComponentMap = {
   Tap: TapBlock,
@@ -23,6 +24,7 @@ export const nodeTypes: BlockComponentMap = {
   MidiOut: MidiOutBlock,
   Synth: SynthBlock,
   Memory: MemoryBlock,
+  P5: P5Block,
   ValueView: ValueViewBlock,
 }
 
