@@ -89,6 +89,7 @@
   },
   "trustedDependencies": [
     "@swc/core",
-    "@tailwindcss/oxide"
+    "@tailwindcss/oxide",
+    "esbuild"
   ]
 }
