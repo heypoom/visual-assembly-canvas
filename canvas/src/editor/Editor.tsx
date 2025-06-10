@@ -39,7 +39,7 @@ export const MachineEditor = memo((props: Props) => {
       basicSetup={{
         lineNumbers: false,
         foldGutter: false,
-        defaultKeymap: false,
+        // defaultKeymap: false,
       }}
     />
   )
