@@ -28,7 +28,8 @@ pub enum BlockDataByType {
 
     /// External blocks.
     External {
-        id: String,
+        /// Unique identifier of the external block.
+        name: String,
 
         /// Data is stored in the MessagePack value format.
         #[serde(with = "serde_bytes")]

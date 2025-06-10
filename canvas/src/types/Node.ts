@@ -6,7 +6,7 @@ import { PaletteKey } from "@/blocks"
 
 export type BlockTypes = Block["type"]
 
-export type Block =
+export type InternalBlock =
   | Exclude<InternalBlockData, { type: "Machine" | "Pixel" | "Tap" }>
   | (Extract<InternalBlockData, { type: "Machine" }> & { source: string })
   | (Extract<InternalBlockData, { type: "Tap" }> & { signal: number[] })
@@ -14,6 +14,10 @@ export type Block =
       columns?: number
       palette?: PaletteKey
     })
+
+export type ExternalBlock = { type: "P5"; source: string }
+
+export type Block = InternalBlock | ExternalBlock
 
 export type BaseBlockFieldOf<K extends BlockTypes> = Omit<
   Extract<Block, { type: K }>,

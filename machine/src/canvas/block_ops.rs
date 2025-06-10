@@ -1,4 +1,4 @@
-use crate::blocks::BlockDataByType::BuiltIn;
+use crate::blocks::BlockDataByType::{BuiltIn, External};
 use crate::blocks::InternalBlockData::{Machine, Memory};
 use crate::blocks::{Block, BlockDataByType, InternalBlockData};
 use crate::canvas::canvas::Errorable;
@@ -123,10 +123,21 @@ impl Canvas {
         Ok(())
     }
 
-    pub fn update_built_in(&mut self, id: u16, next_data: InternalBlockData) -> Errorable {
-        if self.get_block(id)?.data.is_built_in() {
-            let block = self.mut_block(id)?;
-            block.data = BuiltIn { data: next_data };
+    pub fn update_built_in_block(&mut self, id: u16, next_data: InternalBlockData) -> Errorable {
+        let block = self.mut_block(id)?;
+
+        if let BuiltIn { data } = &mut block.data {
+            *data = next_data;
+        }
+
+        Ok(())
+    }
+
+    pub fn update_external_block(&mut self, id: u16, next_data: Vec<u8>) -> Errorable {
+        let block = self.mut_block(id)?;
+
+        if let External { data, .. } = &mut block.data {
+            *data = next_data;
         }
 
         Ok(())

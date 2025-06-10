@@ -7,8 +7,10 @@ import { engine } from "@/engine"
 import { port } from "@/store/actions/changes"
 import { $clock } from "@/store/clock"
 import { BlockNode } from "@/types/Node"
+import { encode as encodeMsgpack } from "@msgpack/msgpack"
 
 import { SaveState } from "../types"
+import { isExternalBlock } from "@/canvas/utils/isExternalBlock"
 
 export interface SaveStateContext {
   serialize: () => SaveState
@@ -65,9 +67,17 @@ export function useSaveState(): SaveStateContext {
           engine.ctx?.add_machine_with_id(id)
         } else {
           const props = { ...getDefaultProps(type), ...nodeProps }
-          const data = { type, ...props } as InternalBlockData
 
-          engine.ctx?.add_block_with_id(id, data)
+          if (isExternalBlock(type)) {
+            engine.ctx?.add_external_block_with_id(
+              id,
+              type,
+              encodeMsgpack(props),
+            )
+          } else {
+            const data = { type, ...props } as InternalBlockData
+            engine.ctx?.add_block_with_id(id, { type: "BuiltIn", data })
+          }
         }
 
         setupBlock(block)
