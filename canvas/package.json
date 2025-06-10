@@ -4,10 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently 'rsw watch' 'vite'",
-    "build": "source ./ci-setup.sh && rsw build && tsc && vite build",
-    "watch:rs": "cd machine-wasm && cargo watch --workdir .. --watch ../machine/src --watch machine-wasm/src -s 'wasm-pack build machine-wasm --out-dir pkg-release --target web --release'",
-    "rsw": "rsw",
+    "dev": "bun wasm:build && vite",
+    "build": "source ./ci-setup.sh && wasm:build && vite build",
+    "wasm:build": "wasm-pack build ./machine-wasm --target web",
     "lint": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0 .",
     "lint:fix": "eslint --fix --ext ts,tsx --report-unused-disable-directives --max-warnings 0 .",
     "test": "vitest",
@@ -84,6 +83,7 @@
     "vite": "^6.3.5",
     "vite-plugin-rsw": "^2.0.11",
     "vite-plugin-top-level-await": "^1.5.0",
+    "vite-plugin-wasm-pack": "^0.1.12",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.3"
   },
