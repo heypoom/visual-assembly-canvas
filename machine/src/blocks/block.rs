@@ -31,7 +31,8 @@ pub enum BlockDataByType {
         /// Unique identifier of the external block.
         name: String,
 
-        /// Data is stored in the MessagePack value format.
+        /// Shared data is stored in the MessagePack value format.
+        /// Optional. You can rely on message passing and not share data.
         #[serde(with = "serde_bytes")]
         data: Vec<u8>,
     },

@@ -413,12 +413,9 @@ export class CanvasEngine {
     if (!node) return
 
     const data = { ...node.data, ...config } as BaseBlockFieldOf<T>
-
     updateNodeData(id, data)
 
-    if (isExternalBlock(type)) {
-      engine.ctx.update_external_block(id, encodeMsgpack(data))
-    } else {
+    if (!isExternalBlock(type)) {
       engine.ctx.update_built_in_block(id, {
         ...data,
         type,

@@ -33,17 +33,12 @@ export const updateNodeData = <K extends BlockValues>(
 
 /** Sync the block data from the engine. */
 export const syncBlockData = (block: { id: number; data: BlockDataByType }) => {
-  console.log("syncBlockData", block.data)
-
   updateNode(block.id, (node) => {
     const type = node.type
 
     if (type) {
       if (block.data.type === "BuiltIn") {
         node.data = { ...node.data, ...block.data.data }
-      } else {
-        console.log("external block", block)
-        // node.data = { ...node.data, ...block.data.data }
       }
     }
   })
