@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod canvas_tests {
     use machine::blocks::pixel::PixelMode;
+    use machine::blocks::BlockDataByType::BuiltIn;
     use machine::blocks::InternalBlockData::{Clock, Memory, Pixel, Plot};
     use machine::canvas::canvas_error::CanvasError;
     use machine::canvas::wire::port;
@@ -12,7 +13,7 @@ mod canvas_tests {
     fn test_add_wire_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(Pixel {
+        let b = c.add_built_in_block(Pixel {
             pixels: vec![],
             mode: PixelMode::Replace,
         })?;
@@ -32,7 +33,7 @@ mod canvas_tests {
     fn test_machine_set_pixel_block() -> Errorable {
         let mut c = Canvas::new();
         let a = c.add_machine()?;
-        let b = c.add_block(Pixel {
+        let b = c.add_built_in_block(Pixel {
             pixels: vec![],
             mode: PixelMode::Replace,
         })?;
@@ -52,9 +53,11 @@ mod canvas_tests {
 
         assert_eq!(
             c.blocks[1].data,
-            Pixel {
-                pixels: vec![0xCC, 0xBB, 0xAA],
-                mode: PixelMode::Replace,
+            BuiltIn {
+                data: Pixel {
+                    pixels: vec![0xCC, 0xBB, 0xAA],
+                    mode: PixelMode::Replace,
+                }
             }
         );
 
@@ -93,7 +96,7 @@ mod canvas_tests {
     fn test_plotter_drain() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(Plot {
+        c.add_built_in_block(Plot {
             values: vec![],
             size: 5,
         })?;
@@ -115,9 +118,11 @@ mod canvas_tests {
 
         assert_eq!(
             c.blocks[1].data,
-            Plot {
-                values: vec![2, 2, 2, 2, 2],
-                size: 5
+            BuiltIn {
+                data: Plot {
+                    values: vec![2, 2, 2, 2, 2],
+                    size: 5
+                }
             }
         );
 
@@ -127,12 +132,12 @@ mod canvas_tests {
     #[test]
     fn test_clock_wraparound() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Clock {
+        c.add_built_in_block(Clock {
             time: 250,
             freq: 1,
             ping: false,
         })?;
-        c.add_block(Plot {
+        c.add_built_in_block(Plot {
             values: vec![],
             size: 5,
         })?;
@@ -140,13 +145,19 @@ mod canvas_tests {
 
         c.tick(1)?;
 
-        if let Clock { time, .. } = c.blocks[0].data {
+        if let BuiltIn {
+            data: Clock { time, .. },
+        } = c.blocks[0].data
+        {
             assert_eq!(time, 251);
         }
 
         c.tick(10)?;
 
-        if let Clock { time, .. } = c.blocks[0].data {
+        if let BuiltIn {
+            data: Clock { time, .. },
+        } = c.blocks[0].data
+        {
             assert_eq!(time, 6);
         }
 
@@ -156,12 +167,12 @@ mod canvas_tests {
     #[test]
     fn test_clock_rate() -> Errorable {
         let mut c = Canvas::new();
-        c.add_block(Clock {
+        c.add_built_in_block(Clock {
             time: 250,
             freq: 8,
             ping: false,
         })?;
-        c.add_block(Plot {
+        c.add_built_in_block(Plot {
             values: vec![],
             size: 5,
         })?;
@@ -171,9 +182,11 @@ mod canvas_tests {
 
         assert_eq!(
             c.blocks[1].data,
-            Plot {
-                values: vec![8, 16, 24, 32, 40],
-                size: 5
+            BuiltIn {
+                data: Plot {
+                    values: vec![8, 16, 24, 32, 40],
+                    size: 5
+                }
             }
         );
 
@@ -184,7 +197,7 @@ mod canvas_tests {
     fn test_mapped_store() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(Pixel {
+        c.add_built_in_block(Pixel {
             pixels: vec![],
             mode: PixelMode::Replace,
         })?;
@@ -206,9 +219,11 @@ mod canvas_tests {
 
         assert_eq!(
             c.blocks[1].data,
-            Pixel {
-                pixels: vec![69, 96, 0],
-                mode: PixelMode::Replace,
+            BuiltIn {
+                data: Pixel {
+                    pixels: vec![69, 96, 0],
+                    mode: PixelMode::Replace,
+                }
             }
         );
 
@@ -219,7 +234,7 @@ mod canvas_tests {
     fn test_mapped_load() -> Errorable {
         let mut c = Canvas::new();
         c.add_machine()?;
-        c.add_block(Memory {
+        c.add_built_in_block(Memory {
             values: vec![20, 40],
             auto_reset: false,
         })?;

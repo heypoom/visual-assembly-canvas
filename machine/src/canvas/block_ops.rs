@@ -41,6 +41,10 @@ impl Canvas {
         Ok(())
     }
 
+    pub fn add_built_in_block(&mut self, data: InternalBlockData) -> Result<u16, CanvasError> {
+        self.add_block(BuiltIn { data })
+    }
+
     pub fn remove_block(&mut self, id: u16) -> Errorable {
         let block_idx = self
             .blocks
