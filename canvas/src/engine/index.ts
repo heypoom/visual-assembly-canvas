@@ -318,8 +318,12 @@ export class CanvasEngine {
   // TODO(Perf): we can optimize this by only syncing the blocks that have changed.
   //             currently, we pull every data from the engine.
   public syncBlocks() {
+    console.time("syncBlocks")
+
     const blocks = this.ctx.get_blocks()
     blocks.forEach(syncBlockData)
+
+    console.timeEnd("syncBlocks")
   }
 
   private updateBlock(id: number) {
@@ -369,11 +373,17 @@ export class CanvasEngine {
     this.invalidate()
 
     // Reset blocks and update UI
-    this.ctx.reset_blocks()
+    try {
+      this.ctx.reset_blocks()
+    } catch (error) {
+      console.error("reset_blocks fail:", error)
+    }
+
     this.syncBlocks()
 
     // Reset machines and update UI
     this.reloadMachines()
+
     this.syncMachineState()
   }
 
@@ -434,9 +444,9 @@ export class CanvasEngine {
     updateValueViewers()
   }
 
-  public addExternalBlock<T>(id: string, data: T) {
-    console.log("addExternalBlock", id, data)
-    return this.ctx.add_external_block(id, encodeMsgpack(data))
+  public addExternalBlock<T>(name: string, data: T) {
+    console.log("addExternalBlock", name, data)
+    return this.ctx.add_external_block(name, encodeMsgpack(data))
   }
 }
 

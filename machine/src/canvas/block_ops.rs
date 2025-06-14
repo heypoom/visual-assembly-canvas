@@ -168,7 +168,10 @@ impl Canvas {
         for id in ids {
             // Do not reset if the block is not auto-reset.
             // This means the memory block is storing persistent data.
-            if let Memory { auto_reset, .. } = self.built_in_data_by_id(id)? {
+            if let BuiltIn {
+                data: Memory { auto_reset, .. },
+            } = self.get_block(id)?.data
+            {
                 if !auto_reset {
                     continue;
                 }

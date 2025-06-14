@@ -69,11 +69,9 @@ export function useSaveState(): SaveStateContext {
           const props = { ...getDefaultProps(type), ...nodeProps }
 
           if (isExternalBlock(type)) {
-            engine.ctx?.add_external_block_with_id(
-              id,
-              type,
-              encodeMsgpack(props),
-            )
+            const empty = new Uint8Array()
+
+            engine.ctx?.add_external_block_with_id(id, type, empty)
           } else {
             const data = { type, ...props } as InternalBlockData
             engine.ctx?.add_block_with_id(id, { type: "BuiltIn", data })

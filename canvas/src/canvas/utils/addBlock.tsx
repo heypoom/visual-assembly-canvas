@@ -25,7 +25,7 @@ export function addBlock<T extends BlockTypes>(type: T, options?: Options<T>) {
   if (type === "Machine") {
     id = engine.ctx?.add_machine()
   } else if (isExternalBlock(type)) {
-    id = engine.addExternalBlock(type, { ...props })
+    id = engine.addExternalBlock(type, null)
   } else {
     id = engine.ctx?.add_block({
       type: "BuiltIn",
