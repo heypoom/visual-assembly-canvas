@@ -1,5 +1,8 @@
 # Visual Assembly Canvas
 
+> [!IMPORTANT]
+> Visual Assembly Canvas is currently **unmaintained**, as we have ported the full functionality of visual assembly canvas to [Patchies](https://github.com/heypoom/patchies), the spiritual successor of this project! The virtual machine is brought to Patchies as-is, so it has full feature parity, including line-by-line highlights and memory region visualizer. Check out its [repo](https://github.com/heypoom/patchies) and [webapp](https://patchies.app) - it's free, open source, much more powerful and even easier to use.
+
 ![Screenshot of Visual Assembly Canvas](./docs/images/canvas-1.jpg)
 
 A highly visual assembly editor, infinite canvas for wiring blocks and machines together, bytecode virtual machine runnable natively and on WebAssembly, and a command-line bytecode compiler.
